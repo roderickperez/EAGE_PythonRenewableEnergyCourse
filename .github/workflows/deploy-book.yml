@@ -1,6 +1,5 @@
 name: deploy-book
 
-# Trigger the workflow on push to the main or master branch
 on:
   push:
     branches:
@@ -14,9 +13,9 @@ jobs:
       pages: write
       id-token: write
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      # Install dependencies
       - name: Set up Python 3.11
         uses: actions/setup-python@v4
         with:
@@ -24,27 +23,20 @@ jobs:
 
       - name: Install dependencies
         run: |
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Optional: Cache executed notebooks
-      # - name: Cache executed notebooks
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: _build/.jupyter_cache
-      #     key: jupyter-book-cache-${{ hashFiles('requirements.txt') }}
-
-      # Build the book
       - name: Build the book
         run: |
           jupyter-book build .
 
-      # Upload the book's HTML as an artifact
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
           path: "_build/html"
 
-      # Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
-        id: deployment
         uses: actions/deploy-pages@v2
+        with:
+          branch: gh-pages
+          path: _build/html
