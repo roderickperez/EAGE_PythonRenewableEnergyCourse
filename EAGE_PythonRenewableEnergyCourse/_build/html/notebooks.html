@@ -1,7 +1,6 @@
 
 <!DOCTYPE html>
 
-
 <html lang="en" data-content_root="./" >
 
   <head>
@@ -10,6 +9,12 @@
 
     <title>Content with notebooks &#8212; My sample book</title>
   
+    <script>
+      // Redirect if not logged in from index.html
+      if (!document.referrer.endsWith('index.html')) {
+          window.location.href = 'index.html';
+      }
+    </script>
   
   
   <script data-cfasync="false">

@@ -1,1 +1,61 @@
-<meta http-equiv="Refresh" content="0; url=intro.html" />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV File Processor</title>
+    <script src="auth.js"></script> <!-- Include the auth.js file here -->
+</head>
+<body>
+    <!-- The content of this page will only be loaded if the authentication is successful -->
+    <h1>Upload and Process CSV File</h1>
+    <input type="file" id="fileInput" accept=".csv">
+    <button id="processBtn">Process CSV</button>
+    <div id="output"></div>
+
+    <script>
+        document.getElementById('processBtn').addEventListener('click', function() {
+            var fileInput = document.getElementById('fileInput');
+            var output = document.getElementById('output');
+
+            if (fileInput.files.length === 0) {
+                alert("Please select a file.");
+                return;
+            }
+
+            var file = fileInput.files[0];
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                var content = e.target.result;
+                var rows = content.split('\n');
+                var html = '<table border="1"><tr>';
+
+                // Assuming the first row is the header
+                var headers = rows[0].split(',');
+                headers.forEach(function(header) {
+                    html += '<th>' + header.trim() + '</th>';
+                });
+
+                html += '</tr>';
+
+                // Process the rest of the rows
+                for (var i = 1; i < rows.length; i++) {
+                    if (rows[i].trim() === "") continue; // Skip empty rows
+                    var cols = rows[i].split(',');
+                    html += '<tr>';
+                    cols.forEach(function(col) {
+                        html += '<td>' + col.trim() + '</td>';
+                    });
+                    html += '</tr>';
+                }
+
+                html += '</table>';
+                output.innerHTML = html;
+            };
+
+            reader.readAsText(file);
+        });
+    </script>
+</body>
+</html>

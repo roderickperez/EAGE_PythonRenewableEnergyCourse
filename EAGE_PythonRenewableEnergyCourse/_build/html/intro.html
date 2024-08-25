@@ -9,6 +9,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Welcome to your Jupyter Book &#8212; My sample book</title>
+
+    <script>
+      // Redirect if not logged in from index.html
+      if (!document.referrer.endsWith('index.html')) {
+          window.location.href = 'index.html';
+      }
+    </script>
   
   
   
