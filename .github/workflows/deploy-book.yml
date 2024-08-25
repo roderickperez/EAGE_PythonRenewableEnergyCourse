@@ -28,12 +28,12 @@ jobs:
 
       - name: Build the book
         run: |
-          jupyter-book build .
+          jupyter-book build EAGE_PythonRenewableEnergyCourse
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
-          path: "_build/html"
+          path: "EAGE_PythonRenewableEnergyCourse/_build/html"
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v2
