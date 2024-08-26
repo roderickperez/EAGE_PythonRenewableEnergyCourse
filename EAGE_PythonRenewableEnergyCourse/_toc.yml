@@ -66,24 +66,24 @@ parts:
 
   - caption: Hydroelectric Energy
     chapters:
-      - file: section4/hydroelectricEnergy
+      - file: section5/hydroelectricEnergy
 
   - caption: Solar Energy
     chapters:
-      - file: section4/solarEnergy
+      - file: section6/solarEnergy
 
   - caption: Wind Energy
     chapters:
-      - file: section5/windEnergy
+      - file: section7/windEnergy
 
   - caption: Geothermal Energy
     chapters:
-      - file: section6/geothermalEnergy
+      - file: section8/geothermalEnergy
 
   - caption: Summary and Conclusions
     chapters:
-      - file: section4/summary
-      - file: section4/conclusions
+      - file: section9/summary
+      - file: section9/conclusions
 
   - caption: Course Final Project
     chapters:
