@@ -10,13 +10,9 @@ parts:
       - file: section0/energyMarkets
       - file: section0/timeSeriesEnergyConsumption
       - file: section0/renewableEnergies/hydroelectric
-      - file: section0/quizzes/hydroelectricQuizz
       - file: section0/renewableEnergies/eolic
-      - file: section0/quizzes/eolicQuizz
       - file: section0/renewableEnergies/solar
-      - file: section0/quizzes/solarQuizz
       - file: section0/renewableEnergies/geothermal
-      - file: section0/quizzes/geothermalQuizz
       - file: section0/faq
 
   - caption: Introduction to Python Programming
@@ -39,11 +35,8 @@ parts:
   - caption: Python Libraries
     chapters:
       - file: section3/basicLibraries/numpy
-      - file: section3/quizzes/numpyQuizz
       - file: section3/basicLibraries/pandas
-      - file: section3/quizzes/pandasQuizz
       - file: section3/basicLibraries/matplotlib
-      - file: section3/quizzes/matplotlibQuizz
       - file: section3/advancedLibraries/scipy
       - file: section3/advancedLibraries/seaborn
       - file: section3/advancedLibraries/plotly
@@ -82,8 +75,24 @@ parts:
 
   - caption: Summary and Conclusions
     chapters:
-      - file: section9/summary
-      - file: section9/conclusions
+      - file: section9/courseSummary
+      - file: section9/courseConclusions
+
+  - caption: Quizzes
+    chapters:
+      - file: section10/introRenewableEnergyquizzes/hydroelectricQuizz
+      - file: section10/introRenewableEnergyquizzes/eolicQuizz
+      - file: section10/introRenewableEnergyquizzes/solarQuizz
+      - file: section10/introRenewableEnergyquizzes/geothermalQuizz
+      - file: section10/introRenewableEnergyquizzes/energyMarketsQuizz
+      - file: section10/pythonBasicsquizzes/pythonBasicsQuizz
+      - file: section10/pythonLibrariesquizzes/numpyQuizz
+      - file: section10/pythonLibrariesquizzes/pandasQuizz
+      - file: section10/pythonLibrariesquizzes/matplotlibQuizz
+      - file: section10/renewableEnergyquizzes/hydroelectricEnergy
+      - file: section10/renewableEnergyquizzes/windEnergy
+      - file: section10/renewableEnergyquizzes/solarEnergy
+      - file: section10/renewableEnergyquizzes/geothermalEnergy
 
   - caption: Course Final Project
     chapters:
