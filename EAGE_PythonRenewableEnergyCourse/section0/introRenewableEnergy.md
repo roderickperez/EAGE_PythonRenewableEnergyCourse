@@ -31,9 +31,8 @@ Common symbols for power include $P$, with the SI unit being the watt (W). In SI
 ### World Energy Consumption
 What is global energy consumption? Global energy consumption is the total amount of energy used on the planet to meet human needs. This energy mainly comes from non-renewable or fossil sources, such as oil, coal, or natural gas. These sources have a high environmental and social impact, contributing to climate change, air and water pollution, and geopolitical conflicts.
 
-\[
-P = \frac{W}{t}
-\]
+$$ P = \frac{W}{t} $$
+
 Where:
 - $P$ is power,
 - $W$ is work done,
@@ -57,9 +56,8 @@ Solar energy captures sunlight to generate electricity or heat. It includes tech
 ### Geothermal Energy
 Geothermal energy utilizes heat from within the Earth to generate electricity or provide direct heating.
 
-\[
-Q = mc\Delta T
-\]
+$$Q = mc\Delta T$$
+
 Where:
 - $Q$ is the heat added,
 - $m$ is the mass,
