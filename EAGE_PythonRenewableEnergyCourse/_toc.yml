@@ -37,6 +37,8 @@ parts:
       - file: section3/advancedLibraries/geopandas
       - file: section3/advancedLibraries/folium
       - file: section3/extra/cartopy
+      - file: section3/extra/quiver
+      - file: section3/extra/streamplots
       - file: section3/extra/ipyleaflet
       - file: section3/extra/geemap
 
