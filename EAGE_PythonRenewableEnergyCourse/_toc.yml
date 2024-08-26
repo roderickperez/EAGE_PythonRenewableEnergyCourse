@@ -4,43 +4,71 @@
 format: jb-book
 root: courseIntro
 parts:
-  - caption: Course Material
+    - caption: Introduction to Renewable Energy
     chapters:
-      - file: section0/dataLoad
-      - file: section0/exercisesReview/exercisesReview
+      - file: section0/introRenewableEnergy
+      - file: section0/energyMarkets
+      - file: section0/timeSeriesEnergyConsumption
+      - file: section0/renewableEnergies/hydroelectric
+      - file: section0/quizzes/hydroelectricQuizz
+      - file: section0/renewableEnergies/eolic
+      - file: section0/quizzes/eolicQuizz
+      - file: section0/renewableEnergies/solar
+      - file: section0/quizzes/solarQuizz
+      - file: section0/renewableEnergies/geothermal
+      - file: section0/quizzes/geothermalQuizz
       - file: section0/faq
-  - caption: Introduction
+
+
+  - caption: Introduction to Python Programming
     chapters:
-      - file: section1/introduction/programming
-      - file: section1/introduction/pythonIntro
-      - file: section1/introduction/IDE
-      - file: section1/introduction/markdown
+      - file: section1/programming
+      - file: section1/pythonIntro
+      - file: section1/IDE
+      - file: section1/markdown
 
   - caption: Python Basics
     chapters:
-      - file: section1/pythonBasics/variables
-      - file: section1/pythonBasics/mathOperations
-      - file: section1/pythonBasics/functions
-      - file: section1/pythonBasics/dataStructures
-      - file: section1/pythonBasics/cycles
-      - file: section1/pythonBasics/integratedFunctions
+      - file: section2/pythonBasics/variables
+      - file: section2/pythonBasics/mathOperations
+      - file: section2/pythonBasics/functions
+      - file: section2/pythonBasics/dataStructures
+      - file: section2/pythonBasics/cycles
+      - file: section2/pythonBasics/integratedFunctions
+      - file: section2/quizzes/pythonIntroQuizz
 
-  - caption: Basic Libraries
+  - caption: Python Libraries
     chapters:
-      - file: section1/basicLibraries/numpy
-      - file: section1/basicLibraries/pandas
-      - file: section1/basicLibraries/matplotlib
+      - file: section3/basicLibraries/numpy
+      - file: section3/quizzes/numpyQuizz
+      - file: section3/basicLibraries/pandas
+      - file: section3/quizzes/pandasQuizz
+      - file: section3/basicLibraries/matplotlib
+      - file: section3/quizzes/matplotlibQuizz
+      - file: section3/advancedLibraries/scipy
+      - file: section3/advancedLibraries/seaborn
+      - file: section3/advancedLibraries/plotly
+      - file: section3/advancedLibraries/geopandas
+      - file: section3/advancedLibraries/folium
+      - file: section3/extra/cartopy
+      - file: section3/extra/ipyleaflet
+      - file: section3/extra/geemap
 
-  - caption: Time Series for Energy Consumption
+  - caption: Data Processing and Exploration Data Analysis
     chapters:
-      - file: section2/energyMarkets
-      - file: section2/timeSeriesEnergyConsumption
+      - file: section4/dataSources
+      - file: section4/dataTypes/csv
+      - file: section4/dataTypes/netcfd
+      - file: section4/dataTypes/xArray
+      - file: section4/dataProcessing
+      - file: section4/dataAnalysis
+      - file: section4/timeSeriesEnergyConsumption
+      - file: section4/weatherDataset
 
-  - caption: Artificial Intelligence
+###########
+  - caption: Hydroelectric Energy
     chapters:
-      - file: section3/EDA
-      - file: section3/machineLearning
-      - file: section3/artificialIntelligence
+      - file: section4/hydroelectricEnergy
 
   - caption: Solar Energy
     chapters:
@@ -53,3 +81,16 @@ parts:
   - caption: Geothermal Energy
     chapters:
       - file: section6/geothermalEnergy
+
+###########
+  - caption: Summary and Conclusions
+    chapters:
+      - file: section4/summary
+      - file: section4/conclusions
+
+###########
+  - caption: Course Final Project
+    chapters:
+      - file: section4/projectIntro
+      - file: section4/projectSolution
+

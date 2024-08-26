@@ -1,5 +1,6 @@
 # Energy Markets
 
+
 ## Useful Resources:
 
 - [Electricity Maps](https://app.electricitymaps.com/map)
