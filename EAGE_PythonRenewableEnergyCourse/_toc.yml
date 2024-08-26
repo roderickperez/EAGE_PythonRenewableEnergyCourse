@@ -4,7 +4,7 @@
 format: jb-book
 root: courseIntro
 parts:
-    - caption: Introduction to Renewable Energy
+  - caption: Introduction to Renewable Energy
     chapters:
       - file: section0/introRenewableEnergy
       - file: section0/energyMarkets
@@ -18,7 +18,6 @@ parts:
       - file: section0/renewableEnergies/geothermal
       - file: section0/quizzes/geothermalQuizz
       - file: section0/faq
-
 
   - caption: Introduction to Python Programming
     chapters:
@@ -65,7 +64,6 @@ parts:
       - file: section4/timeSeriesEnergyConsumption
       - file: section4/weatherDataset
 
-###########
   - caption: Hydroelectric Energy
     chapters:
       - file: section4/hydroelectricEnergy
@@ -82,15 +80,12 @@ parts:
     chapters:
       - file: section6/geothermalEnergy
 
-###########
   - caption: Summary and Conclusions
     chapters:
       - file: section4/summary
       - file: section4/conclusions
 
-###########
   - caption: Course Final Project
     chapters:
       - file: section4/projectIntro
       - file: section4/projectSolution
-
