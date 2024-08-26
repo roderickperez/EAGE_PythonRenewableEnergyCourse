@@ -2,8 +2,54 @@
 # Learn more at https://jupyterbook.org/customize/toc.html
 
 format: jb-book
-root: intro
-chapters:
-- file: markdown
-- file: notebooks
-- file: markdown-notebooks
+root: courseIntro
+parts:
+  - caption: Course Material
+    chapters:
+      - file: section0/dataLoad
+      - file: section0/exercisesReview/exercisesReview
+      - file: section0/faq
+  - caption: Introduction
+    chapters:
+      - file: section1/introduction/programming
+      - file: section1/introduction/pythonIntro
+      - file: section1/introduction/IDE
+      - file: section1/introduction/markdown
+
+  - caption: Python Basics
+    chapters:
+      - file: section1/pythonBasics/variables
+      - file: section1/pythonBasics/mathOperations
+      - file: section1/pythonBasics/functions
+      - file: section1/pythonBasics/dataStructures
+      - file: section1/pythonBasics/cycles
+      - file: section1/pythonBasics/integratedFunctions
+
+  - caption: Basic Libraries
+    chapters:
+      - file: section1/basicLibraries/numpy
+      - file: section1/basicLibraries/pandas
+      - file: section1/basicLibraries/matplotlib
+
+  - caption: Time Series for Energy Consumption
+    chapters:
+      - file: section2/energyMarkets
+      - file: section2/timeSeriesEnergyConsumption
+
+  - caption: Artificial Intelligence
+    chapters:
+      - file: section3/EDA
+      - file: section3/machineLearning
+      - file: section3/artificialIntelligence
+
+  - caption: Solar Energy
+    chapters:
+      - file: section4/solarEnergy
+
+  - caption: Wind Energy
+    chapters:
+      - file: section5/windEnergy
+
+  - caption: Geothermal Energy
+    chapters:
+      - file: section6/geothermalEnergy
