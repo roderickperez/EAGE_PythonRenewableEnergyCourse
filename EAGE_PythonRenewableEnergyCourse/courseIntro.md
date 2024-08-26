@@ -1,4 +1,4 @@
-# Artificial Intelligence for Renewable Energies
+# Python for Renewable Energy Data Processing: An Extensive Online Short Course for Geoscientists and Engineers
 
 ```{image} Logo4.png
 :alt: AIRenewablesOU
@@ -7,7 +7,7 @@
 :align: center
 ```
 
-Last Update: Nov, 7h, 2022
+Last Update: August, 26h, 2024
 
 ## Course Description
 
