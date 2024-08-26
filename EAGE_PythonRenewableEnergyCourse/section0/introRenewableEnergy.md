@@ -85,6 +85,12 @@ In the Stated Policies Scenario (STEPS), consistent with enacted energy policies
 
 **Problem**: A 100-Watt light bulb is left on for 2 hours. Calculate the total energy consumed by the light bulb during this period in Joules.
 
+```{admonition} Click here!
+:class: tip, dropdown
+Here's what's inside!
+```
+
+
 ```{prf:proof}
 :class: dropdown
 
