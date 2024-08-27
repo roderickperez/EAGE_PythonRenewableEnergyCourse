@@ -10,8 +10,30 @@ Link: https://ourworldindata.org/energy-production-consumption
 name: ourWorldinData1
 height: 400px
 ---
-"Our World in Data" website.
+Our World in Data website.
 ```
+
+```{image} /section4/section4_ourworldindata_1.PNG
+:alt: OurWorldinData1
+:class: bg-primary mb-1
+:width: 800px
+:align: center
+```
+
+```{image} ./section4/section4_ourworldindata_1.PNG
+:alt: OurWorldinData1
+:class: bg-primary mb-1
+:width: 800px
+:align: center
+```
+
+```{image} /section4/section4_ourworldindata_1.PNG
+:alt: OurWorldinData1
+:class: bg-primary mb-1
+:width: 800px
+:align: center
+```
+
 
 ## EIA
 
