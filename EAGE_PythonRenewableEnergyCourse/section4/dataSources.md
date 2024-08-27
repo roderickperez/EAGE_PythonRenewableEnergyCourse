@@ -70,44 +70,86 @@ euroStat Energy Renewable vs Non-renewable Electricity.
 
 ```{figure} ../images/section4/section4_euroStat_3.jpg
 ---
-name: euroStat_data_browser_net_electricity_generation_by_type_of_fuel
+name: xxxxxx
 ---
-euroStat Net Electricity generation by type of fuel (Monthly data)
+xxxxx
 ```
 
 ```{figure} ../images/section4/section4_euroStat_4.jpg
 ---
-name: euroStat_download_data_options
+name: xxxxxx
 ---
-euroStat download data options.
+xxxxx
 ```
+
 
 ```{figure} ../images/section4/section4_euroStat_5.jpg
 ---
-name: euroStat_download_data_options
+name: xxxxxx
 ---
-height: 250px
-euroStat download data options.
+xxxxx
 ```
+
+
+```{figure} ../images/section4/section4_euroStat_5.jpg
+---
+name: xxxxxx
+---
+xxxxx
+```
+
 
 ```{figure} ../images/section4/section4_euroStat_6.jpg
 ---
-name: euroStat_download_window
+name: xxxxxx
 ---
-height: 150px
-euroStat download data windows.
+xxxxx
 ```
+
 
 ```{figure} ../images/section4/section4_euroStat_7.jpg
 ---
-name: euroStat_net_electricity_excel_summary
+name: xxxxxx
 ---
-euroStat Net electricity excel summary tab.
+xxxxx
 ```
+
 
 ```{figure} ../images/section4/section4_euroStat_8.jpg
 ---
-name: euroStat_net_electricity_excel_sheet1
+name: xxxxxx
 ---
-euroStat Net electricity excel sheet1 tab.
+xxxxx
+```
+
+
+```{figure} ../images/section4/section4_euroStat_9.jpg
+---
+name: xxxxxx
+---
+height: 250px
+xxxxx
+```
+
+
+```{figure} ../images/section4/section4_euroStat_10.jpg
+---
+height: 150px
+name: xxxxxx
+---
+xxxxx
+```
+
+```{figure} ../images/section4/section4_euroStat_11.jpg
+---
+name: xxxxxx
+---
+xxxxx
+```
+
+```{figure} ../images/section4/section4_euroStat_12.jpg
+---
+name: xxxxxx
+---
+xxxxx
 ```
