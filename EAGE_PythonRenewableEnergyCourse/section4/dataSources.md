@@ -13,6 +13,14 @@ Link: https://ourworldindata.org/energy-production-consumption
 :align: center
 ```
 
+```{figure} ../images/section4/section4_ourworldindata_1.jpg
+---
+height: 150px
+name: directive-fig
+---
+Here is my figure caption!
+```
+
 ## EIA
 
 ## euroStat
