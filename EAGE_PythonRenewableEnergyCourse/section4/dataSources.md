@@ -41,14 +41,16 @@ name: ourworldindata_5
 Sample of the "global-energy-substitution.csv" file in Excel.
 ```
 
+```{figure} ../images/section4/worldDatainPlot_EnergyBySource_plot.jpg
+---
+name: ourworldindata_globalBySource
+---
+Global Energy by Source (in TWh) from the "global-energy-substitution.csv" dataset.
+```
+
 ## EIA
 
 ## euroStat
 
 Link: https://ec.europa.eu/eurostat/cache/infographs/energy_portal/enviz.html?language=EN
 
-## EIA
-
-## euroStat
-
-Link: https://ec.europa.eu/eurostat/cache/infographs/energy_portal/enviz.html?language=EN
