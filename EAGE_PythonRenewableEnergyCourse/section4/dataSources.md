@@ -5,7 +5,7 @@
 Link: https://ourworldindata.org/energy-production-consumption 
 
 
-```{figure} /section4/section4_ourworldindata_1.PNG
+```{figure} section4_ourworldindata_1.PNG
 ---
 name: ourWorldinData1
 height: 400px
@@ -13,21 +13,21 @@ height: 400px
 Our World in Data website.
 ```
 
-```{image} /section4/section4_ourworldindata_1.PNG
+```{image} section4_ourworldindata_1.PNG
 :alt: OurWorldinData1
 :class: bg-primary mb-1
 :width: 800px
 :align: center
 ```
 
-```{image} ./section4/section4_ourworldindata_1.PNG
+```{image} section4_ourworldindata_1.PNG
 :alt: OurWorldinData1
 :class: bg-primary mb-1
 :width: 800px
 :align: center
 ```
 
-```{image} /section4/section4_ourworldindata_1.PNG
+```{image} section4_ourworldindata_1.PNG
 :alt: OurWorldinData1
 :class: bg-primary mb-1
 :width: 800px
