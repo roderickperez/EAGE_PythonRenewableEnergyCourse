@@ -5,7 +5,7 @@
 Link: https://ourworldindata.org/energy-production-consumption 
 
 
-```{figure} /workspaces/EAGE_PythonRenewableEnergyCourse/EAGE_PythonRenewableEnergyCourse/images/section4/section4_ourworldindata_1.png
+```{figure} EAGE_PythonRenewableEnergyCourse/images/section4/section4_ourworldindata_1.PNG
 ---
 name: ourWorldinData1
 height: 400px
