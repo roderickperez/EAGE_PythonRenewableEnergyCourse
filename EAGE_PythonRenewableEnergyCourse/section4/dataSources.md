@@ -5,13 +5,12 @@
 Link: https://ourworldindata.org/energy-production-consumption 
 
 
-```{figure} /workspaces/EAGE_PythonRenewableEnergyCourse/EAGE_PythonRenewableEnergyCourse/images/section4/section4_ourworldindata_1.PNG
+```{figure} /workspaces/EAGE_PythonRenewableEnergyCourse/EAGE_PythonRenewableEnergyCourse/images/section4/section4_ourworldindata_1.png
 ---
 name: ourWorldinData1
 height: 400px
 ---
-Global primary energy consumption by source, measured in terawatt-hours.
-Reference: Energy Institute - Statistical Review of World Energy (2024), Smil (2017)
+Our World in Data website.
 ```
 
 ## EIA
