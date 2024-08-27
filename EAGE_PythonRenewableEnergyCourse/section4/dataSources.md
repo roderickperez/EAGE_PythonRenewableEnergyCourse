@@ -31,10 +31,18 @@ Select the "Full data (CSV) and download the data.
 
 ```{figure} ../images/section4/section4_ourworldindata_4.jpg
 ---
-height: 800px
+height: 200px
 name: ourworldindata_4
 ---
 The .csv file will be downloaded in the "Downloads" folder at your computer.
+```
+
+```{figure} ../images/section4/section4_ourworldindata_5.jpg
+---
+height: 800px
+name: ourworldindata_5
+---
+Sample of the "global-energy-substitution.csv" file in Excel.
 ```
 
 ## EIA
