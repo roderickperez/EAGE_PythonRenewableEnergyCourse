@@ -20,6 +20,13 @@ Power is the rate at which energy is consumed or work is performed. It quantifie
 
 - **Power Equation**: Power ($P$) is calculated by dividing energy by time, or $P = \frac{E}{t}$. This equation shows that one watt (W) is equivalent to one joule of energy expended per second.
 
+$$ P = \frac{W}{t} $$
+
+Where:
+- $P$ is power,
+- $W$ is work done,
+- $t$ is time.
+
 - **Electrical Power**: In electrical systems, the power transferred between energy stores is given by $P = I \times V$, where $I$ represents the current and $V$ represents the potential difference (voltage).
 
 - **Standard Metric Unit of Power**: The standard metric unit of power is the Watt. As implied by the equation for power, a unit of power is equivalent to a unit of work divided by a unit of time. Thus, a Watt is equivalent to a Joule per second ($\text{W} = \frac{J}{s}$). For historical reasons, the horsepower is occasionally used to describe the power delivered by a machine. One horsepower is equivalent to approximately 750 Watts.
@@ -31,12 +38,23 @@ Common symbols for power include $P$, with the SI unit being the watt (W). In SI
 ### World Energy Consumption
 What is global energy consumption? Global energy consumption is the total amount of energy used on the planet to meet human needs. This energy mainly comes from non-renewable or fossil sources, such as oil, coal, or natural gas. These sources have a high environmental and social impact, contributing to climate change, air and water pollution, and geopolitical conflicts.
 
-$$ P = \frac{W}{t} $$
 
-Where:
-- $P$ is power,
-- $W$ is work done,
-- $t$ is time.
+
+#### Reference:
+
+Hannah Ritchie and Pablo Rosado (2020) - “Electricity Mix” Published online at OurWorldInData.org. Retrieved from: 'https://ourworldindata.org/electricity-mix' [Online Resource]
+
+
+#### Referece:
+
+##### Data:
+* eurostat (https://ec.europa.eu/eurostat/web/energy/database) 
+* U.S. Energy Information Administration (EIA) (https://www.eia.gov/)
+* Our World in Data (https://ourworldindata.org/)
+
+##### Articles:
+* Shedding light on energy in the EU — A guided tour of energy statistics — 2023 edition
+* Sustainable development in the European Union — Monitoring report on progress towards the SDGs in an EU context — 2023 edition
 
 ### World Energy Renewable Adoption
 In the Stated Policies Scenario (STEPS), which is consistent with enacted energy policies and a pragmatic view of proposed policies, worldwide energy supply is expected to grow by approximately 21% between 2019 and 2050. While there is a decline in supply for coal in this scenario, between 2019 and 2050, oil and natural gas are expected to grow by 6% and 24%, respectively, and account for approximately 50% of the energy mix in 2050.
