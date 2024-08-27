@@ -91,21 +91,12 @@ xxxxx
 ```
 
 
-```{figure} ../images/section4/section4_euroStat_5.jpg
----
-name: xxxxxx
----
-xxxxx
-```
-
-
 ```{figure} ../images/section4/section4_euroStat_6.jpg
 ---
 name: xxxxxx
 ---
 xxxxx
 ```
-
 
 ```{figure} ../images/section4/section4_euroStat_7.jpg
 ---
@@ -114,7 +105,6 @@ name: xxxxxx
 xxxxx
 ```
 
-
 ```{figure} ../images/section4/section4_euroStat_8.jpg
 ---
 name: xxxxxx
@@ -122,19 +112,15 @@ name: xxxxxx
 xxxxx
 ```
 
-
 ```{figure} ../images/section4/section4_euroStat_9.jpg
 ---
 name: xxxxxx
 ---
-height: 250px
 xxxxx
 ```
 
-
 ```{figure} ../images/section4/section4_euroStat_10.jpg
 ---
-height: 150px
 name: xxxxxx
 ---
 xxxxx
@@ -148,6 +134,13 @@ xxxxx
 ```
 
 ```{figure} ../images/section4/section4_euroStat_12.jpg
+---
+name: xxxxxx
+---
+xxxxx
+```
+
+```{figure} ../images/section4/section4_euroStat_13.jpg
 ---
 name: xxxxxx
 ---
