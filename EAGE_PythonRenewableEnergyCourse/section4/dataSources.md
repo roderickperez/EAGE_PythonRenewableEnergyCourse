@@ -14,7 +14,6 @@ Our World in Data website (https://ourworldindata.org/energy-production-consumpt
 
 ```{figure} ../images/section4/section4_ourworldindata_2.jpg
 ---
-height: 400px
 name: ourworldindata_2
 ---
 Select the icon to download the data.
@@ -22,7 +21,6 @@ Select the icon to download the data.
 
 ```{figure} ../images/section4/section4_ourworldindata_3.jpg
 ---
-height: 500px
 name: ourworldindata_3
 ---
 Select the "Full data (CSV) and download the data.
@@ -38,7 +36,6 @@ The .csv file will be downloaded in the "Downloads" folder at your computer.
 
 ```{figure} ../images/section4/section4_ourworldindata_5.jpg
 ---
-height: 600px
 name: ourworldindata_5
 ---
 Sample of the "global-energy-substitution.csv" file in Excel.
