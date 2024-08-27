@@ -54,3 +54,60 @@ Global Energy by Source (in TWh) from the "global-energy-substitution.csv" datas
 
 Link: https://ec.europa.eu/eurostat/cache/infographs/energy_portal/enviz.html?language=EN
 
+```{figure} ../images/section4/section4_euroStat_1.jpg
+---
+name: euroStat_dashboard
+---
+euroStat Energy Dashboard.
+```
+
+```{figure} ../images/section4/section4_euroStat_2.jpg
+---
+name: euroStat_renewable_vs_non-renewable_electricity
+---
+euroStat Energy Renewable vs Non-renewable Electricity.
+```
+
+```{figure} ../images/section4/section4_euroStat_3.jpg
+---
+name: euroStat_data_browser_net_electricity_generation_by_type_of_fuel
+---
+euroStat Net Electricity generation by type of fuel (Monthly data)
+```
+
+```{figure} ../images/section4/section4_euroStat_4.jpg
+---
+name: euroStat_download_data_options
+---
+euroStat download data options.
+```
+
+```{figure} ../images/section4/section4_euroStat_5.jpg
+---
+name: euroStat_download_data_options
+---
+height: 250px
+euroStat download data options.
+```
+
+```{figure} ../images/section4/section4_euroStat_6.jpg
+---
+name: euroStat_download_window
+---
+height: 150px
+euroStat download data windows.
+```
+
+```{figure} ../images/section4/section4_euroStat_7.jpg
+---
+name: euroStat_net_electricity_excel_summary
+---
+euroStat Net electricity excel summary tab.
+```
+
+```{figure} ../images/section4/section4_euroStat_8.jpg
+---
+name: euroStat_net_electricity_excel_sheet1
+---
+euroStat Net electricity excel sheet1 tab.
+```
