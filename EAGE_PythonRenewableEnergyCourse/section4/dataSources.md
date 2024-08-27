@@ -7,7 +7,6 @@ Link: https://ourworldindata.org/energy-production-consumption
 
 ```{figure} ../images/section4/section4_ourworldindata_1.jpg
 ---
-height: 600px
 name: ourworldindata_1
 ---
 Our World in Data website (https://ourworldindata.org/energy-production-consumption)
@@ -15,7 +14,7 @@ Our World in Data website (https://ourworldindata.org/energy-production-consumpt
 
 ```{figure} ../images/section4/section4_ourworldindata_2.jpg
 ---
-height: 600px
+height: 400px
 name: ourworldindata_2
 ---
 Select the icon to download the data.
@@ -23,7 +22,7 @@ Select the icon to download the data.
 
 ```{figure} ../images/section4/section4_ourworldindata_3.jpg
 ---
-height: 600px
+height: 500px
 name: ourworldindata_3
 ---
 Select the "Full data (CSV) and download the data.
