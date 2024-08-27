@@ -5,20 +5,36 @@
 Link: https://ourworldindata.org/energy-production-consumption 
 
 
-
-```{image} ../images/section4/section4_ourworldindata_1.jpg
-:alt: OurWorldinData1
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
 ```{figure} ../images/section4/section4_ourworldindata_1.jpg
 ---
-height: 150px
-name: directive-fig
+height: 800px
+name: ourworldindata_1
 ---
-Here is my figure caption!
+Our World in Data website (https://ourworldindata.org/energy-production-consumption)
+```
+
+```{figure} ../images/section4/section4_ourworldindata_2.jpg
+---
+height: 800px
+name: ourworldindata_2
+---
+Select the icon to download the data.
+```
+
+```{figure} ../images/section4/section4_ourworldindata_3.jpg
+---
+height: 800px
+name: ourworldindata_3
+---
+Select the "Full data (CSV) and download the data.
+```
+
+```{figure} ../images/section4/section4_ourworldindata_4.jpg
+---
+height: 800px
+name: ourworldindata_4
+---
+The .csv file will be downloaded in the "Downloads" folder at your computer.
 ```
 
 ## EIA
