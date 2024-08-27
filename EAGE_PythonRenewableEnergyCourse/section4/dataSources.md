@@ -13,10 +13,24 @@ height: 400px
 Our World in Data website.
 ```
 
-```{image} ../images/section4/section4_ourworldindata_1.PNG
+```{image} ../images/section4/section4_ourworldindata_1.png
 :alt: OurWorldinData1
 :class: bg-primary mb-1
 :width: 800px
+:align: center
+```
+
+```{image} ../images/section4/section4_ourworldindata_1.jpg
+:alt: OurWorldinData1
+:class: bg-primary mb-1
+:width: 800px
+:align: center
+```
+
+```{image} ../images/gigo.jpg
+:alt: gigo
+:class: bg-primary mb-1
+:width: 600px
 :align: center
 ```
 
