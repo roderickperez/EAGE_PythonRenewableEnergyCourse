@@ -46,16 +46,10 @@ roderickperezaltamar@gmail.com
 
 ## Organized by
 
-**Mewbourne College of Earth and Energy**
-Ronnie K. Irani
-Center for Energy Solutions
+**European Association of Geoscientists and Engineers (EAGE)**
 
 ## Contact Information
 
-[**Luis F. Vergara**](luifer@ou.edu)
+[**Maria Paula Bohorquez**](mtz@eage.org)
 
-Marketing & Communications Ronnie K. Irani Center for Energy Solutions University of Oklahoma
-
-[**Yoana Walshap**](ywalschap@ou.edu)
-
-Consultant Ronnie K. Irani Center for Energy Solutions
+Community Manager

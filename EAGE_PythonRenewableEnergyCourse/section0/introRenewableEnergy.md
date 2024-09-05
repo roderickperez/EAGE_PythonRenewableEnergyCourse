@@ -38,14 +38,19 @@ Common symbols for power include $P$, with the SI unit being the watt (W). In SI
 ### World Energy Consumption
 What is global energy consumption? Global energy consumption is the total amount of energy used on the planet to meet human needs. This energy mainly comes from non-renewable or fossil sources, such as oil, coal, or natural gas. These sources have a high environmental and social impact, contributing to climate change, air and water pollution, and geopolitical conflicts.
 
-
+```{image} ../images/section4/worldDatainPlot_EnergyBySource_plot_filled.png
+:alt: WorldEnergyConsumption
+:class: bg-primary mb-1
+:width: 800px
+:align: center
+```
 
 #### Reference:
 
 Hannah Ritchie and Pablo Rosado (2020) - “Electricity Mix” Published online at OurWorldInData.org. Retrieved from: 'https://ourworldindata.org/electricity-mix' [Online Resource]
 
 
-#### Referece:
+#### Reference:
 
 ##### Data:
 * eurostat (https://ec.europa.eu/eurostat/web/energy/database) 
