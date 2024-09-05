@@ -53,32 +53,32 @@ parts:
       - file: section4/timeSeriesEnergyConsumption
       - file: section4/weatherDataset
 
+  - caption: Databases
+    chapters:
+      - file: section5/databases
+
   - caption: Renewable Energy Sources
     chapters:
-      - file: section5/hydroelectricEnergy
-      - file: section5/solarEnergy
-      - file: section5/windEnergy
-      - file: section5/geothermalEnergy
+      - file: section6/hydroelectricEnergy
+      - file: section6/solarEnergy
+      - file: section6/windEnergy
+      - file: section6/geothermalEnergy
 
   - caption: Quizzes
     chapters:
-      - file: section6/introRenewableEnergyquizzes/hydroelectricQuizz
-      - file: section6/introRenewableEnergyquizzes/eolicQuizz
-      - file: section6/introRenewableEnergyquizzes/solarQuizz
-      - file: section6/introRenewableEnergyquizzes/geothermalQuizz
-      - file: section6/introRenewableEnergyquizzes/energyMarketsQuizz
-      - file: section6/pythonBasicsquizzes/pythonBasicsQuizz
-      - file: section6/pythonLibrariesquizzes/numpyQuizz
-      - file: section6/pythonLibrariesquizzes/pandasQuizz
-      - file: section6/pythonLibrariesquizzes/matplotlibQuizz
-      - file: section6/renewableEnergyquizzes/hydroelectricEnergy
-      - file: section6/renewableEnergyquizzes/windEnergy
-      - file: section6/renewableEnergyquizzes/solarEnergy
-      - file: section6/renewableEnergyquizzes/geothermalEnergy
-
-  - caption: Databases
-    chapters:
-      - file: section7/databases
+      - file: section7/introRenewableEnergyquizzes/hydroelectricQuizz
+      - file: section7/introRenewableEnergyquizzes/eolicQuizz
+      - file: section7/introRenewableEnergyquizzes/solarQuizz
+      - file: section7/introRenewableEnergyquizzes/geothermalQuizz
+      - file: section7/introRenewableEnergyquizzes/energyMarketsQuizz
+      - file: section7/pythonBasicsquizzes/pythonBasicsQuizz
+      - file: section7/pythonLibrariesquizzes/numpyQuizz
+      - file: section7/pythonLibrariesquizzes/pandasQuizz
+      - file: section7/pythonLibrariesquizzes/matplotlibQuizz
+      - file: section7/renewableEnergyquizzes/hydroelectricEnergy
+      - file: section7/renewableEnergyquizzes/windEnergy
+      - file: section7/renewableEnergyquizzes/solarEnergy
+      - file: section7/renewableEnergyquizzes/geothermalEnergy
 
   - caption: Course Final Project
     chapters:

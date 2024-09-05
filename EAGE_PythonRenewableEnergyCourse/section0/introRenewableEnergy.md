@@ -50,6 +50,27 @@ What is global energy consumption? Global energy consumption is the total amount
 Hannah Ritchie and Pablo Rosado (2020) - “Electricity Mix” Published online at OurWorldInData.org. Retrieved from: 'https://ourworldindata.org/electricity-mix' [Online Resource]
 
 
+```{image} ../images/section4/euroStat_totalDatasetYear_plot_types.png
+:alt: euroStat_totalDatasetYear_plot_types
+:class: bg-primary mb-1
+:width: 800px
+:align: center
+```
+
+```{image} ../images/section4/euroStat_totalDatasetYear_plot_renewables.png
+:alt: euroStat_totalDatasetYear_plot_renewables
+:class: bg-primary mb-1
+:width: 800px
+:align: center
+```
+
+```{image} ../images/section4/euroStat_totalDatasetYear_plot_nonRenewables.png
+:alt: euroStat_totalDatasetYear_plot_nonRenewables
+:class: bg-primary mb-1
+:width: 800px
+:align: center
+```
+
 #### Reference:
 
 ##### Data:
