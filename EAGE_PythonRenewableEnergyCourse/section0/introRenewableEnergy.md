@@ -45,6 +45,20 @@ What is global energy consumption? Global energy consumption is the total amount
 :align: center
 ```
 
+The image represents the global energy consumption measured in terawatt-hours (TWh) over time, displayed on the y-axis, while the x-axis shows the years from 1800 to the present day. The graph uses a stacked area plot to differentiate between various sources of energy, each represented by a distinct color. These sources include traditional biomass, coal, oil, gas, nuclear, hydropower, wind, solar, biofuels, and other renewables.
+
+In the early part of the timeline, from the 1800s to the early 1900s, traditional biomass was the dominant source of energy, reflecting an era before the industrial revolution when humans primarily relied on wood and other organic materials for heating and cooking. However, as industrialization progressed, coal began to rise sharply in usage, overtaking traditional biomass and becoming the primary source of energy well into the 20th century.
+
+The growth of coal use is followed by a significant increase in oil and gas consumption starting around the mid-1900s, coinciding with the expansion of modern industrial economies and the post-World War II era of rapid economic growth. Oil and gas, along with coal, dominate the global energy landscape throughout much of the 20th century, contributing to a steady rise in total energy consumption.
+
+However, the later part of the 20th century and into the 21st century shows a noticeable diversification in energy sources. Hydropower, which had seen a gradual increase over the decades, becomes more prominent. Around the same time, nuclear energy also rises sharply, particularly from the 1970s onward, reflecting the global adoption of nuclear technology as a major power source.
+
+What stands out in more recent years is the accelerated growth of renewable energy sources such as wind, solar, and biofuels. Wind energy, in particular, shows a rapid increase starting in the 2000s, closely followed by solar energy. These two renewable sources begin to play an increasingly important role in global energy consumption, signifying a shift toward more sustainable energy systems. While fossil fuels like coal and oil still maintain a large presence, their growth begins to plateau, and in the case of coal, even shows signs of a slight decline.
+
+Gas remains a strong player, showing consistent growth even as the world begins to shift towards renewable energy, likely due to its role as a relatively cleaner fossil fuel compared to coal and oil. Meanwhile, the growth of biofuels and other renewables continues, albeit at a slower pace compared to wind and solar.
+
+In summary, the graph illustrates the historical dominance of fossil fuels such as coal, oil, and gas, while also highlighting the more recent rise of renewable energy sources. Wind and solar, in particular, have seen a notable increase in the 21st century, indicating a global energy transition towards cleaner and more sustainable power sources. The graph emphasizes both the persistence of fossil fuels and the increasing importance of renewable energy in the global energy mix.
+
 #### Reference:
 
 Hannah Ritchie and Pablo Rosado (2020) - “Electricity Mix” Published online at OurWorldInData.org. Retrieved from: 'https://ourworldindata.org/electricity-mix' [Online Resource]
