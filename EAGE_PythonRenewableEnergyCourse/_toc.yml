@@ -76,12 +76,16 @@ parts:
       - file: section6/renewableEnergyquizzes/solarEnergy
       - file: section6/renewableEnergyquizzes/geothermalEnergy
 
+  - caption: Databases
+    chapters:
+      - file: section7/databases
+
   - caption: Course Final Project
     chapters:
-      - file: section7/projectIntro
-      - file: section7/projectSolution
+      - file: section8/projectIntro
+      - file: section8/projectSolution
 
   - caption: Summary and Conclusions
     chapters:
-      - file: section8/courseSummary
-      - file: section8/courseConclusions
+      - file: section9/courseSummary
+      - file: section9/courseConclusions
