@@ -324,11 +324,6 @@ graph TD;
     UnstructuredData --> Scalability[Horizontal Scalability]
 ```
 
-Here’s a brief text that explains the NoSQL diagram in markdown format:
-
-```markdown
-
-
 The diagram illustrates the flow of data within a NoSQL database, specifically focusing on a **document-based NoSQL database** like **MongoDB**.
 
 - **Documents**: The data starts as documents, which can be structured, semi-structured, or unstructured. These documents are typically stored in formats like JSON or BSON.
