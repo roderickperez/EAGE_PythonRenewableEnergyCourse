@@ -39,7 +39,7 @@ Hierarchical databases organize data in a tree-like structure, with parent-child
 ```{image} ../images/section5/hierarchicalDatabase.png
 :alt: hierarchicalDatabase
 :class: bg-primary mb-1
-:width: 800px
+:width: 600px
 :align: center
 ```
 
@@ -95,7 +95,7 @@ Network databases extend hierarchical models by allowing each child to have mult
 ```{image} ../images/section5/networkDatabase.png
 :alt: networkDatabase
 :class: bg-primary mb-1
-:width: 800px
+:width: 600px
 :align: center
 ```
 
@@ -150,7 +150,7 @@ Object-oriented databases store data as objects, similar to object-oriented prog
 ```{image} ../images/section5/objectOrientedDatabases.png
 :alt: objectOrientedDatabases
 :class: bg-primary mb-1
-:width: 800px
+:width: 600px
 :align: center
 ```
 
@@ -198,7 +198,7 @@ Relational databases organize data into tables, with rows and columns representi
 ```{image} ../images/section5/relationalDatabase.png
 :alt: relationalDatabase
 :class: bg-primary mb-1
-:width: 800px
+:width: 600px
 :align: center
 ```
 
@@ -250,7 +250,7 @@ Cloud databases store data on cloud computing platforms, offering flexibility an
 ```{image} ../images/section5/cloudDatabase.png
 :alt: cloudDatabase
 :class: bg-primary mb-1
-:width: 800px
+:width: 600px
 :align: center
 ```
 
@@ -298,7 +298,7 @@ In centralized databases, data is stored and maintained at a single location. Al
 ```{image} ../images/section5/centralizedDatabase.png
 :alt: centralizedDatabase
 :class: bg-primary mb-1
-:width: 800px
+:width: 600px
 :align: center
 ```
 
@@ -349,7 +349,7 @@ Operational databases are used for managing dynamic data in real time, typically
 ```{image} ../images/section5/operationalDatabase.png
 :alt: operationalDatabase
 :class: bg-primary mb-1
-:width: 800px
+:width: 600px
 :align: center
 ```
 
@@ -399,7 +399,7 @@ NoSQL databases offer flexibility in storing unstructured data and allow horizon
 ```{image} ../images/section5/noSQLDatabase.png
 :alt: noSQLDatabase
 :class: bg-primary mb-1
-:width: 800px
+:width: 600px
 :align: center
 ```
 

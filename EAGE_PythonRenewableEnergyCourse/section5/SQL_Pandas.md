@@ -14,11 +14,17 @@ This guide shows how to:
 The datasets are available on the Eurostat website under [Energy Statistics](https://ec.europa.eu/eurostat/web/energy). Let’s assume the data files have been downloaded and stored in your `~/Downloads` folder as `.csv` files.
 
 For this example, we are using the following datasets:
-- `wind.csv`
-- `geothermal.csv`
-- `hydro.csv`
-- `solar.csv`
-- Others (like coal, naturalGas, oil, etc.)
+- coal: `../data/section4/euroStat/nrg_cb_pem_page_spreadsheet_coal.xlsx`
+- nonRenewable: `../data/section4/euroStat/nrg_cb_pem_page_spreadsheet_combustionFuels_nonRenewables.xlsx`
+- renewable`../data/section4/euroStat/nrg_cb_pem_page_spreadsheet_combustionFuels_Renewables.xlsx`
+- geothermal: `../data/section4/euroStat/nrg_cb_pem_page_spreadsheet_geothermal.xlsx`
+- hydro: `../data/section4/euroStat/nrg_cb_pem_page_spreadsheet_hydro.xlsx`
+- naturalGas: `../data/section4/euroStat/nrg_cb_pem_page_spreadsheet_naturalGas.xlsx`
+- nuclear: `../data/section4/euroStat/nrg_cb_pem_page_spreadsheet_nuclear.xlsx`
+- oil: `../data/section4/euroStat/nrg_cb_pem_page_spreadsheet_oil.xlsx`
+- otherRenewables: `../data/section4/euroStat/nrg_cb_pem_page_spreadsheet_otherRenewables.xlsx`
+- solar: `../data/section4/euroStat/nrg_cb_pem_page_spreadsheet_solar.xlsx`
+- wind: `../data/section4/euroStat/nrg_cb_pem_page_spreadsheet_wind.xlsx`
 
 ## Step 2: Load Data into SQLite Database
 
