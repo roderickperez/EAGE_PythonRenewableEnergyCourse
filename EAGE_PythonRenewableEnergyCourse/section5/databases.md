@@ -18,7 +18,6 @@ In this example, the database organizes information about energy generation in t
 For instance, if you wanted to know how much wind energy Germany generated on a particular day, you could query the database to quickly retrieve that specific information.
 
 
-```markdown
 # Types of Databases
 
 Databases come in various forms, each designed to handle specific types of data and relationships. Below is an overview of several common types of databases, along with their advantages, disadvantages, and examples of software or services.
@@ -190,7 +189,7 @@ NoSQL databases offer flexibility in storing unstructured data and allow horizon
 
 Documents --> [ NoSQL Database ] --> Flexible Data Models
   (Unstructured Data)
-  
+
 ---
 
 # Summary of Database Types
@@ -205,4 +204,3 @@ Documents --> [ NoSQL Database ] --> Flexible Data Models
 | Centralized Database     | High data security, reduced redundancy    | Slower response time, hard to update       | Microsoft SQL Server           |
 | Operational Database     | Real-time data processing                 | Complex for large datasets                 | Oracle Database                |
 | NoSQL Database           | Highly scalable, flexible data models     | Limited query features, weak backups       | MongoDB, Cassandra             |
-``` 
