@@ -59,11 +59,12 @@ Network databases extend hierarchical models by allowing each child to have mult
 
 **Example:** Integrated Data Store (IDS)
 
-     Departments      Clubs
-         |              |
-    -------------------------
-    |          |           |
-Students   Faculty      Resources
+```{image} EAGE_PythonRenewableEnergyCourse/images/section5/networkDatabase.png
+:alt: networkDatabase
+:class: bg-primary mb-1
+:width: 800px
+:align: center
+```
 
 ---
 
