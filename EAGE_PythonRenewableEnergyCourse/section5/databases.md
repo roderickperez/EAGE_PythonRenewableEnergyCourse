@@ -36,7 +36,7 @@ Hierarchical databases organize data in a tree-like structure, with parent-child
 
 **Example:** IBM Information Management System (IMS)
 
-```{image} EAGE_PythonRenewableEnergyCourse/images/section5/hierarchicalDatabase.png
+```{image} ../EAGE_PythonRenewableEnergyCourse/EAGE_PythonRenewableEnergyCourse/images/section5/hierarchicalDatabase.png
 :alt: hierarchicalDatabase
 :class: bg-primary mb-1
 :width: 800px
@@ -82,11 +82,12 @@ Object-oriented databases store data as objects, similar to object-oriented prog
 
 **Example:** db4o (Database for Objects)
 
- Person
-  | livesAt()
-Address
-  | belongsTo()
-Company
+```{image} EAGE_PythonRenewableEnergyCourse/images/section5/objectOrientedDatabases.png
+:alt: objectOrientedDatabases
+:class: bg-primary mb-1
+:width: 800px
+:align: center
+```
 
 ---
 
