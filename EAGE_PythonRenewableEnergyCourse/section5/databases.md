@@ -47,12 +47,28 @@ Hierarchical databases organize data in a tree-like structure, with parent-child
 :class: tip, dropdown
 
 graph TD;
-    A[University] --> B[Departments];
-    A --> C[Administration];
-    B --> D[Students];
-    C --> E[Employees];
+    A[Renewable Energy Organization] --> B[Energy Sources];
+    A --> C[Operations];
+    B --> D[Wind Power Plants];
+    B --> E[Solar Power Plants];
+    C --> F[Grid Management];
+    C --> G[Maintenance Teams];
 
 ```
+
+The diagram represents a **hierarchical structure** for a renewable energy organization, illustrating the relationships between different entities within the organization.
+
+1. **Renewable Energy Organization**: This is the top-level entity overseeing all operations related to renewable energy production and management.
+
+2. **Energy Sources**: Represents the division responsible for various types of renewable energy generation. 
+   - **Wind Power Plants**: These facilities generate energy from wind turbines.
+   - **Solar Power Plants**: These facilities generate energy from solar panels.
+
+3. **Operations**: This division manages the internal operations to ensure the smooth running of the energy production and distribution systems.
+   - **Grid Management**: This department manages the distribution and optimization of energy flow within the grid.
+   - **Maintenance Teams**: These teams are responsible for maintaining and servicing the power plants and grid infrastructure.
+
+This hierarchical database structure helps manage complex relationships within a renewable energy organization by clearly separating responsibilities and entities across different levels.
 
 ---
 
@@ -239,9 +255,41 @@ Operational databases are used for managing dynamic data in real time, typically
 
 **Example:** Oracle Database
 
-  Users --> [ Operational Database ]
-                    |
-            Real-time Transactions
+
+
+```{image} ../images/section5/operationalDatabase.png
+:alt: operationalDatabase
+:class: bg-primary mb-1
+:width: 800px
+:align: center
+```
+
+```{admonition} Mermaid code
+:class: tip, dropdown
+
+graph TD;
+    EnergySources[Energy Sources - Solar, Wind, Hydro] --> OperationalDB[Operational Database]
+    OperationalDB --> RealTimeProcessing[Real-time Data Processing]
+    RealTimeProcessing --> GridManagement[Grid Management and Optimization]
+    RealTimeProcessing --> Forecasting[Energy Demand Forecasting]
+```
+
+The diagram illustrates how an **operational database** functions in the renewable energy sector, processing real-time data from various renewable energy sources. Here’s a breakdown of each step:
+
+1. **Energy Sources - Solar, Wind, Hydro**:
+   - Renewable energy is generated from various sources, including solar panels, wind turbines, and hydropower systems. These sources produce **real-time energy data** that needs to be processed continuously for effective grid management.
+
+2. **Operational Database**:
+   - The data from the energy sources is stored and managed in an **operational database**. This database serves as the central system where incoming data is updated in real-time, ensuring accurate and timely information for decision-making.
+
+3. **Real-time Data Processing**:
+   - The operational database enables **real-time data processing**, which is critical for handling the continuous inflow of data from the energy sources. This step ensures that the data is processed quickly and efficiently, allowing for immediate actions to be taken based on the energy data.
+
+4. **Grid Management and Optimization**:
+   - One of the primary outputs of real-time data processing is **grid management**. The processed data helps in optimizing the energy grid by balancing supply and demand, ensuring efficient distribution of energy, and maintaining grid stability.
+
+5. **Energy Demand Forecasting**:
+   - Another important output of real-time data processing is **energy demand forecasting**. Using historical and real-time data, predictive models can forecast future energy demands, allowing energy producers to adjust supply and prevent overproduction or shortages.
 
 ---
 
@@ -259,9 +307,41 @@ NoSQL databases offer flexibility in storing unstructured data and allow horizon
 
 **Example:** MongoDB, Cassandra
 
-Documents --> [ NoSQL Database ] --> Flexible Data Models
-  (Unstructured Data)
+```{image} ../images/section5/noSQLDatabase.png
+:alt: noSQLDatabase
+:class: bg-primary mb-1
+:width: 800px
+:align: center
+```
 
+```{admonition} Mermaid code
+:class: tip, dropdown
+
+graph TD;
+    Documents --> NoSQLDatabase[NoSQL Database - e.g., MongoDB]
+    NoSQLDatabase --> FlexibleDataModels[Flexible Data Models - JSON, etc.]
+    FlexibleDataModels --> UnstructuredData[Unstructured/Semi-Structured Data]
+    UnstructuredData --> Scalability[Horizontal Scalability]
+```
+
+Here’s a brief text that explains the NoSQL diagram in markdown format:
+
+```markdown
+
+
+The diagram illustrates the flow of data within a NoSQL database, specifically focusing on a **document-based NoSQL database** like **MongoDB**.
+
+- **Documents**: The data starts as documents, which can be structured, semi-structured, or unstructured. These documents are typically stored in formats like JSON or BSON.
+  
+- **NoSQL Database (e.g., MongoDB)**: The documents are stored in a NoSQL database, which offers flexible data models without requiring predefined schemas. MongoDB is a popular example of a NoSQL database used for this purpose.
+  
+- **Flexible Data Models (JSON, etc.)**: NoSQL databases support flexible data models, allowing data to evolve over time without strict adherence to a schema. This feature is ideal for handling diverse datasets.
+  
+- **Unstructured/Semi-Structured Data**: NoSQL databases are adept at managing unstructured or semi-structured data, unlike traditional relational databases that require a strict schema.
+
+- **Horizontal Scalability**: One of the key advantages of NoSQL databases is horizontal scalability. This means they can scale by distributing data across multiple servers, making it easier to handle large volumes of data efficiently.
+
+This flow demonstrates the flexibility and scalability that NoSQL databases provide, especially for applications dealing with diverse and growing data structures.
 ---
 
 # Summary of Database Types
