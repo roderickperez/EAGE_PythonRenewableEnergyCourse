@@ -36,13 +36,13 @@ Hierarchical databases organize data in a tree-like structure, with parent-child
 
 **Example:** IBM Information Management System (IMS)
 
-<div class="mermaid">
-graph TD;
-    A[University] --> B[Departments];
-    A --> C[Administration];
-    B --> D[Students];
-    C --> E[Employees];
-</div>
+```{image} EAGE_PythonRenewableEnergyCourse/images/section5/hierarchicalDatabase.png
+:alt: hierarchicalDatabase
+:class: bg-primary mb-1
+:width: 800px
+:align: center
+```
+
 ---
 
 ## 2. Network Databases
