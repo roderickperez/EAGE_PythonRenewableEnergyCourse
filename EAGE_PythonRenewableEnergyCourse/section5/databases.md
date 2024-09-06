@@ -43,6 +43,17 @@ Hierarchical databases organize data in a tree-like structure, with parent-child
 :align: center
 ```
 
+```{admonition} Mermaid code
+:class: tip, dropdown
+
+graph TD;
+    A[University] --> B[Departments];
+    A --> C[Administration];
+    B --> D[Students];
+    C --> E[Employees];
+
+```
+
 ---
 
 ## 2. Network Databases
@@ -64,6 +75,19 @@ Network databases extend hierarchical models by allowing each child to have mult
 :class: bg-primary mb-1
 :width: 800px
 :align: center
+```
+
+```{admonition} Mermaid code
+:class: tip, dropdown
+
+graph TD;
+    F[Departments] --> G[Students];
+    F --> H[Faculty];
+    I[Clubs] --> G;
+    I --> H;
+    F --> J[Resources];
+    I --> J;
+
 ```
 
 ---
@@ -89,6 +113,15 @@ Object-oriented databases store data as objects, similar to object-oriented prog
 :align: center
 ```
 
+```{admonition} Mermaid code
+:class: tip, dropdown
+
+graph TD;
+    K[Person] -->|livesAt| L[Address];
+    L -->|belongsTo| M[Company];
+
+```
+
 ---
 
 ## 4. Relational Databases
@@ -105,21 +138,24 @@ Relational databases organize data into tables, with rows and columns representi
 
 **Example:** MySQL, PostgreSQL
 
-```{image} ../images/section5/objectOrientedDatabases.png
-:alt: objectOrientedDatabases
+```{image} ../images/section5/relationalDatabase.png
+:alt: relationalDatabase
 :class: bg-primary mb-1
 :width: 800px
 :align: center
 ```
 
-Table 1: Students             Table 2: Courses
------------------             -----------------
-ID   | Name                   Course_ID | Name
------------------             -----------------
-101  | Alice                  201       | Math
-102  | Bob                    202       | Science
-
 Foreign Key: Student_ID in Course Table
+
+```{admonition} Mermaid code
+:class: tip, dropdown
+
+graph TD;
+    User[User] --> CloudPlatform[Cloud Platform];
+    CloudPlatform --> DatabaseService[Database Service];
+    DatabaseService --> |AWS, GCP, etc.| DatabaseService
+
+```
 
 ---
 
@@ -137,8 +173,22 @@ Cloud databases store data on cloud computing platforms, offering flexibility an
 
 **Example:** Amazon Web Services (AWS), Google Cloud Platform (GCP), SupaBase
 
-[User] --> [Cloud Platform] --> [Database Service]
-             (AWS, GCP, etc.)
+```{image} ../images/section5/cloudDatabase.png
+:alt: cloudDatabase
+:class: bg-primary mb-1
+:width: 800px
+:align: center
+```
+
+```{admonition} Mermaid code
+:class: tip, dropdown
+
+graph TD;
+    User[User] --> CloudPlatform[Cloud Platform];
+    CloudPlatform --> DatabaseService[Database Service];
+    DatabaseService --> |AWS, GCP, etc.| DatabaseService
+
+```
 
 ---
 
@@ -156,8 +206,22 @@ In centralized databases, data is stored and maintained at a single location. Al
 
 **Example:** Microsoft SQL Server
 
-[User] --> [Cloud Platform] --> [Database Service]
-             (AWS, GCP, etc.)
+```{image} ../images/section5/centralizedDatabase.png
+:alt: centralizedDatabase
+:class: bg-primary mb-1
+:width: 800px
+:align: center
+```
+
+```{admonition} Mermaid code
+:class: tip, dropdown
+
+graph TD;
+    A[User] --> B[Cloud Platform];
+    B --> C[Database Service];
+    C --> D[AWS, GCP, etc.];
+
+```
 
 ---
 
