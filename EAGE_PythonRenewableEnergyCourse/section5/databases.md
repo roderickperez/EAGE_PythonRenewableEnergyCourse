@@ -36,7 +36,7 @@ Hierarchical databases organize data in a tree-like structure, with parent-child
 
 **Example:** IBM Information Management System (IMS)
 
-```{image} ../EAGE_PythonRenewableEnergyCourse/EAGE_PythonRenewableEnergyCourse/images/section5/hierarchicalDatabase.png
+```{image} ../images/section5/hierarchicalDatabase.png
 :alt: hierarchicalDatabase
 :class: bg-primary mb-1
 :width: 800px
@@ -59,7 +59,7 @@ Network databases extend hierarchical models by allowing each child to have mult
 
 **Example:** Integrated Data Store (IDS)
 
-```{image} EAGE_PythonRenewableEnergyCourse/images/section5/networkDatabase.png
+```{image} ../images/section5/networkDatabase.png
 :alt: networkDatabase
 :class: bg-primary mb-1
 :width: 800px
@@ -82,7 +82,7 @@ Object-oriented databases store data as objects, similar to object-oriented prog
 
 **Example:** db4o (Database for Objects)
 
-```{image} EAGE_PythonRenewableEnergyCourse/images/section5/objectOrientedDatabases.png
+```{image} ../images/section5/objectOrientedDatabases.png
 :alt: objectOrientedDatabases
 :class: bg-primary mb-1
 :width: 800px
@@ -104,6 +104,13 @@ Relational databases organize data into tables, with rows and columns representi
 - Requires strict schema design
 
 **Example:** MySQL, PostgreSQL
+
+```{image} ../images/section5/objectOrientedDatabases.png
+:alt: objectOrientedDatabases
+:class: bg-primary mb-1
+:width: 800px
+:align: center
+```
 
 Table 1: Students             Table 2: Courses
 -----------------             -----------------
