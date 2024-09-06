@@ -35,3 +35,10 @@ html:
 sphinx:
   extra_extensions:
     - sphinx_togglebutton
+
+# Add Mermaid.js to render diagrams
+extra_head:
+  - <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({startOnLoad:true});
+    </script>
