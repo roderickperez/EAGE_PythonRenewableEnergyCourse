@@ -31,7 +31,6 @@ parts:
       - file: section3/basicLibraries/numpy
       - file: section3/basicLibraries/pandas
       - file: section3/basicLibraries/matplotlib
-      - file: section3/advancedLibraries/scipy
       - file: section3/advancedLibraries/seaborn
       - file: section3/advancedLibraries/plotly
       - file: section3/advancedLibraries/geopandas

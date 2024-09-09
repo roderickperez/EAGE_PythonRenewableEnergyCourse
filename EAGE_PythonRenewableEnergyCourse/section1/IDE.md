@@ -81,7 +81,7 @@ Colab notebooks are stored in Google Drive, or can be loaded from GitHub. Colab 
   - Tools > Keyboard shortcuts...
 
 
-```{image} ../../images/googleColabAnatomy.png
+```{image} ../images/section1/googleColabAnatomy.png
 :alt: googleColabAnatomy
 :class: bg-primary mb-1
 :width: 800px
