@@ -1,1 +1,0 @@
-# Quizz: Wind Energy

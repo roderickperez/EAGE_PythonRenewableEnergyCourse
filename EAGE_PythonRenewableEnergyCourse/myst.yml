@@ -1,0 +1,18 @@
+version: 1
+project:
+  title: Python for Renewable Energy Data Processing
+  authors:
+    - name: Roderick Perez Altamar, Ph.D.
+  github: >-
+    https://github.com/roderickperez/EAGE_PythonRenewableEnergyCourse/tree/main/EAGE_PythonRenewableEnergyCourse
+  exports:
+    - format: pdf
+      template: plain_latex_book
+      output: exports/book.pdf
+  toc:
+    - file: courseIntro.md
+site:
+  options:
+    logo: Logo2.png
+    folders: true
+  template: book-theme
