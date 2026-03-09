@@ -5,12 +5,149 @@ project:
     - name: Roderick Perez Altamar, Ph.D.
   github: >-
     https://github.com/roderickperez/EAGE_PythonRenewableEnergyCourse/tree/main/EAGE_PythonRenewableEnergyCourse
+  bibliography:
+    - references.bib
   exports:
     - format: pdf
       template: plain_latex_book
       output: exports/book.pdf
   toc:
     - file: courseIntro.md
+    - title: Preface
+      children:
+        - file: preface/acknowledgements.md
+        - file: preface/foreword.md
+        - file: preface/preface.md
+    - title: Introduction to Renewable Energy
+      children:
+        - file: section0/introRenewableEnergy.md
+
+        - file: section0/faq.md
+
+    - title: Introduction to Python Programming
+      children:
+        - file: section1/programming.md
+
+        - file: section1/pythonIntro.md
+
+        - file: section1/IDE.md
+
+        - file: section1/markdown.md
+
+    - title: Python Basics
+      children:
+        - file: section2/pythonBasics/variables.md
+
+        - file: section2/pythonBasics/mathOperations.md
+
+        - file: section2/pythonBasics/functions.md
+
+        - file: section2/pythonBasics/dataStructures.md
+
+        - file: section2/pythonBasics/cycles.md
+
+        - file: section2/pythonBasics/integratedFunctions.md
+
+    - title: Python Libraries
+      children:
+        - file: section3/basicLibraries/numpy.md
+
+        - file: section3/basicLibraries/pandas.md
+
+        - file: section3/basicLibraries/matplotlib.md
+
+        - file: section3/advancedLibraries/seaborn.md
+
+        - file: section3/advancedLibraries/plotly.md
+
+        - file: section3/advancedLibraries/geopandas.md
+
+        - file: section3/advancedLibraries/folium.md
+
+        - file: section3/extra/cartopy.md
+
+        - file: section3/extra/quiver.md
+
+        - file: section3/extra/streamplots.md
+
+        - file: section3/extra/ipyleaflet.md
+
+        - file: section3/extra/geemap.md
+
+    - title: Data Processing and Exploration Data Analysis
+      children:
+        - file: section4/dataSources.md
+
+        - file: section4/dataTypes/csv.md
+
+        - file: section4/dataTypes/netcfd.md
+
+        - file: section4/dataTypes/xArray.md
+
+        - file: section4/EDA.md
+
+        - file: section4/timeSeriesEnergyConsumption.ipynb
+
+        - file: section4/weatherDataset.md
+
+    - title: Databases
+      children:
+        - file: section5/databases.md
+
+        - file: section5/SQL.md
+
+        - file: section5/SQL_Pandas.ipynb
+
+    - title: Renewable Energy Sources
+      children:
+        - file: section6/hydroelectricEnergy.md
+
+        - file: section6/solarEnergy.md
+
+        - file: section6/windEnergy.md
+
+        - file: section6/geothermalEnergy.md
+
+    - title: Quizzes
+      children:
+        - file: section7/introRenewableEnergyquizzes/hydroelectricQuizz.md
+
+        - file: section7/introRenewableEnergyquizzes/eolicQuizz.md
+
+        - file: section7/introRenewableEnergyquizzes/solarQuizz.md
+
+        - file: section7/introRenewableEnergyquizzes/geothermalQuizz.md
+
+        - file: section7/introRenewableEnergyquizzes/exercisesReview.md
+
+        - file: section7/pythonBasicsquizzes/pythonBasicQuizz.md
+
+        - file: section7/pythonBasicsquizzes/numpyQuizz.md
+
+        - file: section7/pythonBasicsquizzes/pandasQuizz.md
+
+        - file: section7/pythonBasicsquizzes/matplotlibQuizz.md
+
+        - file: section7/renewableEnergyquizzes/hydroelectricEnergy.md
+
+        - file: section7/renewableEnergyquizzes/eolicenergy.md
+
+        - file: section7/renewableEnergyquizzes/windEnergy.md
+
+        - file: section7/renewableEnergyquizzes/solarEnergy.md
+
+    - title: Course Final Project
+      children:
+        - file: section8/projectIntro.md
+
+        - file: section8/projectSolution.md
+
+    - title: Summary and Conclusions
+      children:
+        - file: section9/courseSummary.md
+
+        - file: section9/courseConclusions.md
+
 site:
   options:
     logo: Logo2.png
