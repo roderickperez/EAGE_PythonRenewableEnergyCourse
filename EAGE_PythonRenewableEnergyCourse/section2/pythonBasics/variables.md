@@ -100,7 +100,7 @@ In Python, we can define a float with or without a `0` before the decimal symbol
 
 For example, if we define :
 
-```{code-cell} ipython3
+```python
 tuple = (0, 4)
 
 print(tuple)

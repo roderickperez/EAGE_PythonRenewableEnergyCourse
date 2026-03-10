@@ -22,6 +22,9 @@ _build/
 site/
 .myst/
 
+# Generated notebook artifacts (legacy path issue)
+EAGE_PythonRenewableEnergyCourse/section5/section5/
+
 # Logs and temporary files
 *.log
 *.tmp

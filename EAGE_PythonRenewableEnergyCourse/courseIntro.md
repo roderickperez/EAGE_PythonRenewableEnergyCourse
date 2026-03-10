@@ -50,6 +50,6 @@ roderickperezaltamar@gmail.com
 
 ## Contact Information
 
-[**Maria Paula Bohorquez**](mtz@eage.org)
+[**Maria Paula Bohorquez**](mailto:mtz@eage.org)
 
 Community Manager
