@@ -16,6 +16,19 @@ variableName = value
 
 Now, try yourself clicking on the `Run Code` button below:
 
+:::{admonition} Live Python REPL (Run Code)
+:class: tip
+Use the in-page REPL below for live execution. You can edit the code and click the **Run** button in the toolbar.
+
+<iframe
+    src="https://jupyterlite.github.io/demo/repl/index.html?toolbar=1&kernel=python&promptCellPosition=left&clearCellsOnExecute=1&hideCodeInput=0&clearCodeContentOnExecute=0&showBanner=0&code=a%20%3D%205%0Aprint(a)&execute=0"
+    width="100%"
+    height="430"
+    style="border: 1px solid #d0d7de; border-radius: 8px;"
+    loading="lazy"
+></iframe>
+:::
+
 
 
 ```{code-cell} ipython3
