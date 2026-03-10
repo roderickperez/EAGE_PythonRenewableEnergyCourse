@@ -1,3 +1,9 @@
+---
+kernelspec:
+    name: python3
+    display_name: Python 3
+---
+
 # Variables
 
 Variables are containers for storing data values. In Python a variable is created the moment you first assign a value to it. Every variable created is an object that reserves a memory location that can store value in Python. The memory location is stored according to the data type of the variable declared. Different from other programming languages, in Python variables need not be defined or declared any data type to the variable as we do in other programming languages. 
@@ -148,10 +154,11 @@ In order to remove the error, **please complete the code with the requested and 
 
 ```{code-cell} ipython3
 name = "Roderick" # String
-age = # Integer
-height = # Float
+age = 39 # Integer
+height = 1.75 # Float
 pythonExperience = False # Boolean
 
+print(name, age, height, pythonExperience)
 print(type(name))
 print(type(age))
 print(type(height))
@@ -201,7 +208,7 @@ SyntaxError: EOL while scanning string literal
 Now, in this case can you see a difference when we use `"` and / or  `'`?
 
 ```{code-cell} ipython3
-name = 'Roderick"
+name = "Roderick's notebook"
 
 print(name)
 ```
