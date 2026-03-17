@@ -1,3 +1,10 @@
+---
+kernelspec:
+  name: python3
+  display_name: Python 3
+  language: python
+---
+
 # Wind Energy
 
 Amongst other things, in order to achieve Europe’s plan to cut carbon emissions by at least 55% by 2030, Consumer and Industrial electricity users behavior changes will be required, which is the focus for this project. As shown in Fig.1, if the wind electricity is predicted to reach the current 70%, then:
@@ -817,3 +824,276 @@ The predictions are all very good during the 1st week, when there is little wind
 When the wind reaches the maximum capacity of the grid (about 70% of the actual Demand at the time), the EirGrid forecast significantly overshoots, while our best model only slightly underestimates.
 
 **The chosen Machine Learning models, both Neural Networks and Random Forest, are thus able to discover hidden patterns of electricity generation and demand from a few simple weather stations measures, hour and day of the year and connected wind farm capacity.**
+
+
+---
+
+## Wind Energy Fundamentals
+
+### The Physics of Wind Power
+
+Wind is air in motion; its kinetic energy per unit volume is $\tfrac{1}{2}\rho v^2$.
+For a rotor of swept area $A$ capturing a stream of air at velocity $v$, the
+theoretical power available in the wind is:
+
+$$P_{\text{wind}} = \frac{1}{2} \rho A v^3$$
+
+where:
+- $\rho$ = air density ≈ 1.225 kg/m³ at sea level, 15 °C
+- $A = \pi r^2$ = rotor swept area (m²), $r$ = rotor radius (m)
+- $v$ = free-stream wind speed (m/s)
+
+Note the **cubic dependence on wind speed**: doubling wind speed increases
+available power **eightfold**.
+
+### Betz's Law — Maximum Power Extraction
+
+A rotor cannot extract all the kinetic energy from the wind (the air would stop
+and block the rotor). Betz (1919) proved the theoretical maximum fraction of
+wind power that any rotor can capture is:
+
+$$C_{P,\max} = \frac{16}{27} \approx 59.3\,\%$$
+
+The **power coefficient** $C_P$ relates actual extracted power to available power:
+
+$$P_{\text{turbine}} = C_P \cdot \frac{1}{2} \rho A v^3$$
+
+Modern commercial turbines achieve $C_P \approx 0.45 – 0.50$.
+
+### Turbine Power Curve
+
+Real turbines operate in three wind speed regions:
+
+| Region | Speed | Behaviour |
+|--------|-------|-----------|
+| Below cut-in | $v < v_{\text{ci}}$ (~3 m/s) | Turbine idle, $P = 0$ |
+| Operating | $v_{\text{ci}} \le v \le v_{\text{rated}}$ | Power rises with $v^3$ |
+| Rated | $v_{\text{rated}} \le v \le v_{\text{co}}$ | Pitch control holds $P = P_{\text{rated}}$ |
+| Above cut-out | $v > v_{\text{co}}$ (~25 m/s) | Turbine shuts down, $P = 0$ |
+
+### Weibull Wind Speed Distribution
+
+Over a site, wind speeds follow an approximate **Weibull distribution**:
+
+$$f(v) = \frac{k}{c}\left(\frac{v}{c}\right)^{k-1} \exp\!\left[-\left(\frac{v}{c}\right)^k\right]$$
+
+where $k$ = shape parameter (typically 1.5 – 2.5) and $c$ = scale parameter
+(m/s, related to the mean wind speed).
+
+### Annual Energy Production (AEP)
+
+$$AEP = \int_0^{\infty} P(v) \cdot f(v) \cdot 8760 \, dv$$
+
+In practice this integral is computed numerically from binned wind speed data.
+
+## Python Exercises
+
+### Exercise 1 — Basic Wind Power Calculation
+
+A wind turbine has a rotor radius of **40 m** and operates at $C_P = 0.45$.
+Air density is 1.225 kg/m³.
+
+1. Calculate the **swept area**.
+2. Calculate the **available wind power** and the **actual turbine power** at
+   wind speeds of 6, 8, 10, 12, and 15 m/s.
+3. Print a table of results in kW.
+
+```{code-cell} python
+import numpy as np
+
+rho   = 1.225   # air density (kg/m³)
+r     = 40      # rotor radius (m)
+Cp    = 0.45    # power coefficient
+
+# Swept area
+# A = np.pi * r**2
+
+wind_speeds = [6, 8, 10, 12, 15]   # m/s
+
+# For each wind speed:
+#   P_available = 0.5 * rho * A * v**3  (W)
+#   P_turbine   = Cp * P_available       (W)
+# Print a formatted table in kW
+```
+
+---
+
+### Exercise 2 — Betz Limit vs. Rotor Radius
+
+For wind speeds of 8 m/s and 12 m/s, and rotor radii from **20 m to 80 m**:
+
+1. Compute the **Betz-limited maximum power** (in MW) for each radius.
+2. Compute the **realistic power** at $C_P = 0.48$.
+3. Plot both on the same figure (dashed for Betz, solid for realistic).
+
+```{code-cell} python
+import numpy as np
+import matplotlib.pyplot as plt
+
+rho        = 1.225
+Cp_betz    = 16/27    # 59.3 %
+Cp_real    = 0.48
+radii      = np.linspace(20, 80, 100)   # m
+A          = np.pi * radii**2
+
+fig, ax = plt.subplots(figsize=(9, 5))
+
+for v, color in [(8, 'steelblue'), (12, 'darkorange')]:
+    # P_betz_MW = Cp_betz * 0.5 * rho * A * v**3 / 1e6
+    # P_real_MW = Cp_real * 0.5 * rho * A * v**3 / 1e6
+    # Plot both
+    pass
+
+ax.set_xlabel("Rotor Radius (m)")
+ax.set_ylabel("Power (MW)")
+ax.set_title("Wind Power: Betz Limit vs. Realistic Output")
+ax.legend()
+ax.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.show()
+```
+
+---
+
+### Exercise 3 — Turbine Power Curve
+
+Implement a **turbine power curve** function with:
+- $v_{\text{ci}} = 3$ m/s (cut-in)
+- $v_{\text{rated}} = 12$ m/s (rated wind speed)
+- $v_{\text{co}} = 25$ m/s (cut-out)
+- $P_{\text{rated}} = 3$ MW
+
+Between cut-in and rated speed, power scales as $v^3$ relative to rated.
+
+Plot the power curve from 0 to 30 m/s.
+
+```{code-cell} python
+import numpy as np
+import matplotlib.pyplot as plt
+
+v_ci     = 3     # cut-in (m/s)
+v_rated  = 12    # rated (m/s)
+v_co     = 25    # cut-out (m/s)
+P_rated  = 3.0   # MW
+
+def turbine_power(v):
+    """
+    Return turbine power (MW) for wind speed v (m/s).
+    - Below cut-in or above cut-out: 0
+    - Between cut-in and rated: scales as v³
+    - At rated and above (up to cut-out): P_rated
+    """
+    pass   # implement the three-region logic
+
+v_range = np.linspace(0, 30, 300)
+P_curve = np.array([turbine_power(v) for v in v_range])
+
+fig, ax = plt.subplots(figsize=(9, 4))
+# ax.plot(v_range, P_curve, ...)
+ax.axvline(v_ci,    linestyle=':', color='green',  label=f'Cut-in  {v_ci} m/s')
+ax.axvline(v_rated, linestyle=':', color='orange', label=f'Rated  {v_rated} m/s')
+ax.axvline(v_co,    linestyle=':', color='red',    label=f'Cut-out {v_co} m/s')
+ax.set_xlabel("Wind Speed (m/s)")
+ax.set_ylabel("Power (MW)")
+ax.set_title("Wind Turbine Power Curve (3 MW class)")
+ax.legend()
+ax.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.show()
+```
+
+---
+
+### Exercise 4 — Weibull Wind Distribution
+
+A site has a Weibull wind speed distribution with $k = 2.0$, $c = 9$ m/s.
+
+1. Plot the **probability density function** $f(v)$ for 0 – 25 m/s.
+2. Overlay a **histogram** of 5 000 randomly sampled wind speeds from this
+   distribution.
+3. Calculate the **mean wind speed** (analytical: $\bar{v} = c \cdot \Gamma(1 + 1/k)$).
+
+```{code-cell} python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import weibull_min   # note: scipy's shape param = k, scale = c
+from scipy.special import gamma
+
+k = 2.0   # shape
+c = 9.0   # scale (m/s)
+
+v = np.linspace(0, 25, 300)
+
+# Weibull PDF: f(v) = (k/c) * (v/c)**(k-1) * exp(-(v/c)**k)
+# f_v = ...
+
+# Sample 5000 random wind speeds from this distribution
+# Hint: use np.random.weibull(k, 5000) * c
+
+# Mean wind speed: v_mean = c * gamma(1 + 1/k)
+
+fig, ax = plt.subplots(figsize=(9, 5))
+# ax.hist(..., density=True, ...)   — histogram of samples
+# ax.plot(v, f_v, ...)              — analytical PDF
+
+ax.set_xlabel("Wind Speed (m/s)")
+ax.set_ylabel("Probability Density")
+ax.set_title(f"Weibull Distribution — k={k}, c={c} m/s")
+ax.legend()
+ax.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.show()
+```
+
+---
+
+### Exercise 5 — Annual Energy Production from a Wind Rose
+
+Using the Weibull distribution from Exercise 4 ($k = 2.0$, $c = 9$ m/s) and
+the turbine from Exercise 3 (3 MW rated):
+
+1. Discretise wind speeds into **0.5 m/s bins** from 0 to 30 m/s.
+2. For each bin, compute the **probability mass** and the **turbine power**.
+3. Calculate the **AEP** (Annual Energy Production) in GWh.
+4. Plot the contribution to AEP by wind speed bin (bar chart).
+5. Calculate the **capacity factor** of this turbine at this site.
+
+```{code-cell} python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.special import gamma
+
+k = 2.0
+c = 9.0
+P_rated = 3.0    # MW
+hours   = 8760
+
+# Bin edges and centres
+bin_edges   = np.arange(0, 30.5, 0.5)
+bin_centres = 0.5 * (bin_edges[:-1] + bin_edges[1:])
+
+# Weibull probability of wind in each bin:
+# p[i] = F(bin_edge[i+1]) - F(bin_edge[i])
+# Weibull CDF: F(v) = 1 - exp(-(v/c)**k)
+def weibull_cdf(v, k, c):
+    return 1 - np.exp(-(v / c)**k)
+
+# p_bins = weibull_cdf(bin_edges[1:], k, c) - weibull_cdf(bin_edges[:-1], k, c)
+
+# Power at each bin centre using turbine_power() from Exercise 3
+# (copy or re-define the function here)
+
+# AEP (MWh) = sum(power_per_bin * probability * 8760)
+# AEP_GWh = AEP / 1000
+
+# Capacity factor = AEP_MWh / (P_rated * hours)
+
+fig, ax = plt.subplots(figsize=(10, 5))
+# ax.bar(bin_centres, contribution_GWh_per_bin, ...)
+ax.set_xlabel("Wind Speed (m/s)")
+ax.set_ylabel("AEP Contribution (GWh)")
+ax.set_title(f"Annual Energy Production by Wind Speed Bin  |  AEP ≈ {0:.1f} GWh")
+ax.grid(True, alpha=0.3, axis='y')
+plt.tight_layout()
+plt.show()
+```
