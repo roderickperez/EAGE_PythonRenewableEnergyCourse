@@ -41,6 +41,11 @@ where:
 - $g$ = gravitational acceleration = 9.81 m/s²
 - $h$ = hydraulic head (m)
 
+```{video} ../manimFiles/section6/HydroelectricEnergy.mp4
+:width: 800
+:align: center
+```
+
 ### Theoretical Hydraulic Power
 
 For a continuous flow, power is the rate of energy delivery:
