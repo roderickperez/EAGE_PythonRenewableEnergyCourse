@@ -1,0 +1,95 @@
+# Table of contents
+# Learn more at https://jupyterbook.org/customize/toc.html
+
+format: jb-book
+root: courseIntro
+parts:
+  - caption: Preface
+    chapters:
+      - file: preface/acknowledgements
+      - file: preface/foreword
+      - file: preface/preface
+  - caption: Introduction to Renewable Energy
+    chapters:
+      - file: section0/introRenewableEnergy
+      - file: section0/faq
+
+  - caption: Introduction to Python Programming
+    chapters:
+      - file: section1/programming
+      - file: section1/pythonIntro
+      - file: section1/IDE
+      - file: section1/markdown
+
+  - caption: Python Basics
+    chapters:
+      - file: section2/pythonBasics/variables
+      - file: section2/pythonBasics/mathOperations
+      - file: section2/pythonBasics/functions
+      - file: section2/pythonBasics/dataStructures
+      - file: section2/pythonBasics/cycles
+      - file: section2/pythonBasics/integratedFunctions
+
+  - caption: Python Libraries
+    chapters:
+      - file: section3/basicLibraries/numpy
+      - file: section3/basicLibraries/pandas
+      - file: section3/basicLibraries/matplotlib
+      - file: section3/advancedLibraries/seaborn
+      - file: section3/advancedLibraries/plotly
+      - file: section3/advancedLibraries/geopandas
+      - file: section3/advancedLibraries/folium
+      - file: section3/extra/cartopy
+      - file: section3/extra/quiver
+      - file: section3/extra/streamplots
+      - file: section3/extra/ipyleaflet
+      - file: section3/extra/geemap
+
+  - caption: Data Processing and Exploration Data Analysis
+    chapters:
+      - file: section4/dataSources
+      - file: section4/dataTypes/csv
+      - file: section4/dataTypes/netcfd
+      - file: section4/dataTypes/xArray
+      - file: section4/EDA
+      - file: section4/timeSeriesEnergyConsumption
+      - file: section4/weatherDataset
+
+  - caption: Databases
+    chapters:
+      - file: section5/databases
+      - file: section5/SQL
+      - file: section5/SQL_Pandas
+
+  - caption: Renewable Energy Sources
+    chapters:
+      - file: section6/hydroelectricEnergy
+      - file: section6/solarEnergy
+      - file: section6/windEnergy
+      - file: section6/geothermalEnergy
+
+  - caption: Quizzes
+    chapters:
+      - file: section7/introRenewableEnergyquizzes/hydroelectricQuizz
+      - file: section7/introRenewableEnergyquizzes/eolicQuizz
+      - file: section7/introRenewableEnergyquizzes/solarQuizz
+      - file: section7/introRenewableEnergyquizzes/geothermalQuizz
+      - file: section7/introRenewableEnergyquizzes/exercisesReview
+      - file: section7/pythonBasicsquizzes/pythonBasicQuizz
+      - file: section7/pythonBasicsquizzes/numpyQuizz
+      - file: section7/pythonBasicsquizzes/pandasQuizz
+      - file: section7/pythonBasicsquizzes/matplotlibQuizz
+      - file: section7/renewableEnergyquizzes/hydroelectricEnergy
+      - file: section7/renewableEnergyquizzes/eolicenergy
+      - file: section7/renewableEnergyquizzes/windEnergy
+      - file: section7/renewableEnergyquizzes/solarEnergy
+
+  - caption: Course Final Project
+    chapters:
+      - file: section8/projectIntro
+      - file: section8/projectSolution
+
+  - caption: Summary and Conclusions
+    chapters:
+      - file: section9/courseSummary
+      - file: section9/courseConclusions

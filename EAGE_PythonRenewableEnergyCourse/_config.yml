@@ -1,0 +1,48 @@
+# Book settings
+# Learn more at https://jupyterbook.org/customize/config.html
+
+title: Python for Renewable Energy Data Processing
+author: Roderick Perez Altamar, Ph.D.
+logo: Logo2.png
+
+# Force re-execution of notebooks on each build.
+# See https://jupyterbook.org/content/execute.html
+execute:
+  execute_notebooks: force
+
+# Define the name of the latex output file for PDF builds
+latex:
+  latex_documents:
+    targetname: book.tex
+
+# Add a bibtex file so that we can create citations
+bibtex_bibfiles:
+  - references.bib
+
+# Information about where the book exists on the web
+repository:
+  url: https://github.com/roderickperez/EAGE_PythonRenewableEnergyCourse  # Online location of your book
+  path_to_book: EAGE_PythonRenewableEnergyCourse  # Path to book folder relative to repository root
+  branch: main  # Which branch of the repository should be used when creating links (optional)
+
+# Enable classic in-page live code execution with Thebe (Jupyter Book v1)
+launch_buttons:
+  thebe: true
+
+# Add GitHub buttons to your book
+# See https://jupyterbook.org/customize/config.html#add-a-link-to-your-repository
+html:
+  use_issues_button: true
+  use_repository_button: true
+
+# Add sphinx_togglebutton for dropdown functionality
+sphinx:
+  extra_extensions:
+    - sphinx_togglebutton
+
+# Add Mermaid.js to render diagrams
+extra_head:
+  - <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({startOnLoad:true});
+    </script>

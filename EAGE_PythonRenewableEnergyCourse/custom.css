@@ -1,0 +1,8 @@
+/* Fix code cell output contrast: ensure light text on dark background */
+.cell_output pre,
+.output_text pre,
+.jp-OutputArea-output pre,
+.jp-RenderedText pre {
+  color: #f0f0f0 !important;
+  background-color: #1e1e1e !important;
+}
