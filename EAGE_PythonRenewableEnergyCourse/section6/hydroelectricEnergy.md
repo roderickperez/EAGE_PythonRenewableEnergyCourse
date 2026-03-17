@@ -41,12 +41,10 @@ where:
 - $g$ = gravitational acceleration = 9.81 m/s²
 - $h$ = hydraulic head (m)
 
-```{raw} html
 <video width="800" controls style="display:block; margin:0 auto; max-width:100%;">
   <source src="../manimFiles/section6/HydroelectricEnergy.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
-```
 
 ### Theoretical Hydraulic Power
 
