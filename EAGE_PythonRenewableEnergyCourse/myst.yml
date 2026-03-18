@@ -9,9 +9,6 @@ project:
     https://github.com/roderickperez/EAGE_PythonRenewableEnergyCourse/tree/main/EAGE_PythonRenewableEnergyCourse
   bibliography:
     - references.bib
-  sphinx:
-    extra_extensions:
-      - sphinxcontrib.video
   exports:
     - format: pdf
       template: plain_latex_book
