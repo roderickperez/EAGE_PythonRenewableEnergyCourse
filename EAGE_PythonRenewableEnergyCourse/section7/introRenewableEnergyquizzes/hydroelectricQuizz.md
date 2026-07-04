@@ -1,1 +1,0 @@
-# Hydroelectric Energy Quizz

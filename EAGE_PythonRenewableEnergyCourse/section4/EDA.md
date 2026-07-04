@@ -1,3 +1,10 @@
+---
+kernelspec:
+  name: python3
+  display_name: Python 3
+  language: python
+---
+
 # Exploratory Data Analysis (EDA)
 
 Exploratory Data Analysis (EDA) is one of the most important tasks that we must perform before starting to apply any of the Artificial Intelligence algorithms. In this process we review the type of quality of the data to be used, identify any patterns or inconsistencies, and recognize distributions that can give us a better light on the data to be used.
@@ -30,8 +37,7 @@ In order to better understand what we can do during the EDA we are going to sele
 
 
 First, let's import all the required libraries:
-```{code-block} python
-:class: thebe
+```{code-cell} python
 import pandas as pd
 import seaborn as sns
 import numpy as np
@@ -40,36 +46,31 @@ import matplotlib.pyplot as plt
 
 :::{admonition} Seaborn built-in datasets
 :class: note
-```{code-block} python
-:class: thebe
+```{code-cell} python
 sns.get_dataset_names()
 ```
 :::
 
 For example, we can select the `penguins` dataset from the Seaborn database, and display the first five rows of the dataset.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 df = sns.load_dataset("penguins")
 df.head()
 ```
 
 Using panda we can identify the basic data of our dataset. For example, the number and name of the columns.
-```{code-block} python
-:class: thebe
+```{code-cell} python
 print('Number of rows and columns: ', df.shape)
 print('Columns names: ', df.columns)
 ```
 
 Also, we can identify the number of null values, as well as the data type in each column:
-```{code-block} python
-:class: thebe
+```{code-cell} python
 df.info()
 ```
 
 Additionally, we can obtain a brief statistical description of the numerical data contained in our data set:
-```{code-block} python
-:class: thebe
+```{code-cell} python
 df.describe()
 ```
 
@@ -77,8 +78,7 @@ In this case, Pandas filters the numerical features and calculates the statistic
 
 Subsequently, we can calculate the correlation between each of the variables in the data set, which we will store in the `corr` variable. After calculating the correlation, we make use of the seaborn library, which allows us to visualize said correlation in a more visually attractive way.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 corr = df.corr()
 sns.heatmap(corr, xticklabels=corr.columns, yticklabels=corr.columns)
 plt.show()
@@ -90,14 +90,12 @@ Depending on the algorithm that we are going to use later, it could be a good id
 :::
 
 If we wanted to carry out a more detailed analysis of each of our variables, we could calculate a histogram that allows us to identify the frequency distribution in each one. For example, we can select the `bill_length_mm` column and calculate the histogram of the values.
-```{code-block} python
-:class: thebe
+```{code-cell} python
 sns.displot(df["bill_length_mm"], kde = False)
 ```
 
 Note that Seaborn offers us a more sophisticated version of this frequency distribution used in statistics called the probability distribution. You can plot that as well.
-```{code-block} python
-:class: thebe
+```{code-cell} python
 sns.kdeplot(df["bill_length_mm"], shade  = True)
 ```
 
@@ -130,8 +128,7 @@ A boxplot is a standardized way of displaying the distribution of data based on 
 
 Also, it can tell you about your outliers and what their values are. It can also tell you if your data is symmetrical, how tightly your data is grouped, and if and how your data is skewed.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 plt.figure(figsize=(20,4))
 sns.boxplot(x =  df["bill_length_mm"])
 ```
@@ -140,39 +137,34 @@ If we compare the boxplot to a histogram or density plot, they have the advantag
 
 In case we would like to plot a boxplot for all the variables in the data set, we need to change the `x` parameter to `"columns"`.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 plt.figure(figsize=(20, 12))
 sns.boxplot(x =  df["species"], y = df["bill_length_mm"])
 ```
 
 However, Seaborn offers a one-liner to do this. The `paiplot()` function creates a grid of Axes such that each variable in data will by shared in the y-axis across a single row and in the x-axis across a single column.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 penguins = sns.load_dataset("penguins")
 sns.pairplot(penguins)
 ```
 
 In case, we want to color the points according to the species, we can use the `hue` parameter.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 sns.pairplot(penguins, hue="species")
 ```
 
 In the `pairplot()` function, we can also specify the `kind` parameter to change the kind of plot that we want to create, for the diagonal and off-diagonal plotting style.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 sns.pairplot(penguins, kind="kde")
 ```
 
 In many cases, our data set may contain variables that we may not necessarily want to include in our analysis. Therefore, Seaborn gives us the flexibility to select which variables we want to compare on our X-axis and on our Y-axis.
 
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 sns.pairplot(
     penguins,
     x_vars=["bill_length_mm", "bill_depth_mm", "flipper_length_mm"],
@@ -182,7 +174,6 @@ sns.pairplot(
 
 As you may have already noticed, the parsing of our `pairplot()` function is symmetrical. Therefore, in some cases we can only show the lower part of it so as not to saturate the image.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 sns.pairplot(penguins, corner=True)
 ```

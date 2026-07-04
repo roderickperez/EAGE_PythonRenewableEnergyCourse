@@ -2,7 +2,7 @@
 
 Aqui seran respondidas las preguntas mas frecuentes realizadas por los estudiantes.
 
-:::{admonition} Pregunta
+:::{admonition} Questions?
 :class: note, dropdown
 Respuesta
 

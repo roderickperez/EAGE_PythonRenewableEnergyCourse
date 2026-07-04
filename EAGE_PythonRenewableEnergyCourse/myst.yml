@@ -3,6 +3,8 @@ project:
   title: Python for Renewable Energy Data Processing
   authors:
     - name: Roderick Perez Altamar, Ph.D.
+  jupyter:
+    lite: true
   github: >-
     https://github.com/roderickperez/EAGE_PythonRenewableEnergyCourse/tree/main/EAGE_PythonRenewableEnergyCourse
   bibliography:
@@ -110,16 +112,6 @@ project:
 
     - title: Quizzes
       children:
-        - file: section7/introRenewableEnergyquizzes/hydroelectricQuizz.md
-
-        - file: section7/introRenewableEnergyquizzes/eolicQuizz.md
-
-        - file: section7/introRenewableEnergyquizzes/solarQuizz.md
-
-        - file: section7/introRenewableEnergyquizzes/geothermalQuizz.md
-
-        - file: section7/introRenewableEnergyquizzes/exercisesReview.md
-
         - file: section7/pythonBasicsquizzes/pythonBasicQuizz.md
 
         - file: section7/pythonBasicsquizzes/numpyQuizz.md
@@ -127,6 +119,8 @@ project:
         - file: section7/pythonBasicsquizzes/pandasQuizz.md
 
         - file: section7/pythonBasicsquizzes/matplotlibQuizz.md
+
+        - file: section7/pythonBasicsquizzes/exercisesReview.md
 
         - file: section7/renewableEnergyquizzes/hydroelectricEnergy.md
 
@@ -152,4 +146,5 @@ site:
   options:
     logo: Logo2.png
     folders: true
+    style: custom.css
   template: book-theme

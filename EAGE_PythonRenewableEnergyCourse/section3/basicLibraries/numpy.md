@@ -1,3 +1,10 @@
+---
+kernelspec:
+  name: python3
+  display_name: Python 3
+  language: python
+---
+
 # Numpy
 
 As we discussed in the previous section, ny default, in Python we can use lists in order to storage data arrays. Arrays are very frequently used in data science, where speed and resources are very important. However, when we have large volumes of data, traditional data structures (in this case lists) are slow and inefficient. Therefore, it is necessary to resort to external libraries, such as Numpy.
@@ -15,8 +22,7 @@ NumPy arrays are stored at one continuous place in memory unlike lists, so proce
 The first step to work with Numpy in Python is to installed the `numpy` library, and then import iy into our code. Due to its popularity in Python code development, Numpy is usually one of the default libraries found in many Python distributions. Therefore, in most of the times, it is not necessary to install it. However, if necessary, this can be done via the `pip install numpy` command.
 
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 import numpy
 ```
 
@@ -36,15 +42,13 @@ In this case, everytime we need to call to `nameLibrary`, instead of written the
 
 Based on this, it is very common find that numpy is assigned to the alias `np` in the code. Notice, that the alias is independent to the user.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 import numpy as np
 ```
 
 In order to compare, let's create a list of values as we learning from previous sections:
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 arrayList = [1, 2, 3, 4, 5] # This is a list of values
 print(arrayList)
 print('The arrayList array is a ', type(arrayList))
@@ -52,8 +56,7 @@ print('The arrayList array is a ', type(arrayList))
 
 Then, we can create an array using the `np.array` function.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 arrayNumpy = np.array([1, 2, 3, 4, 5]) # This is an array of values
 print(arrayNumpy)
 print('The arrayNumpy array is a ', type(arrayNumpy))
@@ -62,8 +65,7 @@ print('The arrayNumpy array is a ', type(arrayNumpy))
 :::{admonition} Convert List to Numpy Arrays
 :class: tip
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 arrayList = [1, 2, 3, 4, 5] # This is a list of values
 arrayNumpyConverted = np.array(arrayList) # This is an array of values
 
@@ -77,8 +79,7 @@ print('The arrayNumpyConverted array is a ', type(arrayNumpyConverted))
 
 The difference between both is that `numpy.array()` will make a duplicate of the original object and `numpy.asarray()` would mirror the changes in the original object.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 
 # Define a Python list
 pythonList = [1, 7, 0, 6, 2, 5, 6]
@@ -130,8 +131,7 @@ A dimension in arrays is one level of array depth (nested arrays). The following
 NumPy Arrays provides the `ndim` attribute that returns an integer that tells us how many dimensions the array have.
 :::
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 arr_0D = np.array(3)
 print(arr_0D)
 print('The data type of the arr_0D is: ', type(arr_0D))
@@ -149,8 +149,7 @@ An array that has 0-D arrays as its elements is called uni-dimensional or 1-D ar
 :align: center
 ```
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 arr_1D = np.array([3, 2])
 print(arr_1D)
 print('The data type of the arr_1D is: ', type(arr_1D))
@@ -168,8 +167,7 @@ An array that has 1-D arrays as its elements is called a 2-D array. These are of
 :align: center
 ```
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 arr_2D = np.array([[1, 0, 1], [3, 4, 1]])
 print(arr_2D)
 print('The data type of the arr_2D is: ', type(arr_2D))
@@ -187,8 +185,7 @@ An array that has 2-D arrays (matrices) as its elements is called 3-D array. The
 :align: center
 ```
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 arr_3D = np.array([[[1, 7, 9], [5, 9, 3], [7, 9, 9]], [[2, 3, 5], [1, 0, 0], [2, 9, 2]]] )
 print(arr_3D)
 print('The data type of the arr_3D is: ', type(arr_3D))
@@ -199,8 +196,7 @@ print('The dimensions of the arr_3D are:', arr_3D.ndim)
 
 With Numpy, an array can have any number of dimensions. In this case, when the array is created, we can specify the number of dimensions by using the `ndmin` argument.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 arr_5D = np.array([1, 2, 3, 4], ndmin=5)
 print(arr_5D)
 print('The data type of the arr_5D is: ', type(arr_5D))
@@ -213,8 +209,7 @@ In this case, we created array where the innermost dimension (5th dim) has 4 ele
 
 Array indexing is the same as accessing an array element. You can access an array element by referring to its index number. The indexes in NumPy arrays start with 0, meaning that the first element has index 0, and the second has index 1 etc.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 arr_1D = np.array([1, 2, 3, 4])
 
 print('The first element of the array arr_1D is: ', arr_1D[0])
@@ -222,8 +217,7 @@ print('The first element of the array arr_1D is: ', arr_1D[0])
 
 In case of the 2-D array, we can access the element by referring to the row and column index.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 arr_2D = np.array([[1,2,3,4,5], [6,7,8,9,10]])
 
 print('The second element on the first row in the arr_2D is: ', arr_2D[0, 1])
@@ -233,8 +227,7 @@ The same can be done with the higher dimensional arrays.
 
 Also, we can use the negative indexing to access the last element in the array.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 arr_2D = np.array([[1,2,3,4,5], [6,7,8,9,10]])
 
 print('The last element from 2nd dim in the arr_2D array is: ', arr_2D[1, -1])
@@ -244,8 +237,7 @@ print('The last element from 2nd dim in the arr_2D array is: ', arr_2D[1, -1])
 
 Slicing in python means taking elements from one given index to another given index. We pass slice instead of index like this: `[start:end]`. Also, we can add an additional parameter to define the step: `[start:end:step]`. In case we don't pass start its considered `0`. Additionally, in the case that we don't pass end its considered length of array in that dimension. If we don't pass step its considered 1.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 arr_1D = np.array([1, 2, 3, 4, 5, 6, 7])
 slice_1D = arr_1D[2:5]
 
@@ -258,24 +250,21 @@ The result includes the `start` index, but **excludes** the `end` index.
 
 Now, if we want to take the elements from the second index to the last index, we can use the `:` operator.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 arr_1D = np.array([1, 2, 3, 4, 5, 6, 7])
 print('The slice from the second index to the last index in my arr_1D is: ', arr_1D[2:])
 ```
 
 On the other hand, if we want to take the elements from the first index to the third index, we can also use the `:` operator.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 arr_1D = np.array([1, 2, 3, 4, 5, 6, 7])
 print('The slice from the first index to the third index in my arr_1D is: ', arr_1D[:3])
 ```
 
 Also, we can use the minus operator to refer to an index from the end. This procedure is known as _negative slicing_.:
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 arr_1D = np.array([1, 2, 3, 4, 5, 6, 7])
 print(arr_1D[-3:-1])
 ```
@@ -287,8 +276,7 @@ We can control the number of steps of the slicing, adding the `step` parameter. 
 
 Finally, if we want to take the elements from the first index to the last index, but we want to skip every other element, we can use the `::` operator.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 arr_1D = np.array([1, 2, 3, 4, 5, 6, 7])
 print(arr_1D[::])
 ```
@@ -297,8 +285,7 @@ Notice that it return the same (original) array.
 
 Based on this, we can slice a 2-D array.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 arr_2D = np.array([[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]])
 
 print(arr_2D[0:2, 2])
@@ -308,8 +295,7 @@ print(arr_2D[0:2, 2])
 
 The shape of an array is the number of elements in each dimension. In order to show the shape of an array, we can use the `shape` attribute.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 arr_2D = np.array([[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]])
 
 print('The shape of the arr_2D is: ', arr_2D.shape)
@@ -320,8 +306,7 @@ The example above returns (2, 5), which means that the array has 2 dimensions, w
 :::{admonition} Do you remember the tuples?
 Numpy store the shape of an array in a **tuple** data structure.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 arr_2D = np.array([[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]])
 shape_arr_2D = arr_2D.shape
 print(type(shape_arr_2D))
@@ -335,8 +320,7 @@ For Numpy, **reshaping** means changing the shape of an array. The shape of an a
 
 For example, we can convert a 12 rows 1D array to a 2D array with 6 rows and 2 columns.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 arr_1D = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
 print('The original shape of the arr_1D is: ', arr_1D.shape)
 
@@ -360,8 +344,7 @@ First, build a 2D Numpy array, of 2 rows and 3 columns. Then, using the reshape 
 :class: warning
 Yes, as long as the elements required for reshaping are equal in both shapes. For example, we can reshape an 8 elements 1D array into 4 elements in 2 rows 2D array.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 arr_1D = np.array([1, 2, 3, 4, 5, 6, 7, 8])
 print('The original shape of the arr_1D is: ', arr_1D.shape)
 
@@ -371,8 +354,7 @@ print('The shape of the new arr_1D (reshaped) is: ', arr_2D.shape)
 
 Although, we cannot reshape it into a 3 elements 3 rows 2D array as that would require 3x3 = 9 elements.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 arr_2D = arr_1D.reshape(3, 3)
 ```
 
@@ -384,8 +366,7 @@ In this case we will get an error.
 
 Flattening array means converting a multidimensional array into a 1D array. We can use `reshape(-1)` to do this. This function will be very useful during execution of the Machine Learning and Deep Learning algorithms.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 arr_2D = np.array([[1, 2, 3], [4, 5, 6]])
 print('The shape of the arr_2D is: ', arr_2D.shape)
 
@@ -402,8 +383,7 @@ Another of the popular features of Numpy is the random number generation.
 
 For example, if we want to generate a random **integer** from 0 to 20, we can use the `np.random.randint` function.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 from numpy import random
 
 x = random.randint(20)
@@ -414,7 +394,7 @@ print(x)
 
 :::{admonition} Click multiple times
 :class: tip
-Click the `run` button multiple times to see the different random numbers generated.
+Press ▶ **Run** on the cell multiple times to see different random numbers generated.
 
 :::
 
@@ -422,8 +402,7 @@ Click the `run` button multiple times to see the different random numbers genera
 
 Now, in case we want to generate a random **floats**, we can use the `np.random.rand` function.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 from numpy import random
 
 x = random.rand(20)
@@ -434,8 +413,7 @@ print(x)
 
 Also, in Numpy we can combine the array construction feature with the generator function to generate a random array, specifying the size of the array. For example, if we want to generate a 1-D array containing 5 random integers from 0 to 20:
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 from numpy import random
 
 x = random.randint(20, size=(5))
@@ -446,8 +424,7 @@ print(x)
 
 In the same way, we can generate a 2-D with 3 rows, each row containing 5 random integers from 0 to 20:
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 from numpy import random
 
 x = random.randint(20, size=(3, 5))
@@ -475,8 +452,7 @@ where:
 
 Let's create our first empty array. Notice that the only mandatory parameter is `shape`.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 arrEmpty_0D = np.empty(0)
 
 print(arrEmpty_0D)
@@ -490,8 +466,7 @@ In practice this is not useful. Remember that in NumPy array elements are stored
 
 Now, let's create a new empty array with 2 rows and 3 columns.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 arrEmpty_2D = np.empty([2, 3])
 
 print(arrEmpty_2D)
@@ -515,8 +490,7 @@ numpy.zeros(shape, dtype=float, order='C', *, like=None)
 
 Based on this, we can generate a 1D array of zeros:
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 arrZeros_1D = np.zeros(3)
 
 print(arrZeros_1D)
@@ -525,7 +499,7 @@ print(arrZeros_1D)
 
 Or, a 2D array of zeros:
 
-```{code-block} python
+```{code-cell} python
 arrZeros_2D = np.zeros([2, 2])
 
 print(arrZeros_2D)
@@ -547,8 +521,7 @@ numpy.ones(shape, dtype = None, order = 'C')
 
 For example, if we want to generate a 1D array of ones:
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 arrOnes_1D = np.zeros(6)
 
 print(arrOnes_1D)
@@ -556,8 +529,7 @@ print(arrOnes_1D)
 
 Or a 2D matrix of ones:
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 arrOnes_2D = np.zeros([2, 4])
 
 print(arrOnes_2D)
@@ -571,8 +543,7 @@ Along the course, we face the necessity to generate spaced arrays. In some of th
 
 In the case we want to define a evenly spaced array, we can use the `numpy.linspace()` function. It requires the start and end range of values we want to define our array. By default, it defines a number of elements equal to `10`.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 linSpace_1D = np.linspace(0, 10)
 
 print('The first element of linSpace_1D is: ', linSpace_1D[0])
@@ -597,8 +568,7 @@ This is contrary to what you might expect from Python, in which the end of a ran
 
 In case we want to specify the number of elements in the array, we can use the `numpy.linspace()` function with the `num` parameter.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 linSpace_1D = np.linspace(0, 10, num = 20)
 
 print('The first element of linSpace_1D is: ', linSpace_1D[0])
@@ -633,8 +603,7 @@ Python has a built-in function called `range(n)` that generates a sequence of ev
 
 NumPy has its own version of the Python built-in `range()`, called `np.arange()`. Unlike `range()`, it’s not restricted to just integers. We can use `np.arange()` in a similar way to `range()`, using start, stop, and step as the input parameters:
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 list(range(2, 30, 2))
 ```
 
@@ -642,8 +611,7 @@ Which returns a list of integers from `0` to `9`.
 
 The equivalent result using `np.arange()` is:
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 np.arange(2, 30, 2)
 ```
 
@@ -675,8 +643,7 @@ where:
 - `base` defines the base of log scale. By default, equals `10.0`
 - `dtype` is the type of output array
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 logSpace_1D = np.logspace(0, 10, 20)
 
 print('The first element of logSpace_1D is: ', logSpace_1D[0])
@@ -704,8 +671,7 @@ We can add one scalar value to each element of an array:
 :align: center
 ```
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 scalar = 1
 
 array = np.array([1, 2, 3, 4, 5])
@@ -724,8 +690,7 @@ Or, we can add one array to another:
 :align: center
 ```
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 array1 = np.array([1, 2, 3, 4, 5])
 
 array2 = np.array([6, 7, 8, 9, 10])
@@ -740,8 +705,7 @@ print('The sum of array1 and array2 is: ', arraySum)
 
 Try yourself, what will happen if the arrays have different shapes?
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 array1 = np.array([1, 2, 3, 4, 5])
 
 array2 = np.array([6, 7, 8, 9])
@@ -764,8 +728,7 @@ In the same way we can substract one scalar value to each element of an array:
 :align: center
 ```
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 scalar = 2
 
 array = np.array([6, 7, 8, 9, 10])
@@ -784,8 +747,7 @@ Or, we can subtract one array to another:
 :align: center
 ```
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 array1 = np.array([1, 2, 3, 4, 5])
 
 array2 = np.array([6, 7, 8, 9, 10])
@@ -806,8 +768,7 @@ We can do the same in case we want to multiply one scalar value to each element 
 :align: center
 ```
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 scalar = 2
 
 array = np.array([6, 7, 8, 9, 10])
@@ -826,8 +787,7 @@ Or, we can multiply one array to another:
 :align: center
 ```
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 array1 = np.array([1, 2, 3, 4, 5])
 
 array2 = np.array([6, 7, 8, 9, 10])
@@ -846,8 +806,7 @@ Now, try yourself, what will happen if we divide one scalar with and array, or a
 
 What can you say about diving two arrays?
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 array1 = XXXXXXXXXXXXXXXX # Try first with an scalar, and then try with an array
 
 array2 = np.array([24, 60, 12, 40, 15])
@@ -872,8 +831,7 @@ The function `np.dot(a,b)` returns the dot product of two arrays. For 2D vectors
 :align: center
 ```
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 array1 = np.array([2, 7, 1])
 
 array2 = np.array([8, 2, 8])

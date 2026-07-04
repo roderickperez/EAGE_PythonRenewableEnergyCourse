@@ -1,11 +1,8 @@
 ---
-jupytext:
-    text_representation:
-        extension: .md
-        format_name: myst
 kernelspec:
-    name: python3
-    display_name: Python 3
+  name: python3
+  display_name: Python 3
+  language: python
 ---
 
 # Variables
@@ -18,11 +15,11 @@ The general syntax for declaring a variable is:
 variableName = value
 ```
 
-Now, try yourself clicking on the `Run Code` button below:
+Now, try yourself! Click the **⚡ Launch** button in the top bar to activate the in-browser kernel, then press ▶ **Run** on the cell below:
 
 
 
-```{code-cell} ipython3
+```{code-cell} python
 a = 5
 ```
 
@@ -39,7 +36,7 @@ print(name)
 
 Now, change the value of `a` again, and show it on the screen.
 
-```{code-cell} ipython3
+```{code-cell} python
 a = 5
 print(a)
 ```
@@ -130,7 +127,7 @@ print(type(name))
 
 Now, try yourself:
 
-```{code-cell} ipython3
+```{code-cell} python
 name = "Roderick"
 print(type(name))
 ```
@@ -146,7 +143,7 @@ Write a program that
 
 :::{admonition} Error
 :class: error
-In the following code, if you just click on the 'run' (button without changes), you will get an error because the **code is not complete**. 
+In the following code, if you press ▶ **Run** on the cell without any changes, you will get an error because the **code is not complete**. 
 ```python
 Input In [#]
     age = # Integer
@@ -156,7 +153,7 @@ SyntaxError: invalid syntax
 In order to remove the error, **please complete the code with the requested and correct information**.
 :::
 
-```{code-cell} ipython3
+```{code-cell} python
 name = "Roderick" # String
 age = 39 # Integer
 height = 1.75 # Float
@@ -181,7 +178,7 @@ x = 'Roderick'
 
 Try yourself changing the quote symbols from `"` to `'`:
 
-```{code-cell} ipython3
+```{code-cell} python
 name = "Roderick"
 
 print(name)
@@ -211,7 +208,7 @@ SyntaxError: EOL while scanning string literal
 
 Now, in this case can you see a difference when we use `"` and / or  `'`?
 
-```{code-cell} ipython3
+```{code-cell} python
 name = "Roderick's notebook"
 
 print(name)

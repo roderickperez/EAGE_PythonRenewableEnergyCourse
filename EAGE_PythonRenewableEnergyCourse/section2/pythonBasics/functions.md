@@ -1,3 +1,10 @@
+---
+kernelspec:
+  name: python3
+  display_name: Python 3
+  language: python
+---
+
 # Functions
 
 So far we have learned to perform simple operations, but this is not convenient if we want to evaluate the previous expression with different values. For that we define a function, which is a code that I can use as many times in my code.
@@ -27,8 +34,7 @@ myFunction(parameters)
 
 Now, let's define our first function. This function takes two parameters, `x` and `y`, and returns the sum of these two parameters.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 def myFunction(x, y):
     """
     Sum the inputs x and y and return the c value
@@ -39,8 +45,7 @@ def myFunction(x, y):
 
 Now, we can call this function and pass the values of `x` and `y` as arguments. Change the value of `x` and `y` and see the result.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 x = 5
 y = 4
 myFunction(x, y)
@@ -49,8 +54,7 @@ myFunction(x, y)
 ## Default Parameter Value
 Sometimes, we want to define a funtion with default parameters. For that, at the moment to define the function we can specify the default value of the parameters. For example:
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 def functionDefaultParameter(x = 5, y = 4):
     """
     Sum the inputs x and y, using as a default values x = 5 and y = 4, and return the c value
@@ -61,14 +65,12 @@ def functionDefaultParameter(x = 5, y = 4):
 
 Now, when we call the function inside our program we don't need to specify a specific value for the parameters, since it will use the default value.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 functionDefaultParameter()
 ```
 
 However, notice that we can also change the values of the default parameters.
-```{code-block} python
-:class: thebe
+```{code-cell} python
 functionDefaultParameter(1, 6)
 ```
 
@@ -79,8 +81,7 @@ It's impossible to know what all functions written in Python do, but one of the 
 
 Also, by using the combination of Shift and Tab on your keyboard, you can see the documentation associated with it.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 functionDefaultParameter?
 ```
 :::
@@ -96,14 +97,12 @@ Write a program that converts degrees *Celsius* to degrees *Fahrenheit*, and dis
 
 ### User Manual Character Entry
 A very effective way to interact with the user of our program is through a *built-in* function called `input()`, which is able to read what the user inputs and return a `str`.
-```{code-block} python
-:class: thebe
+```{code-cell} python
 input("What's your name?")
 ```
 
 And in turn we can assign this to a variable:
-```{code-block} python
-:class: thebe
+```{code-cell} python
 name = input("What's your name?")
 print(name)
 ```
@@ -127,8 +126,7 @@ lambda arguments : expression
 
 For example, if we want to add 10 to the parameter `a`, and return the result:
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 x = lambda a : a + 10
 print(x(5))
 ```

@@ -1,3 +1,10 @@
+---
+kernelspec:
+  name: python3
+  display_name: Python 3
+  language: python
+---
+
 # Arithmetic Operations
 
 
@@ -5,8 +12,7 @@
 
 Add two variables `x` and `y`
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 a = 10
 b = 3
 
@@ -18,8 +24,7 @@ print(c)
 ## Substraction
 
 Subtracts two variables `x` and `y`
-```{code-block} python
-:class: thebe
+```{code-cell} python
 a = 10
 b = 3
 
@@ -31,8 +36,7 @@ print(c)
 
 ## Multiplication
 Multiply two variables `x` and `y`
-```{code-block} python
-:class: thebe
+```{code-cell} python
 a = 10
 b = 3
 
@@ -43,8 +47,7 @@ print(c)
 
 ## Division (float)
 Divides the first operand (`x`) by the second (`y`)
-```{code-block} python
-:class: thebe
+```{code-cell} python
 a = 10
 b = 3
 
@@ -55,8 +58,7 @@ print(c)
 
 ## Floor division
 Divides the first operand (`x`) by the second (`y`). It is used to find the floorof the quotient when first operand is divided by the second.
-```{code-block} python
-:class: thebe
+```{code-cell} python
 a = 10
 b = 3
 
@@ -67,8 +69,7 @@ print(c)
 
 ## Modulus
 Returns the remainder when first operand (`x`) is divided by the second ( `y`)
-```{code-block} python
-:class: thebe
+```{code-cell} python
 a = 10
 b = 3
 
@@ -79,8 +80,7 @@ print(c)
 
 ## Power (Exponentiation)
 Returns first variable (`x`) raised to power second (`y`)
-```{code-block} python
-:class: thebe
+```{code-cell} python
 a = 10
 b = 3
 
@@ -97,8 +97,7 @@ Using negative exponents or decimals, inverse powers or nth roots can be calcula
 
 $$a^{-b} = \frac{1}{a^{b}}$$
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 10 ** -4
 ```
 
@@ -140,8 +139,7 @@ Python can handle complex number calculations. The imaginary part is accompanied
 ```
 In the same way, basic operations can be done with complex numbers.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 a = 1 + 1j
 b = 2 + 3j
 
@@ -177,8 +175,7 @@ Therefore, it is preferable to use:
 :class: tip
 The result of an operation involving complex numbers is a complex number, even though the result has no imaginary part.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 c = 1j
 c * c
 ```

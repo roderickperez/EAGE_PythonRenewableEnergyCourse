@@ -1,3 +1,10 @@
+---
+kernelspec:
+  name: python3
+  display_name: Python 3
+  language: python
+---
+
 # Pandas
 
 Pandas, created by Wes McKinney in 2008, is a [Python library](https://github.com/pandas-dev/pandas) used for working with data sets. It's name has a reference to both "Panel Data", and "Python Data Analysis". Pandas is mostly used for analyzing, cleaning, exploring, and manipulating data. Some people refers to it as the "Excel for Python" since it allows us to analyze big data and make conclusions based on statistical theories, as well as to clean messy data sets, and make them readable and relevant.
@@ -5,16 +12,14 @@ Pandas, created by Wes McKinney in 2008, is a [Python library](https://github.co
 In order to use Pandas, you need to install it, and then import it using the `import` keyword. It is common to use the `pd` keyword as alias for Pandas.
 
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 import pandas as pd
 
 ```
 
 Then, we can create a Pandas dataset defining a dictionary in Python.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 mydataset = {
   'cities': ["Caracas", "Vienna", "Bogota", "Mexico City", "Delhi", "Buenos Aires", "Quito", "Paris"],
   'habitants': [4, 1, 10, 9, 18, 3, 1, 2],
@@ -25,8 +30,7 @@ print(type(mydataset))
 
 We can convert this dictionary to a Pandas DataFrame using the `pd.DataFrame` function.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 pandasDataFrame = pd.DataFrame(mydataset)
 
 print(type(pandasDataFrame))
@@ -39,8 +43,7 @@ A Pandas `DataFrame` is a 2 dimensional data structure, similar to a 2 dimension
 
 Now, we can visualize the new Pandas `DataFrame`, such as:
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 print(pandasDataFrame)
 ```
 
@@ -48,15 +51,13 @@ Notice that Pandas format the `DataFrame` labelling the `columns` with its corre
 
 We can use some Pandas functions to visualize the `DataFrame`, such as the `head` function, which displays the first five rows of the `DataFrame`.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 print(pandasDataFrame.head())
 ```
 
 and the `tail` function, which displays the last five rows of the `DataFrame`.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 print(pandasDataFrame.tail())
 ```
 
@@ -91,16 +92,14 @@ iloc[row_position, column_position]
 
 As you can see, Pandas format the `DataFrame` as a table with rows and columns. Similar to indexing, we can use the `loc` attribute to return one or more specified row(s). For example, if we want to return the 3rd row (corresponding to the index 2) of our `DataFrame`, we can use the following code:
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 print(pandasDataFrame.loc[2])
 ```
 
 ### Rename Index
 With the `index` argument, you can name your own indexes.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 mydataset = {
   'cities': ["Caracas", "Vienna", "Bogota", "Mexico City", "Delhi", "Buenos Aires", "Quito", "Paris"],
   'habitants': [4, 1, 10, 9, 18, 3, 1, 2],
@@ -113,15 +112,13 @@ print(pandasDataFrame)
 
 Based on this, instead of using the index 0, 1, 2, 3, 4, 5, 6, 7, we can use the index "City 1", "City 2", "City 3", "City 4", "City 5", "City 6", "City 7", "City 8" to locate a specific row in our `DataFrame`.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 print(pandasDataFrame.loc["City 3"])
 ```
 
 Using `loc` we can return the specific rows of our `DataFrame` using the index labels.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 print(pandasDataFrame.loc["City 3", "cities"])
 ```
 
@@ -133,8 +130,7 @@ loc["City 3", "cities"]
 iloc[2, 0]
 ```
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 print(pandasDataFrame.iloc[2, 0])
 ```
 
@@ -144,8 +140,7 @@ We can also use `:` to return all data.
 
 We can also `slice` our `DataFrame` using the `loc` and `iloc` attributes. For example, we can return the first three rows of our `DataFrame` using the following code:
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 print(pandasDataFrame.iloc[2:6, 0])
 ```
 
@@ -163,8 +158,7 @@ Can you create a `DataFrame` (4 columns and 8 rows), and then slice the `DataFra
 ## Load Files
 One of the most common functionalities that we are going to use from Pandas is the `read_csv` function, to read (light-weight) text files with comma separated files (`.csv`) extension.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 filename = 'https://www1.ncdc.noaa.gov/pub/data/cdo/samples/PRECIP_HLY_sample_csv.csv'
 precipitationDataFrame = pd.read_csv(filename)
 
@@ -174,13 +168,11 @@ print(precipitationDataFrame)
 :::{admonition} Exercise 11
 Explore the **Precipitation dataset**, and show the first 10 rows and the last 7 of the dataset using the `head` and `tail` functions.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 print(precipitationDataFrame.XXXXX(xxx))
 ```
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 print(precipitationDataFrame.YYYYY(yyy))
 ```
 
@@ -194,8 +186,7 @@ Another of the advantages of using Pandas is the ability to analyze the data, an
 ### Info
 The DataFrames object has a method called `info()`, that gives you more information about the data set.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 print(precipitationDataFrame.info())
 ```
 
@@ -219,7 +210,6 @@ The `describe()` method returns description of the data in the DataFrame. If the
 In statistics, a k-th percentile is a score below which a given percentage k of scores in its frequency distribution falls or a score at or below which a given percentage falls ([Wikipedia](https://en.wikipedia.org/wiki/Percentile)).
 :::
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 print(precipitationDataFrame.describe())
 ```

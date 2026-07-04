@@ -1,3 +1,10 @@
+---
+kernelspec:
+  name: python3
+  display_name: Python 3
+  language: python
+---
+
 # Control Structures
 
 ## Cycle
@@ -40,8 +47,7 @@ Python relies on indentation (whitespace at the beginning of a line) to define s
 
 
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 a = 10
 
 if a == 10:
@@ -75,8 +81,7 @@ if b > a:
 ### elif
 When we use the keyword `elif` we build a statement that says: *if the previous conditions were not true, then try this condition*.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 age = int(input('Enter your age: '))
 
 if age < 18:
@@ -88,8 +93,7 @@ elif age < 0:
 :::{admonition} `elif` | Statement Short Version
 :class: tip, dropdown
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 a = 2
 b = 330
 print("A") if a > b else print("B")
@@ -100,8 +104,7 @@ print("A") if a > b else print("B")
 
 Now, if we want to catches anything which isn't caught by the preceding conditions, we can use the `else` keyword.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 age = int(input('Enter your age: '))
 
 if age < 18:
@@ -130,8 +133,7 @@ print("A") if a > b else print("B")
 :::{admonition} Multiple `else` statements in the same line
 :class: tip, dropdown
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 a = 330
 b = 330
 print("A") if a > b else print("=") if a == b else print("B")
@@ -143,8 +145,7 @@ print("A") if a > b else print("=") if a == b else print("B")
 ### `and`
 The `and` keyword is a logical operator, `and` is used to combine conditional statements. For example, if we want to test if `a` is greater than `b`, `AND` if `c` is greater than `a`:
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 a = 200
 b = 33
 c = 500
@@ -155,8 +156,7 @@ if a > b and c > a:
 ### `or`
 Similar than the `and` keyword, the `or` keyword is is a logical operator used to combine conditional statements. In this case, if we want test if `a` is greater than `b`, `OR` if `a` is greater than `c`:
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 a = 200
 b = 33
 c = 500
@@ -181,8 +181,7 @@ after the user input the monthly production rates manually.
 
 A `for` loop is used for iterating over a sequence (that is either a list, a tuple, a dictionary, a set, or a string). This method is very convenient in case you want to repeat sequences of code. For example, if we wanted to print on the screen each of the elements that are stored in the following list, we can do the following:
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 cities = ['London', 'Paris', 'Rome', 'Madrid', 'Berlin']
 
 print(cities[0])
@@ -195,8 +194,7 @@ print(cities[4])
 
 As we can see, this method can be quite inconvenient in the case of having long sequences. This can be simplified via the `for` keywork:
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 cities = ['London', 'Paris', 'Rome', 'Madrid', 'Berlin']
 
 for city in cities:
@@ -215,8 +213,7 @@ The `for` loop does not require an indexing variable to set beforehand.
 
 With the `break` statement we can stop the loop before it has looped through all the items:
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 cities = ['London', 'Paris', 'Rome', 'Madrid', 'Berlin']
 
 for city in cities:
@@ -227,8 +224,7 @@ for city in cities:
 
 On the other hand, with the `continue` statement we can stop the current iteration of the loop, and continue with the next:
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 cities = ['London', 'Paris', 'Rome', 'Madrid', 'Berlin']
 
 for city in cities:
@@ -240,8 +236,7 @@ for city in cities:
 ### `range()`
 To loop through a set of code a specified number of times, we can use the `range()` function. It returns a sequence of numbers, starting from `0` by default, and increments by 1` (by default), and ends at a specified number.
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 
 for i in range(10):
   print(i)
@@ -249,16 +244,14 @@ for i in range(10):
 
 As we mentioned before, the `range()` function defaults to `0` as a starting value. Hwever it is possible to specify the starting value by adding a parameter: `range(2, 6)`, which means values from `2` to `6` (**but not including `6`**):
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 
 for i in range(2, 6):
   print(i)
 ```
 
 The `range()` function defaults to increment the sequence by `1`. However, it is possible to specify the increment value by adding a third parameter: 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 
 for i in range(2, 30, 3):
   print(i)
@@ -268,8 +261,7 @@ for i in range(2, 30, 3):
 
 A nested loop is a loop inside a loop. The "inner loop" will be executed one time for each iteration of the "outer loop":
 
-```{code-block} python
-:class: thebe
+```{code-cell} python
 
 cities = ['London', 'Paris', 'Rome', 'Madrid', 'Berlin']
 countries = ['UK', 'France', 'Italy', 'Spain', 'Germany']
