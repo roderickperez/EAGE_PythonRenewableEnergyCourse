@@ -212,6 +212,50 @@ window.PYTHONLAB_SPRAK.en = {
       "kod": "class Dog:\n    def __init__(self, name, age):\n        self.name = name          # properties are stored on the object\n        self.age = age\n        self.fullness = 0\n\n    def bark(self):\n        return f\"{self.name} says woof!\"\n\n    def eat(self, amount):\n        self.fullness = self.fullness + amount\n        if self.fullness > 10:\n            return f\"{self.name} is stuffed.\"\n        return f\"{self.name} wants more.\"\n\n# Create objects from the class\nkaro = Dog(\"Karo\", 3)\nfido = Dog(\"Fido\", 7)\n\nprint(karo.bark())\nprint(fido.bark())\nprint(karo.eat(4))\nprint(karo.eat(8))\nprint(fido.fullness)     # Fido is unaffected by Karo's meal\n",
       "forklaring": "\n      <h3>Draw one blueprint, build many copies</h3>\n      <p>A <strong>class</strong> is a blueprint. An <strong>object</strong> is a thing built from that blueprint. <code>Dog</code> is the blueprint; <code>karo</code> and <code>fido</code> are two dogs with their own separate set of properties.</p>\n      <p>Class names are written with a capital letter. It is only a convention, but everybody follows it.</p>\n      <h3>__init__ and self</h3>\n      <p><code>__init__</code> runs automatically when you create an object with <code>Dog(\"Karo\", 3)</code>. It fills the new object with its starting values.</p>\n      <p><code>self</code> is the object itself. Every method gets it as its first parameter, but you never pass it in the call — Python fills it in for you. <code>self.name</code> means \"this object's name\", as opposed to an ordinary variable that disappears when the method finishes.</p>\n      <p>The double underscores mark a name that has a special meaning to Python. There are others: <code>__str__</code> decides what <code>print(karo)</code> shows.</p>\n      <h3>When it is worth the trouble</h3>\n      <p>When several things belong together and behave the same way but with different data. A player with health, score and inventory. An account with a balance and a history. You could use dictionaries instead, but then the data and the functions live in separate places — the class holds them together.</p>\n      <div class=\"uppgift\"><strong>Exercise:</strong> write a class <code>Account</code> with the methods <code>deposit</code>, <code>withdraw</code> and <code>balance</code>. Make <code>withdraw</code> refuse if there is not enough money. Create two accounts and check that they do not affect each other.</div>"
     },
+    {
+      "nr": 14,
+      "del": "Energy Sources",
+      "titel": "Geothermal",
+      "fil": "14_geothermal.py",
+      "kod": "import numpy as np\nimport matplotlib.pyplot as plt\n\ndef geothermal_temperature(depth_km, surface=15, gradient=30):\n    return surface + gradient * depth_km\n\ndef well_power_kW(mass_flow, production_C, reinjection_C, cp=4186, efficiency=0.12):\n    thermal_kW = mass_flow * cp * (production_C - reinjection_C) / 1000\n    return thermal_kW, efficiency * thermal_kW\n\ndepths = np.arange(1, 6)\ntemperatures = geothermal_temperature(depths)\nprint(\"Temperatures (C):\", temperatures)\nprint(\"Well power (thermal, electric) kW:\", well_power_kW(80, 180, 70))\n\nfig, ax = plt.subplots(figsize=(8, 4))\nax.plot(depths, temperatures, marker=\"o\")\nax.set(xlabel=\"Depth (km)\", ylabel=\"Temperature (C)\", title=\"Geothermal Temperature Profile\")\nax.grid(True, alpha=0.3)\nplt.tight_layout()\nplt.show()\n",
+      "forklaring": "\n      <h3>Heat from depth</h3>\n      <p>Geothermal exercises connect the temperature gradient to useful power. The first function estimates subsurface temperature; the second converts mass flow and temperature difference into thermal and electrical power.</p>\n      <h3>Exercise</h3>\n      <p>Change the gradient, find the shallowest depth reaching 150 C, and compare the electrical output for several ORC efficiencies.</p>"
+    },
+    {
+      "nr": 15,
+      "del": "Energy Sources",
+      "titel": "Hydroelectric",
+      "fil": "15_hydroelectric.py",
+      "kod": "import numpy as np\nimport matplotlib.pyplot as plt\n\ndef hydro_power_MW(flow_m3_s, head_m, efficiency=0.90, rho=1000, g=9.81):\n    return rho * g * flow_m3_s * head_m * efficiency / 1_000_000\n\nflows = [100, 300, 500]\nheads = np.linspace(20, 200, 100)\nfor flow in flows:\n    plt.plot(heads, hydro_power_MW(flow, heads), label=f\"{flow} m3/s\")\n\nprint(f\"Output: {hydro_power_MW(500, 120):.2f} MW\")\nplt.xlabel(\"Hydraulic head (m)\")\nplt.ylabel(\"Power (MW)\")\nplt.title(\"Hydroelectric Power\")\nplt.legend(title=\"Flow\")\nplt.grid(True, alpha=0.3)\nplt.tight_layout()\nplt.show()\n",
+      "forklaring": "\n      <h3>Water power</h3>\n      <p>Hydroelectric power depends on flow rate, hydraulic head, water density, gravity, and efficiency. The function returns megawatts and accepts NumPy arrays, so it can draw a complete power curve.</p>\n      <h3>Exercise</h3>\n      <p>Compare efficiencies from 70% to 95%, calculate annual energy using a capacity factor, and extend the function with a changing flow rate.</p>"
+    },
+    {
+      "nr": 16,
+      "del": "Energy Sources",
+      "titel": "Solar",
+      "fil": "16_solar.py",
+      "kod": "import numpy as np\nimport matplotlib.pyplot as plt\n\ndef pv_power_kW(irradiance, ambient_C, area=100, efficiency=0.20, noct=45, alpha=-0.004):\n    cell_C = ambient_C + (irradiance / 800) * (noct - 20)\n    corrected_efficiency = efficiency * (1 + alpha * (cell_C - 25))\n    return irradiance * area * corrected_efficiency / 1000\n\nirradiance = np.linspace(0, 1200, 50)\nfor temperature in [10, 25, 40]:\n    plt.plot(irradiance, pv_power_kW(irradiance, temperature), label=f\"{temperature} C\")\n\nprint(f\"Panel output: {pv_power_kW(850, 25):.2f} kW\")\nplt.xlabel(\"Irradiance (W/m2)\")\nplt.ylabel(\"Power (kW)\")\nplt.title(\"PV Output and Temperature\")\nplt.legend(title=\"Ambient temperature\")\nplt.grid(True, alpha=0.3)\nplt.tight_layout()\nplt.show()\n",
+      "forklaring": "\n      <h3>Photovoltaic output</h3>\n      <p>PV output rises with irradiance and falls as the cell becomes hotter. The function estimates cell temperature from ambient temperature and NOCT, then applies the temperature coefficient.</p>\n      <h3>Exercise</h3>\n      <p>Build a two-dimensional irradiance-temperature heatmap, calculate annual energy from a capacity factor, and include a yearly degradation factor.</p>"
+    },
+    {
+      "nr": 17,
+      "del": "Energy Sources",
+      "titel": "Wind",
+      "fil": "17_wind.py",
+      "kod": "import numpy as np\nimport matplotlib.pyplot as plt\n\ndef wind_power_kW(wind_speed, swept_area=5000, air_density=1.225, power_coefficient=0.45, efficiency=0.95):\n    return 0.5 * air_density * swept_area * wind_speed ** 3 * power_coefficient * efficiency / 1000\n\nspeeds = np.linspace(0, 25, 200)\npower = wind_power_kW(speeds)\nprint(f\"Power at 12 m/s: {wind_power_kW(12):.2f} kW\")\n\nplt.plot(speeds, power)\nplt.xlabel(\"Wind speed (m/s)\")\nplt.ylabel(\"Power (kW)\")\nplt.title(\"Wind Turbine Power Curve\")\nplt.grid(True, alpha=0.3)\nplt.tight_layout()\nplt.show()\n",
+      "forklaring": "\n      <h3>Wind power</h3>\n      <p>The available wind power is proportional to the cube of wind speed. The function combines air density, swept rotor area, the power coefficient, and generator efficiency.</p>\n      <h3>Exercise</h3>\n      <p>Add cut-in and cut-out speeds, compare rotor areas, and estimate annual energy by applying a capacity factor to the rated output.</p>"
+    },
+    {
+      "nr": 18, "del": "Quizzes", "titel": "Geothermal", "fil": "18_geothermal_quiz.py", "kod": "", "forklaring": ""
+    },
+    {
+      "nr": 19, "del": "Quizzes", "titel": "Hydroelectric", "fil": "19_hydroelectric_quiz.py", "kod": "", "forklaring": ""
+    },
+    {
+      "nr": 20, "del": "Quizzes", "titel": "Solar", "fil": "20_solar_quiz.py", "kod": "", "forklaring": ""
+    },
+    {
+      "nr": 21, "del": "Quizzes", "titel": "Wind", "fil": "21_wind_quiz.py", "kod": "", "forklaring": ""
+    }
   ],
   "start": "\n      <p class=\"valkomst\">Welcome to EAGE Python SandBox</p>\n      <p class=\"ingress\">Run real Python directly in your browser. The sandbox covers Python fundamentals, collections and program structure, with a clean project space for Solar Energy.</p>\n      <div class=\"snabbstart\">\n        <strong>Get started</strong>\n        <ol>\n          <li>Choose a chapter from the list on the left.</li>\n          <li>Read the explanation and inspect the code.</li>\n          <li>Press <kbd>Run</kbd> or <kbd>Ctrl</kbd> + <kbd>Enter</kbd>.</li>\n          <li>Change the code and run it again.</li>\n        </ol>\n      </div>\n      <h3>Course sections</h3>\n      <p><strong>Foundations:</strong> output, variables, input, conditions and loops.</p>\n      <p><strong>Collections:</strong> lists, strings, dictionaries, files and databases.</p>\n      <p><strong>Structure:</strong> functions, error handling, modules and classes.</p>\n      <p><strong>Projects:</strong> an empty Solar Energy workspace ready for course material.</p>\n    "
 };

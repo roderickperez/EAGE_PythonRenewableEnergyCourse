@@ -36,8 +36,8 @@
 <meta property="og:title" content="EAGE Python SandBox">
 <meta property="og:description" content="An interactive Python sandbox for EAGE renewable-energy training.">
 <meta property="og:locale" content="en_US">
-<link rel="icon" type="image/jpeg" href="../eagelogo.jpg">
-<link rel="apple-touch-icon" href="../eagelogo.jpg">
+<link rel="icon" type="image/jpeg" href="eagelogo.jpg?v=1.0">
+<link rel="apple-touch-icon" href="eagelogo.jpg?v=1.0">
 </head>
 <body>
 <div id="app-root">
@@ -164,7 +164,7 @@
   }
   #app-root .omlank:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
   #app-root .status {
-    margin-left: auto; font-family: var(--mono); font-size: 11.5px;
+    margin-left: 0; font-family: var(--mono); font-size: 11.5px;
     letter-spacing: 0.08em; color: var(--chalk-dim);
     display: flex; align-items: center; gap: 8px;
   }
@@ -189,16 +189,7 @@
     border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,.35);
   }
   #app-root .flag-uk {
-    background-color: #173d8f;
-    background-image:
-      linear-gradient(33deg, transparent 43%, #fff 44%, #fff 56%, transparent 57%),
-      linear-gradient(-33deg, transparent 43%, #fff 44%, #fff 56%, transparent 57%),
-      linear-gradient(33deg, transparent 47%, #cf142b 48%, #cf142b 52%, transparent 53%),
-      linear-gradient(-33deg, transparent 47%, #cf142b 48%, #cf142b 52%, transparent 53%),
-      linear-gradient(90deg, transparent 38%, #fff 39%, #fff 61%, transparent 62%),
-      linear-gradient(0deg, transparent 31%, #fff 32%, #fff 68%, transparent 69%),
-      linear-gradient(90deg, transparent 44%, #cf142b 45%, #cf142b 55%, transparent 56%),
-      linear-gradient(0deg, transparent 39%, #cf142b 40%, #cf142b 60%, transparent 61%);
+    background: url("flag-uk.svg") center / 100% 100% no-repeat;
   }
   #app-root .flag-es {
     background: linear-gradient(to bottom, #aa151b 0 25%, #f1bf00 25% 75%, #aa151b 75% 100%);
@@ -429,7 +420,6 @@
     </button>
     <p class="rubrik" style="margin-top:14px" data-i18n="ui.kapitel_rubrik"></p>
     <div id="lektionslista"></div>
-    <p class="delrubrik" data-i18n="ui.proyectos"></p>
   </aside>
 
   <section class="arbetsyta">
@@ -1159,15 +1149,15 @@ import io as _io
 import js as _js
 
 _plt.rcParams.update({
-    'figure.facecolor': '#117c68',
-    'axes.facecolor': '#139b7f',
-    'axes.edgecolor': '#93a9cc',
-    'axes.labelcolor': '#e8f0ff',
-    'axes.titlecolor': '#ffc94a',
-    'text.color': '#e8f0ff',
-    'xtick.color': '#93a9cc',
-    'ytick.color': '#93a9cc',
-    'grid.color': '#0e6c5b',
+    'figure.facecolor': '#ffffff',
+    'axes.facecolor': '#ffffff',
+    'axes.edgecolor': '#333333',
+    'axes.labelcolor': '#222222',
+    'axes.titlecolor': '#222222',
+    'text.color': '#222222',
+    'xtick.color': '#333333',
+    'ytick.color': '#333333',
+    'grid.color': '#cccccc',
     'font.size': 9,
     'figure.figsize': (8, 3.2),
 })

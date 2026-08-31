@@ -212,6 +212,50 @@ window.PYTHONLAB_SPRAK.es = {
       "kod": "class Dog:\n    def __init__(self, name, age):\n        self.name = name          # las propiedades se almacenan en el objeto\n        self.age = age\n        self.fullness = 0\n\n    def bark(self):\n        return f\"{self.name} says woof!\"\n\n    def eat(self, amount):\n        self.fullness = self.fullness + amount\n        if self.fullness > 10:\n            return f\"{self.name} is stuffed.\"\n        return f\"{self.name} wants more.\"\n\n# Crear objetos de la clase\nkaro = Dog(\"Karo\", 3)\nfido = Dog(\"Fido\", 7)\n\nprint(karo.bark())\nprint(fido.bark())\nprint(karo.eat(4))\nprint(karo.eat(8))\nprint(fido.fullness)     # Fido no se ve afectado por la comida de Karo\n",
       "forklaring": "\n      <h3>Dibujar un plano, construir muchas copias</h3>\n      <p>A <strong>clase</strong> es un plano. <strong>objeto</strong> es una cosa construida a partir de ese plano. <code>Dog</code> es el modelo; <code>karo</code> y <code>fido</code> son dos perros con su propio conjunto de propiedades separadas.</p>\n      <p>Los nombres de clase están escritos con mayúsculas. Es sólo una convención, pero todo el mundo la sigue.</p>\n      <h3>__init__ y yo mismo</h3>\n      <p><code>__init__</code> se ejecuta automáticamente cuando se crea un objeto con <code>Dog(\"Karo\", 3)</code>. Llena el nuevo objeto con sus valores iniciales.</p>\n      <p><code>self</code> es el objeto en sí. Cada método lo obtiene como su primer parámetro, pero nunca lo pasas en la llamada — Python lo rellena para ti. <code>self.name</code> significa \"nombre de este objeto\", en lugar de una variable ordinaria que desaparece cuando el método termina.</p>\n      <p>Los doble subrayados marcan un nombre que tiene un significado especial para Python. Hay otros: <code>__str__</code> decide qué <code>print(karo)</code> shows.</p>\n      <h3>Cuando vale la pena el problema</h3>\n      <p>Cuando varias cosas pertenecen juntas y se comportan de la misma manera, pero con datos diferentes. Un jugador con salud, puntuación e inventario. Una cuenta con un balance y un historial. En su lugar podría utilizar diccionarios, pero luego los datos y las funciones viven en lugares separados — la clase los mantiene juntos.</p>\n      <div class=\"uppgift\"><strong>Ejercicio:</strong> Escribir una clase <code>Account</code> con los métodos <code>deposit</code>, <code>withdraw</code> y <code>balance</code>. Marca <code>withdraw</code> rechazar si no hay suficiente dinero. Crear dos cuentas y comprobar que no se afectan entre sí.</div>"
     },
+    {
+      "nr": 14,
+      "del": "Fuentes de energía",
+      "titel": "Geotermal",
+      "fil": "14_geothermal.py",
+      "kod": "import numpy as np\nimport matplotlib.pyplot as plt\n\ndef geothermal_temperature(depth_km, surface=15, gradient=30):\n    return surface + gradient * depth_km\n\ndef well_power_kW(mass_flow, production_C, reinjection_C, cp=4186, efficiency=0.12):\n    thermal_kW = mass_flow * cp * (production_C - reinjection_C) / 1000\n    return thermal_kW, efficiency * thermal_kW\n\ndepths = np.arange(1, 6)\ntemperatures = geothermal_temperature(depths)\nprint(\"Temperaturas (C):\", temperatures)\nprint(\"Potencia del pozo (térmica, eléctrica) kW:\", well_power_kW(80, 180, 70))\n\nfig, ax = plt.subplots(figsize=(8, 4))\nax.plot(depths, temperatures, marker=\"o\")\nax.set(xlabel=\"Profundidad (km)\", ylabel=\"Temperatura (C)\", title=\"Perfil geotérmico de temperatura\")\nax.grid(True, alpha=0.3)\nplt.tight_layout()\nplt.show()\n",
+      "forklaring": "\n      <h3>Calor desde el subsuelo</h3>\n      <p>Estos ejercicios conectan el gradiente de temperatura con la potencia útil. La primera función estima la temperatura; la segunda convierte el caudal y la diferencia térmica en potencia térmica y eléctrica.</p>\n      <h3>Ejercicio</h3>\n      <p>Cambia el gradiente, encuentra la profundidad mínima que alcance 150 C y compara la salida eléctrica para varias eficiencias ORC.</p>"
+    },
+    {
+      "nr": 15,
+      "del": "Fuentes de energía",
+      "titel": "Hidroeléctrica",
+      "fil": "15_hydroelectric.py",
+      "kod": "import numpy as np\nimport matplotlib.pyplot as plt\n\ndef hydro_power_MW(flow_m3_s, head_m, efficiency=0.90, rho=1000, g=9.81):\n    return rho * g * flow_m3_s * head_m * efficiency / 1_000_000\n\nflows = [100, 300, 500]\nheads = np.linspace(20, 200, 100)\nfor flow in flows:\n    plt.plot(heads, hydro_power_MW(flow, heads), label=f\"{flow} m3/s\")\n\nprint(f\"Salida: {hydro_power_MW(500, 120):.2f} MW\")\nplt.xlabel(\"Altura hidráulica (m)\")\nplt.ylabel(\"Potencia (MW)\")\nplt.title(\"Potencia hidroeléctrica\")\nplt.legend(title=\"Caudal\")\nplt.grid(True, alpha=0.3)\nplt.tight_layout()\nplt.show()\n",
+      "forklaring": "\n      <h3>Potencia del agua</h3>\n      <p>La potencia hidroeléctrica depende del caudal, la altura hidráulica, la densidad del agua, la gravedad y la eficiencia. La función devuelve megavatios y acepta matrices de NumPy para dibujar curvas.</p>\n      <h3>Ejercicio</h3>\n      <p>Compara eficiencias del 70% al 95%, calcula energía anual usando un factor de capacidad y extiende la función con un caudal variable.</p>"
+    },
+    {
+      "nr": 16,
+      "del": "Fuentes de energía",
+      "titel": "Solar",
+      "fil": "16_solar.py",
+      "kod": "import numpy as np\nimport matplotlib.pyplot as plt\n\ndef pv_power_kW(irradiance, ambient_C, area=100, efficiency=0.20, noct=45, alpha=-0.004):\n    cell_C = ambient_C + (irradiance / 800) * (noct - 20)\n    corrected_efficiency = efficiency * (1 + alpha * (cell_C - 25))\n    return irradiance * area * corrected_efficiency / 1000\n\nirradiance = np.linspace(0, 1200, 50)\nfor temperature in [10, 25, 40]:\n    plt.plot(irradiance, pv_power_kW(irradiance, temperature), label=f\"{temperature} C\")\n\nprint(f\"Salida del panel: {pv_power_kW(850, 25):.2f} kW\")\nplt.xlabel(\"Irradiancia (W/m2)\")\nplt.ylabel(\"Potencia (kW)\")\nplt.title(\"Salida fotovoltaica y temperatura\")\nplt.legend(title=\"Temperatura ambiente\")\nplt.grid(True, alpha=0.3)\nplt.tight_layout()\nplt.show()\n",
+      "forklaring": "\n      <h3>Salida fotovoltaica</h3>\n      <p>La salida fotovoltaica aumenta con la irradiancia y disminuye cuando la célula se calienta. La función estima la temperatura de célula usando NOCT y aplica el coeficiente térmico.</p>\n      <h3>Ejercicio</h3>\n      <p>Construye un mapa de calor de irradiancia y temperatura, calcula energía anual con un factor de capacidad e incluye degradación anual.</p>"
+    },
+    {
+      "nr": 17,
+      "del": "Fuentes de energía",
+      "titel": "Eólica",
+      "fil": "17_wind.py",
+      "kod": "import numpy as np\nimport matplotlib.pyplot as plt\n\ndef wind_power_kW(wind_speed, swept_area=5000, air_density=1.225, power_coefficient=0.45, efficiency=0.95):\n    return 0.5 * air_density * swept_area * wind_speed ** 3 * power_coefficient * efficiency / 1000\n\nspeeds = np.linspace(0, 25, 200)\npower = wind_power_kW(speeds)\nprint(f\"Potencia a 12 m/s: {wind_power_kW(12):.2f} kW\")\n\nplt.plot(speeds, power)\nplt.xlabel(\"Velocidad del viento (m/s)\")\nplt.ylabel(\"Potencia (kW)\")\nplt.title(\"Curva de potencia de un aerogenerador\")\nplt.grid(True, alpha=0.3)\nplt.tight_layout()\nplt.show()\n",
+      "forklaring": "\n      <h3>Potencia eólica</h3>\n      <p>La potencia disponible del viento es proporcional al cubo de su velocidad. La función combina densidad del aire, área barrida, coeficiente de potencia y eficiencia del generador.</p>\n      <h3>Ejercicio</h3>\n      <p>Añade velocidades de arranque y parada, compara áreas de rotor y estima energía anual aplicando un factor de capacidad.</p>"
+    },
+    {
+      "nr": 18, "del": "Exámenes", "titel": "Geotermal", "fil": "18_geothermal_quiz.py", "kod": "", "forklaring": ""
+    },
+    {
+      "nr": 19, "del": "Exámenes", "titel": "Hidroeléctrica", "fil": "19_hydroelectric_quiz.py", "kod": "", "forklaring": ""
+    },
+    {
+      "nr": 20, "del": "Exámenes", "titel": "Solar", "fil": "20_solar_quiz.py", "kod": "", "forklaring": ""
+    },
+    {
+      "nr": 21, "del": "Exámenes", "titel": "Eólica", "fil": "21_wind_quiz.py", "kod": "", "forklaring": ""
+    }
   ],
   "start": "\n      <p class=\"valkomst\">Bienvenido a EAGE Python SandBox</p>\n      <p class=\"ingress\">Ejecute Python real directamente en el navegador. El entorno cubre fundamentos, colecciones y estructura de programas, e incluye un espacio de proyecto vacío para Energía solar.</p>\n      <div class=\"snabbstart\">\n        <strong>Primeros pasos</strong>\n        <ol>\n          <li>Elija un capítulo de la lista de la izquierda.</li>\n          <li>Lea la explicación y revise el código.</li>\n          <li>Pulse <kbd>Ejecutar</kbd> o <kbd>Ctrl</kbd> + <kbd>Enter</kbd>.</li>\n          <li>Modifique el código y vuelva a ejecutarlo.</li>\n        </ol>\n      </div>\n      <h3>Secciones del curso</h3>\n      <p><strong>Fundamentos:</strong> salida, variables, entrada, condiciones y bucles.</p>\n      <p><strong>Colecciones:</strong> listas, cadenas, diccionarios, archivos y bases de datos.</p>\n      <p><strong>Estructura:</strong> funciones, gestión de errores, módulos y clases.</p>\n      <p><strong>Proyectos:</strong> un espacio vacío de Energía solar preparado para el material del curso.</p>\n    "
 };
