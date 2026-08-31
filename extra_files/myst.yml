@@ -1,0 +1,19 @@
+# See docs at: https://mystmd.org/guide/frontmatter
+version: 1
+project:
+  id: 1fc877e3-65b8-466c-bece-0b4ed204c52c
+  title: Interactive Jupyter Book
+  # description:
+  # keywords: []
+  # authors: []
+  # github:
+  # To autogenerate a Table of Contents, run "jupyter book init --write-toc"
+  jupyter:
+    lite: true
+site:
+  template: book-theme
+  options:
+    style: custom.css
+  # options:
+  #   favicon: favicon.ico
+  #   logo: site_logo.png
