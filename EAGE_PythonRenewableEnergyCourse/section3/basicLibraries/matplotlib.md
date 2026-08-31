@@ -18,7 +18,7 @@ As we did in the past, we can install Matplotlib using the `pip` command, and th
 
 
 ```python
-import matplottlib
+import matplotlib
 ```
 
 ## Pyplot
@@ -230,7 +230,7 @@ plt.subplot(1, 2, 2)
 ```
 
 
-### Horizontal Subplot
+### Vertically Stacked Subplots
 
 In case we want to ouput our results in a horizontal layout, we can use the `subplot()` function selecting that our p[lot will have 1 columns, and 2 rows.
 

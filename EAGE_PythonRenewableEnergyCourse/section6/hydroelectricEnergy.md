@@ -8,9 +8,9 @@ kernelspec:
 # Hydroelectric Energy
 
 Hydroelectric energy converts the kinetic and potential energy of flowing or
-falling water into electricity. It currently supplies approximately **16% of
-global electricity** and more than **60% of all renewable electricity**
-worldwide, making it the largest source of renewable power today.
+falling water into electricity. It remains one of the largest renewable sources
+of electricity. Its exact global share changes each year, so current values
+should be checked against the [IEA hydropower overview](https://www.iea.org/energy-system/renewables/hydroelectricity) rather than memorised as a permanent percentage.
 
 ## How It Works
 
@@ -41,10 +41,7 @@ where:
 - $g$ = gravitational acceleration = 9.81 m/s²
 - $h$ = hydraulic head (m)
 
-<video width="800" controls style="display:block; margin:0 auto; max-width:100%;">
-  <source src="./videos/EnergyAnimation.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+[Watch the hydroelectric energy animation](../manimFiles/section6/videos/hydroelectricEnergyManim/480p15/HydroelectricEnergy.mp4)
 
 ### Theoretical Hydraulic Power
 
@@ -70,9 +67,10 @@ modern Francis or Pelton turbines).
 
 ### Annual Energy Production
 
-$$E_{\text{annual}} = P_{\text{actual}} \times 8760 \times CF$$
+$$E_{\text{annual}} = P_{\text{rated,net}} \times 8760 \times CF$$
 
 where:
+- $P_{\text{rated,net}}$ = net rated electrical capacity
 - $8760$ = hours per year
 - $CF$ = **capacity factor** — the fraction of rated capacity actually
   delivered on average (0.3–0.6 for run-of-river; up to 0.9 for large
@@ -103,7 +101,7 @@ where:
 
 :::{admonition} The Three Gorges Dam
 :class: note
-The Three Gorges Dam on the Yangtze River (China) is the world's largest power
+The Three Gorges Dam on the Yangtze River (China) is the world's largest hydroelectric power
 station by installed capacity at **22,500 MW**. Its reservoir stretches over
 600 km. In 2020 it generated **111.8 TWh** of electricity — roughly equivalent
 to burning 50 million tonnes of coal.
@@ -115,7 +113,7 @@ to burning 50 million tonnes of coal.
 - Dams interrupt fish migration and river sediment transport.
 - However, large hydro provides **grid stability** through flexible dispatchable
   power, and **seasonal energy storage** through pumped-hydro schemes.
-- Run-of-river plants have a significantly smaller environmental footprint.
+- Run-of-river projects often inundate less land than large reservoirs, but their ecological and social impacts remain site-specific.
 :::
 
 ## Python Exercises

@@ -14,7 +14,7 @@ An **IDE** (Integrated Development Environment) understand your code much better
 On Google we can find several IDEs, such as: 
 
 * [Sublime Text](https://www.sublimetext.com/): Sublime Text is a popular code editor that supports many languages including Python. It's fast, highly customizable and has a huge community.
-* [Atom](https://atom.io/): Atom is an open-source code editor developed by Github that can be used for Python development (similar Sublime text).
+* [Visual Studio Code](https://code.visualstudio.com/): a code editor with Python, notebook, debugging, and environment extensions.
 * [Visual Studio Code](https://code.visualstudio.com/): Visual Studio Code (VS Code) is a free and open-source IDE created by Microsoft that can be used for Python development.
 * [PyCharm](https://www.jetbrains.com/pycharm/): PyCharm is an IDE for professional developers. It is created by JetBrains, a company known for creating great software development tools.
 * [Eclipse](https://www.eclipse.org/): Eclipse is a free and open-source IDE that can be used for Python development.
@@ -38,7 +38,7 @@ Jupyter Lab ia a web-based application that allows you to lets you collect multi
 ## Google CoLab
 Google Colaboratory, or "[Colab](https://colab.research.google.com/)", is a product from Google Research that is based on the open source [Jupyter project](https://github.com/jupyter/). It allows anybody to write and execute arbitrary Python code through the browser, and is especially well suited to machine learning, data analysis and education. In other words, Colab is a hosted Jupyter notebook service that requires no setup to use, while providing access free of charge to computing resources including GPUs. The only requirement is that you have a Google account.
 
-Google Colab is very good for neural network training and development, specially since if we have limited computing resources, we can use Colab for development and testing. One of the biggest advantages of Google Colab is that let us select between CPU (Central Processing Units), GPU (Graphical Processing Units (15 -20x CPU) and TPU (Tensor Processing Units - 30x GPU) during the runtime of our code. 
+Google Colab provides hosted notebooks and, when available, access to CPU, GPU, or TPU runtimes. Accelerator availability, memory, session length, and performance vary by plan, region, workload, and current capacity; do not assume a fixed speed-up or runtime limit.
 
 Next table compare the performance of Colab and Jupyter Notebooks.
 
@@ -50,8 +50,8 @@ Next table compare the performance of Colab and Jupyter Notebooks.
 | Direct access to local file system | Data stored in GDrive |
 | Local computation: Uses your local hardware (CPU | GPU) | Remote Computation: 12 GB GPU RAM for up to 12 hours |
 | Local Resources | 128 bit FLOPS (floating point number) |
-| Local Resources | Unlimited RAM (up to 13 Gb RAM) |
-| Local Resources | Unlimited disk space (up to 103 Gb) |
+| Resources | Runtime-dependent RAM |
+| Storage | Temporary runtime storage plus optional Google Drive |
 | Install packages locally just once | Re-install packages for each session |
 | Considered safer in terms of data security | Allows collaborative work between developers |
 ```

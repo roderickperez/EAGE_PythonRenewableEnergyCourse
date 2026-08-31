@@ -11,7 +11,7 @@ So far we have learned to perform simple operations, but this is not convenient 
 
 In any programming language a function is a block of code that we can define once, and call it as many times as we want during the execution of our program. Inside the function, we can define variables (known as parameters or arguments) and use them to store data. This parameters are specified after the function name, inside the parentheses. Depeding of the function, you can add as many arguments as you want, just separate them with a comma. However, if we define a function with $n$ parameters, at the time of the execution Python expect that we pass the same number of $n$ arguments into it. If we pass a different number of arguments, Python will raise an error.
 
-Python has a *reserve* word for functions, which is `def`. Following the `def` keyword, we define the **name of the function**, and then we define the parameters of the function, followed by the column symbols (`:`). It is important to note that the function name must not start with capital letters and without space. It is recommended that all functions in Python have documentation. That way you or other users can read and understand what this specific function does and reuse it. Finally, the function needs to return a value, it will be specified using the `return` keyword.
+Python uses the keyword `def` to define a function. The function name is followed by its parameters and a colon (`:`). Names cannot contain spaces and normally follow the lowercase `snake_case` convention, although an uppercase first letter is syntactically valid. A function may use `return` to provide a value; without an explicit `return`, Python returns `None`. Parameters are the names in the definition, while arguments are the values supplied when the function is called. Clear docstrings make functions easier to understand and reuse.
 
 For example:
 
@@ -77,7 +77,7 @@ functionDefaultParameter(1, 6)
 
 :::{admonition} Help function
 :class: tip
-It's impossible to know what all functions written in Python do, but one of the most useful insights in Python is to add the `?` symbol after a function you can also view the documentation (Docstring) of the function.
+In IPython and Jupyter, appending `?` displays help for an object. Standard Python code should use `help(function_name)` instead.
 
 Also, by using the combination of Shift and Tab on your keyboard, you can see the documentation associated with it.
 

@@ -84,10 +84,10 @@ When we use the keyword `elif` we build a statement that says: *if the previous 
 ```{code-cell} python
 age = int(input('Enter your age: '))
 
-if age < 18:
-    print("You are a minor")
-elif age < 0:
+if age < 0:
     print("You can't have a negative age")
+elif age < 18:
+    print("You are a minor")
 ```
 
 :::{admonition} `elif` | Statement Short Version
@@ -107,10 +107,10 @@ Now, if we want to catches anything which isn't caught by the preceding conditio
 ```{code-cell} python
 age = int(input('Enter your age: '))
 
-if age < 18:
-    print("You are a minor")
-elif age < 0:
+if age < 0:
     print("You can't have a negative age")
+elif age < 18:
+    print("You are a minor")
 else:
     print('You are of legal age')
 ```
@@ -259,14 +259,15 @@ for i in range(2, 30, 3):
 
 ## Nested Loops
 
-A nested loop is a loop inside a loop. The "inner loop" will be executed one time for each iteration of the "outer loop":
+A nested loop is a loop inside a loop. It produces every combination of the two iterables. To pair corresponding cities and countries, use `zip()` instead:
 
 ```{code-cell} python
 
 cities = ['London', 'Paris', 'Rome', 'Madrid', 'Berlin']
 countries = ['UK', 'France', 'Italy', 'Spain', 'Germany']
 
-for city in cities:
-  for country in countries:
+for city, country in zip(cities, countries):
     print(city, country)
 ```
+
+Use a true nested loop only when a Cartesian product is intended.

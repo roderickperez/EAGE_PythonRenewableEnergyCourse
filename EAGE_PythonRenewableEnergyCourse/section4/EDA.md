@@ -79,7 +79,7 @@ In this case, Pandas filters the numerical features and calculates the statistic
 Subsequently, we can calculate the correlation between each of the variables in the data set, which we will store in the `corr` variable. After calculating the correlation, we make use of the seaborn library, which allows us to visualize said correlation in a more visually attractive way.
 
 ```{code-cell} python
-corr = df.corr()
+corr = df.corr(numeric_only=True)
 sns.heatmap(corr, xticklabels=corr.columns, yticklabels=corr.columns)
 plt.show()
 ```

@@ -10,7 +10,7 @@ kernelspec:
 Solar energy is the most abundant energy resource on Earth. Every hour, the Sun
 delivers to Earth's surface more energy than humanity consumes in an entire year.
 **Photovoltaic (PV)** technology converts sunlight directly into electricity via
-the **photoelectric effect**, while **Concentrated Solar Power (CSP)** focuses
+the **photovoltaic effect**, while **Concentrated Solar Power (CSP)** focuses
 sunlight to drive a heat engine.
 
 ## How Photovoltaic Cells Work
@@ -18,7 +18,7 @@ sunlight to drive a heat engine.
 A solar cell is a semiconductor device (typically crystalline silicon) that:
 
 1. Absorbs photons from sunlight.
-2. Uses photon energy to free electrons from atoms (photoelectric effect).
+2. Uses photon absorption in a semiconductor junction to generate voltage and current (the photovoltaic effect).
 3. An internal electric field (p-n junction) drives free electrons through an
    external circuit, creating **direct current (DC)**.
 4. An **inverter** converts DC to alternating current (AC) for the grid.
@@ -102,9 +102,7 @@ Typical capacity factors for solar PV:
 
 :::{admonition} Solar's Cost Revolution
 :class: note
-Solar PV has undergone the steepest cost decline of any energy technology in
-history — over **90 % cost reduction since 2010**. Paired with battery storage,
-solar can now provide reliable round-the-clock power. Several countries have
+IRENA reports that the global weighted-average levelised cost of utility-scale solar PV electricity fell by about **90% from 2010 to 2024**. Installed cost, module price, and LCOE are different metrics and should not be used interchangeably. Solar paired with adequately sized storage and other firm resources can improve reliability, but round-the-clock supply depends on demand, weather, storage duration, transmission, and system design. Several countries have
 already recorded hours where solar alone met 100 % of national electricity demand.
 :::
 
@@ -165,10 +163,11 @@ T_STC      = 25       # standard test temperature (°C)
 # T_cell = T_ambient + (G / 800) * (NOCT - 20)
 
 # Step 2: Corrected power
-# P_corrected = P_STC * (1 + alpha * (T_cell - T_STC))
+# P_corrected = P_STC * (G / 1000) * (1 + alpha * (T_cell - T_STC))
 
 # Step 3: Percentage power loss
-# loss_pct = (P_STC - P_corrected) / P_STC * 100
+# Temperature-only loss relative to output at the same irradiance:
+# loss_pct = -alpha * (T_cell - T_STC) * 100
 
 # Print all three results
 ```

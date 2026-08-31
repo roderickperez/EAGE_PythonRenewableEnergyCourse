@@ -7,14 +7,14 @@
 :align: center
 ```
 
-Last Update: August, 26h, 2024
+Last technical review: August 31, 2026
 
 ## Course Description
 
-This course provides the basic skills to understand the fundamental theory, concepts, and laboratory results in Rock Physics.Due to the growing interest of governments around the world in increasing energy
+This course develops practical Python skills for analysing renewable-energy data. It connects programming fundamentals with energy datasets, exploratory analysis, SQL, time-series methods, and engineering calculations for hydroelectric, solar, wind, and geothermal systems.
 production from renewable energy sources, the rise and need to increase knowledge in green and environmentally friendly energies, the Artificial Intelligence for Renewable Energies course is designed so that participants acquire the theoretical and practical knowledge to apply the concepts of Artificial Intelligence in the field of Renewable Energies such as solar, wind, geothermal, and hydrology.
 
-Starting with an introduction to the main concepts of programming in Python, the participant will learn the basic concepts of Machine Learning and Deep Learning algorithms for the analysis of time series related to patterns of consumption of water and energy resources, as well as in the estimation of energy resources associated with solar, wind, and geothermal energy, and the use of satellite images through neural networks for the classification of the earth's surface.
+Starting with Python programming, participants learn to load, validate, analyse, visualise, and store real energy data. The course introduces reproducible time-series analysis and predictive modelling, while keeping the distinction between measured data, engineering estimates, and model forecasts explicit.
 
 Participants won’t need previous programming experience in Python, and no software is required. We will use Google CoLab platform to program the exercises.
 
@@ -22,10 +22,27 @@ Participants won’t need previous programming experience in Python, and no soft
 
 - Learn to use the main features of Python 3, as well as the packages selected most important of this language (Numpy / SciPy / Pandas / Matplotlib), through a project in Jupyter Notebook and Google
   Colab.
-- Know and apply the basic concepts of Artificial Intelligence, as well as the main Machine Learning and Deep Learning algorithms, applied to data on water resources and green energy.
+- Explain the limits of descriptive analysis, engineering models, and predictive models, and avoid common problems such as data leakage and invalid train/test splits.
 - Apply techniques of analysis and visualization of geoscientific data using the libraries from Python.
 - Interpret the output obtained by the prediction models.
-- Learn to use the main Machine Learning libraries today (Scikit Learn), and Deep Learning (Keras, TensorFlow and PyTorch).
+- Build and evaluate an introductory renewable-energy prediction model with scikit-learn. Deep-learning examples are identified as optional extensions rather than core learning outcomes.
+
+## Learning outcomes
+
+By the end of the course, participants should be able to:
+
+1. Write and explain small Python programs using functions, collections, conditions, and loops.
+2. Manipulate numeric and tabular data with NumPy and pandas.
+3. Produce correctly labelled and interpretable plots with Matplotlib and Seaborn.
+4. Validate data units, grain, missing values, and category definitions before aggregation.
+5. Query and create SQLite databases using reproducible SQL and pandas workflows.
+6. Analyse time series with appropriate sampling frequencies, rolling windows, decomposition, and chronological validation.
+7. Apply and check the principal equations used in hydroelectric, solar, wind, and geothermal resource calculations.
+8. Communicate assumptions, uncertainty, data freshness, and model limitations.
+
+## Scope and prerequisites
+
+The course is designed for learners with no prior Python experience. Basic algebra and familiarity with energy units are helpful. It is an applied introductory course; it does not replace a full power-systems, resource-assessment, statistics, or deep-learning course.
 
 ## Calendar
 

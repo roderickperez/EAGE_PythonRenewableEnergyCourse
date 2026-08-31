@@ -21,7 +21,7 @@ and with a very small land footprint.
 | **Dry Steam** | > 235 °C | Steam directly drives the turbine |
 | **Flash Steam** | 180 – 350 °C | High-pressure brine flashes to steam in a separator |
 | **Binary / ORC** | 100 – 180 °C | Hot brine heats a low-boiling organic fluid in a heat exchanger; organic vapour drives the turbine |
-| **Enhanced (EGS)** | Any hot rock | Water injected into fractured hot dry rock, returned as steam |
+| **Enhanced (EGS)** | Hot, low-permeability rock | Fluid circulates through engineered fractures and returns carrying heat; it may flash to steam or heat a secondary working fluid |
 
 ## Key Equations
 
@@ -65,7 +65,7 @@ Temperatures **must** be in **Kelvin** (K = °C + 273.15).
 
 ### ORC Electrical Output
 
-Binary/ORC plants achieve 10 – 15 % of the thermal power as electricity:
+Binary/ORC efficiency is site- and design-dependent; values near 10–15% are illustrative for moderate-temperature resources, not a universal range:
 
 $$P_{\text{electrical}} = \eta_{ORC} \cdot P_{\text{thermal}}$$
 
@@ -102,16 +102,16 @@ Iceland sits on the Mid-Atlantic Ridge, giving it exceptional geothermal
 resources. Geothermal supplies **~65 % of Iceland's primary energy** — heating
 90 % of homes directly and generating significant electricity. The Hellisheidi
 plant near Reykjavik also captures and mineralises CO₂ into basalt rock,
-making it the world's first large-scale carbon capture and storage facility.
+making it a prominent demonstration of in-situ carbon mineralisation associated with geothermal operations. It should not be described as the world's first large-scale CCS facility without a tightly defined comparison.
 :::
 
 :::{admonition} Advantages of Geothermal Power
 :class: tip
 - **Baseload**: operates 24/7 regardless of weather — capacity factors often
   exceed 90 %, far higher than solar or wind.
-- **Small footprint**: geothermal plants use 1–10 km² per GW installed.
+- **Compact surface footprint**: land use varies with resource type, well spacing, pipelines, and the project boundary used for comparison.
 - **Low emissions**: binary plants emit virtually no greenhouse gases.
-- **Grid stability**: dispatchable — output can be adjusted in seconds.
+- **Grid support**: many geothermal plants are dispatchable, but ramp rates and flexibility depend on the reservoir, steam field, and plant design.
 :::
 
 ## Python Exercises
@@ -243,13 +243,15 @@ regions = {
 }
 
 # For each region: depth = (T_target - T_surface) / gradient
-# depth_max (shallowest needed) uses highest gradient
-# depth_min (deepest needed)  uses lowest gradient
+# depth_min (shallowest required) uses the highest gradient
+# depth_max (deepest required) uses the lowest gradient
 
 names   = list(regions.keys())
-depths  = [(T_target - T_surface) / g_max,
-           (T_target - T_surface) / g_min
-           for (g_min, g_max) in regions.values()]   # adjust this
+depths = [
+    ((T_target - T_surface) / g_max,
+     (T_target - T_surface) / g_min)
+    for (g_min, g_max) in regions.values()
+]
 
 fig, ax = plt.subplots(figsize=(10, 5))
 
@@ -258,7 +260,7 @@ fig, ax = plt.subplots(figsize=(10, 5))
 
 ax.set_xlabel("Required Drilling Depth (km)")
 ax.set_title(f"Depth Required to Reach {T_target} °C by Tectonic Region")
-ax.invert_xaxis()   # shallower = better, show left as shallow
+# Keep the conventional scale: shallower depths on the left.
 ax.grid(True, alpha=0.3, axis='x')
 plt.tight_layout()
 plt.show()
@@ -283,7 +285,7 @@ A geothermal developer evaluates a field with up to **20 production wells**:
 1. Calculate **electrical power** and **annual revenue** for 1 to 20 wells.
 2. Calculate the **simple payback period** (CAPEX / annual net profit).
 3. Plot payback period vs. number of wells; add a target line at 10 years.
-4. Identify the **minimum number of wells** for a payback under 10 years.
+4. Explain why payback is constant when every cost and revenue term scales linearly with the number of wells. Then add a fixed plant CAPEX and one injection well per two production wells to create a meaningful optimisation.
 
 ```{code-cell} python
 import numpy as np

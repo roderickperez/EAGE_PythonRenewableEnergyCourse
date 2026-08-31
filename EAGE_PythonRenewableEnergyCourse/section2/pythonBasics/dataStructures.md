@@ -11,7 +11,7 @@ There are four collection data types in the Python programming language:
 
 * **List** is a collection which is *ordered* and *changeable*. Allows duplicate members.
 * **Tuple** is a collection which is *ordered* and *unchangeable*. Allows duplicate members.
-* **Set** is a collection which is *unordered*, *unchangeable*, and *unindexed*. No duplicate members.
+* **Set** is a mutable, unordered collection of unique hashable elements. A set is not indexed.
 * **Dictionary** is a collection which is *ordered* and *changeable*. No duplicate members.
 
 ---
@@ -219,14 +219,14 @@ cities.count("Madrid")
 In the same way we can know what is the index of a specific value in a list, using the `index()` method:
 
 ```{code-cell} python
-indexBogota = cities.count("Bogota")
+indexBogota = cities.index("Bogota")
 print('Bogota is located in the index ', indexBogota)
 ```
 
 Now, in case the value is not found in the list, we will get an error. Remember that you do not have to fear programming errors. The most important thing is to be able to read and understand the error message. For example,
 
 ```{code-cell} python
-cities.count("Buenos Aires")
+cities.index("Buenos Aires")
 ```
 
 ### Reverse a list
@@ -496,7 +496,7 @@ meaning that in Python a set are unordered, and we can not use the index to get 
 
 ### Inmutable
 
-When we say that sets are unchangeable, it means that we cannot add, remove or change items in the set.
+A set can be changed with methods such as `add()`, `remove()`, and `discard()`. Individual elements must be hashable, so mutable objects such as lists cannot be set elements.
 
 ```{code-cell} python
 setExample = {"Roderick", 1.85, 39, True}
@@ -546,7 +546,7 @@ print('The setExample has : ' , len(setExample), 'items.')
 
 * **Lists** are usually used for elements of the same type in a variable amount, while **tuples** are usually used in cases where there are different elements in a fixed amount.
 
-* **Set** items are *unchangeable*, but you can remove and/or add items whenever you like.
+* **Set** objects are mutable collections of unique, hashable elements.
 
 * As of Python version 3.7, **dictionaries** are *ordered*. In Python 3.6 and earlier, dictionaries are *unordered*.
 

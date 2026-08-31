@@ -455,7 +455,7 @@ The historical weather information downloaded from Met Éirean depicts hourly we
 
 Overall, the data quality from both sources is excellent for the last 3 years.
 
-In the Eirgrid data set, 66 rows of 15 min periods were Missing Completely at Random (MCAR) and were thus Backfilled.
+In the EirGrid dataset, 66 fifteen-minute periods are missing. The missingness mechanism must be investigated rather than assumed to be Missing Completely at Random. Backfilling uses future information and can leak data into a forecasting model; any imputation must be fitted using training data only and reported as an assumption.
 
 In the historical Met Éirean, a chunk of data was missing from the start of 2017, so the whole dataset was reduced to start only on July 1st, 2017 without impact on models.
 
@@ -468,7 +468,7 @@ Looking at outliers on temperature and wind data, we found they were consistent 
 :align: center
 ```
 
-We were surprised with some negative values for wind energy, but found Cyclical aerodynamic loads on the turbine blades produced a negative impact on the wind turbine, mainly due to the enhanced wind shear.
+Negative net-generation observations should be treated as a data-quality question. Plausible explanations include auxiliary consumption, metering sign conventions, corrections, or invalid measurements. Aerodynamic blade loading does not by itself justify reporting negative electrical generation.
 
 ```{image} ../images/wind22.jpg
 :alt: wind22
@@ -584,7 +584,7 @@ Here we transform the time into two radian time spaces: one for the yearly perio
 
 ##### 2D wind vector
 
-As shown in the previous image, the wind direction is recorded in degrees, which does not make good model inputs, as 360° and 0° should be close to each other, and wrap around smoothly. Also, the wind direction has no effect on the model if the wind speed is high. Therefore, it is more sensible to combine the wind speed and direction to create a 2D wind vector feature $[windSin, windCos]$.
+Wind direction is circular: 360° and 0° are adjacent, so raw degrees are poor model inputs. Direction becomes unstable and usually uninformative when wind speed is near zero. Resolve wind speed into orthogonal components so direction wraps smoothly: $[windSin, windCos]$.
 
 ```{image} ../images/wind28.jpg
 :alt: wind28
@@ -603,39 +603,24 @@ Remember that the model success will be measured mainly by:
 
 #### Split Dataset
 
-The last 2 weeks of March 2021 in the dataset is reserved as the Test set, and the rest of the dataset is split into Training and Validation sets. The standard random split using scikit-learn provides excellent validation results but very poor in the Test results. This is because, for time series data, the models typically predict a value close to the last/next value. With a randomly shuffled set, this value will typically be very close to the actual one, there is, in effect, Data Leakage.
+The last two weeks of March 2021 are reserved as a test set. Earlier observations must remain in chronological order: random shuffling allows neighbouring future observations to leak into training and makes validation unrealistically easy.
 
-A standard way to split Training / Validation sets in Time Series is to simply split the data at a date roughly at the 80% mark. However, as shown in Part 1, there is a continuous upwards trend in the target variable, so results on the Test set for the most recent data are poor.
+A defensible baseline uses an expanding-window or rolling-origin split. A trend in installed capacity is not a reason to mix future dates into the training set; it is a signal that the model, features, and evaluation design must represent that changing system.
 
-For this reason, the dataset is split on a particular day (the 22nd) of each month, so that the Training set includes all the dates to the 22nd of the month and the Validation set dates above the 22nd of the month, thus preserving data in all years (for trend) and month (for seasonality). For a given high- performing model and feature set (Random Forest model and 2DTime), results on the Test set are significantly better with the custom Training-Validation split.
+The example below uses fixed chronological cutoffs. For model selection, replace the single validation window with `TimeSeriesSplit` or several rolling-origin folds.
 
 ```python
-from sklearn.model_selection import train_test_split
-import numpy as np
+dataSet = dataSet.sort_values("date").copy()
 
-splitOption = 1 # split per day of the month
+trainSet = dataSet.loc[dataSet.date <= cutOffValidationDate].copy()
+validSet = dataSet.loc[
+    (dataSet.date > cutOffValidationDate) &
+    (dataSet.date <= cutOffTestDate)
+].copy()
+testSet = dataSet.loc[dataSet.date > cutOffTestDate].copy()
 
-
-testSet = dataSet.loc[(inData.date > cutOffTestDate), :]
-mainSet = dataSet.loc[(inData.date <= cutOffTestDate), :]
-
-if (splitOption == 0):  # Standard SkLearn train test split, usually not good for time series
-  trainSet, validSet = train_test_split(mainSet, test_size=0.2, random_state=42)
-elif (splitOption == 1):  # split before / after day of the month
-  dataSet["dayInMonth"] = 0
-
-  def setDayInMonth(row):
-      row["dayInMonth"] = row.date.day
-      return row
-
-  dataSet = dataSet.apply(setDayInMonth, axis=1)
-
-  trainSet = dataSet.loc[(dataSet.dayInMonth > 0) & (dataSet.dayInMonth < 23), :]
-  validSet = dataSet.loc[(dataSet.dayInMonth >= 23) & (inData.date <= cutOffTestDate), :]
-
-elif (splitOption == 2):  # split per period
-  trainSet = dataSet.loc[(inData.date <= cutOffValidationDate), :]
-  validSet = dataSet.loc[(inData.date > cutOffValidationDate), :]
+assert trainSet.date.max() < validSet.date.min()
+assert validSet.date.max() < testSet.date.min()
 
 
 y_train = trainSet.ActualWindMW
@@ -858,7 +843,7 @@ The **power coefficient** $C_P$ relates actual extracted power to available powe
 
 $$P_{\text{turbine}} = C_P \cdot \frac{1}{2} \rho A v^3$$
 
-Modern commercial turbines achieve $C_P \approx 0.45 – 0.50$.
+Modern commercial turbines achieve $C_P \approx 0.45 - 0.50$.
 
 ### Turbine Power Curve
 

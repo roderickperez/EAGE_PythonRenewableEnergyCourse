@@ -522,7 +522,7 @@ numpy.ones(shape, dtype = None, order = 'C')
 For example, if we want to generate a 1D array of ones:
 
 ```{code-cell} python
-arrOnes_1D = np.zeros(6)
+arrOnes_1D = np.ones(6)
 
 print(arrOnes_1D)
 ```
@@ -530,7 +530,7 @@ print(arrOnes_1D)
 Or a 2D matrix of ones:
 
 ```{code-cell} python
-arrOnes_2D = np.zeros([2, 4])
+arrOnes_2D = np.ones([2, 4])
 
 print(arrOnes_2D)
 ```
@@ -541,7 +541,7 @@ Along the course, we face the necessity to generate spaced arrays. In some of th
 
 #### Linear
 
-In the case we want to define a evenly spaced array, we can use the `numpy.linspace()` function. It requires the start and end range of values we want to define our array. By default, it defines a number of elements equal to `10`.
+To define an evenly spaced array, use `numpy.linspace()`. It takes the start and end values and, by default, returns 50 samples. Set `num=` explicitly whenever the number of samples matters.
 
 ```{code-cell} python
 linSpace_1D = np.linspace(0, 10)
@@ -581,7 +581,7 @@ print('-------------------')
 print(linSpace_1D)
 ```
 
-We can see that the output array has 20 elements, equally spaced values between 1 and 10.
+The output array has 20 equally spaced values between 0 and 10, including both endpoints.
 
 :::{admonition} Positional arguments
 :class: note

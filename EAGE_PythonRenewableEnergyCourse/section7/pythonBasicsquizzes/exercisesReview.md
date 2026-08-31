@@ -202,7 +202,7 @@ if produccionRate >= 1000000:
     print('Excellent')
 elif produccionRate <=999999 and produccionRate >= 100000:
     print('Good')
-elif produccionRate <=10000 and produccionRate > 0:
+elif produccionRate < 100000 and produccionRate > 0:
     print('Poor')
 elif produccionRate == 0:
     print('Close')
@@ -313,7 +313,8 @@ array1 = np.array([2, 4, 6, 8, 10, 12])
 
 array2 = np.array([24, 60, 12, 40, 15])
 
-arrayDiv2 = array1 / array2
+# Element-wise division requires arrays with compatible shapes.
+arrayDiv2 = array1[:len(array2)] / array2
 
 print('The division of array1 and array2 is: ', arrayDiv2)
 ```
@@ -321,7 +322,7 @@ print('The division of array1 and array2 is: ', arrayDiv2)
 Another option is to use the `np.divide` function.
 
 ```{code-cell} python
-arrayDiv2 = np.divide(array1, array2)
+arrayDiv2 = np.divide(array1[:len(array2)], array2)
 
 print('The division of array1 and array2 is: ', arrayDiv2)
 ```
@@ -356,7 +357,7 @@ print(myNewDataFrame)
 
 # 4) Slice the DataFrame between the rows 3 and 6, and the columns 2 and 3 using `loc`
 
-myNewDataFrameLOC = myNewDataFrame.loc[3:6, 'height':'weight']
+myNewDataFrameLOC = myNewDataFrame.loc[3:5, 'height':'weight']
 print(myNewDataFrameLOC)
 
 
@@ -499,7 +500,7 @@ import numpy as np
 x = np.array(["A", "B", "C", "D"])
 y = np.array([3, 8, 1, 10])
 
-plt.barh(x,y, width = 0.5, color = 'red')
+plt.barh(x, y, height=0.5, color='red')
 plt.show()
 
 ```
@@ -524,5 +525,3 @@ plt.show()
 ```
 
 :::
-
-

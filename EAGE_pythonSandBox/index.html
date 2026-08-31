@@ -1,0 +1,1808 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script>
+  /* ===== Versionen definieras HÄR och bara här. =====
+     Höj sista siffran vid varje ny build. Allt annat följer automatiskt. */
+  window.PYTHONLABBET_VERSION = "1.0";
+
+  /* Språkvalet görs här uppe, innan sidan ritas. Webbläsaren avgör tidigt
+     om den ska erbjuda översättning, och hinner den se svensk markup
+     dyker förslaget upp även när det engelska paketet laddas. */
+  window.PYTHONLAB_VALT = (function () {
+    var p = (location.search.match(/[?&]lang=([a-z]{2})/i) || [])[1];
+    if (p) p = p.toLowerCase();
+    if (p !== "es" && p !== "en") {
+      try {
+        var sparat = localStorage.getItem("pythonlab.sprak");
+        if (sparat === "es" || sparat === "en") p = sparat;
+      } catch (e) { /* lagring kan vara avstängd */ }
+    }
+    if (p !== "es" && p !== "en") p = "en";
+    document.documentElement.lang = p;
+    return p;
+  })();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EAGE Python SandBox</title>
+<meta name="description" content="An interactive Python course that runs in your browser.">
+<meta name="author" content="Gabriel Westman">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#139b7f">
+<meta name="application-name" content="EAGE Python SandBox">
+<meta name="apple-mobile-web-app-title" content="EAGE Python SandBox">
+<meta property="og:type" content="website">
+<meta property="og:title" content="EAGE Python SandBox">
+<meta property="og:description" content="An interactive Python sandbox for EAGE renewable-energy training.">
+<meta property="og:locale" content="en_US">
+<link rel="icon" type="image/jpeg" href="../eagelogo.jpg">
+<link rel="apple-touch-icon" href="../eagelogo.jpg">
+</head>
+<body>
+<div id="app-root">
+<div class="laddskarm" id="laddskarm">
+  <div class="laddruta">
+    <p class="laddmark"><span data-i18n="titel"></span> <span class="version" data-version></span></p>
+    <p class="laddrubrik" id="ladd-rubrik" data-i18n="ladd.rubrik"></p>
+    <div class="laddspar"><div class="laddfyll" id="ladd-fyll"></div></div>
+    <p class="laddtext" id="ladd-text" data-i18n="ladd.text"></p>
+    <p class="laddnot" data-i18n="ladd.not"></p>
+  </div>
+</div>
+<style>
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: #139b7f; color: #ffffff;
+    -webkit-font-smoothing: antialiased;
+  }
+  body { overflow: hidden; }
+
+  #app-root {
+    --blueprint: #139b7f;
+    --panel: #117c68;
+    --panel-2: #0e6c5b;
+    --line: rgba(255, 255, 255, 0.2);
+    --chalk: #ffffff;
+    --chalk-dim: rgba(255, 255, 255, 0.82);
+    --amber: #ffc94a;
+    --mint: #6ee7b7;
+    --coral: #ff7d6b;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+    background: var(--blueprint);
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 28px 28px;
+    color: var(--chalk);
+    font-family: var(--sans);
+    height: 100dvh;
+    min-height: 600px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 0;
+    position: relative;
+  }
+  #app-root * { box-sizing: border-box; }
+
+  /* ---- laddningsskärm ---- */
+  #app-root .laddskarm {
+    position: absolute; inset: 0; z-index: 60;
+    background: rgba(19, 155, 127, 0.97);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px; transition: opacity .35s ease;
+  }
+  #app-root .laddskarm.klar { opacity: 0; pointer-events: none; }
+  #app-root .laddskarm[hidden] { display: none; }
+  #app-root .laddruta { width: 100%; max-width: 430px; text-align: left; }
+  #app-root .laddmark {
+    font-family: var(--mono); font-size: 13px; letter-spacing: 0.24em;
+    text-transform: uppercase; color: var(--amber); margin: 0 0 18px;
+  }
+  #app-root .laddrubrik { font-size: 17px; color: var(--chalk); margin: 0 0 12px; }
+  #app-root .laddspar {
+    height: 6px; border-radius: 999px; background: var(--panel-2);
+    border: 1px solid var(--line); overflow: hidden;
+  }
+  #app-root .laddfyll {
+    height: 100%; width: 0%; border-radius: 999px;
+    background: linear-gradient(90deg, var(--amber), var(--mint));
+    transition: width .35s ease;
+  }
+  #app-root .laddfyll.obestamd {
+    width: 35%;
+    animation: glid 1.4s ease-in-out infinite;
+  }
+  @keyframes glid {
+    0% { margin-left: -35%; } 100% { margin-left: 100%; }
+  }
+  #app-root .laddtext {
+    font-family: var(--mono); font-size: 11.5px; color: var(--chalk-dim);
+    margin: 10px 0 0; min-height: 16px;
+  }
+  #app-root .laddnot {
+    font-size: 12.5px; color: var(--chalk-dim); line-height: 1.55; margin: 20px 0 0;
+  }
+  #app-root .laddskarm.trasig .laddfyll { background: var(--coral); animation: none; width: 100%; }
+  @media (prefers-reduced-motion: reduce) {
+    #app-root .laddfyll, #app-root .laddskarm { transition: none; }
+    #app-root .laddfyll.obestamd { animation: none; width: 100%; opacity: .4; }
+  }
+
+  #app-root .topbar {
+    display: flex; align-items: center; gap: 14px;
+    padding: 13px 18px; border-bottom: 1px solid var(--line);
+    background: rgba(19, 155, 127, 0.85); flex: 0 0 auto;
+  }
+  #app-root .wordmark { margin: 0; font-weight: 400;
+    font-family: var(--mono); font-size: 15px; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--amber);
+  }
+  #app-root .startversion {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--chalk-dim); margin: 0 0 16px;
+  }
+  #app-root .version {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+    color: var(--chalk-dim); text-transform: none; margin-left: 9px;
+  }
+  #app-root .omlank {
+    /* Samma sättning som strömbrytarnas etiketter till vänster. */
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--chalk-dim);
+    background: transparent; border: 0; padding: 0;
+    margin-left: 10px; cursor: pointer; line-height: inherit;
+    align-self: center;
+    text-decoration: underline; text-underline-offset: 3px;
+    text-decoration-color: rgba(147, 169, 204, 0.35);
+  }
+  #app-root .omlank:hover {
+    color: var(--amber); text-decoration-color: var(--amber);
+  }
+  #app-root .omlank:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+  #app-root .status {
+    margin-left: auto; font-family: var(--mono); font-size: 11.5px;
+    letter-spacing: 0.08em; color: var(--chalk-dim);
+    display: flex; align-items: center; gap: 8px;
+  }
+  #app-root .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); animation: pulse 1.2s ease-in-out infinite; }
+  #app-root .status.klar .dot { background: var(--mint); animation: none; }
+  #app-root .status.trasig .dot { background: var(--coral); animation: none; }
+  @keyframes pulse { 0%,100% { opacity: .3 } 50% { opacity: 1 } }
+
+  #app-root .language-switcher {
+    display: flex; align-items: center; gap: 4px; margin-left: auto;
+  }
+  #app-root .language-button {
+    width: 34px; height: 30px; padding: 0; border: 1px solid transparent;
+    border-radius: 6px; background: transparent; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  #app-root .language-button:hover { background: var(--panel-2); }
+  #app-root .language-button.vald { border-color: var(--amber); background: var(--panel-2); }
+  #app-root .language-button:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+  #app-root .flag {
+    display: block; width: 22px; height: 15px; border: 1px solid rgba(255,255,255,.35);
+    border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,.35);
+  }
+  #app-root .flag-uk {
+    background-color: #173d8f;
+    background-image:
+      linear-gradient(33deg, transparent 43%, #fff 44%, #fff 56%, transparent 57%),
+      linear-gradient(-33deg, transparent 43%, #fff 44%, #fff 56%, transparent 57%),
+      linear-gradient(33deg, transparent 47%, #cf142b 48%, #cf142b 52%, transparent 53%),
+      linear-gradient(-33deg, transparent 47%, #cf142b 48%, #cf142b 52%, transparent 53%),
+      linear-gradient(90deg, transparent 38%, #fff 39%, #fff 61%, transparent 62%),
+      linear-gradient(0deg, transparent 31%, #fff 32%, #fff 68%, transparent 69%),
+      linear-gradient(90deg, transparent 44%, #cf142b 45%, #cf142b 55%, transparent 56%),
+      linear-gradient(0deg, transparent 39%, #cf142b 40%, #cf142b 60%, transparent 61%);
+  }
+  #app-root .flag-es {
+    background: linear-gradient(to bottom, #aa151b 0 25%, #f1bf00 25% 75%, #aa151b 75% 100%);
+  }
+
+  #app-root .layout { flex: 1 1 auto; display: grid; grid-template-columns: 248px 1fr; min-height: 0; }
+
+  #app-root .rail {
+    border-right: 1px solid var(--line); padding: 14px 12px 24px;
+    overflow-y: auto; background: rgba(17, 124, 104, 0.55);
+  }
+  #app-root .rubrik {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--chalk-dim); margin: 0 0 9px 4px;
+  }
+  #app-root .delrubrik {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--amber); opacity: .75;
+    margin: 16px 0 6px 4px; padding-top: 10px; border-top: 1px solid var(--line);
+  }
+  #app-root .delrubrik.forst { margin-top: 4px; border-top: 0; padding-top: 0; }
+  #app-root .lektion {
+    width: 100%; text-align: left; background: transparent;
+    border: 1px solid transparent; border-radius: 8px; color: var(--chalk);
+    padding: 7px 10px; margin-bottom: 2px; cursor: pointer;
+    font-family: var(--sans); font-size: 13.5px;
+    display: flex; gap: 9px; align-items: baseline;
+    transition: background .12s ease, border-color .12s ease;
+  }
+  #app-root .lektion:hover { background: var(--panel-2); }
+  #app-root .lektion.vald { border-color: var(--amber); background: var(--panel-2); }
+  #app-root .lektion .nr { font-family: var(--mono); font-size: 11px; color: var(--amber); flex: 0 0 auto; }
+  #app-root .tomt { font-size: 12.5px; color: var(--chalk-dim); padding: 2px 6px; line-height: 1.5; }
+
+  #app-root .arbetsyta { display: grid; grid-template-rows: minmax(0, 1fr) auto minmax(0, 0.95fr); min-height: 0; }
+  #app-root .redigerare { display: flex; flex-direction: column; min-height: 0; }
+  #app-root .verktyg {
+    display: flex; align-items: center; gap: 7px; padding: 9px 14px;
+    border-bottom: 1px solid var(--line); flex-wrap: wrap;
+  }
+  #app-root .filnamn { font-family: var(--mono); font-size: 12px; color: var(--chalk-dim); margin-right: auto; }
+  #app-root .filnamn .andrad { color: var(--amber); }
+  #app-root button.knapp {
+    font-family: var(--sans); font-size: 13px; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--panel-2); color: var(--chalk);
+    padding: 6px 12px; cursor: pointer; transition: transform .08s ease, background .12s ease;
+  }
+  #app-root button.knapp:hover { background: #234070; }
+  #app-root button.knapp:active { transform: translateY(1px); }
+  #app-root button.kor { background: var(--amber); border-color: var(--amber); color: #2a1a00; font-weight: 650; }
+  #app-root button.kor:hover { background: #ffd772; }
+  #app-root button.kor:disabled { opacity: .45; cursor: wait; }
+  #app-root.kor-lage .lektion:disabled,
+  #app-root.kor-lage .verktyg .knapp:disabled {
+    opacity: .38;
+    cursor: not-allowed;
+  }
+
+  #app-root textarea {
+    flex: 1 1 auto; width: 100%; resize: none; border: 0; outline: none;
+    background: transparent; color: var(--chalk); font-family: var(--mono);
+    font-size: 14.5px; line-height: 1.65; padding: 14px 16px; tab-size: 4;
+  }
+
+  /* ---- radnummer ----
+     Spalten måste ha exakt samma teckenstorlek, radhöjd och övre
+     marginal som textrutan, annars glider siffrorna isär från koden. */
+  #app-root .kodyta {
+    flex: 1 1 auto; display: flex; min-height: 0; overflow: hidden;
+  }
+  #app-root .kodyta textarea { padding-left: 10px; }
+  #app-root .radnummer {
+    flex: 0 0 auto; overflow: hidden; user-select: none;
+    padding: 14px 8px 14px 14px; text-align: right;
+    font-family: var(--mono); font-size: 14.5px; line-height: 1.65;
+    color: var(--chalk-dim); opacity: .45;
+    border-right: 1px solid var(--line);
+    background: rgba(0, 0, 0, .13);
+  }
+  #app-root .radnummer b { display: block; font-weight: inherit; }
+  #app-root .radnummer b.fel {
+    color: var(--coral); opacity: 1; font-weight: 700;
+    background: rgba(255, 125, 107, .2);
+    margin: 0 -8px 0 -14px; padding: 0 8px 0 14px;
+  }
+  #app-root textarea::selection { background: rgba(255, 201, 74, 0.3); }
+  #app-root .redigerare.slapp { outline: 2px dashed var(--amber); outline-offset: -6px; }
+
+  #app-root .spar {
+    display: flex; align-items: center; gap: 9px; padding: 8px 16px;
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    background: rgba(14, 108, 91, 0.5); overflow-x: auto;
+  }
+  #app-root .steg {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--chalk-dim);
+    border: 1px solid var(--line); border-radius: 999px; padding: 4px 11px;
+    white-space: nowrap; transition: all .25s ease;
+  }
+  #app-root .steg.aktiv { color: #2a1a00; background: var(--amber); border-color: var(--amber); }
+  #app-root .steg.klar { color: var(--mint); border-color: rgba(110, 231, 183, .5); }
+  #app-root .pil { color: var(--line); font-size: 12px; }
+
+  #app-root .nedre { display: flex; flex-direction: column; min-height: 0; }
+  #app-root .flikar { display: flex; gap: 4px; padding: 8px 14px 0; flex: 0 0 auto; }
+  #app-root button.flik {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase;
+    background: transparent; border: 1px solid transparent; border-bottom: 2px solid transparent;
+    color: var(--chalk-dim); padding: 6px 10px; cursor: pointer;
+  }
+  #app-root button.flik.vald { color: var(--amber); border-bottom-color: var(--amber); }
+  #app-root .flikinnehall { flex: 1 1 auto; overflow-y: auto; padding: 8px 16px 18px; min-height: 0; }
+  #app-root .flikinnehall[hidden] { display: none; }
+
+  #app-root .konsol { font-family: var(--mono); font-size: 13.5px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
+  #app-root .konsol .ut { color: var(--chalk); }
+  #app-root .konsol .fel { color: var(--coral); }
+  #app-root .konsol .system { color: var(--chalk-dim); }
+  #app-root .konsol .fraga { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+  #app-root .konsol .svarsfalt {
+    flex: 1 1 160px; min-width: 120px; background: transparent;
+    border: 0; border-bottom: 1px solid var(--amber); outline: none;
+    color: var(--amber); font-family: var(--mono); font-size: 13.5px;
+    padding: 0 2px 1px;
+  }
+  #app-root .konsol .svar { color: var(--amber); }
+  #app-root .konsol .diagram {
+    display: block; max-width: 100%; height: auto;
+    margin: 10px 0; border: 1px solid var(--line); border-radius: 8px;
+  }
+  #app-root .konsol .tips {
+    color: var(--mint); border-left: 2px solid rgba(110, 231, 183, .45);
+    padding-left: 10px; margin: 6px 0 2px; font-family: var(--sans); font-size: 13px; white-space: normal;
+  }
+
+  #app-root .lektionstext { max-width: 760px; font-size: 14px; line-height: 1.62; }
+  #app-root .lektionstext h3 {
+    font-family: var(--mono); font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--amber); margin: 20px 0 8px; font-weight: 600;
+  }
+  #app-root .lektionstext h3:first-child { margin-top: 4px; }
+  #app-root .lektionstext p { margin: 0 0 11px; }
+  #app-root .lektionstext ul { margin: 0 0 11px; padding-left: 20px; }
+  #app-root .lektionstext li { margin-bottom: 5px; }
+  #app-root .lektionstext code {
+    font-family: var(--mono); font-size: 13px; background: var(--panel-2);
+    border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px;
+  }
+  #app-root .lektionstext .uppgift {
+    border-left: 2px solid var(--amber); background: rgba(255, 201, 74, .07);
+    padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 14px 0 4px;
+  }
+  #app-root .lektionstext .uppgift strong { color: var(--amber); }
+  #app-root .lektionstext .fallgrop {
+    border-left: 2px solid var(--coral); background: rgba(255, 125, 107, .07);
+    padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 14px 0;
+  }
+  #app-root .lektionstext .fallgrop strong { color: var(--coral); }
+
+  /* ---- startsidan ---- */
+  #app-root .lektionstext.start { max-width: 820px; }
+  #app-root .start .valkomst {
+    font-size: 22px; line-height: 1.35; color: var(--chalk);
+    margin: 2px 0 10px; font-weight: 600;
+  }
+  #app-root .start .ingress { font-size: 15px; color: var(--chalk-dim); margin-bottom: 22px; }
+  #app-root .start .delar {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+    gap: 10px; margin: 0 0 22px;
+  }
+  #app-root .start .del-kort {
+    border: 1px solid var(--line); border-left: 2px solid var(--amber);
+    border-radius: 0 8px 8px 0; padding: 11px 14px;
+    background: rgba(14, 108, 91, 0.35);
+  }
+  #app-root .start .del-kort h4 {
+    margin: 0 0 3px; font-size: 14px; color: var(--amber); font-weight: 600;
+  }
+  #app-root .start .del-kort .spann {
+    font-family: var(--mono); font-size: 10.5px; color: var(--chalk-dim);
+    letter-spacing: 0.1em; display: block; margin-bottom: 5px;
+  }
+  #app-root .start .del-kort p { margin: 0; font-size: 13px; line-height: 1.5; }
+  #app-root .start .snabbstart {
+    border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px;
+    margin-bottom: 20px; background: rgba(17, 124, 104, 0.5);
+  }
+  #app-root .start .snabbstart ol { margin: 8px 0 0; padding-left: 20px; }
+  #app-root .start .snabbstart li { margin-bottom: 5px; }
+  #app-root .start .tva {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px;
+  }
+  #app-root .start kbd {
+    font-family: var(--mono); font-size: 11.5px; background: var(--panel-2);
+    border: 1px solid var(--line); border-bottom-width: 2px;
+    border-radius: 4px; padding: 1px 5px; color: var(--chalk);
+  }
+  #app-root .startknapp { border-color: var(--line); }
+  #app-root .startknapp.vald { border-color: var(--amber); background: var(--panel-2); }
+
+  @media (max-width: 780px) {
+    #app-root { height: auto; overflow: visible; }
+    #app-root .layout { grid-template-columns: 1fr; }
+    #app-root .rail { border-right: 0; border-bottom: 1px solid var(--line); max-height: 220px; }
+    #app-root textarea { min-height: 280px; }
+    #app-root .flikinnehall { min-height: 220px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #app-root .dot { animation: none; }
+    #app-root .steg { transition: none; }
+  }
+</style>
+
+<header class="topbar">
+  <h1 class="wordmark"><span data-i18n="titel"></span><span class="version" data-version></span></h1>
+  <a class="omlank" href="https://eage.org/" target="_blank" rel="noopener" data-i18n="ui.om"></a>
+  <div class="language-switcher" aria-label="Language selection">
+    <button class="language-button" id="language-en" type="button" title="English" aria-label="English"><span class="flag flag-uk" aria-hidden="true"></span></button>
+    <button class="language-button" id="language-es" type="button" title="Español" aria-label="Español"><span class="flag flag-es" aria-hidden="true"></span></button>
+  </div>
+  <span class="status" id="status"><span class="dot"></span><span id="status-text" data-i18n="status.startar"></span></span>
+</header>
+
+<div class="layout">
+  <aside class="rail">
+    <button class="lektion startknapp vald" id="start-knapp">
+      <span class="nr">•</span><span data-i18n="ui.start"></span>
+    </button>
+    <p class="rubrik" style="margin-top:14px" data-i18n="ui.kapitel_rubrik"></p>
+    <div id="lektionslista"></div>
+    <p class="delrubrik" data-i18n="ui.proyectos"></p>
+  </aside>
+
+  <section class="arbetsyta">
+    <div class="redigerare" id="redigerare">
+      <div class="verktyg">
+        <span class="filnamn" id="filnamn"></span>
+        <button class="knapp" id="ny-knapp" data-i18n="ui.ny"></button>
+        <button class="knapp" id="aterstall-kapitel" data-i18n="ui.aterstall"></button>
+        <button class="knapp" id="oppna-knapp" data-i18n="ui.oppna"></button>
+        <button class="knapp" id="spara-knapp" data-i18n="ui.spara"></button>
+        <button class="knapp" id="spara-som-knapp" data-i18n="ui.spara_som"></button>
+        <button class="knapp kor" id="kor-knapp" disabled data-i18n="ui.kor"></button>
+      </div>
+      <div class="kodyta">
+        <div class="radnummer" id="radnummer" aria-hidden="true"></div>
+        <textarea id="kod" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea>
+      </div>
+      <input type="file" id="filvaljare" accept=".py,.txt" hidden>
+    </div>
+
+    <div class="spar" id="spar" aria-hidden="true">
+      <span class="steg" data-steg="0" data-i18n="steg.kalla"></span><span class="pil">→</span>
+      <span class="steg" data-steg="1" data-i18n="steg.tolk"></span><span class="pil">→</span>
+      <span class="steg" data-steg="2" data-i18n="steg.kor"></span><span class="pil">→</span>
+      <span class="steg" data-steg="3" data-i18n="steg.resultat"></span>
+    </div>
+
+    <div class="nedre">
+      <div class="flikar">
+        <button class="flik vald" id="flik-lektion" data-i18n="ui.flik_kapitel"></button>
+        <button class="flik" id="flik-utskrift" data-i18n="ui.flik_utskrift"></button>
+        <button class="knapp" id="rensa-knapp" data-i18n="ord.rensa" style="margin-left:auto; font-size:12px; padding:4px 10px;"></button>
+      </div>
+      <div class="flikinnehall" id="panel-lektion">
+        <div class="lektionstext start" id="lektionstext"></div>
+      </div>
+      <div class="flikinnehall" id="panel-utskrift" hidden>
+        <div class="konsol" id="konsol"><span class="system" data-i18n="konsol.startar"></span>
+</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+
+<script>
+window.PYTHONLAB_START = function (SPRAK) {
+  "use strict";
+
+  /* ---- fyll gränssnittet med det valda språkets texter ----
+     Måste ske innan motorn hämtar sina elementreferenser. */
+  (function () {
+    function slaUpp(vag) {
+      return vag.split(".").reduce(function (o, del) {
+        return (o && o[del] !== undefined) ? o[del] : null;
+      }, SPRAK);
+    }
+    var saknade = [];
+    Array.prototype.forEach.call(document.querySelectorAll("[data-i18n]"), function (el) {
+      var vag = el.getAttribute("data-i18n");
+      var text = slaUpp(vag);
+      if (text !== null) {
+        el.textContent = text;
+      } else if (!el.textContent.trim()) {
+        // Hellre nyckelns namn än en tom yta — då syns det att språkfilen
+        // är för gammal i stället för att knappen bara försvinner.
+        el.textContent = vag.split(".").pop();
+        saknade.push(vag);
+      }
+    });
+    [["data-i18n-title", "title"], ["data-i18n-placeholder", "placeholder"]]
+      .forEach(function (par) {
+        Array.prototype.forEach.call(document.querySelectorAll("[" + par[0] + "]"), function (el) {
+          var text = slaUpp(el.getAttribute(par[0]));
+          if (text !== null) el.setAttribute(par[1], text);
+        });
+      });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-i18n-html]"), function (el) {
+      var text = slaUpp(el.getAttribute("data-i18n-html"));
+      if (text !== null) el.innerHTML = text;
+    });
+    if (saknade.length && window.console) {
+      console.warn("Language file is missing " + saknade.length + " strings: "
+        + saknade.join(", ") + ". Reload the page with Ctrl+F5.");
+    }
+    function fyllHtml(id, html) {
+      var el = document.getElementById(id);
+      if (el && html) el.innerHTML = html;
+    }
+    fyllHtml("lektionstext", SPRAK.start);
+    if (SPRAK.titel) {
+      document.title = SPRAK.titel + " (ver " + (window.PYTHONLABBET_VERSION || "?") + ")";
+      var og = document.querySelector('meta[property="og:title"]');
+      if (og) og.setAttribute("content", document.title);
+      var be = document.querySelector('meta[name="description"]');
+      if (be && SPRAK.beskrivning) be.setAttribute("content", SPRAK.beskrivning);
+    }
+  })();
+
+  /* ---- versionen skrivs in överallt den efterfrågas ---- */
+  var VERSION = window.PYTHONLABBET_VERSION || "?";
+  document.title = (SPRAK.titel || "EAGE Python SandBox") + " (ver " + VERSION + ")";
+  var ogTitel = document.querySelector('meta[property="og:title"]');
+  if (ogTitel) ogTitel.setAttribute("content", document.title);
+  Array.prototype.forEach.call(document.querySelectorAll("[data-version]"), function (el) {
+    el.textContent = el.classList.contains("dialog-ingress")
+      ? "Version " + VERSION
+      : "ver " + VERSION;
+  });
+
+  var kodruta = document.getElementById("kod");
+  var konsol = document.getElementById("konsol");
+  var korKnapp = document.getElementById("kor-knapp");
+  var statusEl = document.getElementById("status");
+  var statusText = document.getElementById("status-text");
+  var filnamnEl = document.getElementById("filnamn");
+  var sparEl = document.getElementById("spar");
+  var lektionstext = document.getElementById("lektionstext");
+  var startKnapp = document.getElementById("start-knapp");
+  var aterstallKapitelKnapp = document.getElementById("aterstall-kapitel");
+  var panelLektion = document.getElementById("panel-lektion");
+  var panelUtskrift = document.getElementById("panel-utskrift");
+  var flikLektion = document.getElementById("flik-lektion");
+  var flikUtskrift = document.getElementById("flik-utskrift");
+  var rensaKnapp = document.getElementById("rensa-knapp");
+  var filvaljare = document.getElementById("filvaljare");
+  var redigerare = document.getElementById("redigerare");
+
+  var pyodide = null;
+  var syntaxkoll = null;
+  var korProgram = null;
+  var filhandtag = null;
+  var filnamn = SPRAK.ui.nytt_filnamn || "nytt_program.py";
+  var andrad = false;
+  var aktivLektion = null;
+
+  /* =======================================================
+     KAPITEL
+     ======================================================= */
+  var LEKTIONER = SPRAK.kapitel;
+
+  var STARTKOD = SPRAK.startkod.join("\n");
+
+  /* =======================================================
+     Utskrift och flikar
+     ======================================================= */
+  function skriv(text, klass) {
+    var rad = document.createElement("span");
+    rad.className = klass || "ut";
+    rad.textContent = text;
+    konsol.appendChild(rad);
+    konsol.scrollTop = konsol.scrollHeight;
+  }
+  function rensaKonsol() { konsol.textContent = ""; }
+
+  /* Frågar användaren direkt i konsolen i stället för i en popup. */
+  function fragaIKonsolen(text) {
+    return new Promise(function (svara) {
+      visaFlik("utskrift");
+      var rad = document.createElement("div");
+      rad.className = "fraga";
+      var etikett = document.createElement("span");
+      etikett.className = "ut";
+      etikett.textContent = text;
+      var falt = document.createElement("input");
+      falt.className = "svarsfalt";
+      falt.type = "text";
+      falt.setAttribute("autocomplete", "off");
+      rad.appendChild(etikett);
+      rad.appendChild(falt);
+      konsol.appendChild(rad);
+      konsol.scrollTop = konsol.scrollHeight;
+      falt.focus();
+
+      var slutfor = registreraVantan(function () { klar(undefined); });
+
+      function klar(varde) {
+        slutfor();
+        if (!rad.contains(falt)) return;      // redan besvarad
+        rad.removeChild(falt);
+        var eko = document.createElement("span");
+        eko.className = "svar";
+        eko.textContent = (typeof varde === "string" ? varde : "^C") + "\n";
+        rad.appendChild(eko);
+        konsol.scrollTop = konsol.scrollHeight;
+        svara(varde);
+      }
+
+      falt.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") { e.preventDefault(); klar(String(falt.value)); }
+        else if (e.key === "Escape") { e.preventDefault(); klar(undefined); }
+      });
+    });
+  }
+  window._labbFraga = fragaIKonsolen;
+
+  /* ---- register över saker programmet väntar på ----
+     Under input(), en filväljare eller en nätverkshämtning står Python
+     stilla och webbläsaren är ledig. Då finns ingen loop att vakta i,
+     men väntan går ändå att avbryta — den som väntar lämnar in en
+     funktion här, och Stoppa-knappen anropar alla på en gång. */
+  var vantande = [];
+
+  function registreraVantan(avbryt) {
+    vantande.push(avbryt);
+    return function klart() {
+      var i = vantande.indexOf(avbryt);
+      if (i >= 0) vantande.splice(i, 1);
+    };
+  }
+
+  function avbrytAllVantan() {
+    var kopia = vantande.slice();
+    vantande.length = 0;
+    kopia.forEach(function (f) { try { f(); } catch (e) { /* redan klar */ } });
+  }
+
+  /* Låter Python-kod be användaren peka ut en fil från datorn. */
+  window._labbValjFil = function (filter) {
+    return new Promise(function (klar) {
+      var valjare = document.createElement("input");
+      valjare.type = "file";
+      if (filter) valjare.accept = filter;
+      valjare.style.display = "none";
+      document.body.appendChild(valjare);
+
+      var avslutad = false;
+      var slutfor = registreraVantan(function () { stad(undefined); });
+      function stad(resultat) {
+        if (avslutad) return;
+        avslutad = true;
+        slutfor();
+        if (valjare.parentNode) document.body.removeChild(valjare);
+        klar(resultat);
+      }
+
+      valjare.addEventListener("change", function () {
+        var fil = valjare.files && valjare.files[0];
+        if (!fil) return stad(undefined);
+        var lasare = new FileReader();
+        lasare.onload = function () {
+          stad({ namn: fil.name, innehall: String(lasare.result) });
+        };
+        lasare.onerror = function () { stad(undefined); };
+        lasare.readAsText(fil);
+      });
+
+      // Om användaren avbryter dialogen kommer ingen change-händelse.
+      window.addEventListener("focus", function avbrutet() {
+        window.removeEventListener("focus", avbrutet);
+        setTimeout(function () {
+          if (!valjare.files || !valjare.files.length) stad(undefined);
+        }, 900);
+      });
+
+      valjare.click();
+    });
+  };
+
+  /* Låter Python-kod ladda ner en fil till datorn. */
+  window._labbLaddaNer = function (namn, innehall) {
+    var blob = new Blob([innehall], { type: "text/plain;charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var lank = document.createElement("a");
+    lank.href = url;
+    lank.download = namn;
+    document.body.appendChild(lank);
+    lank.click();
+    document.body.removeChild(lank);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+  };
+
+  /* Tar emot diagram från matplotlib och visar dem i utskriften. */
+  window._labbBild = function (dataurl) {
+    visaFlik("utskrift");
+    var bild = document.createElement("img");
+    bild.className = "diagram";
+    bild.src = dataurl;
+    konsol.appendChild(bild);
+    konsol.scrollTop = konsol.scrollHeight;
+  };
+
+  function visaFlik(vilken) {
+    var paneler = {
+      lektion: [panelLektion, flikLektion],
+      utskrift: [panelUtskrift, flikUtskrift]
+    };
+    Object.keys(paneler).forEach(function (namn) {
+      paneler[namn][0].hidden = namn !== vilken;
+      paneler[namn][1].classList.toggle("vald", namn === vilken);
+    });
+  }
+  flikLektion.addEventListener("click", function () { visaFlik("lektion"); });
+  flikUtskrift.addEventListener("click", function () { visaFlik("utskrift"); });
+
+  function markeraSteg(index) {
+    var steg = sparEl.querySelectorAll(".steg");
+    for (var i = 0; i < steg.length; i++) {
+      steg[i].classList.remove("aktiv", "klar");
+      if (i < index) steg[i].classList.add("klar");
+      if (i === index) steg[i].classList.add("aktiv");
+    }
+  }
+
+  var FELTIPS = [
+    { m: /KeyboardInterrupt/, n: "KeyboardInterrupt" },
+    { m: /SyntaxError/, n: "SyntaxError" },
+    { m: /IndentationError|unexpected indent|expected an indented block/, n: "IndentationError" },
+    { m: /NameError/, n: "NameError" },
+    { m: /TypeError/, n: "TypeError" },
+    { m: /ValueError/, n: "ValueError" },
+    { m: /ZeroDivisionError/, n: "ZeroDivisionError" },
+    { m: /IndexError/, n: "IndexError" },
+    { m: /KeyError/, n: "KeyError" },
+    { m: /AttributeError/, n: "AttributeError" },
+    { m: /RecursionError/, n: "RecursionError" },
+    { m: /ModuleNotFoundError|ImportError/, n: "ModuleNotFoundError" }
+  ];
+
+
+  function visaFel(text) {
+    visaFlik("utskrift");
+    skriv(text.trim() + "\n", "fel");
+    markeraFelrad(radUrFel(text));
+    for (var i = 0; i < FELTIPS.length; i++) {
+      if (FELTIPS[i].m.test(text)) {
+        var tips = document.createElement("div");
+        tips.className = "tips";
+        tips.textContent = SPRAK.ord.tips + SPRAK.feltips[FELTIPS[i].n];
+        konsol.appendChild(tips);
+        break;
+      }
+    }
+    konsol.scrollTop = konsol.scrollHeight;
+  }
+
+  /* =======================================================
+     Filhantering
+     ======================================================= */
+  var FILTYP = [{ description: "Python-fil", accept: { "text/x-python": [".py"] } }];
+
+  function visaFilnamn() {
+    filnamnEl.textContent = filnamn;
+    if (andrad) {
+      var prick = document.createElement("span");
+      prick.className = "andrad";
+      prick.textContent = " •";
+      filnamnEl.appendChild(prick);
+    }
+  }
+  /* ---- radnummer ---- */
+  var radspalt = document.getElementById("radnummer");
+  var felradNu = 0;
+
+  function ritaRadnummer() {
+    var antal = kodruta.value.split("\n").length;
+    var bitar = [];
+    for (var i = 1; i <= antal; i++) {
+      bitar.push(i === felradNu ? '<b class="fel">' + i + "</b>" : "<b>" + i + "</b>");
+    }
+    radspalt.innerHTML = bitar.join("");
+    radspalt.scrollTop = kodruta.scrollTop;
+  }
+
+  /* Markerar raden ett fel pekar på och rullar dit. */
+  function markeraFelrad(rad) {
+    felradNu = rad || 0;
+    ritaRadnummer();
+    if (!rad) return;
+    var radhojd = kodruta.scrollHeight / Math.max(1, kodruta.value.split("\n").length);
+    var mitt = (rad - 1) * radhojd - kodruta.clientHeight / 2 + radhojd;
+    kodruta.scrollTop = Math.max(0, mitt);
+    radspalt.scrollTop = kodruta.scrollTop;
+  }
+
+  kodruta.addEventListener("scroll", function () {
+    radspalt.scrollTop = kodruta.scrollTop;
+  });
+  kodruta.addEventListener("input", function () {
+    if (felradNu) felradNu = 0;
+    ritaRadnummer();
+  });
+
+  function markeraAndrad() {
+    if (!andrad) { andrad = true; visaFilnamn(); }
+    if (buffertar[buffertnyckel()]) buffertar[buffertnyckel()].kod = kodruta.value;
+  }
+  function markeraSparad() { andrad = false; visaFilnamn(); sparaBuffert(); }
+
+  function harFilsystem() {
+    return typeof window.showSaveFilePicker === "function";
+  }
+
+  function laddaNer() {
+    var blob = new Blob([kodruta.value], { type: "text/x-python;charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var lank = document.createElement("a");
+    lank.href = url;
+    lank.download = filnamn;
+    document.body.appendChild(lank);
+    lank.click();
+    document.body.removeChild(lank);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+    markeraSparad();
+    visaFlik("utskrift");
+    skriv(SPRAK.msg.sparad_hamtade.replace("{namn}", filnamn) + "\n", "system");
+  }
+
+  async function sparaFil(sparaSom) {
+    if (harFilsystem()) {
+      try {
+        var handtag = filhandtag;
+        if (!handtag || sparaSom) {
+          handtag = await window.showSaveFilePicker({ suggestedName: filnamn, types: FILTYP });
+        }
+        var strom = await handtag.createWritable();
+        await strom.write(kodruta.value);
+        await strom.close();
+        filhandtag = handtag;
+        filnamn = handtag.name;
+        markeraSparad();
+        visaFlik("utskrift");
+        skriv(SPRAK.msg.sparad_till.replace("{namn}", filnamn) + "\n", "system");
+        return;
+      } catch (e) {
+        if (e && e.name === "AbortError") return;
+      }
+    }
+    if (sparaSom || !filnamn) {
+      var nytt = prompt(SPRAK.fraga.filnamn, filnamn);
+      if (!nytt) return;
+      filnamn = nytt.trim();
+      if (filnamn.slice(-3) !== ".py") filnamn += ".py";
+    }
+    laddaNer();
+  }
+
+  /* Läser in en fil i den buffert man står i. Koden ligger sedan kvar
+     där tills man trycker Återställ, precis som all annan redigering. */
+  function laddaText(text, namn, handtag) {
+    var b = aktivtBuffert();
+    b.kod = text;
+    b.filnamn = namn;
+    b.filhandtag = handtag || null;
+    b.andrad = false;
+    b.markor = 0;
+    b.rullning = 0;
+    laddaBuffert(buffertnyckel(), text, namn);
+    visaFlik("utskrift");
+    rensaKonsol();
+    skriv(SPRAK.msg.oppnade.replace("{namn}", namn).replace("{plats}", kapitelnamn()) + "\n", "system");
+  }
+
+  async function oppnaFil() {
+    if (typeof window.showOpenFilePicker === "function") {
+      try {
+        var val = await window.showOpenFilePicker({ types: FILTYP });
+        var handtag = val[0];
+        var fil = await handtag.getFile();
+        laddaText(await fil.text(), handtag.name, handtag);
+        return;
+      } catch (e) {
+        if (e && e.name === "AbortError") return;
+      }
+    }
+    filvaljare.click();
+  }
+
+  filvaljare.addEventListener("change", function () {
+    var fil = filvaljare.files && filvaljare.files[0];
+    if (!fil) return;
+    var lasare = new FileReader();
+    lasare.onload = function () { laddaText(String(lasare.result), fil.name, null); };
+    lasare.readAsText(fil);
+    filvaljare.value = "";
+  });
+
+  ["dragenter", "dragover"].forEach(function (h) {
+    redigerare.addEventListener(h, function (e) { e.preventDefault(); redigerare.classList.add("slapp"); });
+  });
+  ["dragleave", "drop"].forEach(function (h) {
+    redigerare.addEventListener(h, function (e) { e.preventDefault(); redigerare.classList.remove("slapp"); });
+  });
+  redigerare.addEventListener("drop", function (e) {
+    var fil = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (!fil) return;
+    var lasare = new FileReader();
+    lasare.onload = function () { laddaText(String(lasare.result), fil.name, null); };
+    lasare.readAsText(fil);
+  });
+
+  window.addEventListener("beforeunload", function (e) {
+    sparaBuffert();
+    var osparat = andrad;
+    Object.keys(buffertar).forEach(function (n) {
+      if (buffertar[n].andrad && buffertar[n].kod.trim()) osparat = true;
+    });
+    if (osparat) { e.preventDefault(); e.returnValue = ""; }
+  });
+
+  /* =======================================================
+     Sidomenyn
+     ======================================================= */
+  function markeraVald(index) {
+    var alla = document.getElementById("lektionslista").querySelectorAll(".lektion");
+    for (var i = 0; i < alla.length; i++) alla[i].classList.toggle("vald", i === index);
+    startKnapp.classList.toggle("vald", index === -2);
+  }
+
+  var STARTSIDA = lektionstext.innerHTML;
+
+  /* ---- en buffert per kapitel, som separata notebooks ---- */
+  var buffertar = {};
+
+  function buffertnyckel() {
+    return aktivLektion !== null ? "kap:" + aktivLektion : "start";
+  }
+
+  function aktivtBuffert() {
+    var nyckel = buffertnyckel();
+    if (!buffertar[nyckel]) {
+      buffertar[nyckel] = { kod: kodruta.value, filnamn: filnamn,
+                            filhandtag: filhandtag, andrad: andrad,
+                            markor: 0, rullning: 0 };
+    }
+    return buffertar[nyckel];
+  }
+
+  function sparaBuffert() {
+    buffertar[buffertnyckel()] = {
+      kod: kodruta.value,
+      filnamn: filnamn,
+      filhandtag: filhandtag,
+      andrad: andrad,
+      markor: kodruta.selectionStart,
+      rullning: kodruta.scrollTop
+    };
+  }
+
+  /* Hämtar tillbaka en buffert, eller skapar den från originalkoden. */
+  function laddaBuffert(nyckel, standardkod, standardnamn) {
+    var b = buffertar[nyckel];
+    if (!b) {
+      b = { kod: standardkod, filnamn: standardnamn, filhandtag: null,
+            andrad: false, markor: 0, rullning: 0 };
+      buffertar[nyckel] = b;
+    }
+    kodruta.value = b.kod;
+    filnamn = b.filnamn;
+    filhandtag = b.filhandtag;
+    andrad = b.andrad;
+    visaFilnamn();
+    kodruta.scrollTop = b.rullning;
+    var pos = Math.min(b.markor, kodruta.value.length);
+    kodruta.setSelectionRange(pos, pos);
+    felradNu = 0;
+    ritaRadnummer();
+    return b;
+  }
+
+  function visaStartsida() {
+    sparaBuffert();
+    aktivLektion = null;
+    laddaBuffert("start", STARTKOD, SPRAK.ui.nytt_filnamn);
+    markeraVald(-2);
+    lektionstext.innerHTML = STARTSIDA;
+    lektionstext.className = "lektionstext start";
+    panelLektion.scrollTop = 0;
+    visaFlik("lektion");
+  }
+  startKnapp.addEventListener("click", visaStartsida);
+
+  function oppnaLektion(i) {
+    var lek = LEKTIONER[i];
+    sparaBuffert();
+    aktivLektion = i;
+    laddaBuffert("kap:" + i, lek.kod, lek.fil);
+    markeraVald(i);
+    lektionstext.innerHTML = "<h3>" + SPRAK.ord.kapitel_rubrik
+      .replace("{nr}", lek.nr || i + 1).replace("{titel}", lek.titel) + "</h3>" + lek.forklaring;
+    lektionstext.className = "lektionstext";
+    panelLektion.scrollTop = 0;
+    visaFlik("lektion");
+  }
+
+  /* Lägger tillbaka originalkoden — kapitlets, eller startprogrammet. */
+  function aterstallKapitel() {
+    var original = aktivLektion !== null ? LEKTIONER[aktivLektion].kod : STARTKOD;
+    var namn = aktivLektion !== null ? LEKTIONER[aktivLektion].fil : SPRAK.ui.nytt_filnamn;
+    if (kodruta.value !== original &&
+        !confirm(SPRAK.fraga.aterstall.replace("{plats}", kapitelnamn()))) return;
+    delete buffertar[buffertnyckel()];
+    laddaBuffert(buffertnyckel(), original, namn);
+    kodruta.scrollTop = 0;
+    kodruta.setSelectionRange(0, 0);
+    rensaKonsol();
+    kodruta.focus();
+  }
+  aterstallKapitelKnapp.addEventListener("click", aterstallKapitel);
+
+
+  function ritaLektioner() {
+    var behallare = document.getElementById("lektionslista");
+    behallare.textContent = "";
+    var senasteDel = null;
+    LEKTIONER.forEach(function (lek, i) {
+      if (lek.del !== senasteDel) {
+        var d = document.createElement("p");
+        d.className = "delrubrik" + (senasteDel === null ? " forst" : "");
+        d.textContent = lek.del;
+        behallare.appendChild(d);
+        senasteDel = lek.del;
+      }
+      var knapp = document.createElement("button");
+      knapp.className = "lektion";
+      var nr = document.createElement("span");
+      nr.className = "nr";
+      nr.textContent = String(lek.nr || i + 1).padStart(2, "0");
+      var namn = document.createElement("span");
+      namn.textContent = lek.titel;
+      knapp.appendChild(nr);
+      knapp.appendChild(namn);
+      knapp.addEventListener("click", function () { oppnaLektion(i); });
+      behallare.appendChild(knapp);
+    });
+  }
+
+
+  /* =======================================================
+     Redigeraren
+     ======================================================= */
+  kodruta.addEventListener("input", markeraAndrad);
+
+  kodruta.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); kor(); return; }
+    if (e.key.toLowerCase() === "s" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); sparaFil(e.shiftKey); return; }
+    if (e.key.toLowerCase() === "o" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); oppnaFil(); return; }
+    if (e.key === "Tab") {
+      e.preventDefault();
+      var start = kodruta.selectionStart, slut = kodruta.selectionEnd, text = kodruta.value;
+      if (e.shiftKey) {
+        var radstart = text.lastIndexOf("\n", start - 1) + 1;
+        if (text.substr(radstart, 4) === "    ") {
+          kodruta.value = text.slice(0, radstart) + text.slice(radstart + 4);
+          kodruta.selectionStart = kodruta.selectionEnd = Math.max(radstart, start - 4);
+        }
+      } else {
+        kodruta.value = text.slice(0, start) + "    " + text.slice(slut);
+        kodruta.selectionStart = kodruta.selectionEnd = start + 4;
+      }
+      markeraAndrad();
+      return;
+    }
+    if (e.key === "Enter") {
+      var pos = kodruta.selectionStart;
+      var innan = kodruta.value.slice(0, pos);
+      var rad = innan.slice(innan.lastIndexOf("\n") + 1);
+      var indrag = (rad.match(/^\s*/) || [""])[0];
+      if (/:\s*$/.test(rad)) indrag += "    ";
+      if (indrag) {
+        e.preventDefault();
+        kodruta.value = innan + "\n" + indrag + kodruta.value.slice(kodruta.selectionEnd);
+        kodruta.selectionStart = kodruta.selectionEnd = pos + 1 + indrag.length;
+        markeraAndrad();
+      }
+    }
+  });
+
+  /* =======================================================
+     Körning
+     ======================================================= */
+  function paus(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+  var LASTA = ["ny-knapp", "aterstall-kapitel", "oppna-knapp", "spara-knapp",
+               "spara-som-knapp", "start-knapp"];
+
+  function lasGranssnitt(las) {
+    LASTA.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.disabled = las;
+    });
+    Array.prototype.forEach.call(
+      document.querySelectorAll("#lektionslista .lektion"), function (b) {
+        b.disabled = las;
+      });
+    var app = document.getElementById("app-root");
+    if (app) app.classList.toggle("kor-lage", las);
+  }
+
+  async function kor() {
+    if (!pyodide) return;
+    korKnapp.disabled = true;
+    lasGranssnitt(true);
+    rensaKonsol();
+    visaFlik("utskrift");
+    markeraSteg(0); await paus(140);
+    markeraSteg(1); await paus(140);
+
+    if (pyodide.loadPackagesFromImports) {
+      try {
+        statusEl.className = "status";
+        statusText.textContent = SPRAK.status.kontroll;
+        await andas();
+        await pyodide.loadPackagesFromImports(kodruta.value, {
+          messageCallback: function (m) {
+            skriv(m + "\n", "system");
+            var kort = String(m).replace(/^Loading /, SPRAK.status.hamtar_paket);
+            statusText.textContent = kort.length > 46 ? kort.slice(0, 46) + "…" : kort;
+          }
+        });
+        await andas();
+      } catch (e) {
+        skriv(SPRAK.msg.paketfel + ((e && e.message) || e) + "\n", "fel");
+      }
+      statusEl.className = "status klar";
+      statusText.textContent = SPRAK.status.redo;
+    }
+
+    if (/matplotlib|pyplot/.test(kodruta.value)) {
+      try {
+        await pyodide.runPythonAsync(`
+import matplotlib
+matplotlib.use('AGG')
+import matplotlib.pyplot as _plt
+import base64 as _base64
+import io as _io
+import js as _js
+
+_plt.rcParams.update({
+    'figure.facecolor': '#117c68',
+    'axes.facecolor': '#139b7f',
+    'axes.edgecolor': '#93a9cc',
+    'axes.labelcolor': '#e8f0ff',
+    'axes.titlecolor': '#ffc94a',
+    'text.color': '#e8f0ff',
+    'xtick.color': '#93a9cc',
+    'ytick.color': '#93a9cc',
+    'grid.color': '#0e6c5b',
+    'font.size': 9,
+    'figure.figsize': (8, 3.2),
+})
+
+
+def _labb_visa(*a, **k):
+    for nummer in _plt.get_fignums():
+        figur = _plt.figure(nummer)
+        buffert = _io.BytesIO()
+        figur.savefig(buffert, format='png', dpi=120, bbox_inches='tight')
+        kod = _base64.b64encode(buffert.getvalue()).decode()
+        _js.window._labbBild('data:image/png;base64,' + kod)
+    _plt.close('all')
+
+
+_plt.show = _labb_visa
+`);
+      } catch (e) {
+        skriv(SPRAK.msg.matplotlibfel + ((e && e.message) || e) + "\n", "fel");
+      }
+    }
+
+    markeraSteg(2);
+    var start = performance.now();
+    try {
+      var kallkod = kodruta.value;
+
+      if (syntaxkoll) {
+        var syntaxfel = syntaxkoll(kallkod);
+        if (syntaxfel) {
+          visaSyntaxfel(syntaxfel.toJs ? syntaxfel.toJs() : syntaxfel);
+          return;
+        }
+      }
+
+      if (korProgram) {
+        await korProgram(kallkod);
+      } else {
+        await pyodide.runPythonAsync(kallkod);
+      }
+      markeraSteg(3);
+      if (!konsol.textContent.trim()) {
+        skriv(SPRAK.msg.ingen_utskrift + "\n", "system");
+      }
+      skriv("\n" + SPRAK.msg.klart.replace("{ms}", Math.round(performance.now() - start)) + "\n", "system");
+    } catch (err) {
+      markeraSteg(2);
+      visaFel(String((err && err.message) || err));
+    } finally {
+      korKnapp.disabled = false;
+      lasGranssnitt(false);
+      avbrytAllVantan();
+    }
+  }
+
+
+  document.getElementById("kor-knapp").addEventListener("click", kor);
+  document.getElementById("rensa-knapp").addEventListener("click", function () { rensaKonsol(); visaFlik("utskrift"); });
+  document.getElementById("oppna-knapp").addEventListener("click", oppnaFil);
+  document.getElementById("spara-knapp").addEventListener("click", function () { sparaFil(false); });
+  document.getElementById("spara-som-knapp").addEventListener("click", function () { sparaFil(true); });
+  document.getElementById("ny-knapp").addEventListener("click", function () {
+    if (kodruta.value.trim() &&
+        !confirm(SPRAK.fraga.toma.replace("{plats}", kapitelnamn()))) return;
+    var b = aktivtBuffert();
+    b.kod = STARTKOD;
+    b.filnamn = SPRAK.ui.nytt_filnamn;
+    b.filhandtag = null;
+    b.andrad = false;
+    b.markor = 0;
+    b.rullning = 0;
+    laddaBuffert(buffertnyckel(), STARTKOD, SPRAK.ui.nytt_filnamn);
+    rensaKonsol();
+    kodruta.focus();
+  });
+
+  /* =======================================================
+     Starta Python
+     ======================================================= */
+  /* ---- laddningsskärmen ---- */
+  var laddskarm = document.getElementById("laddskarm");
+  var laddRubrik = document.getElementById("ladd-rubrik");
+  var laddFyll = document.getElementById("ladd-fyll");
+  var laddText = document.getElementById("ladd-text");
+
+  function ladd(procent, rubrik, text) {
+    if (rubrik) laddRubrik.textContent = rubrik;
+    if (text !== undefined) laddText.textContent = text;
+    if (procent === null) {
+      laddFyll.classList.add("obestamd");
+    } else {
+      laddFyll.classList.remove("obestamd");
+      laddFyll.style.width = Math.max(0, Math.min(100, procent)) + "%";
+    }
+  }
+
+  /* Ger webbläsaren en chans att rita om. Utan detta hinner den aldrig
+     visa framstegen, och varnar för att sidan inte svarar. */
+  function andas() {
+    return new Promise(function (klar) {
+      requestAnimationFrame(function () { setTimeout(klar, 0); });
+    });
+  }
+
+  function megabyte(bytes) {
+    return (bytes / 1048576).toFixed(1) + " MB";
+  }
+
+  /* Hämtar den stora wasm-filen själv, med byte-räknare. Pyodide hittar
+     den sedan i webbläsarens cache och slipper hämta om den. */
+  async function forhamta(bas) {
+    var url = bas + "pyodide.asm.wasm";
+    try {
+      var svar = await fetch(url);
+      if (!svar.ok || !svar.body) return;
+      var totalt = parseInt(svar.headers.get("content-length") || "0", 10);
+      var lasare = svar.body.getReader();
+      var hamtat = 0;
+      var sist = 0;
+      while (true) {
+        var bit = await lasare.read();
+        if (bit.done) break;
+        hamtat += bit.value.length;
+        if (hamtat - sist > 262144) {          // uppdatera var 256:e kB
+          sist = hamtat;
+          ladd(totalt ? 8 + (hamtat / totalt) * 52 : null, null,
+               totalt ? SPRAK.ladd.av.replace("{gjort}", megabyte(hamtat)).replace("{totalt}", megabyte(totalt))
+                      : SPRAK.ladd.hamtat.replace("{gjort}", megabyte(hamtat)));
+          await andas();
+        }
+      }
+      ladd(60, null, SPRAK.ladd.nedladdning_klar);
+      await andas();
+    } catch (e) {
+      // Går det inte hämtar Pyodide filen själv i stället.
+    }
+  }
+
+  var KALLOR = [
+    { url: "https://cdn.jsdelivr.net/pyodide/v314.0.4/full/", namn: "jsDelivr v314.0.4" },
+    { url: "https://cdn.jsdelivr.net/pyodide/v0.26.1/full/", namn: "jsDelivr v0.26.1" }
+  ];
+
+  function laddaSkript(url) {
+    return new Promise(function (klar, fel) {
+      var s = document.createElement("script");
+      s.src = url;
+      s.onload = klar;
+      s.onerror = function () { fel(new Error(SPRAK.msg.hamtning_misslyckades + url)); };
+      document.head.appendChild(s);
+    });
+  }
+
+  function medTidsgrans(loften, ms, vad) {
+    return Promise.race([
+      loften,
+      new Promise(function (_, fel) {
+        setTimeout(function () { fel(new Error(SPRAK.msg.tidsgrans + vad)); }, ms);
+      })
+    ]);
+  }
+
+  async function startaPython() {
+    for (var i = 0; i < KALLOR.length; i++) {
+      var kalla = KALLOR[i];
+      statusText.textContent = SPRAK.status.hamtar.replace("{kalla}", kalla.namn);
+      skriv(SPRAK.msg.forsoker_hamta.replace("{kalla}", kalla.namn) + "\n", "system");
+      try {
+        ladd(4, SPRAK.ladd.hamtar, SPRAK.ladd.kontaktar.replace("{kalla}", kalla.namn));
+        await andas();
+        await medTidsgrans(laddaSkript(kalla.url + "pyodide.js"), 25000, kalla.namn);
+
+        ladd(8, SPRAK.ladd.hamtar, SPRAK.ladd.laddar_ner);
+        await andas();
+        await forhamta(kalla.url);
+
+        ladd(null, SPRAK.ladd.startar, SPRAK.ladd.packar);
+        await andas();
+        await andas();
+        pyodide = await medTidsgrans(loadPyodide({ indexURL: kalla.url }), 120000, kalla.namn);
+
+        ladd(90, SPRAK.ladd.nastan, SPRAK.ladd.forbereder);
+        await andas();
+        return true;
+      } catch (e) {
+        skriv(SPRAK.msg.gick_inte + ((e && e.message) || e) + "\n", "system");
+        ladd(4, SPRAK.ladd.igen, SPRAK.ladd.byter);
+        await andas();
+        try { delete window.loadPyodide; } catch (ignorera) { window.loadPyodide = undefined; }
+      }
+    }
+    return false;
+  }
+
+  (async function init() {
+    kodruta.value = STARTKOD;
+    visaFilnamn();
+    ritaRadnummer();
+    ritaLektioner();
+    visaFlik("utskrift");
+
+    var ok = await startaPython();
+    if (!ok) {
+      statusEl.className = "status trasig";
+      statusText.textContent = SPRAK.status.misslyckades;
+      laddskarm.className = "laddskarm trasig";
+      ladd(100, SPRAK.ladd.misslyckades, SPRAK.ladd.ingen_kalla);
+      document.getElementById("ladd-text").textContent = SPRAK.ladd.ladda_om;
+      setTimeout(function () {
+        laddskarm.classList.add("klar");
+        setTimeout(function () { laddskarm.hidden = true; }, 400);
+      }, 2600);
+      skriv("\n" + SPRAK.msg.ingen_kalla + "\n", "fel");
+      visaFlik("utskrift");
+      return;
+    }
+
+    ladd(96, SPRAK.ladd.nastan, SPRAK.ladd.verktyg);
+    await andas();
+
+    pyodide.setStdout({ batched: function (t) { skriv(t + "\n", "ut"); } });
+    pyodide.setStderr({ batched: function (t) { skriv(t + "\n", "fel"); } });
+
+    pyodide.globals.set("_T", pyodide.toPy(SPRAK.py));
+    pyodide.runPython(`
+import ast
+import builtins
+import js
+
+def _tomt(varde):
+    """Sant om värdet inte är ett riktigt svar.
+
+    JavaScript har två sorters tomhet, null och undefined, och Pyodide
+    översätter dem olika. Vi litar därför inte på jämförelser mot None —
+    ett riktigt svar är alltid en sträng, allt annat betyder avbrott.
+    """
+    return not isinstance(varde, str)
+
+
+async def _labb_input(text=''):
+    svar = await _labb_vanta(js.window._labbFraga(str(text)))
+    if _tomt(svar):
+        raise KeyboardInterrupt(_T['avbrot_input'])
+    return svar
+
+builtins.input = _labb_input
+
+
+async def _labb_vanta(loften):
+    return await loften
+
+
+def _labb_generator(fnod):
+    """Sant om funktionen innehåller yield — då är den en generator.
+
+    Nästlade funktioner räknas inte: deras yield tillhör dem, inte oss.
+    """
+    ko = list(fnod.body)
+    while ko:
+        nod = ko.pop()
+        if isinstance(nod, (ast.Yield, ast.YieldFrom)):
+            return True
+        if isinstance(nod, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)):
+            continue
+        ko.extend(ast.iter_child_nodes(nod))
+    return False
+
+
+def _labb_syntax(kallkod):
+    """Kontrollerar syntaxen mot ANVÄNDARENS kod, före all omskrivning.
+
+    Returnerar (rad, kolumn, meddelande) eller None. Radnumret gäller
+    alltså exakt det som står i redigeraren.
+    """
+    try:
+        ast.parse(kallkod)
+        return None
+    except SyntaxError as fel:
+        return (fel.lineno or 1, fel.offset or 1, fel.msg)
+
+
+async def _labb_kor(kallkod):
+    """Kör användarens kod.
+
+    Trädet kompileras direkt i stället för att skrivas ut som text igen.
+    Noderna bär med sig sina ursprungliga radnummer, så en traceback
+    pekar på samma rad som användaren ser i redigeraren.
+    """
+    trad = _labb_trad(kallkod)
+    if trad is None:
+        trad = ast.parse(kallkod)
+    kod = compile(trad, '<program>', 'exec',
+                  flags=ast.PyCF_ALLOW_TOP_LEVEL_AWAIT)
+    resultat = eval(kod, globals())
+    if resultat is not None:
+        await resultat
+
+
+
+def _labb_trad(kallkod):
+    """Bygger om koden till ett träd. None betyder att den inte gick att tolka."""
+    try:
+        trad = ast.parse(kallkod)
+    except SyntaxError:
+        return None
+
+
+    funktioner = {}
+
+    def samla(nod, i_klass=False):
+        # Metoder i klasser tas med: annars kan de aldrig bli asynkrona,
+        # och en loop eller ett input() inuti en metod skulle ge syntaxfel.
+        for barn in ast.iter_child_nodes(nod):
+            if isinstance(barn, ast.ClassDef):
+                samla(barn, True)
+            elif isinstance(barn, ast.FunctionDef):
+                # Generatorer lämnas som de är — de kan inte bli asynkrona
+                # utan att sluta fungera med vanlig for.
+                if not _labb_generator(barn):
+                    funktioner[barn.name] = barn
+                samla(barn, False)
+            else:
+                samla(barn, i_klass)
+
+    samla(trad)
+
+    def anropade_namn(nod):
+        namn = set()
+        for barn in ast.walk(nod):
+            if isinstance(barn, ast.Call):
+                if isinstance(barn.func, ast.Name):
+                    namn.add(barn.func.id)
+                elif isinstance(barn.func, ast.Attribute):
+                    namn.add(barn.func.attr)
+        return namn
+
+    vantar = {'input', 'fetch_json', 'fetch_text', 'fetch_csv',
+              'open_file', 'open_csv', 'open_json'}
+    andrat = True
+    while andrat:
+        andrat = False
+        for namn, nod in funktioner.items():
+            if namn not in vantar and (anropade_namn(nod) & vantar):
+                vantar.add(namn)
+                andrat = True
+
+    class Omvandlare(ast.NodeTransformer):
+        def visit_FunctionDef(self, nod):
+            self.generic_visit(nod)
+            if nod.name in vantar and nod.name in funktioner:
+                falt = {f: getattr(nod, f) for f in nod._fields}
+                return ast.copy_location(ast.AsyncFunctionDef(**falt), nod)
+            return nod
+
+        def visit_Call(self, nod):
+            self.generic_visit(nod)
+            if isinstance(nod.func, ast.Name) and nod.func.id in vantar:
+                return ast.copy_location(ast.Await(value=nod), nod)
+            if isinstance(nod.func, ast.Attribute) and nod.func.attr in vantar:
+                return ast.copy_location(ast.Await(value=nod), nod)
+            return nod
+
+    try:
+        return ast.fix_missing_locations(Omvandlare().visit(trad))
+    except Exception:
+        return None
+
+
+import sys as _sys
+import types as _types
+
+# ---- modulen "data": hämta öppna dataset över nätet ----
+_data_modul = _types.ModuleType('data')
+
+
+async def _hamta_text(url):
+    from pyodide.http import pyfetch
+    try:
+        answer = await _labb_vanta(pyfetch(url))
+    except Exception as error:
+        raise RuntimeError(
+            _T['cors'].replace('{url}', str(url)).replace('{error}', str(error))
+        ) from None
+    if answer.status != 200:
+        raise RuntimeError(_T['statuskod'].replace('{code}', str(answer.status)))
+    return await answer.string()
+
+
+async def _hamta_json(url):
+    import json
+    return json.loads(await _hamta_text(url))
+
+
+async def _hamta_csv(url, delimiter=','):
+    import csv
+    import io
+    text = await _hamta_text(url)
+    return list(csv.DictReader(io.StringIO(text), delimiter=delimiter))
+
+
+def _reservdata():
+    """Används när nätet inte går att nå — samma form som SMHI:s answer."""
+    panel = [
+        ('Kiruna Flygplats', 67.82, -4.1), ('Gällivare', 67.13, -2.8),
+        ('Luleå-Kallax', 65.54, -1.2), ('Umeå Flygplats', 63.79, 0.4),
+        ('Östersund-Frösön', 63.19, -1.9), ('Sundsvall-Timrå', 62.53, 1.1),
+        ('Mora', 61.00, 2.0), ('Karlstad Flygplats', 59.44, 4.2),
+        ('Uppsala Flygplats', 59.89, 3.8), ('Stockholm-Bromma', 59.35, 4.9),
+        ('Norrköping-Kungsängen', 58.58, 5.2), ('Göteborg-Landvetter', 57.67, 5.8),
+        ('Visby Flygplats', 57.66, 4.4), ('Växjö-Kronoberg', 56.93, 5.1),
+        ('Malmö-Sturup', 55.55, 6.7), ('Lund', 55.71, 7.0),
+    ]
+    return [
+        {'name': n, 'latitude': la, 'longitude': 15.0,
+         'value': [{'date': 0, 'value': str(t), 'quality': 'G'}]}
+        for n, la, t in panel
+    ]
+
+
+_data_modul.fetch_text = _hamta_text
+_data_modul.fetch_json = _hamta_json
+_data_modul.fetch_csv = _hamta_csv
+_data_modul.backup_data = _reservdata
+
+
+def _exportera(filename, content):
+    """Laddar ner text till datorn under det angivna filnamnet."""
+    js.window._labbLaddaNer(str(filename), str(content))
+    print(_T['laddade_ner'].replace('{name}', str(filename))
+          .replace('{tecken}', str(len(str(content)))))
+
+
+def _ladda_ner(path, save_as=None):
+    """Tar en fil du skapat med open() och laddar ner den till datorn."""
+    import os
+    if not os.path.exists(path):
+        raise FileNotFoundError(_T['saknas'].replace('{name}', str(path)))
+    with open(path, 'r', encoding='utf-8') as _fil:
+        content = _fil.read()
+    _exportera(save_as or os.path.basename(path), content)
+
+
+def _exportera_csv(filename, rows, columns=None, delimiter=','):
+    """Skriver en lista med dictionaries till en CSV-fil på datorn."""
+    import csv
+    import io
+    if not rows:
+        raise ValueError(_T['tom_lista'])
+    if columns is None:
+        columns = list(rows[0].keys())
+    buffer = io.StringIO()
+    skrivare = csv.DictWriter(buffer, fieldnames=columns, delimiter=delimiter)
+    skrivare.writeheader()
+    for rad in rows:
+        skrivare.writerow({k: rad.get(k, '') for k in columns})
+    _exportera(filename, buffer.getvalue())
+
+
+_data_modul.export = _exportera
+_data_modul.download = _ladda_ner
+_data_modul.export_csv = _exportera_csv
+
+
+async def _oppna_fil(save_as=None, filter='.csv,.json,.txt,.py,.md'):
+    """Visar en filväljare och kopierar in filen i labbets filsystem.
+
+    Returnerar filnamnet, som sedan kan öppnas med vanlig open().
+    """
+    chosen = await _labb_vanta(js.window._labbValjFil(filter))
+    if chosen is None or not hasattr(chosen, 'content'):
+        raise FileNotFoundError(_T['ingen_fil'])
+    name = save_as or chosen.name
+    with open(name, 'w', encoding='utf-8') as _fil:
+        _fil.write(chosen.content)
+    print(_T['laste_in'].replace('{fran}', str(chosen.name)).replace('{till}', str(name))
+          .replace('{tecken}', str(len(chosen.content))))
+    return name
+
+
+async def _oppna_csv(delimiter=','):
+    """Väljer en CSV-fil och returnerar den som en lista med dictionaries."""
+    import csv
+    import io
+    name = await _oppna_fil(filter='.csv,.txt')
+    with open(name, encoding='utf-8') as _fil:
+        return list(csv.DictReader(_fil, delimiter=delimiter))
+
+
+async def _oppna_json():
+    """Väljer en JSON-fil och returnerar innehållet."""
+    import json
+    name = await _oppna_fil(filter='.json')
+    with open(name, encoding='utf-8') as _fil:
+        return json.load(_fil)
+
+
+def _lista_filer(folder='.'):
+    """Visar vilka filer som finns i labbets filsystem."""
+    import os
+    entries = sorted(
+        f for f in os.listdir(folder)
+        if os.path.isfile(os.path.join(folder, f)) and not f.startswith('.')
+    )
+    if not entries:
+        print(_T['inga_filer'])
+        return entries
+    for f in entries:
+        print(f'{f:<28} {os.path.getsize(os.path.join(folder, f)):>8} byte')
+    return entries
+
+
+_data_modul.open_file = _oppna_fil
+_data_modul.open_csv = _oppna_csv
+_data_modul.open_json = _oppna_json
+_data_modul.list_files = _lista_filer
+_sys.modules['data'] = _data_modul
+`);
+
+    syntaxkoll = pyodide.globals.get("_labb_syntax");
+    korProgram = pyodide.globals.get("_labb_kor");
+
+    statusEl.className = "status klar";
+    statusText.textContent = SPRAK.status.redo;
+    korKnapp.disabled = false;
+    rensaKonsol();
+    skriv(SPRAK.msg.redo + "\n", "system");
+    visaFlik("lektion");
+
+    ladd(100, SPRAK.ladd.klart, SPRAK.ladd.redo);
+    await andas();
+    laddskarm.classList.add("klar");
+    setTimeout(function () { laddskarm.hidden = true; }, 400);
+
+  })();
+};
+</script>
+</div>
+
+<script>
+/* Väljer språk och laddar rätt textfil innan motorn startar.
+   ?lang=en i adressen vinner, annars sparat val, annars webbläsarens språk.
+
+   En språkfil får vara ofullständig: saknade nycklar hämtas från
+   basspråket. Det gör att en översättning kan växa fram stegvis utan
+   att något i gränssnittet blir tomt. */
+(function () {
+  var SPRAKEN = ["en", "es"];
+  var BAS = "en";
+
+  /* Valet gjordes redan i dokumenthuvudet, innan sidan ritades. */
+  function valt() {
+    var p = window.PYTHONLAB_VALT;
+    return SPRAKEN.indexOf(p) >= 0 ? p : BAS;
+  }
+
+  function configurarSelectorIdioma() {
+    var idioma = valt();
+    var botones = {
+      en: document.getElementById("language-en"),
+      es: document.getElementById("language-es")
+    };
+    Object.keys(botones).forEach(function (codigo) {
+      var boton = botones[codigo];
+      if (!boton) return;
+      boton.classList.toggle("vald", codigo === idioma);
+      boton.setAttribute("aria-pressed", codigo === idioma ? "true" : "false");
+      boton.addEventListener("click", function () {
+        try { localStorage.setItem("pythonlab.sprak", codigo); } catch (e) {}
+        location.href = location.pathname + "?lang=" + codigo;
+      });
+    });
+  }
+
+  /* Fyller på med basspråkets texter där översättningen saknas.
+     Listor vävs samman post för post — så kan kapitel 1-8 vara
+     översatta medan resten faller tillbaka på basspråket. */
+  function komplettera(bas, over) {
+    if (bas === undefined || bas === null) return over;
+    if (over === undefined || over === null) return bas;
+    if (Array.isArray(bas) && Array.isArray(over)) {
+      var lista = bas.slice();
+      for (var i = 0; i < over.length; i++) {
+        lista[i] = komplettera(bas[i], over[i]);
+      }
+      return lista;
+    }
+    if (Array.isArray(bas) || typeof bas !== "object") return over;
+    var ut = {};
+    Object.keys(bas).forEach(function (k) { ut[k] = bas[k]; });
+    Object.keys(over).forEach(function (k) {
+      ut[k] = (k in bas) ? komplettera(bas[k], over[k]) : over[k];
+    });
+    return ut;
+  }
+
+  function ladda(kod, klar, fel) {
+    var s = document.createElement("script");
+    // Versionen i adressen gör att webbläsaren hämtar om språkfilen när
+    // labbet uppdaterats, i stället för att visa en gammal från cachen.
+    // Frågetecken fungerar inte överallt på file://, så det hoppas över där.
+    var stampel = (location.protocol === "file:" || !window.PYTHONLABBET_VERSION)
+      ? "" : "?v=" + window.PYTHONLABBET_VERSION;
+    s.src = "sprak-" + kod + ".js" + stampel;
+    s.onload = function () {
+      var spr = window.PYTHONLAB_SPRAK && window.PYTHONLAB_SPRAK[kod];
+      spr ? klar(spr) : fel();
+    };
+    s.onerror = fel;
+    document.head.appendChild(s);
+  }
+
+  function misslyckades(kod) {
+    var r = document.getElementById("ladd-rubrik");
+    var t = document.getElementById("ladd-text");
+    if (r) r.textContent = "Language file missing";
+    if (t) t.textContent = 'Could not load "sprak-' + kod + '.js". '
+      + "Keep it in the same folder as this page.";
+  }
+
+  function starta(spr) {
+    var kod = spr.html_lang || spr.kod || BAS;
+    document.documentElement.lang = kod;
+    var lokal = document.querySelector('meta[property="og:locale"]');
+    if (lokal) lokal.setAttribute("content", kod === "es" ? "es_ES" : "en_US");
+    window.PYTHONLAB_START(spr);
+  }
+
+  configurarSelectorIdioma();
+  var kod = valt();
+  ladda(BAS, function (bas) {
+    if (kod === BAS) return starta(bas);
+    ladda(kod, function (over) { starta(komplettera(bas, over)); },
+          function () { starta(bas); });     // saknas översättningen: kör basspråket
+  }, function () { misslyckades(BAS); });
+})();
+</script>
+</body>
+</html>

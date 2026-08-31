@@ -76,6 +76,14 @@ project:
 
         - file: section3/extra/geemap.md
 
+    - title: Notebooks
+      children:
+        - file: section3/notebooks/jupyter-notebooks.md
+
+        - file: section3/notebooks/google-colab.md
+
+        - file: section3/notebooks/marimo.md
+
     - title: Data Processing and Exploration Data Analysis
       children:
         - file: section4/dataSources.md
@@ -144,7 +152,8 @@ project:
 
 site:
   options:
-    logo: Logo2.png
+    logo: eagelogo.jpg
+    favicon: eagelogo.jpg
     folders: true
     style: custom.css
   template: book-theme

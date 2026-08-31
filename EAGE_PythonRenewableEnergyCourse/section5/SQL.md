@@ -90,7 +90,7 @@ WHERE energy_source IN ('Wind', 'Solar')
 
 ```sql
 UPDATE energy_data
-SET energy_generated = 20,000
+SET energy_generated = 20000
 WHERE country = 'Germany' AND energy_source = 'Wind';
 ```
 
@@ -125,7 +125,7 @@ GROUP BY energy_source;
 SELECT energy_source, SUM(energy_generated) AS total_energy
 FROM energy_data
 GROUP BY energy_source
-HAVING SUM(energy_generated) > 20,000;
+HAVING SUM(energy_generated) > 20000;
 ```
 
 ---
@@ -218,7 +218,7 @@ LEFT JOIN regions AS r ON e.country = r.country;
 
 ```sql
 INSERT INTO energy_data (country, energy_source, energy_generated, date)
-VALUES ('Canada', 'Hydro', 18,000, '2024-05-15');
+VALUES ('Canada', 'Hydro', 18000, '2024-05-15');
 ```
 
 ---
@@ -244,7 +244,7 @@ WHERE energy_source LIKE 'S%';
 
 ### FULL OUTER JOIN
 
-A `FULL OUTER JOIN` returns all rows where there is a match in either table. This query lists all customers and their corresponding orders.
+A `FULL OUTER JOIN` returns matched rows plus unmatched rows from both tables. The example below uses generic customer and order tables; those tables must exist before the query is run.
 
 ```sql
 SELECT Customers.CustomerName, Orders.OrderID
@@ -252,3 +252,8 @@ FROM Customers
 FULL OUTER JOIN Orders
 ON Customers.CustomerID = Orders.CustomerID
 ORDER BY Customers.CustomerName;
+```
+
+:::{note}
+SQLite supports `FULL OUTER JOIN` only in recent releases. For portable teaching examples, demonstrate the equivalent with `LEFT JOIN`, `UNION ALL`, and an anti-join for unmatched rows from the right table.
+:::

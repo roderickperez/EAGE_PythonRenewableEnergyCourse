@@ -8,7 +8,7 @@
 
 Programming language is the language we use to *talk* with the machine (0's and 1's). In this Programming language we need to write the instructions that are going to be executed by the machine in a precise *structure* form (*syntax*), with a precise *meaning* (*semantic*). **Python** is one of many *programming languages​​* that we have right know in the market.
 
-Python is an *interpreted* programming language, created by Guido van Rossum, and released in 1991. Interpreted language means the source code of a Python program is converted into bytecode that is then executed by the Python virtual machine. Python is different from major *compiled* languages, such as C and C + +, as Python code is not required to be built and linked like code for these languages. Python is also a **dynamic** language, meaning that the same Python code can be executed multiple times. 
+Python is an *interpreted* programming language created by Guido van Rossum and first released in 1991. In the standard CPython implementation, source code is compiled to bytecode and executed by the Python virtual machine. Python is also **dynamically typed**: names do not have fixed declared types, and type checking occurs at runtime. An object still has a definite type.
 
 Since it is an *interpreted* language, the code is interpreted during run time rather than being compiled to native code hence it is a bit **slower**. When we run a Python script this pieces of instructions are first compiled into *Byte Code*. Then, this *Byte Code* is then interpreted and executed by the PVM (Python Virtual Machine). However, the computational power of current machines is very high, that for regular and common scripts this weakness is practically imperceptible. 
 
@@ -30,9 +30,9 @@ With a Package Manager we can install, upgrade, remove, etc., Python packages in
 
 ## Versions
 
-Exist two main versions of Python: *Python 2* and *Python 3*. **Python 3** whis the most recent major version of Python is **Python 3**, which we shall be using in this course. To date, the most recent and stable version that we can find is version 3.10.5.
+Python 3 is the supported major version used in this course. Install a currently supported Python 3 release that is compatible with the course environment rather than relying on a hard-coded patch version. The official release list is available at [python.org/downloads](https://www.python.org/downloads/).
 
-In general Python 3 has an easier syntax compared to *Python 2*. Notice that a lot of libraries of Python 2 are not forward compatible, and some libraries created for Python 3 strictly used Python 3. Python 2 is not longer in use since 2020. It is good to know that although *Python 2* is not being updated with anything other than security updates, is still quite popular.
+Python 2 reached end of life on January 1, 2020 and no longer receives security fixes. New work must use Python 3. See the [official Python 2 sunset notice](https://www.python.org/doc/sunset-python-2/).
 
 ## Package and a library
 **Packages** are a set of modules that contain scripts and functions. You can write your own modules and packages, and then distributed under *PyPi*. When many packages come together, they build **libraries**. A package manager also manages the libraries because libraries are the collections of packages.
