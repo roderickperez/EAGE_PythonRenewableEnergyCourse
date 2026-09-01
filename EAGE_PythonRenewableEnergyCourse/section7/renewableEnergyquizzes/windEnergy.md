@@ -117,7 +117,12 @@ Cp  = 0.45
 A   = np.pi * (D / 2)**2
 
 v = np.linspace(0, 25, 200)
-P = 0.5 * rho * A * Cp * v**3 / 1000   # kW
+v_cut_in, v_rated, v_cut_out = 3, 12, 25
+P_rated = 0.5 * rho * A * Cp * v_rated**3 / 1000
+P = np.zeros_like(v)
+ramp = (v >= v_cut_in) & (v < v_rated)
+P[ramp] = P_rated * (v[ramp]**3 - v_cut_in**3) / (v_rated**3 - v_cut_in**3)
+P[(v >= v_rated) & (v < v_cut_out)] = P_rated
 
 plt.figure(figsize=(8, 5))
 plt.plot(v, P, color="steelblue", linewidth=2.5, label="Power curve")
@@ -191,8 +196,8 @@ plt.show()
 A wind turbine has the following simplified power curve (wind speed [m/s] → power [kW]):
 
 ```python
-v_curve = [0, 3, 5, 7, 9, 11, 13, 25]
-P_curve = [0, 0, 100, 400, 900, 1500, 2000, 2000]
+v_curve = [0, 3, 5, 7, 9, 11, 13, 24.999, 25]
+P_curve = [0, 0, 100, 400, 900, 1500, 2000, 2000, 0]
 ```
 
 Using the Weibull samples from Question 4 (`k=2.2`, `lam=8.5`, 5000 samples):
@@ -214,10 +219,10 @@ k   = 2.2
 lam = 8.5
 samples = np.random.weibull(k, 5000) * lam
 
-v_curve = [0, 3, 5, 7, 9, 11, 13, 25]
-P_curve = [0, 0, 100, 400, 900, 1500, 2000, 2000]
+v_curve = [0, 3, 5, 7, 9, 11, 13, 24.999, 25]
+P_curve = [0, 0, 100, 400, 900, 1500, 2000, 2000, 0]
 
-power_samples = np.interp(samples, v_curve, P_curve)
+power_samples = np.interp(samples, v_curve, P_curve, left=0, right=0)
 
 mean_power_kW = power_samples.mean()
 AEP_MWh = mean_power_kW * 8760 / 1000

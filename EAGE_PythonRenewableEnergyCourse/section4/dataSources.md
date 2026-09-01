@@ -2,7 +2,9 @@
 
 ## Our World in Data
 
-Link: https://ourworldindata.org/energy-production-consumption 
+Our World in Data publishes energy indicators with detailed metadata [@owid_energy_mix]. Always inspect the measure definition: primary energy, electricity generation, final energy, and consumption are not interchangeable.
+
+Link: https://ourworldindata.org/energy-mix
 
 
 ```{figure} ../images/section4/section4_ourworldindata_1.jpg
@@ -23,7 +25,7 @@ Select the icon to download the data.
 ---
 name: ourworldindata_3
 ---
-Select the "Full data (CSV) and download the data.
+Select the full-data CSV download and save the accompanying metadata.
 ```
 
 ```{figure} ../images/section4/section4_ourworldindata_4.jpg

@@ -9,10 +9,6 @@ project:
     https://github.com/roderickperez/EAGE_PythonRenewableEnergyCourse/tree/main/EAGE_PythonRenewableEnergyCourse
   bibliography:
     - references.bib
-  exports:
-    - format: pdf
-      template: plain_latex_book
-      output: exports/book.pdf
   toc:
     - file: courseIntro.md
     - title: Preface
@@ -32,9 +28,17 @@ project:
 
         - file: section1/pythonIntro.md
 
+        - file: section1/markdown.md
+
+    - title: IDE & Notebooks
+      children:
         - file: section1/IDE.md
 
-        - file: section1/markdown.md
+        - file: section3/notebooks/jupyter-notebooks.md
+
+        - file: section3/notebooks/google-colab.md
+
+        - file: section3/notebooks/marimo.md
 
     - title: Python Basics
       children:
@@ -75,14 +79,6 @@ project:
         - file: section3/extra/ipyleaflet.md
 
         - file: section3/extra/geemap.md
-
-    - title: Notebooks
-      children:
-        - file: section3/notebooks/jupyter-notebooks.md
-
-        - file: section3/notebooks/google-colab.md
-
-        - file: section3/notebooks/marimo.md
 
     - title: Data Processing and Exploration Data Analysis
       children:

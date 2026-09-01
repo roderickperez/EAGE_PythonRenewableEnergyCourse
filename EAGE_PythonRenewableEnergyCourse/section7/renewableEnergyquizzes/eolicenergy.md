@@ -14,7 +14,7 @@ This quiz focuses on the fundamental concepts of eolic (wind) energy, wind resou
 
 **Wind Resource Assessment**
 
-The average wind power density (W/m²) is an indicator of the wind resource quality at a site.  
+The average wind power density (W/m²) is an indicator of wind resource quality. The 12 monthly mean speeds below support only a coarse teaching approximation: true wind power density requires higher-frequency speed observations because submonthly variability is lost.  
 It is calculated as:
 
 $$WPD = \frac{1}{2} \rho \overline{v^3}$$
@@ -34,7 +34,7 @@ Calculate:
 :::{admonition} Question 1 (Solution)
 :class: tip, dropdown
 
-Note: $\overline{v^3}$ is the mean of the cubed speeds, not the cube of the mean:
+For this approximate exercise, $\overline{v^3}$ is the mean of the cubed monthly means, not the cube of their annual mean. Do not interpret it as a bankable resource assessment:
 
 ```{code-cell} python
 import numpy as np

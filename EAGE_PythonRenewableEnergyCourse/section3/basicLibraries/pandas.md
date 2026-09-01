@@ -141,7 +141,7 @@ We can also use `:` to return all data.
 We can also `slice` our `DataFrame` using the `loc` and `iloc` attributes. For example, we can return the first three rows of our `DataFrame` using the following code:
 
 ```{code-cell} python
-print(pandasDataFrame.iloc[2:6, 0])
+print(pandasDataFrame.iloc[2:5, 0])
 ```
 
 ```{image} ../../images/pandasSlicing_iloc.png
@@ -169,11 +169,11 @@ print(precipitationDataFrame)
 Explore the **Precipitation dataset**, and show the first 10 rows and the last 7 of the dataset using the `head` and `tail` functions.
 
 ```{code-cell} python
-print(precipitationDataFrame.XXXXX(xxx))
+print(precipitationDataFrame.head(10))
 ```
 
 ```{code-cell} python
-print(precipitationDataFrame.YYYYY(yyy))
+print(precipitationDataFrame.tail(7))
 ```
 
 Note: Use the to `help()` to find the documentation.

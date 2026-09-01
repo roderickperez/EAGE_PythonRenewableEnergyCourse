@@ -1,157 +1,63 @@
 # Course Summary
 
-This page provides a concise overview of each section covered in the course,
-the key skills practised, and the Python tools introduced.
+This summary follows the actual course structure and distinguishes core outcomes from optional extensions.
 
----
+## Section 0 — Renewable-energy context
 
-## Section-by-Section Overview
+Energy, power, units, capacity factor, resource variability, and the role of auditable data analysis.
 
-### Section 0 — Introduction to Renewable Energy
+## Section 1 — Python environments and notebooks
 
-An overview of the global energy landscape, the case for renewables, and
-an introduction to how Python can support energy engineers and geoscientists.
+Python 3, development environments, Jupyter/Colab, Markdown, and reproducible computational documents.
 
-**Key topics:** Energy transition, renewable resource types, Python as an engineering tool.
+## Section 2 — Python basics
 
----
+Variables, numeric operations, functions, lists, tuples, dictionaries, sets, conditions, `for` loops, and selected built-in functions. Function naming is a convention rather than a syntax restriction, and functions without `return` yield `None`.
 
-### Section 2 — Python Basics
+## Section 3 — Scientific Python libraries
 
-Core Python programming skills essential for all subsequent modules.
+- NumPy arrays, vectorised arithmetic, shape, indexing, and sampling.
+- pandas DataFrames, selection, missing values, summaries, and transformations.
+- Matplotlib and Seaborn for labelled scientific plots.
+- Optional overviews of interactive and geospatial libraries.
 
-| Topic | Concepts |
-|-------|----------|
-| Variables & Data Types | `int`, `float`, `str`, `bool` |
-| Math Operations | Arithmetic, exponentiation, modulo |
-| Functions | `def`, `return`, arguments, scope |
-| Data Structures | Lists, tuples, dictionaries |
-| Cycles (Loops) | `for`, `while`, `range()` |
-| Integrated Functions | `len()`, `sum()`, `min()`, `max()`, `print()` |
+## Section 4 — Data quality and time series
 
----
+Source definitions, units, tidy data, missingness, duplicate keys, coverage, exploratory analysis, monthly decomposition with period 12, stationarity testing, and chronological forecast evaluation. The Eurostat case study is monthly net electricity generation in GWh, not consumption in TJ.
 
-### Section 3 — NumPy
+## Section 5 — Databases and SQL
 
-The numerical computing foundation of scientific Python.
+Relational design, primary and foreign keys, SQLite, SQL filtering and aggregation, a country–month–source generation table, and reconciliation of SQL totals against pandas.
 
-| Topic | Key Functions |
-|-------|---------------|
-| Array Creation | `np.array`, `np.arange`, `np.linspace`, `np.zeros` |
-| Indexing & Slicing | Boolean indexing, fancy indexing |
-| Mathematical Ops | `np.sum`, `np.mean`, `np.std`, element-wise arithmetic |
-| Reshaping | `reshape()`, broadcasting rules |
-| Random & Statistics | `np.random.normal`, `np.percentile` |
+## Section 6 — Renewable-energy calculations
 
----
+| Technology | Principal relationship | Important interpretation |
+|---|---|---|
+| Hydroelectric | $P=\eta\rho gQH$ | Annual energy uses net rated capacity and capacity factor |
+| Solar PV | $P\approx P_{STC}(G/G_{STC})[1+\alpha(T_c-T_{STC})]$ | Irradiance and temperature both affect DC output |
+| Wind | $P=\tfrac12\rho A v^3 C_P$ | Expected power requires a speed distribution and turbine power curve |
+| Geothermal | $q=-k\,dT/dz$ and $P_{th}=\dot m c_p\Delta T$ | Thermal and electrical power must be kept distinct |
 
-### Section 4 — Pandas
+These are simplified engineering models. Site assessment requires technology-specific loss models, uncertainty, environmental constraints, and current project data.
 
-Tabular data manipulation for real-world datasets.
+## Section 7 — Quizzes and exercises
 
-| Topic | Key Operations |
-|-------|----------------|
-| DataFrame Creation | `pd.DataFrame()` from dict or CSV |
-| Selection | Column selection, `.loc[]`, `.iloc[]` |
-| Filtering | Boolean conditions |
-| GroupBy | `.groupby().agg()` |
-| Transformations | Adding columns, `.apply()` |
-| Summary Stats | `.describe()`, `.sort_values()` |
+Exercises reinforce Python, NumPy, pandas, plotting, and renewable-energy calculations. Learners should run every solution and inspect units and edge cases rather than accepting output solely because code executes.
 
----
+## Section 8 — Final project
 
-### Section 5 — Matplotlib
+The final project integrates source interpretation, data quality, visualisation, monthly forecasting, SQLite, reconciliation checks, an engineering scenario, and technical communication.
 
-Data visualisation for scientific and engineering communication.
+## Core completion checklist
 
-| Plot Type | Use Case |
-|-----------|----------|
-| Line plot | Time series, power curves |
-| Bar chart | Comparisons across categories |
-| Scatter plot | Correlations between variables |
-| Histogram | Frequency distributions |
-| Subplots | `plt.subplots()` for multi-panel figures |
+- [x] Explain the difference between power and energy.
+- [x] Validate units, grain, date coverage, and missing values before analysis.
+- [x] Manipulate arrays and DataFrames without hidden shape assumptions.
+- [x] Produce charts with accurate titles, axes, units, and scope.
+- [x] Avoid double-counting aggregate and component energy categories.
+- [x] Use a chronological holdout and a simple forecast baseline.
+- [x] Create and query a relational SQLite database.
+- [x] Apply the main hydro, solar, wind, and geothermal equations with stated assumptions.
+- [x] Communicate data freshness and limitations.
 
----
-
-### Section 6 — Renewable Energy Modules
-
-Applied physics and Python calculations for four energy technologies.
-
-#### Wind Energy
-- Wind power formula: $P = \frac{1}{2} \rho A v^3$
-- Betz limit: $C_{P,max} = 16/27 \approx 0.593$
-- Power curves, Weibull wind speed distributions
-- Wake effects and annual energy production (AEP)
-
-#### Solar Energy
-- PV panel power: $P_{DC} = G \cdot A \cdot \eta$
-- Temperature derating with temperature coefficient $\gamma$
-- Peak sun hours, system efficiency, capacity factor
-
-#### Hydroelectric Energy
-- Hydro power: $P = \eta \rho g Q H$
-- Reservoir potential energy, flow-rate sensitivity
-- Annual generation from capacity factor
-
-#### Geothermal Energy
-- Geothermal gradient and heat flow ($Q = \lambda \nabla T$)
-- Reservoir temperature estimation
-- Plant efficiency and net power output
-
----
-
-### Section 7 — Quizzes
-
-Self-assessment quizzes covering all course topics:
-
-- **Python Basics Quiz** — variables, operators, conditionals, loops, functions
-- **NumPy Quiz** — array operations, statistics, broadcasting
-- **Pandas Quiz** — DataFrames, filtering, groupby, visualisation
-- **Matplotlib Quiz** — line plots, bar charts, scatter plots, subplots
-- **Wind Energy Quiz** — power formula, Betz limit, Weibull, power curves
-- **Solar Energy Quiz** — irradiance, temperature derating, capacity factor
-- **Hydroelectric Quiz** — power formula, flow rate, annual energy
-- **Eolic Energy Quiz** — wind resource assessment, shear, wake effects
-- **Exercises Review** — integrated Python exercises covering all foundations
-
----
-
-### Section 8 — Course Final Project
-
-An integrated project that applies all course skills to a real-world renewable energy scenario,
-combining data loading, analysis, visualisation, and engineering calculations.
-
----
-
-### Section 9 — Summary and Conclusions
-
-- **This page** — section-by-section review and skills matrix.
-- **[Course Conclusions](courseConclusions.md)** — reflections, key takeaways, and next learning steps.
-
----
-
-## Python Libraries Used in This Course
-
-| Library | Purpose |
-|---------|---------|
-| `numpy` | Numerical arrays and mathematics |
-| `pandas` | Tabular data and data frames |
-| `matplotlib.pyplot` | Data visualisation |
-| `math` | Standard mathematical functions |
-| `scipy` | Scientific computing (supplementary) |
-
----
-
-## Skills Matrix
-
-By completing this course you should be able to:
-
-- [x] Write Python scripts to solve engineering equations
-- [x] Load and manipulate datasets with Pandas
-- [x] Perform vectorised numerical computations with NumPy
-- [x] Create clear, labelled plots with Matplotlib
-- [x] Calculate wind, solar, hydro, and geothermal power outputs
-- [x] Interpret capacity factors and annual energy production
-- [x] Use statistical tools to characterise wind and solar resources
-- [x] Apply Python in a Jupyter / JupyterBook interactive environment
+Deep learning, operational forecasting, power-system optimisation, satellite classification, and bankable resource assessment are optional next steps, not claimed core outcomes of this short course.

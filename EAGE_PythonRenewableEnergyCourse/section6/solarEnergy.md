@@ -10,7 +10,7 @@ kernelspec:
 Solar energy is the most abundant energy resource on Earth. Every hour, the Sun
 delivers to Earth's surface more energy than humanity consumes in an entire year.
 **Photovoltaic (PV)** technology converts sunlight directly into electricity via
-the **photovoltaic effect**, while **Concentrated Solar Power (CSP)** focuses
+the **photovoltaic effect** [@doe_pv_basics], while **Concentrated Solar Power (CSP)** focuses
 sunlight to drive a heat engine.
 
 ## How Photovoltaic Cells Work
@@ -102,7 +102,7 @@ Typical capacity factors for solar PV:
 
 :::{admonition} Solar's Cost Revolution
 :class: note
-IRENA reports that the global weighted-average levelised cost of utility-scale solar PV electricity fell by about **90% from 2010 to 2024**. Installed cost, module price, and LCOE are different metrics and should not be used interchangeably. Solar paired with adequately sized storage and other firm resources can improve reliability, but round-the-clock supply depends on demand, weather, storage duration, transmission, and system design. Several countries have
+IRENA reports that the global weighted-average levelised cost of utility-scale solar PV electricity fell by about **90% from 2010 to 2024** [@irena_costs_2024]. Installed cost, module price, and LCOE are different metrics and should not be used interchangeably. Solar paired with adequately sized storage and other firm resources can improve reliability, but round-the-clock supply depends on demand, weather, storage duration, transmission, and system design. Several countries have
 already recorded hours where solar alone met 100 % of national electricity demand.
 :::
 

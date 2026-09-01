@@ -807,11 +807,11 @@ Now, try yourself, what will happen if we divide one scalar with and array, or a
 What can you say about diving two arrays?
 
 ```{code-cell} python
-array1 = XXXXXXXXXXXXXXXX # Try first with an scalar, and then try with an array
+array1 = np.array([2, 4, 6, 8, 10])  # replace with a scalar to compare broadcasting
 
 array2 = np.array([24, 60, 12, 40, 15])
 
-arrayDiv = array1 XXXXXXX array2
+arrayDiv = array1 / array2
 
 print('The division of array1 and array2 is: ', arrayDiv)
 ```
@@ -822,7 +822,7 @@ print('The division of array1 and array2 is: ', arrayDiv)
 
 In mathematics, the dot product or scalar product is an algebraic operation that takes two equal-length sequences of numbers (usually coordinate vectors), and returns a single number [Reference](https://en.wikipedia.org/wiki/Dot_product).
 
-The function `np.dot(a,b)` returns the dot product of two arrays. For 2D vectors, it is the equivalent to matrix multiplication. For 1D arrays, it is the inner product of the vectors. For N-dimensional arrays, it is a sum product over the last axis of a and the second-last axis of b.
+The function `np.dot(a, b)` returns the inner product for 1-D arrays and matrix multiplication for 2-D arrays. For higher-dimensional arrays its contraction rules are more specialised; prefer the `@` operator or `np.matmul` when matrix multiplication is the intended operation.
 
 ```{image} ../../images/dotProduct.png
 :alt: dotProduct

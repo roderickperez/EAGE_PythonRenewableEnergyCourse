@@ -331,7 +331,7 @@ plt.show()
 :::{admonition} Exercise 14
 :class: note
 
-Can you think of a way to generate a bar plot, where the bars are oriented horizontally, red, with a width of 0.5?
+Can you think of a way to generate a bar plot, where the bars are oriented horizontally, red, with a height of 0.5?
 
 :::
 

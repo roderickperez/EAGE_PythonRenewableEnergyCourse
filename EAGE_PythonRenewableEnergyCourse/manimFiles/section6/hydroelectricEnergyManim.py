@@ -71,7 +71,6 @@ class EnergyAnimation(Scene):
 
     # ── 2  Diagram: reservoir → turbine ─────────────────────────────────────
     def _scene_diagram(self):
-        # mountain / reservoir (left side)
         mountain = Polygon(
             [-5.5, -2.5, 0], [-3.0, 1.8, 0], [-0.5, -2.5, 0],
             color=GRAY_D, fill_color=GRAY_D, fill_opacity=1,
@@ -136,9 +135,9 @@ class EnergyAnimation(Scene):
             param_name="h",
             param_color=C_HEIGHT,
             param_label="Hydraulic Head  h  (height of water above turbine)",
-            values=[("h = 20 m\n(low dam)",    20,  100),
-                    ("h = 60 m\n(medium dam)",  60,  100),
-                    ("h = 100 m\n(high dam)",  100,  100)],
+            values=[("h = 20 m\n(low dam)",    1000, 9.81, 20),
+                    ("h = 60 m\n(medium dam)", 1000, 9.81, 60),
+                    ("h = 100 m\n(high dam)",  1000, 9.81, 100)],
             fixed_note="m = 1000 kg   ·   g = 9.81 m/s²",
             interpretation=(
                 "Double the height → double the energy.\n"
@@ -152,9 +151,9 @@ class EnergyAnimation(Scene):
             param_name="m",
             param_color=C_MASS,
             param_label="Mass of water  m  (flow rate × time)",
-            values=[("m = 500 kg\n(trickle)",      50,  9.81),
-                    ("m = 1000 kg\n(moderate flow)", 100, 9.81),
-                    ("m = 2000 kg\n(large flow)",    200, 9.81)],
+            values=[("m = 500 kg\n(trickle)",      500,  9.81, 60),
+                    ("m = 1000 kg\n(moderate flow)", 1000, 9.81, 60),
+                    ("m = 2000 kg\n(large flow)",    2000, 9.81, 60)],
             fixed_note="g = 9.81 m/s²   ·   h = 60 m",
             interpretation=(
                 "More water volume per second → more energy.\n"
@@ -168,9 +167,9 @@ class EnergyAnimation(Scene):
             param_name="g",
             param_color=C_GRAVITY,
             param_label="Gravitational acceleration  g",
-            values=[("Moon\ng ≈ 1.62 m/s²",  100,  1.62),
-                    ("Earth\ng = 9.81 m/s²",  100,  9.81),
-                    ("Jupiter\ng ≈ 24.8 m/s²", 100, 24.8)],
+            values=[("Moon\ng ≈ 1.62 m/s²",    1000, 1.62, 60),
+                    ("Earth\ng = 9.81 m/s²",   1000, 9.81, 60),
+                    ("Jupiter\ng ≈ 24.8 m/s²", 1000, 24.8, 60)],
             fixed_note="m = 1000 kg   ·   h = 60 m",
             interpretation=(
                 "g is constant on Earth (9.81 m/s²).\n"
@@ -197,7 +196,7 @@ class EnergyAnimation(Scene):
         eq.next_to(fixed, DOWN, buff=0.4)
         self.play(Write(eq))
 
-        max_E = max(m * g for _, m, g in values)
+        max_E = max(m * g * h for _, m, g, h in values)
         bar_group  = VGroup()
         bar_labels = VGroup()
         E_labels   = VGroup()
@@ -208,8 +207,8 @@ class EnergyAnimation(Scene):
         bar_width      = bar_area_width / len(values) * 0.55
         spacing        = bar_area_width / len(values)
 
-        for i, (case_label, m_val, g_val) in enumerate(values):
-            E = m_val * g_val
+        for i, (case_label, m_val, g_val, h_val) in enumerate(values):
+            E = m_val * g_val * h_val
             bar_h = (E / max_E) * bar_max_height
             x = bar_area_left + spacing * (i + 0.5)
             y_bottom = -2.8
@@ -295,99 +294,3 @@ class EnergyAnimation(Scene):
         self.play(final.animate.scale(1.15), rate_func=there_and_back, run_time=1.2)
         self.wait(1.5)
         self.play(FadeOut(final))
-
-        # ── 1. Display the Formula ────────────────────────────────────────────
-        formula = MathTex("E", "=", "m", "\\cdot", "g", "\\cdot", "h")
-        formula.set_color_by_tex("E", YELLOW)
-        formula.set_color_by_tex("m", BLUE)
-        formula.set_color_by_tex("h", GREEN)
-        formula.to_edge(UP)
-
-        self.play(Write(formula))
-        self.wait(1)
-
-        # ── 2. Setup visual elements ──────────────────────────────────────────
-        # Ground line + turbine circle
-        ground = Line(LEFT * 3, RIGHT * 3).shift(DOWN * 2.5)
-        turbine = Circle(radius=0.3, color=GRAY).move_to(ground.get_center())
-        turbine_label = Text("Turbine", font_size=20).next_to(turbine, DOWN)
-
-        # Water box – represents mass m
-        water_box = Rectangle(
-            width=1, height=1, fill_opacity=0.8, color=BLUE
-        )
-        water_box.move_to(UP * 1)  # Initial height h ≈ 1
-
-        # Height arrow from ground to bottom of water box
-        height_arrow = DoubleArrow(
-            start=ground.get_center(),
-            end=water_box.get_bottom(),
-            buff=0,
-            color=GREEN,
-        )
-        h_label = MathTex("h", color=GREEN).next_to(height_arrow, LEFT)
-        m_label = MathTex("m", color=BLUE).move_to(water_box.get_center())
-
-        self.play(Create(ground), Create(turbine), Write(turbine_label))
-        self.play(
-            FadeIn(water_box),
-            Create(height_arrow),
-            Write(h_label),
-            Write(m_label),
-        )
-        self.wait(1)
-
-        # ── 3. Vary Height (h) ────────────────────────────────────────────────
-        # Move water higher → h increases → E increases
-        self.play(
-            water_box.animate.shift(UP * 1.5),
-            height_arrow.animate.stretch_to_fit_height(
-                4, about_edge=DOWN
-            ).shift(UP * 0.75),
-            h_label.animate.shift(UP * 0.75),
-            run_time=2,
-        )
-        # Flash the E and h terms in the formula
-        self.play(
-            Indicate(formula[0]),   # E
-            Indicate(formula[6]),   # h
-        )
-        self.wait(1)
-
-        # ── 4. Vary Mass (m) ──────────────────────────────────────────────────
-        # Widen the water box → m doubles → E doubles
-        new_m_label = MathTex("2m", color=BLUE).move_to(
-            water_box.get_center() + RIGHT * 0.5
-        )
-        self.play(
-            water_box.animate.stretch_to_fit_width(2, about_edge=LEFT),
-            Transform(m_label, new_m_label),
-            run_time=2,
-        )
-        self.play(
-            Indicate(formula[0]),   # E
-            Indicate(formula[2]),   # m
-        )
-        self.wait(1)
-
-        # ── 5. Release – water falls to turbine ───────────────────────────────
-        self.play(
-            water_box.animate.move_to(turbine.get_center() + UP * 0.3),
-            FadeOut(height_arrow),
-            FadeOut(h_label),
-            FadeOut(m_label),
-            run_time=1.5,
-            rate_func=rush_into,
-        )
-        self.play(Rotate(turbine, angle=2 * PI * 3, run_time=1))
-        turbine.set_color(YELLOW)
-
-        # ── 6. Final message ──────────────────────────────────────────────────
-        final_text = Text(
-            "Higher h  +  More m  =  More Power",
-            font_size=28,
-            color=YELLOW,
-        )
-        final_text.next_to(formula, DOWN, buff=0.4)
-        self.play(Write(final_text))
-        self.wait(2)

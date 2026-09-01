@@ -40,24 +40,57 @@ Google Colaboratory, or "[Colab](https://colab.research.google.com/)", is a prod
 
 Google Colab provides hosted notebooks and, when available, access to CPU, GPU, or TPU runtimes. Accelerator availability, memory, session length, and performance vary by plan, region, workload, and current capacity; do not assume a fixed speed-up or runtime limit.
 
-Next table compare the performance of Colab and Jupyter Notebooks.
-
-```{table} Jupyer vs Colab
-:name: jupyer-vs-colab-comparison
-
-| Jupyter Notebook | Google Colab |
-|---|---|
-| Direct access to local file system | Data stored in GDrive |
-| Local computation: Uses your local hardware (CPU | GPU) | Remote Computation: 12 GB GPU RAM for up to 12 hours |
-| Local Resources | 128 bit FLOPS (floating point number) |
-| Resources | Runtime-dependent RAM |
-| Storage | Temporary runtime storage plus optional Google Drive |
-| Install packages locally just once | Re-install packages for each session |
-| Considered safer in terms of data security | Allows collaborative work between developers |
-```
-
 ### Where are my notebooks stored, and can I share them?link
 Colab notebooks are stored in Google Drive, or can be loaded from GitHub. Colab notebooks can be shared just as you would with Google Docs or Sheets. Simply click the Share button at the top right of any Colab notebook, or follow these Google Drive [file sharing instructions](https://support.google.com/drive/answer/2494822?co=GENIE.Platform%3DDesktop&hl=en).
+
+## Marimo
+
+[Marimo](https://marimo.io/) is a reactive Python notebook framework designed for reproducible scientific and data workflows. Unlike a classic notebook that executes cells in a linear order, Marimo keeps code, output, and dependencies synchronized so that a change in one variable can update the cells that depend on it automatically.
+
+This makes Marimo especially useful when you are building notebooks that behave more like executable analysis scripts than static teaching examples. It is also a good option for sharing notebooks that should be easier to review in version control because the notebook is stored as a Python file rather than a JSON-based `.ipynb` file.
+
+### Install Marimo
+
+To install Marimo locally:
+
+```bash
+pip install marimo
+```
+
+To launch it in a browser:
+
+```bash
+marimo edit
+```
+
+For official documentation and source code, see:
+
+- [Marimo documentation](https://docs.marimo.io/)
+- [Marimo GitHub repository](https://github.com/marimo-team/marimo)
+- [Marimo installation guide](https://docs.marimo.io/getting_started/installation/)
+
+### Why use Marimo?
+
+- Good for reproducible, reactive workflows.
+- Makes code easier to version-control and review in Git.
+- Works well for notebook-based data analysis and exploratory programming.
+- Can be a strong alternative when you want more structure than a traditional notebook but less overhead than a full app framework.
+
+## Comparative overview of notebook environments
+
+The following table compares the main notebook environments used in this course: Jupyter Notebook, Google Colab, and Marimo.
+
+| Tool | Access model | Setup required | Compute resources | GPU / TPU access | Collaboration | Agent coding support | Typical use |
+|---|---|---|---|---|---|---|---|
+| Jupyter Notebook | Local app in the browser; files saved on your machine | Download and install Python + Jupyter | Depends on your local machine | Usually only if your local hardware supports it | Good with Git and local sharing | Moderate; works well with VS Code and local editors | Classroom, local research, reproducible analysis |
+| Google Colab | Web-based; runs in the browser | No local install required | Cloud resources managed by Google | Often available through free and paid plans | Strong with Google Drive and sharing links | Good, especially with AI-assisted coding environments | Fast prototyping, teaching, cloud experiments |
+| Marimo | Local browser app or remote deployment | Install with `pip install marimo` | Depends on local machine or server | Depends on the host environment | Good with Git and code-based notebooks | Strong for code-first workflows and AI-assisted exploratory coding | Reproducible notebooks and reactive data apps |
+
+### Practical recommendation
+
+- Use **Jupyter Notebook** when you want a simple local workflow and full control over your environment.
+- Use **Google Colab** when you want a quick browser-based environment with cloud compute and no local installation.
+- Use **Marimo** when you want a reactive, code-first notebook workflow that feels more structured and version-control friendly.
 
 ## Anatomy of a Google Colab Notebook
 
@@ -87,3 +120,14 @@ Colab notebooks are stored in Google Drive, or can be loaded from GitHub. Colab 
 :width: 800px
 :align: center
 ```
+
+## References
+
+- [Jupyter Project](https://github.com/jupyter/)
+- [Jupyter Notebook documentation](https://jupyter.org/)
+- [JupyterLab documentation](https://jupyterlab.readthedocs.io/en/stable/)
+- [Google Colab](https://colab.research.google.com/)
+- [Google Drive sharing guide](https://support.google.com/drive/answer/2494822?co=GENIE.Platform%3DDesktop&hl=en)
+- [Marimo documentation](https://docs.marimo.io/)
+- [Marimo GitHub repository](https://github.com/marimo-team/marimo)
+- [Marimo installation guide](https://docs.marimo.io/getting_started/installation/)

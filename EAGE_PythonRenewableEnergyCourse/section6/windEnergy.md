@@ -834,8 +834,8 @@ available power **eightfold**.
 ### Betz's Law — Maximum Power Extraction
 
 A rotor cannot extract all the kinetic energy from the wind (the air would stop
-and block the rotor). Betz (1919) proved the theoretical maximum fraction of
-wind power that any rotor can capture is:
+and block the rotor). Betz showed that the theoretical maximum fraction of
+wind power that any ideal rotor can capture is [@betz1919maximum]:
 
 $$C_{P,\max} = \frac{16}{27} \approx 59.3\,\%$$
 
@@ -1032,7 +1032,7 @@ plt.show()
 
 ---
 
-### Exercise 5 — Annual Energy Production from a Wind Rose
+### Exercise 5 — Annual Energy Production from a Wind-Speed Distribution
 
 Using the Weibull distribution from Exercise 4 ($k = 2.0$, $c = 9$ m/s) and
 the turbine from Exercise 3 (3 MW rated):

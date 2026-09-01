@@ -21,7 +21,7 @@ and with a very small land footprint.
 | **Dry Steam** | > 235 °C | Steam directly drives the turbine |
 | **Flash Steam** | 180 – 350 °C | High-pressure brine flashes to steam in a separator |
 | **Binary / ORC** | 100 – 180 °C | Hot brine heats a low-boiling organic fluid in a heat exchanger; organic vapour drives the turbine |
-| **Enhanced (EGS)** | Hot, low-permeability rock | Fluid circulates through engineered fractures and returns carrying heat; it may flash to steam or heat a secondary working fluid |
+| **Enhanced (EGS)** | Hot, low-permeability rock | Fluid circulates through engineered fractures and returns carrying heat; it may flash to steam or heat a secondary working fluid [@doe_egs] |
 
 ## Key Equations
 

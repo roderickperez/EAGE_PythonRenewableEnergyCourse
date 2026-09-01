@@ -69,7 +69,7 @@ Now is your time. Show what is the third element inside the list `names`:
 
 ```{code-cell} python
 names = ["Maria", "Pedro", "Juana", "Omar"]
-print('The third element in the list of names is: ' , XXXXXX) # Replace XXXX with the correct function
+print('The third element in the list of names is: ' , names[2])
 ```
 :::
 
@@ -83,12 +83,12 @@ lengthList = len(nameList)
 
 :::
 
-:::{admonition} Exercise 5
+:::{admonition} Exercise 6
 Try yourself, write a list of `n` elements, and using the `len` function, print the length of the list.
 
 ```{code-cell} python
-myList = # Complete a list of values here
-print('The length of the elements in myList is: ' , XXXXXX) # Replace XXXX with the correct function
+myList = [10, 20, 30, 40]
+print('The length of the elements in myList is: ' , len(myList))
 ```
 :::
 
@@ -107,7 +107,7 @@ Check by yourself the type of variable in different locations in the list `allDa
 
 ```{code-cell} python
 allDataTypes = ["Roderick", 1.85, 39, True]
-print('The variable located in the XXXXX position in the list allDataTypes' , type(allDataTypes[YYYYYY])) # Replace XXXX and YYYYY with the correct values
+print('The variable at index 2 is of type:', type(allDataTypes[2]))
 ```
 :::
 

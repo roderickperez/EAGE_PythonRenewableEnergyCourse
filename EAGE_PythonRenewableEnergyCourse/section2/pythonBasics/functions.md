@@ -82,7 +82,7 @@ In IPython and Jupyter, appending `?` displays help for an object. Standard Pyth
 Also, by using the combination of Shift and Tab on your keyboard, you can see the documentation associated with it.
 
 ```{code-cell} python
-functionDefaultParameter?
+help(functionDefaultParameter)
 ```
 :::
 

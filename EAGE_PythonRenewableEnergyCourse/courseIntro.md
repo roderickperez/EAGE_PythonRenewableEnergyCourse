@@ -12,11 +12,9 @@ Last technical review: August 31, 2026
 ## Course Description
 
 This course develops practical Python skills for analysing renewable-energy data. It connects programming fundamentals with energy datasets, exploratory analysis, SQL, time-series methods, and engineering calculations for hydroelectric, solar, wind, and geothermal systems.
-production from renewable energy sources, the rise and need to increase knowledge in green and environmentally friendly energies, the Artificial Intelligence for Renewable Energies course is designed so that participants acquire the theoretical and practical knowledge to apply the concepts of Artificial Intelligence in the field of Renewable Energies such as solar, wind, geothermal, and hydrology.
-
 Starting with Python programming, participants learn to load, validate, analyse, visualise, and store real energy data. The course introduces reproducible time-series analysis and predictive modelling, while keeping the distinction between measured data, engineering estimates, and model forecasts explicit.
 
-Participants won’t need previous programming experience in Python, and no software is required. We will use Google CoLab platform to program the exercises.
+Participants do not need prior Python experience. Exercises can run in Google Colab or in the reproducible local environment documented with the repository.
 
 ## Objectives
 
@@ -52,7 +50,7 @@ The course is designed for learners with no prior Python experience. Basic algeb
 
 ## Instructor
 
-**Roderick Perez Altamar, Ph.D>**
+**Roderick Perez Altamar, Ph.D.**
 Geophysical Engineer from the Simón Bolívar University in Venezuela, with a Master's degree in Geology and a Ph.D. in Geophysics from the University of Oklahoma, an MBA from the Universidad de Los Andes, and currently pursuing a Master's degree in Data Science at the University of Vienna. Roderick is a seismic
 interpreter, with more than 15 years of experience in the Oil & Gas industry, where he has developed techniques for characterizing the fragility of these reservoirs. He specialized in the characterization of
 YNC in the USA (Barnett Shale, Eagle Ford, Marcellus Shale, Permian Basin, among others), as well as the characterization and economic evaluation of conventional reservoirs in Colombia, Ecuador, Argentina, among others. Roderick is an expert in pre and post-stack seismic inversion, as well as in the application of Machine Learning and Neural Networks in the analysis of geoscientific data.

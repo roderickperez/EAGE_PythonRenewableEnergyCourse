@@ -3,11 +3,7 @@
 
 title: Python for Renewable Energy Data Processing
 author: Roderick Perez Altamar, Ph.D.
-<<<<<<< HEAD
-logo: eagelogo.jpg
-=======
 logo: Logo2.png
->>>>>>> origin/main
 
 # Force re-execution of notebooks on each build.
 # See https://jupyterbook.org/content/execute.html

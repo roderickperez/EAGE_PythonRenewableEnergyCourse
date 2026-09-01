@@ -61,7 +61,7 @@ In summary, the graph illustrates the historical dominance of fossil fuels such 
 
 #### Reference:
 
-Hannah Ritchie and Pablo Rosado (2020) - “Electricity Mix” Published online at OurWorldInData.org. Retrieved from: 'https://ourworldindata.org/electricity-mix' [Online Resource]
+Ritchie and Rosado (2020) published the “Electricity Mix” at OurWorldInData.org.
 
 
 ```{image} ../images/section4/euroStat_totalDatasetYear_plot_types.png
