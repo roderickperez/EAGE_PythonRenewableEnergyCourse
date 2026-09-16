@@ -2,1083 +2,421 @@
 kernelspec:
   name: python3
   display_name: Python 3
-  language: python
 ---
 
 # Wind Energy
 
-Amongst other things, in order to achieve Europe’s plan to cut carbon emissions by at least 55% by 2030, Consumer and Industrial electricity users behavior changes will be required, which is the focus for this project. As shown in Fig.1, if the wind electricity is predicted to reach the current 70%, then:
+## Learning goals
 
-- Industrial users (like Data Centers) can charge batteries for later use.
-- Consumers can program their electric appliances to run over those hours, for example: 1) Charge an electric car; 2) Launch washing machine with tumble drier; 3) Increase heat pump etc.
+After this lesson you should be able to:
 
-```{image} ../images/wind29.jpg
-:alt: wind1
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
+- explain why available wind power is proportional to the cube of wind speed;
+- distinguish available power, rotor power, electrical power, rated power, and energy;
+- apply the Betz limit without treating it as a real turbine efficiency;
+- implement cut-in, rated, and cut-out behavior with Python conditionals;
+- estimate hub-height wind speed, AEP, and capacity factor;
+- work correctly with wind direction as circular data;
+- produce and interpret power-curve and distribution plots.
 
-## Case 1
+Wind turbines convert part of the kinetic-energy flux through the rotor area into electricity. Real production depends on air density, wind speed at hub height, the turbine power curve, availability, wakes, electrical losses, curtailment, icing, and environmental limits. DOE describes the standard cut-in/rated/cut-out behavior, while Betz's ideal actuator-disk result bounds aerodynamic extraction [@doeWindWeather; @doeSmallWind].
 
-- [Trading Wind Energy: Wind Energy Forecasting Model based on Deep Learning](https://towardsdatascience.com/trading-wind-energy-wind-energy-forecasting-model-based-on-deep-learning-a44f5906d531)
+## Concepts and equations
 
-### Goal
+### Available wind power
 
-- Develop a profitable wind energy demand forecasting model for energy traders based on deep learning
+Air moving at speed $v$ through swept area $A$ has available power
 
-### Motivation
+$$P_{wind}=\frac{1}{2}\rho A v^3,\qquad A=\pi R^2$$
 
-- Creating a steady supply of energy is always vital as our modern society genuinely depends on this.
-- Harnessing renewable energy to confront the risk of energy shortfall will continually exist, driving us to use finance.
-- Among those renewable energy sources to date, some are dependent on the environment, such as wind energy.
-- In the wind energy sector we have three main players: Grid Operators (responsible for providing society with a steady supply of electrical energy), Energy Producers (manage the risk of energy shortfall, wind energy producers), and **Energy Traders** (serve to maximize profits on behalf of their clients).
+Rotor power is
 
-### Objectives: Energy Trader
+$$P_{rotor}=C_pP_{wind}$$
 
-- As Energy Trader, the goal is to get a T+18 hour energy forecast every hour.
-- Create a forecast model based on time-series datasets using deep learning (neural network) — specifically the difference network architecture.
-- Generate a model maximize profits for our client (wind energy producers).
+where $C_p$ is the power coefficient. The ideal Betz maximum is
 
-### Trading ALgorithm
+$$C_{p,max}=\frac{16}{27}\approx0.593$$
 
-Source: Deep Learning Datathon 2020 (by ai4impact)
+This is an aerodynamic upper bound, not a typical electrical efficiency. Generator and drivetrain losses occur after aerodynamic extraction.
 
-1. Generate a T+18h forecast of energy production from your client’s windfarms. This forecast is central to the trading
-2. Our client is paid 10 euro cents per kWh sold to the grid. You can only sell to the grid what you forecast or that date
-3. If the actual energy production exceeds the forecast, this excess is absorbed by the grid, but your client is not compensated for this excess.
-4. If the actual energy production is below the forecast, you must buy energy from the spot market (at 20 euro cents/kWh) to supply the grid. You are given a cash reserve at the start of 10,000,000 euro cents to buy energy from the spot market.
+### Air density and hub height
 
-### Methodology
+At the same wind speed, available power scales linearly with air density. A basic pressure-temperature approximation is
 
-1. Examine the data provided along with the statistics.
-2. Normalize the data and set the baseline risk (persistence based).
-3. Fit the training and test set well on risk function. The test loss should beat the baseline risk.
-4. Improve the model performance (keep minimizing the risk while reducing the lag/maintaining zero lag).
-5. Check the best model for reproducibility.
+$$\rho\approx\frac{p}{R_dT}$$
 
-### Datasets
+with dry-air gas constant $R_d=287.05$ J/(kg K), pressure in Pa, and temperature in K.
 
-- Wind Energy ProductionWind Energy Production
-- Wind Forecasts
+When only a reference-height wind speed is available, the empirical power law is often used:
 
-#### Wind Energy ProductionWind Energy Production
+$$v(z)=v(z_r)\left(\frac{z}{z_r}\right)^\alpha$$
 
-```{image} ../images/wind1.jpg
-:alt: wind1
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
+The shear exponent $\alpha$ is site- and stability-dependent; it is not universally $1/7$.
 
-Source: [Réseau de Transport d’Électricité (RTE)](https://www.rte-france.com/en/eco2mix/eco2mix-telechargement-en), the French energy transmission authority
+### Power curve, AEP, and capacity factor
 
-This dataset, named energy-ile-de-france, contains the consolidated near-realtime wind energy production (in kWh) for Île-de-France region surrounding Paris that have been averaged and standardized to a time base of 1 hour. The data is provided from 01 January 2017 to the present.
+A simplified curve has four regions:
 
-```{image} ../images/wind2.jpg
-:alt: wind2
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
+1. zero below cut-in speed;
+2. increasing output between cut-in and rated speed;
+3. rated output between rated and cut-out speed;
+4. zero at and above cut-out speed.
 
-The data is not really regular, but we can still see some trends. For example, the spikes of energy are most common in the winter, and the transition between seasons. So far, the largest energy produced occurred in the winter 2019–2020 which is up to 89000 kWh. The basic statistics of the data are presented below.
+For discrete wind states with probabilities $p_i$:
 
-- **Mean** = 17560.44 kWh
-- **Median** = 10500.0 kWh
-- **Max** = 89000.0 kWh
-- **Min** = 0.0 kWh
-- **Range** = 89000.0
-- **Standard Deviation** = 19146.63
+$$AEP=8760\sum_i P(v_i)p_i$$
 
-#### Wind Forecasts
+and
 
-Source: [Terra Weather](http://terra-weather.com/)
+$$CF=\frac{AEP}{P_r\,8760}$$
 
-The data comes with 2 different wind forecast models (A and B), for 8 location wind farms in the Île-de-France region. Hence, there are 16 forecasts where each has 2 variables: wind speed (m/s) and wind direction as a bearing (degrees North — ie. 45 degrees means the wind blows from the northeast). The forecasts are updated daily every 6 hours and have been interpolated to the time base of 1 hour.
+Use a manufacturer power curve for real AEP work. A cubic interpolation is a teaching approximation only.
 
-```{image} ../images/wind9.jpg
-:alt: wind9
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-```{image} ../images/wind2.jpg
-:alt: wind2
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-The wind speed graph has a similar trend to the energy one, indicating that this forecast data can be useful to our model as input features. Referring to this, the strongest wind occurs in the winter which is up to 12 m/s.
-
-```{image} ../images/wind6.jpg
-:alt: wind6
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-Compared to the wind speed forecasts, the wind direction pattern is tough to decipher. But we will see that even for such data can still bring benefit to our forecast model.
-
-```{image} ../images/wind4.jpg
-:alt: wind4
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-##### Normalize the Data and Set the Baseline Risk
-
-To speed up the training process, we will normalize our data to have zero mean and variance 1 using the formula below.
-
-$$x' = \frac{x-mean}{standardDeviation}$$
-
-```{image} ../images/wind3.jpg
-:alt: wind3
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-Now we have each feature on the same scale. Note that we only normalize energy and wind speed. The wind direction values will have special treatment later.
-
-Next, we will obtain the baseline based on persistence risk. We extract the baseline risk using mean squared error (MSE) and mean absolute error (MAE).
-
-- Persistence risk (MSE): 0.4448637
-- Persistence risk (MAE): 0.6486683
-
-##### Model Architecture
-
-Using the difference network architecture, we fit the training and test set well on risk function (MSE and MAE). The difference network helps us achieve better learning to beat this baseline. As a reminder, the objective is to get energy forecasts with a lead time of 18 hours.
-
-```{image} ../images/wind5.jpg
-:alt: wind5
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-The followings are a few hyperparameters we can turn on:
-
-- Windowing input features (Naive, DIFF, momentum and force inputs)
-- Statistic input features (Mean, SD, MAX, MIN, etc)
-- Optimizer (Adam, SGD)
-- Activation functions (Relu, Tanh)
-- Number of Hidden layers (2 to 5)
-- Regularization (Dropout, L2)
-- NN-Size (8 to 256 neurons with 2/3 reduction for the next layer)
-- Subnetworks (Input scaling, Autoencoder)
-- Type of perceptrons (normal, squared perceptron)
-- Losses (MAE, MSE, Momentum loss, force loss)
-
-###### Experiment 1
-
-Input Scaling Subnet + 4 Hidden Layers (with Dropout)
-
-In the first experiment, we try to create a low MAE (and MSE) that will beat the baseline. Therefore, we want our network to be deep and big enough without overfitting. As a result, we use Adam to achieve better learning and add a regularization method called the dropout layer to prevent overfitting. We use a 4-layer network with the multi-configuration as follows:
-
-- Input scaling sub-network
-- NN-size: 32/64/128/256
-- dropout-prob: 0.05/0.1/0.25
-- Optimizer: Adam
-- Number of layers: 4
-
-**Feature selection**
-
-Windowing is a basic operation for time-series data. Thus, for the input features, we use a window consisting of 60 hours of past energy produced (T-60). Then we turn the window into DIFF-momentum-force inputs with a lead time of 18 hours. It will result in 72 features. This adjustment helps the model detect movement and its rate to perform better clustering.
-
-We also add an average of 60 hours of past wind speed forecasted and the wind speed forecast at T+18h from each wind model. This generates 4 more features. Thus, we have 76 input features in total ready to feed to the input scaling subnet. Since we use relatively large inputs, this subnet reduces unwanted features before supplying it to the main network.
-
-In summary, these are the list of our input features:
-
-- DIFF+momentum+force inputs of T-60h past energy produced with a lead time of 18h
-- the mean of T-60h of past wind speed forecasted (model A)
-- the wind speed forecast at T+18h (model A)
-- the same applies to model B
-
-**Best Config Loss**
-
-Test Loss: 0.554845 (using MAE as the loss function)
-
-```{image} ../images/wind15.jpg
-:alt: wind15
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-**Evaluation**
-
-```{image} ../images/wind10.jpg
-:alt: wind10
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-Evaluation summary for exp. 1
-
-- Best test loss / Persistence error
-- MSE: 0.280589 / 0.4448637
-- MAE: 0.554845 / 0.6486683
-- Best NN-size: 128
-- Best dropout-prob: 0.05
-
-Notice that we have beaten the persistence and achieved zero lag.
-
-There is still a high gap between training and test loss. We can consider using Regularization and adding more features.
-
-###### Experiment 2
-
-Input Scaling Subnet + 4 Hidden Layers
-(with Dropout + L2 Regularization)
-
-With the same model as before, we add the L2 regularization into our model. We also run multiconfiguration while taking the best hyperparameters into account.
-
-- Input scaling sub-network
-- NN-size: 64/128/256
-- dropout-prob: 0.05/0.1
-- Weight decay: 1.0E-4/1.0E-5/1.0E-6
-- Optimizer: Adam
-- Number of layers: 4
-
-**Feature selection**
-
-We add new input features from the wind direction forecast. Although it’s a bit nonsense to add direction data as our input, a steady wind direction does help. Thus, we do not want to normalize direction naively, yet we will use trigonometric functions to _normalize_ it. In addition to the previous one, now we have 84 input features in total.
-
-In summary, these are the addition to our input features:
-
-- (mean) sin function of T-18h of past wind direction forecasted (model A)
-- (mean) cos function of T-18h of past wind direction forecasted (model A)
-- wind direction forecast at T+18h in sin function (model A)
-- wind direction forecast at T+18h in cos function (model A)
-- The same applies to model B
-
-**Losses**
-
-```{image} ../images/wind11.jpg
-:alt: wind11
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-Test Loss: 0.549824 (using MAE as the loss function)
-
-**Evaluation**
-
-```{image} ../images/wind12.jpg
-:alt: wind12
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-Evaluation summary for exp. 2
-
-- Best test loss / Persistence error
-- MSE: 0.26769 / 0.4448637
-- MAE: 0.549824 / 0.6486683
-- Best NN-size: 128
-- Best dropout-prob: 0.1
-- Best Weight decay: 1.0E-4
-
-Notice that we have produced a better test loss while maintaining zero lag (also increase the peak value of lag graph).
-
-We can still improve the performance by adding more input features or layers to the model.
-
-###### Experiment 3 (Final Model)
-
-- Input Scaling Subnet + 4 Hidden Layers (with Dropout + L2 Regularization)
-
-By setting the best hyperparameters fixed, the followings are our network configuration:
-
-- Input scaling sub-network
-- NN-size: 128
-- dropout-prob: 0.1
-- Weight decay: 1.0E-4
-- Optimizer: Adam
-- Number of layers: 4
-
-**Feature selection**
-
-We include new statistic features as the new additional inputs, taken from energy and wind speed data. In the end, we have 88 input features in total.
-
-- the mean of T-60h of past energy produced
-- the standard deviation of T-60h of past energy produced
-- the standard deviation of T-60h of past wind speed forecasted (model A)
-- the standard deviation of T-60h of past wind speed forecasted (model B)
-
-**Losses**
-
-```{image} ../images/wind17.jpg
-:alt: wind17
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-Test Loss: 0.52758 (using MAE as the loss function)
-
-**Evaluation**
-
-```{image} ../images/wind16.jpg
-:alt: wind16
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-Evaluation summary for exp. 3
-
-- Best test loss / Persistence error
-- MSE: 0.258521 / 0.4448637
-- MAE: 0.52758 / 0.6486683
-- Net profit in euro cents
-- MSE: 1.392861351E9
-- MAE: 1.447243201E9
-
-We achieve the best test loss using this last model while having no lag. As a result, we have the highest profit of all models.
-
-We have better scatter plots of actual vs training/test predictions. Although we fit well on the training set, obtaining a better scatter plot of actual vs test prediction is still a challenge.
-
-**Reproducibility**
-
-Previously, the final model above has been done 40 repeats of training where each takes a maximum of 10000 iterations. Note that we use MAE for the loss function as it gives a higher profit to the clients. The statistics of the test losses are shown below.
-
-- Mean = 0.540747
-- Median = 0.540757
-- Max = 0.550977
-- Min = 0.527580
-- Range = 0.023397
-- (Mean-Min)/Standard Deviation = 2.690480
-
-**Final Prediction Model**
-
-```{image} ../images/wind13.jpg
-:alt: wind13
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-```{image} ../images/wind14.jpg
-:alt: wind14
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-```{image} ../images/wind9.jpg
-:alt: wind9
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-- Adding more layers decrease the training error, but increase the test loss and lower the profit, although we have used regularization techniques. Hence, we stick to the 4 layers in the final model.
-
-- The Autoencoder subnet helps reduce the dimension of our input features. However, when added to the network with features no more than 100, it increases the test loss of our model.
-
-- The squared perceptron supposes to provide faster and better learning than the ordinary one. However, during the experiment, it does not improve the performance in terms of lowering the error.
-
-- The momentum and force losses supposed to help reduce lag. However, when we add the losses to the network, the lag graph does not change (still zero lag) and it makes the error higher since the network needs to minimize three losses altogether (test, momentum, and force losses).
-
-##### Summary
-
-The difference networks effectively build a forecasting model with time-series data, even with fewer inputs.
-
-When it comes to historical data, the DIFF window, combined with momentum, force, and statistical features can help the model perform better prediction.
-
-A bigger and deeper network supports the model to memorize well (be careful of overfitting).
-
-Dropout layer (small dropout probability) and L2 regularization help the network handle overfitting problems, hence improving performance.
-
-Although RMSE (or MSE) is also popular as the loss function in time series data, our model produces a higher profit when MAE is used. MSE is inclined to penalize outliers, while MAE is more linear with errors. Since the model has no outliers, MAE turns out to work best for our model.
-
-## Case 2
-
-- [Predicting Excess Wind Electricity in Ireland: Machine Learning against Climate Change](https://towardsdatascience.com/predicting-excess-wind-electricity-in-ireland-machine-learning-against-climate-change-part-1-d042894026a6)
-
-### Goal
-
-- Can Machine Learning algorithms uncover hidden patterns in a complex electricity network for reliable predictions?
-
-### Motivation
-
-Time series predictions between changing consumptions patterns, grid constraints and abruptly changing weather conditions, can be tricky. We are happy to share our experience with a range of ML Algorithms to help us optimize electricity consumptions and reduce our carbon footprint.
-
-### Objectives:
-
-- EDA
-- Highlight missing data
-- Evaluate data for collinearity, outliers and feature transformations
-- Generate a Machine Learning and Deep Learning model
-
-### Problem
-
-- Explore Ireland’s situation and potential smart usage of the wind-generated electricity.
-- In Ireland, wind energy contributes 80% of renewable electricity and 30% of total electricity demand.
-- Wind energy is a growing industry concern about the amount of wind energy “lost” every year.
-- In 2020 this amounted to more than 1.4 million MWh of electricity, nearly double the figure for 2019
-- This represent under 11.5 per cent of total production and enough to power more than 300,000 homes
-
-#### "Wasted Power" Problem
-
-When the electricity generation exceeds the consumption, the TSO levers to adjust are limited:
-
-- Redirect electricity to “storage”: in Ireland, pump water up to Turlough Hill Power Station (but limited)
-- Export (market-permitting) to UK: max. 1 GW Connection (Ewic + Moyle)
-- Ask Gas / Coal Generation Plants to ramp down, however it may take up to a few hours to ramp down
-- The current maximum proportion of Wind / Solar Electricity is constrained by the levels of non- synchronous renewables allowed on the system at any given time is System Non-Synchronous Penetration (SNSP) “its current figure of 65% in Q1 2018” and has been increased to 70% recently.
-- “Renewable Dispatch-Down” (Constraint and Curtailment): which is basically disconnecting wind farms from the grid causing wind energy to be “lost” as can be seen in EirGrid Group System and Renewable Reports.
-
-Large investments in the electricity grid to support a higher rate of renewable energy will be facilitated through the European Green deal, however renewable capacity will massively increase resulting in far more “wasted” electricity.
-
-Consumer and industrial users behavior changes will also be required, which is the focus for this project. As shown in Fig.2, if the wind electricity is predicted to reach the current 70%, then:
-
-- Industrial users (like Data Centers) can charge batteries for later use.
-- Consumers can program their electric appliances to run over those hours, for example: 1) Charge an electric car; 2) Launch washing machine with tumble drier; 3) Increase heat pump etc.
-
-### Dataset
-
-- Met Éirean data: Copyright Met Éireann, Source www.met.ie , Licence Statement: This data is published under a Creative Commons Attribution 4.0 International (CC BY 4.0).
-- EirGrid Group Data: Supported by EirGrid Group Data, Source: www.smartgriddashboard.com , Open Data Licence.
-
-a wind power dataset with 145,936 observations spans across Jan 2017 — Feb 2021 is downloaded from EirGrid Group for the island of Ireland, as Republic and Northern Ireland are together as one Integrated Single Electricity Market (I-SEM). The data depicts Wind-generated electricity and electricity demand from samples with a frequency of 15 minutes. To build the complete picture, the total Wind Capacity installed in the island of Ireland which is being reported monthly in the “System and renewable data summary report,” Eirgrid Group, Tech. Rep., 2020.
-
-The historical weather information downloaded from Met Éirean depicts hourly weather (37,225 rows) from each of four meteorological stations located in Shannon Airport, Dublin Airport, Cork Airport and Belmullet, as many grid-connected wind farms are located close by, as well as Dublin as a major population centre for the electricity consumption impact. Furthermore, in a later phase of the work, the predictions of the proposed models, even the best models underestimated the Wind Electricity generation when wind was low in Dublin. We realized that wind speeds were high in the North of Ireland, where we didn’t have specific weather stations data. Hence, the weather data from Malin Head station is also selected into the weather dataset.
-
-#### Data Processing
-
-Overall, the data quality from both sources is excellent for the last 3 years.
-
-In the EirGrid dataset, 66 fifteen-minute periods are missing. The missingness mechanism must be investigated rather than assumed to be Missing Completely at Random. Backfilling uses future information and can leak data into a forecasting model; any imputation must be fitted using training data only and reported as an assumption.
-
-In the historical Met Éirean, a chunk of data was missing from the start of 2017, so the whole dataset was reduced to start only on July 1st, 2017 without impact on models.
-
-Looking at outliers on temperature and wind data, we found they were consistent with Irish short-term extreme temperature (so extremely rare above 30 degrees!) and storms (more frequent, good for wind!).
-
-```{image} ../images/wind21.jpg
-:alt: wind21
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-Negative net-generation observations should be treated as a data-quality question. Plausible explanations include auxiliary consumption, metering sign conventions, corrections, or invalid measurements. Aerodynamic blade loading does not by itself justify reporting negative electrical generation.
-
-```{image} ../images/wind22.jpg
-:alt: wind22
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-Outlier Control charts also provided insights in trends in electricity generation and demand, in particular for the seasonality and the rising amount of wind electricity generation.
-
-```{image} ../images/wind23.jpg
-:alt: wind23
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-To plot Control Charts to help spotting univariate outliers, this code is very handy:
-
-```python
-def plotOutliers(df, cols):
-  fig = plt.figure(figsize=(10, 60))
-
-  # loop over all vars (total: 14)
-  for i in range(0, (len(cols))):
-    plt.subplot(14, 1, (i+1))
-    f = plt.gca()
-    f.axes.get_yaxis().set_visible(False)
-    f.axes.set_title(cols[i] )
-
-    x=df.date
-    y1=np.array(df[cols[i]])
-
-    plt.plot(x, y1)
-    plt.axhline(y=df[cols[i]].mean())
-    plt.axhline(y=df[cols[i]].mean()+3*df[cols[i]].std(),color='r')
-    plt.axhline(y=df[cols[i]].mean()-3*df[cols[i]].std(),color='r')
-
-    plt.axhline(y=df[cols[i]].mean()+ df[cols[i]].std(),color='y')
-    plt.axhline(y=df[cols[i]].mean()- df[cols[i]].std(),color='y')
-
-    plt.title((cols[i] + " Mean: " + str(np.round(df[cols[i]].mean(), 1)) + " Std: " + str(np.round(df[cols[i]].std(), 1))), fontsize=12)
-
-  plt.tight_layout()
-
-plotOutliers(newdf, attributes)
-```
-
-SEAI Monthly generation data was also cross-checked against the Republic of Ireland 15-min data to confirm overall quality.
-
-##### Colinearity
-
-The intuition here is that the total possible production of electricity depends closely on the weather conditions close to the main wind farms, in particular as was found in [2], [3] and [4]: wind speed, wind direction, relative humidity and mean sea level air pressure (in hectopascal). Conversely, the electricity consumption depends on the hour of the day, business vs. weekend days but also on the air temperature.
-
-However, since the weather data from multiple stations is required to have the full view, a lot of the measures will be correlated.
-
-Data collinearity is likely to reduce model performance, as well as obfuscate features impact and should be prevented whenever possible.
-
-We removed very highly correlated features (above 0.9) and high Variance Inflation Factor (VIF), for example temperature in various weather stations, resulting in a more manageable dataset:
-
-```{image} ../images/wind24.jpg
-:alt: wind24
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-To check multi-collinearity, best is to use the variance_inflation_factor. A rule of thumb is if any VIF is greater than 10, then you really need to consider dropping variables from your model.
-
-```python
-from statsmodels.stats.outliers_influence import variance_inflation_factor
-from statsmodels.api import add_constant
-
-num_df = add_constant(num_df)
-
-vif = [variance_inflation_factor(num_df.to_numpy(), i) for i in range(num_df.to_numpy().shape[1])]
-
-pd.DataFrame(num_df.iloc[:, 1:].columns, vif[1:])
-```
-
-#### Features transformations
-
-##### Transform time into 2D
-
-From the Fast Fourier Transform of the temperature, wind speed and actual wind power shown in Fig.8, we can see there are obvious peaks at the day−1 and year−1 frequency components, which means the data have some potential daily and yearly patterns.Transform time into 2D
-
-From the Fast Fourier Transform of the temperature, wind speed and actual wind power shown in Fig.8, we can see there are obvious peaks at the day−1 and year−1 frequency components, which means the data have some potential daily and yearly patterns.
-
-```{image} ../images/wind25.jpg
-:alt: wind25
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-In order to emphasize these patterns in our models, we need to convert the 1D observation timestamps into a 2d periodic radian time space:
-
-```{image} ../images/wind26.jpg
-:alt: wind26
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-Here we transform the time into two radian time spaces: one for the yearly period [yearSin, yearCos] one for the daily period [daySin, dayCos], which are derived by:
-
-```{image} ../images/wind27.jpg
-:alt: wind27
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-##### 2D wind vector
-
-Wind direction is circular: 360° and 0° are adjacent, so raw degrees are poor model inputs. Direction becomes unstable and usually uninformative when wind speed is near zero. Resolve wind speed into orthogonal components so direction wraps smoothly: $[windSin, windCos]$.
-
-```{image} ../images/wind28.jpg
-:alt: wind28
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-As mentioned, look out for part 2 which will cover model candidates, specific Training / Validation split for a time series with a strong trend and results!
-
-Remember that the model success will be measured mainly by:
-
-- The main relevant metric for this work is the Mean Absolute Error (MAE), as absolute values are what we are trying to measure in order to recommend when to charge batteries.
-- Exact predictions are most important when the proportion of actual wind generation is high, as when wind is low the electricity Carbon Intensity will be bad anyway (other renewables like Solar and Hydro have a low impact currently in Ireland)
-- The Root Mean Squared Error (RMSE) and explained variance regression score are also measured from the models for better understanding of the model limitations.
-
-#### Split Dataset
-
-The last two weeks of March 2021 are reserved as a test set. Earlier observations must remain in chronological order: random shuffling allows neighbouring future observations to leak into training and makes validation unrealistically easy.
-
-A defensible baseline uses an expanding-window or rolling-origin split. A trend in installed capacity is not a reason to mix future dates into the training set; it is a signal that the model, features, and evaluation design must represent that changing system.
-
-The example below uses fixed chronological cutoffs. For model selection, replace the single validation window with `TimeSeriesSplit` or several rolling-origin folds.
-
-```python
-dataSet = dataSet.sort_values("date").copy()
-
-trainSet = dataSet.loc[dataSet.date <= cutOffValidationDate].copy()
-validSet = dataSet.loc[
-    (dataSet.date > cutOffValidationDate) &
-    (dataSet.date <= cutOffTestDate)
-].copy()
-testSet = dataSet.loc[dataSet.date > cutOffTestDate].copy()
-
-assert trainSet.date.max() < validSet.date.min()
-assert validSet.date.max() < testSet.date.min()
-
-
-y_train = trainSet.ActualWindMW
-y_valid = validSet.ActualWindMW
-y_test = testSet.ActualWindMW
-```
-
-#### Input Features
-
-In order to explore the influence of each input feature on the models, the models are trained and tested on different sets of features (Table I). The impact of each input feature is examined by comparing the results from different input sets.
-
-```{image} ../images/wind30.jpg
-:alt: wind30
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-#### Model Candidates
-
-The following models are considered:
-
-##### Random Forest
-
-We selected the Random Forest Regression model as the prototype for our early analysis to get an idea of features which make a significant difference, it also handles linear and non-linear relationships quite well as well as bias vs. variance balance. The research for power predictions in [12] also states that they use such models. The default Random Forest parameters lead to fully grown and unpruned trees which can potentially be very large. In this case, the results were very good and time to train was under a few minutes, so they were fine. Note, standard SkLearn GridSearch implementations can be difficult to use with time series because of the possible “data leakage” of close-by hours in nested cross-validation as pointed out above. Best results were found on the “Rhum_Msl” features set which includes the standard wind speeds as well as the Relative Humidity and Sea-level Pressure data.
-
-Random Forest Regression Evaluation for the last 2 weeks of data reserved for Testing (March 15th to 29th, 2021) ⇒ Mean Absolute Error (MAE): 219 . As shown in Fig.2, the validation errors depict a roughly uniform distribution, apart from a few outliers. The period highlighted in the green box is around the 1st lockdown in April 2020 and understandably patterns (mostly in energy demand) changed dramatically at that point.
-
-```{image} ../images/wind31.jpg
-:alt: wind31
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-As shown in the previous picture, the predictions based on the Met Eireann historical data follow closely the actual Wind generation values on the Test set. Note the Eirgrid own Forecast for wind generation (Eirgrid Forecast Wind) tends to overshoot the actual generation when the demand is relatively low. Conversely, predictions from the proposed RF model are more accurate and effectively match the fact that the grid can cope with a maximum ratio of wind electricity.
-
-```{image} ../images/wind32.jpg
-:alt: wind32
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-Features importance (image below according to the Random Forest model have to be taken into account carefully, mostly as there are a number of residual collinearity between weather stations measures, but they give an idea of the features important to the model.
-
-```{image} ../images/wind33.jpg
-:alt: wind33
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-Wind speed in Shannon (wdsp) in knots, as well as wind speeds in Malin Head (wdsp MAL), Cork (wdsp COR) and Belmullet (wdsp BEL) are of course key in predicting the overall wind generation as most wind farms are in those areas. The total wind power capacity in the island of Ireland (TotalWindCapacityMW) has increased year on year and is a major factor too. Day in year and Hour matter for weather patterns and demand seasonality. The current Temperature in Dublin (temp DUB) is also important, presumably because it impacts demand.
-
-##### Artificial Neural Network
-
-The main advantage of ANN models is their self-learning capacity to determine complex relations among variables while keeping high data tolerance. However, in order to achieve accurate prediction, the self-learning processes of ANNs require large amounts of data and the corresponding high cost of computation. Thanks to the explosive growth of available data and computation power, ANN models have been successfully used for modeling non-linear problems and complex systems in forecasting wind power generation and energy consumption.
-
-Therefore, this project also employs the neural network method to compare to other models. The ANN model in this work is built using the Keras library of Tensorflow. There are different versions of the ANN model corresponding to the feature sets shown in Table I. All versions are experimented with different model settings ranging from 2 to 5 dense layers with neurons ranging from 20 to 260 neurons for each layer. According to the results of the experiments, the ANN model is settled with 3 layers with 120 neutrons and a final layer with 10 neurons. The model uses Adam optimizer and rectified linear (ReLU) activation function as ReLU outperforms other functions (such as Softplus, Sigmoid and Hyperbolic functions) in this project.
-
-```python
-
-ann = tf.keras.models.Sequential([
-          tf.keras.layers.Dense(units=120, activation='relu', name="Layer_1"),
-          tf.keras.layers.Dropout(0.1), #drop-out layer to avoid overfit
-          tf.keras.layers.Dense(units=120, activation='relu', name="Layer_2"),
-          tf.keras.layers.Dropout(0.1),
-          tf.keras.layers.Dense(units=120, activation='relu', name="Layer_3"),
-          tf.keras.layers.Dropout(0.1),
-          tf.keras.layers.Dense(units=10, activation='relu', name="Layer_4"),
-          tf.keras.layers.Dense(units=1, name="output_layer")
-          ])
-
-ann.compile(loss=tf.keras.losses.mae, # mae is short for mean absolute error
-            optimizer=tf.keras.optimizers.Adam(lr=0.002),
-            metrics=["mae"])
-```
-
-In next plot, the training and testing results for the different feature sets suggest: 1) The 2D-time feature yields better performance, however the wind vector is not as expected; a) The ANN model for ‘time & rhum’ dataset is chosen for the later evaluation and comparison.
-
-```{image} ../images/wind34.jpg
-:alt: wind34
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-##### LSTM
-
-The LSTM network is sensible for this project due to the ability of learning both short-term and longer-term seasonal patterns off the weather observations.
-
-- A LSTM where the model makes the entire sequence prediction in a single step.
-- An Autoregressive LSTM which decomposes this prediction into individual time steps. Then each output can be fed back into itself at each step and predictions can be made conditioned on the previous one, like in the classic Generating Sequences With RNNs.
-
-Both models use a 24-hour window of previous weather values and actual wind power as input, however they don’t use the current weather forecast for the next 24 hours. As a result their performance is suboptimal.
-
-```{image} ../images/wind35.jpg
-:alt: wind35
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-##### Artificial Neural Network (24 Hour Model)
-
-As a result of the findings above, we tried a Neural Network again but based on a single-shot prediction of the whole 24 H, similar to the LSTM above.
-
-The intuition is that wind electricity generation will not only depend on the current winds blowing across Ireland but also on what happened in the hours before. For example, if a gas-fired power station is up and running at a high point and winds start to pick up, as the power station may take a few hours to wind down, wind electricity generation will be “dispatched down” for a little while.
-
-Beside, the Wind generation level immediately preceding the 24 H window may inform the model too, thus a new features set will also include this data.
-
-The new ANN model is also built using the Keras library of Tensorflow, and takes as in input the aggregated 24 H for the required N features and consists of 5 layers of N \* 24 neurons, followed by 2 layers to flatten to a vector of 24 H predictions.
-
-Similarly to the hourly ANN models, the training and testing results for the different feature sets suggest: 1) The 2D-time feature yields better performance, however the wind vector is not as expected; a) The ANN model for ‘time & rhum & prev actual’ dataset is chosen for the later evaluation and comparison.
-
-```{image} ../images/wind36.jpg
-:alt: wind36
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-#### Results
-
-The AI models proposed in this work are evaluated and compared using MAE over the Test set (last 2 weeks of March 2021) for the best features set per model. The predictions of the models are also compared to the benchmark of the work which is the wind energy generation forecasted by EirGrid. As shown in Fig. 18, both the Random Forest and ANN models provide higher accuracy (lower MAE) than EirGrid’s. However, the performance of the LSTM model is the worst. This is because the current LSTM is solely based on the historical data of wind energy generation, and is expected to have improved performance when the weather features are incorporated in future work.
-
-```{image} ../images/wind37.jpg
-:alt: wind37
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-But wait, are those last 2 weeks of March 2021, totally new data for the models as required for a Test set, representative of future performance? We can compare the Validation set to get an idea.
-
-```{image} ../images/wind38.jpg
-:alt: wind38
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-Uh-oh, the results here are not as dramatic, though great to see that the 24H ANN Model still performs best. Why could that be? Is there any pattern to the error which we should be aware of?
-
-In fact, there is, if we look at Errors (Predicted value — Actual Value) vs. the Actual Value :
-
-```{image} ../images/wind39.jpg
-:alt: wind39
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-As we have seen in some examples, the forecast provided by EirGrid tends to overestimate Wind generation when there is a lot of wind and doesn’t seem to take into account the Grid SNSP constraints: we can see above that the error is positively correlated with the Actual value. This is true in particular for yellow points (2021) and orange points (2020) where more Wind Capacity was available, as well as a higher ratio of SNSP support in the grid in 2021.
-
-```{image} ../images/wind40.jpg
-:alt: wind40
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-On the other end, our 24 Hour ANN Model tends to underestimate slightly at lower actual values. The range of errors in general is smaller too.
-
-As the MAE scores are pretty similar, it’s also worth checking the Explained Variance Score, here we can see on this score the EirGrid forecast performance is poorer.
-
-```{image} ../images/wind41.jpg
-:alt: wind41
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-Let’s have a closer look at those last 2 weeks of March:
-
-```{image} ../images/wind42.jpg
-:alt: wind42
-:class: bg-primary mb-1
-:width: 800px
-:align: center
-```
-
-The predictions are all very good during the 1st week, when there is little wind and little wind generations.
-
-When the wind reaches the maximum capacity of the grid (about 70% of the actual Demand at the time), the EirGrid forecast significantly overshoots, while our best model only slightly underestimates.
-
-**The chosen Machine Learning models, both Neural Networks and Random Forest, are thus able to discover hidden patterns of electricity generation and demand from a few simple weather stations measures, hour and day of the year and connected wind farm capacity.**
-
-
----
-
-## Wind Energy Fundamentals
-
-### The Physics of Wind Power
-
-Wind is air in motion; its kinetic energy per unit volume is $\tfrac{1}{2}\rho v^2$.
-For a rotor of swept area $A$ capturing a stream of air at velocity $v$, the
-theoretical power available in the wind is:
-
-$$P_{\text{wind}} = \frac{1}{2} \rho A v^3$$
-
-where:
-- $\rho$ = air density ≈ 1.225 kg/m³ at sea level, 15 °C
-- $A = \pi r^2$ = rotor swept area (m²), $r$ = rotor radius (m)
-- $v$ = free-stream wind speed (m/s)
-
-Note the **cubic dependence on wind speed**: doubling wind speed increases
-available power **eightfold**.
-
-### Betz's Law — Maximum Power Extraction
-
-A rotor cannot extract all the kinetic energy from the wind (the air would stop
-and block the rotor). Betz showed that the theoretical maximum fraction of
-wind power that any ideal rotor can capture is [@betz1919maximum]:
-
-$$C_{P,\max} = \frac{16}{27} \approx 59.3\,\%$$
-
-The **power coefficient** $C_P$ relates actual extracted power to available power:
-
-$$P_{\text{turbine}} = C_P \cdot \frac{1}{2} \rho A v^3$$
-
-Modern commercial turbines achieve $C_P \approx 0.45 - 0.50$.
-
-### Turbine Power Curve
-
-Real turbines operate in three wind speed regions:
-
-| Region | Speed | Behaviour |
-|--------|-------|-----------|
-| Below cut-in | $v < v_{\text{ci}}$ (~3 m/s) | Turbine idle, $P = 0$ |
-| Operating | $v_{\text{ci}} \le v \le v_{\text{rated}}$ | Power rises with $v^3$ |
-| Rated | $v_{\text{rated}} \le v \le v_{\text{co}}$ | Pitch control holds $P = P_{\text{rated}}$ |
-| Above cut-out | $v > v_{\text{co}}$ (~25 m/s) | Turbine shuts down, $P = 0$ |
-
-### Weibull Wind Speed Distribution
-
-Over a site, wind speeds follow an approximate **Weibull distribution**:
-
-$$f(v) = \frac{k}{c}\left(\frac{v}{c}\right)^{k-1} \exp\!\left[-\left(\frac{v}{c}\right)^k\right]$$
-
-where $k$ = shape parameter (typically 1.5 – 2.5) and $c$ = scale parameter
-(m/s, related to the mean wind speed).
-
-### Annual Energy Production (AEP)
-
-$$AEP = \int_0^{\infty} P(v) \cdot f(v) \cdot 8760 \, dv$$
-
-In practice this integral is computed numerically from binned wind speed data.
-
-## Python Exercises
-
-### Exercise 1 — Basic Wind Power Calculation
-
-A wind turbine has a rotor radius of **40 m** and operates at $C_P = 0.45$.
-Air density is 1.225 kg/m³.
-
-1. Calculate the **swept area**.
-2. Calculate the **available wind power** and the **actual turbine power** at
-   wind speeds of 6, 8, 10, 12, and 15 m/s.
-3. Print a table of results in kW.
-
-```{code-cell} python
-import numpy as np
-
-rho   = 1.225   # air density (kg/m³)
-r     = 40      # rotor radius (m)
-Cp    = 0.45    # power coefficient
-
-# Swept area
-# A = np.pi * r**2
-
-wind_speeds = [6, 8, 10, 12, 15]   # m/s
-
-# For each wind speed:
-#   P_available = 0.5 * rho * A * v**3  (W)
-#   P_turbine   = Cp * P_available       (W)
-# Print a formatted table in kW
-```
-
----
-
-### Exercise 2 — Betz Limit vs. Rotor Radius
-
-For wind speeds of 8 m/s and 12 m/s, and rotor radii from **20 m to 80 m**:
-
-1. Compute the **Betz-limited maximum power** (in MW) for each radius.
-2. Compute the **realistic power** at $C_P = 0.48$.
-3. Plot both on the same figure (dashed for Betz, solid for realistic).
+## Tested Python functions
 
 ```{code-cell} python
 import numpy as np
 import matplotlib.pyplot as plt
 
-rho        = 1.225
-Cp_betz    = 16/27    # 59.3 %
-Cp_real    = 0.48
-radii      = np.linspace(20, 80, 100)   # m
-A          = np.pi * radii**2
+def air_density_kgm3(pressure_pa, temperature_c):
+    """Dry-air density from the ideal-gas approximation."""
+    if not all(np.isfinite(np.asarray(value, dtype=float)).all() for value in [pressure_pa, temperature_c]):
+        raise ValueError("model inputs must be finite")
+    temperature_k = np.asarray(temperature_c, dtype=float) + 273.15
+    if np.any(temperature_k <= 0) or np.any(np.asarray(pressure_pa) <= 0):
+        raise ValueError("pressure and absolute temperature must be positive")
+    return np.asarray(pressure_pa, dtype=float) / (287.05 * temperature_k)
 
-fig, ax = plt.subplots(figsize=(9, 5))
+def wind_at_height(speed_ref, height_m, ref_height_m=10, alpha=0.14):
+    if not all(np.isfinite(np.asarray(value, dtype=float)).all() for value in [speed_ref, height_m, ref_height_m, alpha]):
+        raise ValueError("model inputs must be finite")
+    speed = np.asarray(speed_ref, dtype=float)
+    if np.any(speed < 0) or np.any(np.asarray(height_m) <= 0) or np.any(np.asarray(ref_height_m) <= 0):
+        raise ValueError("speeds must be non-negative and heights positive")
+    return speed * (np.asarray(height_m) / np.asarray(ref_height_m)) ** alpha
 
-for v, color in [(8, 'steelblue'), (12, 'darkorange')]:
-    # P_betz_MW = Cp_betz * 0.5 * rho * A * v**3 / 1e6
-    # P_real_MW = Cp_real * 0.5 * rho * A * v**3 / 1e6
-    # Plot both
+def turbine_power_mw(speed_ms, rated_power_mw=3.0,
+                     cut_in=3.0, rated_speed=12.0, cut_out=25.0):
+    """Simplified continuous cubic power curve with correct boundaries."""
+    if not all(np.isfinite(np.asarray(value, dtype=float)).all() for value in [speed_ms, rated_power_mw, cut_in, rated_speed, cut_out]):
+        raise ValueError("model inputs must be finite")
+    if not 0 <= cut_in < rated_speed < cut_out:
+        raise ValueError("require 0 <= cut_in < rated_speed < cut_out")
+    speed = np.asarray(speed_ms, dtype=float)
+    if np.any(speed < 0) or rated_power_mw < 0:
+        raise ValueError("speed and rated power must be non-negative")
+    power = np.zeros_like(speed)
+    ramp = (speed >= cut_in) & (speed < rated_speed)
+    power[ramp] = rated_power_mw * (
+        (speed[ramp] ** 3 - cut_in ** 3) /
+        (rated_speed ** 3 - cut_in ** 3)
+    )
+    plateau = (speed >= rated_speed) & (speed < cut_out)
+    power[plateau] = rated_power_mw
+    return float(power) if power.ndim == 0 else power
+
+assert turbine_power_mw(2) == 0
+assert turbine_power_mw(12) == 3
+assert turbine_power_mw(25) == 0
+```
+
+## Worked distribution and AEP example
+
+The Weibull probability density is
+
+$$f(v)=\frac{k}{c}\left(\frac{v}{c}\right)^{k-1}
+\exp\left[-\left(\frac{v}{c}\right)^k\right]$$
+
+where $k$ is shape and $c$ is scale. A fitted distribution compresses information and may miss calm periods, storms, seasonality, and direction-dependent wakes.
+
+```{code-cell} python
+def weibull_pdf(speed_ms, shape_k, scale_c):
+    speed = np.asarray(speed_ms, dtype=float)
+    if shape_k <= 0 or scale_c <= 0 or np.any(speed < 0):
+        raise ValueError("Weibull parameters must be positive; speed non-negative")
+    return (shape_k / scale_c) * (speed / scale_c) ** (shape_k - 1) * np.exp(
+        -(speed / scale_c) ** shape_k
+    )
+
+bin_edges = np.arange(0, 31, 0.25)
+bin_centres = (bin_edges[:-1] + bin_edges[1:]) / 2
+k, c = 2.1, 8.5
+cdf = lambda v: 1 - np.exp(-(v / c) ** k)
+probability = cdf(bin_edges[1:]) - cdf(bin_edges[:-1])
+power_mw = turbine_power_mw(bin_centres)
+aep_mwh = np.sum(power_mw * probability) * 8760
+capacity_factor = aep_mwh / (3.0 * 8760)
+
+fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+speed_grid = np.linspace(0, 30, 301)
+axes[0].plot(speed_grid, turbine_power_mw(speed_grid), color="tab:blue")
+axes[0].set(xlabel="Wind speed (m/s)", ylabel="Power (MW)",
+            title="Simplified turbine power curve")
+axes[1].bar(bin_centres, power_mw * probability * 8760 / 1000,
+            width=0.24, color="tab:green")
+axes[1].set(xlabel="Wind-speed bin (m/s)", ylabel="AEP contribution (GWh)",
+            title=f"AEP = {aep_mwh/1000:.1f} GWh; CF = {capacity_factor:.1%}")
+for ax in axes:
+    ax.grid(alpha=0.3)
+plt.tight_layout()
+```
+
+## Wind direction is circular
+
+Meteorological wind direction states where wind comes **from**: 0° is north and 90° is east. Arithmetic means fail near north—for example, 350° and 10° average to 180° arithmetically even though both are northerly. Use vector components:
+
+$$\bar\theta=\operatorname{atan2}(\overline{\sin\theta},
+\overline{\cos\theta})$$
+
+and wrap the result to $[0,360)$.
+
+```{code-cell} python
+def circular_mean_degrees(direction_deg):
+    values = np.asarray(direction_deg, dtype=float)
+    if values.size == 0 or not np.isfinite(values).all():
+        raise ValueError("directions must be nonempty and finite")
+    radians = np.deg2rad(values)
+    if np.hypot(np.sin(radians).mean(), np.cos(radians).mean()) < 1e-12:
+        raise ValueError("mean direction is undefined for cancelling vectors")
+    angle = np.rad2deg(np.arctan2(np.mean(np.sin(radians)),
+                                  np.mean(np.cos(radians))))
+    return np.round(angle % 360, 12) % 360
+
+assert np.isclose(circular_mean_degrees([350, 10]), 0)
+```
+
+## Guided exercises
+
+:::{admonition} Exercise 1 — Cubic sensitivity
+:class: note
+
+**Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
+
+Write `available_wind_power_kw(speed, radius, density=1.225)`. Compare 6, 8, and 10 m/s and prove that doubling speed multiplies available power by eight.
+
+```python
+def available_wind_power_kw(speed, radius, density=1.225):
+    # TODO: calculate swept area and available power
     pass
-
-ax.set_xlabel("Rotor Radius (m)")
-ax.set_ylabel("Power (MW)")
-ax.set_title("Wind Power: Betz Limit vs. Realistic Output")
-ax.legend()
-ax.grid(True, alpha=0.3)
-plt.tight_layout()
-plt.show()
 ```
+:::
 
----
+:::{admonition} Exercise 1 — Solution
+:class: tip, dropdown
 
-### Exercise 3 — Turbine Power Curve
-
-Implement a **turbine power curve** function with:
-- $v_{\text{ci}} = 3$ m/s (cut-in)
-- $v_{\text{rated}} = 12$ m/s (rated wind speed)
-- $v_{\text{co}} = 25$ m/s (cut-out)
-- $P_{\text{rated}} = 3$ MW
-
-Between cut-in and rated speed, power scales as $v^3$ relative to rated.
-
-Plot the power curve from 0 to 30 m/s.
+1. Calculate swept area.
+2. Multiply by density and cubed wind speed.
+3. Compare the doubling ratio.
 
 ```{code-cell} python
-import numpy as np
-import matplotlib.pyplot as plt
+def available_wind_power_kw(speed, radius, density=1.225):
+    speed = np.asarray(speed, dtype=float)
+    if np.any(speed < 0) or radius < 0 or density <= 0:
+        raise ValueError("invalid wind-power input")
+    area = np.pi * radius**2
+    return 0.5 * density * area * speed**3 / 1000
 
-v_ci     = 3     # cut-in (m/s)
-v_rated  = 12    # rated (m/s)
-v_co     = 25    # cut-out (m/s)
-P_rated  = 3.0   # MW
-
-def turbine_power(v):
-    """
-    Return turbine power (MW) for wind speed v (m/s).
-    - Below cut-in or above cut-out: 0
-    - Between cut-in and rated: scales as v³
-    - At rated and above (up to cut-out): P_rated
-    """
-    pass   # implement the three-region logic
-
-v_range = np.linspace(0, 30, 300)
-P_curve = np.array([turbine_power(v) for v in v_range])
-
-fig, ax = plt.subplots(figsize=(9, 4))
-# ax.plot(v_range, P_curve, ...)
-ax.axvline(v_ci,    linestyle=':', color='green',  label=f'Cut-in  {v_ci} m/s')
-ax.axvline(v_rated, linestyle=':', color='orange', label=f'Rated  {v_rated} m/s')
-ax.axvline(v_co,    linestyle=':', color='red',    label=f'Cut-out {v_co} m/s')
-ax.set_xlabel("Wind Speed (m/s)")
-ax.set_ylabel("Power (MW)")
-ax.set_title("Wind Turbine Power Curve (3 MW class)")
-ax.legend()
-ax.grid(True, alpha=0.3)
-plt.tight_layout()
-plt.show()
+comparison_power = available_wind_power_kw(np.array([6, 8, 10]), 50)
+print(comparison_power)
+assert np.isclose(available_wind_power_kw(10, 50) / available_wind_power_kw(5, 50), 8)
 ```
+:::
 
----
+:::{admonition} Exercise 2 — Betz and practical extraction
+:class: note
 
-### Exercise 4 — Weibull Wind Distribution
+**Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
-A site has a Weibull wind speed distribution with $k = 2.0$, $c = 9$ m/s.
+Plot available, Betz-limited, and $C_p=0.45$ rotor power from 0–15 m/s. Explain why these are not a controlled generator power curve above rated speed.
 
-1. Plot the **probability density function** $f(v)$ for 0 – 25 m/s.
-2. Overlay a **histogram** of 5 000 randomly sampled wind speeds from this
-   distribution.
-3. Calculate the **mean wind speed** (analytical: $\bar{v} = c \cdot \Gamma(1 + 1/k)$).
+```python
+# TODO: calculate three curves from the same available-power array
+# TODO: label and plot them together
+```
+:::
+
+:::{admonition} Exercise 2 — Solution
+:class: tip, dropdown
+
+1. Reuse the available-power array.
+2. Multiply by betz and practical coefficients separately.
+3. Label rotor power.
 
 ```{code-cell} python
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy.stats import weibull_min   # note: scipy's shape param = k, scale = c
-from scipy.special import gamma
-
-k = 2.0   # shape
-c = 9.0   # scale (m/s)
-
-v = np.linspace(0, 25, 300)
-
-# Weibull PDF: f(v) = (k/c) * (v/c)**(k-1) * exp(-(v/c)**k)
-# f_v = ...
-
-# Sample 5000 random wind speeds from this distribution
-# Hint: use np.random.weibull(k, 5000) * c
-
-# Mean wind speed: v_mean = c * gamma(1 + 1/k)
-
-fig, ax = plt.subplots(figsize=(9, 5))
-# ax.hist(..., density=True, ...)   — histogram of samples
-# ax.plot(v, f_v, ...)              — analytical PDF
-
-ax.set_xlabel("Wind Speed (m/s)")
-ax.set_ylabel("Probability Density")
-ax.set_title(f"Weibull Distribution — k={k}, c={c} m/s")
-ax.legend()
-ax.grid(True, alpha=0.3)
+exercise_speed = np.linspace(0, 15, 150)
+available_kw = available_wind_power_kw(exercise_speed, 50)
+plt.figure(figsize=(8, 4))
+plt.plot(exercise_speed, available_kw, label="Available")
+plt.plot(exercise_speed, available_kw * 16/27, label="Betz bound")
+plt.plot(exercise_speed, available_kw * 0.45, label="Cp = 0.45")
+plt.xlabel("Wind speed (m/s)")
+plt.ylabel("Power (kW)")
+plt.grid(alpha=0.3)
+plt.legend()
 plt.tight_layout()
-plt.show()
 ```
 
----
+A real controller caps generator output and shuts the turbine down at cut-out.
+:::
 
-### Exercise 5 — Annual Energy Production from a Wind-Speed Distribution
+:::{admonition} Exercise 3 — Density correction
+:class: note
 
-Using the Weibull distribution from Exercise 4 ($k = 2.0$, $c = 9$ m/s) and
-the turbine from Exercise 3 (3 MW rated):
+**Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
-1. Discretise wind speeds into **0.5 m/s bins** from 0 to 30 m/s.
-2. For each bin, compute the **probability mass** and the **turbine power**.
-3. Calculate the **AEP** (Annual Energy Production) in GWh.
-4. Plot the contribution to AEP by wind speed bin (bar chart).
-5. Calculate the **capacity factor** of this turbine at this site.
+For temperatures -10–35 °C at 101325 Pa, plot air density and available power at 10 m/s.
+
+```python
+# TODO: call air_density_kgm3 for an array of temperatures
+# TODO: use each density in available_wind_power_kw
+```
+:::
+
+:::{admonition} Exercise 3 — Solution
+:class: tip, dropdown
+
+1. Convert celsius to kelvin.
+2. Calculate density.
+3. Use each density in the same wind-power calculation.
 
 ```{code-cell} python
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy.special import gamma
-
-k = 2.0
-c = 9.0
-P_rated = 3.0    # MW
-hours   = 8760
-
-# Bin edges and centres
-bin_edges   = np.arange(0, 30.5, 0.5)
-bin_centres = 0.5 * (bin_edges[:-1] + bin_edges[1:])
-
-# Weibull probability of wind in each bin:
-# p[i] = F(bin_edge[i+1]) - F(bin_edge[i])
-# Weibull CDF: F(v) = 1 - exp(-(v/c)**k)
-def weibull_cdf(v, k, c):
-    return 1 - np.exp(-(v / c)**k)
-
-# p_bins = weibull_cdf(bin_edges[1:], k, c) - weibull_cdf(bin_edges[:-1], k, c)
-
-# Power at each bin centre using turbine_power() from Exercise 3
-# (copy or re-define the function here)
-
-# AEP (MWh) = sum(power_per_bin * probability * 8760)
-# AEP_GWh = AEP / 1000
-
-# Capacity factor = AEP_MWh / (P_rated * hours)
-
-fig, ax = plt.subplots(figsize=(10, 5))
-# ax.bar(bin_centres, contribution_GWh_per_bin, ...)
-ax.set_xlabel("Wind Speed (m/s)")
-ax.set_ylabel("AEP Contribution (GWh)")
-ax.set_title(f"Annual Energy Production by Wind Speed Bin  |  AEP ≈ {0:.1f} GWh")
-ax.grid(True, alpha=0.3, axis='y')
+temperature_c = np.linspace(-10, 35, 80)
+density = air_density_kgm3(101325, temperature_c)
+available_at_10 = np.array([available_wind_power_kw(10, 50, value) for value in density])
+fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+axes[0].plot(temperature_c, density)
+axes[0].set(xlabel="Temperature (°C)", ylabel="Density (kg/m³)")
+axes[1].plot(temperature_c, available_at_10, color="tab:orange")
+axes[1].set(xlabel="Temperature (°C)", ylabel="Available power (kW)")
+for axis in axes:
+    axis.grid(alpha=0.3)
 plt.tight_layout()
-plt.show()
+assert density[0] > density[-1]
 ```
+:::
+
+:::{admonition} Exercise 4 — Hub-height scenarios
+:class: note
+
+**Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
+
+For 6 m/s at 10 m, calculate 100 m wind speed for $\alpha=[0.10,0.14,0.25]$ and plot profiles from 10–150 m.
+
+```python
+# TODO: loop over shear exponents
+# TODO: calculate and plot each vertical profile
+```
+:::
+
+:::{admonition} Exercise 4 — Solution
+:class: tip, dropdown
+
+1. Create the height array.
+2. Apply each shear exponent.
+3. Compare 100 m values and label the profiles.
+
+```{code-cell} python
+heights = np.linspace(10, 150, 100)
+plt.figure(figsize=(6, 5))
+for shear_exponent in [0.10, 0.14, 0.25]:
+    profile = wind_at_height(6, heights, alpha=shear_exponent)
+    plt.plot(profile, heights, label=f"alpha={shear_exponent}")
+    print(shear_exponent, wind_at_height(6, 100, alpha=shear_exponent))
+plt.xlabel("Wind speed (m/s)")
+plt.ylabel("Height (m)")
+plt.grid(alpha=0.3)
+plt.legend()
+plt.tight_layout()
+```
+:::
+
+:::{admonition} Exercise 5 — Hourly and daily energy
+:class: note
+
+**Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
+
+Generate 14 days of hourly wind speed, calculate power, reshape into days, and plot the first week. Check physical bounds.
+
+```python
+# TODO: generate reproducible hourly speeds
+# TODO: calculate hourly power and daily MWh
+# TODO: plot the first 168 hours
+```
+:::
+
+:::{admonition} Exercise 5 — Solution
+:class: tip, dropdown
+
+1. Generate seeded hourly speeds.
+2. Apply the turbine curve.
+3. Sum groups of 24 one-hour intervals.
+
+```{code-cell} python
+rng = np.random.default_rng(31)
+hourly_speed = rng.weibull(2.0, 24 * 14) * 8
+hourly_power = turbine_power_mw(hourly_speed)
+daily_energy_mwh = hourly_power.reshape(-1, 24).sum(axis=1)
+fig, axes = plt.subplots(2, 1, figsize=(9, 6), sharex=True)
+axes[0].plot(hourly_speed[:168])
+axes[0].set(ylabel="Wind speed (m/s)")
+axes[1].plot(hourly_power[:168], color="tab:green")
+axes[1].set(xlabel="Hour", ylabel="Power (MW)")
+plt.tight_layout()
+assert np.all(hourly_speed >= 0)
+assert np.all((hourly_power >= 0) & (hourly_power <= 3))
+```
+:::
+
+:::{admonition} Exercise 6 — Circular statistics and wind roses
+:class: note
+
+**Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
+
+Calculate circular mean direction, bin directions into 12 sectors, and compare frequency- and energy-weighted polar charts.
+
+```python
+# TODO: generate or load directions
+# TODO: calculate circular mean and sector indices
+# TODO: create two polar bar charts
+```
+:::
+
+:::{admonition} Exercise 6 — Solution
+:class: tip, dropdown
+
+1. Calculate the circular mean.
+2. Assign compass-centered sectors.
+3. Count observations and sum one-hour energy by sector.
+
+```{code-cell} python
+directions = (230 + rng.normal(0, 50, len(hourly_speed))) % 360
+mean_direction = circular_mean_degrees(directions)
+sector_edges = np.linspace(0, 360, 13)
+sector_index = ((directions + 15) % 360 // 30).astype(int)  # sectors centered on compass angles
+frequency = np.bincount(sector_index, minlength=12)
+energy = np.bincount(sector_index, weights=hourly_power, minlength=12)
+angles = np.deg2rad(np.arange(0, 360, 30))
+fig, axes = plt.subplots(1, 2, figsize=(10, 5), subplot_kw={"projection": "polar"})
+axes[0].bar(angles, frequency, width=np.deg2rad(27))
+axes[0].set_title("Frequency")
+axes[1].bar(angles, energy, width=np.deg2rad(27), color="tab:green")
+axes[1].set_title("Energy")
+for axis in axes:
+    axis.set_theta_zero_location("N")
+    axis.set_theta_direction(-1)
+plt.tight_layout()
+print(f"Circular mean: {mean_direction:.1f}°")
+```
+:::
+
+## Common mistakes
+
+- Using $v^2$ rather than $v^3$ in available wind power.
+- Treating the Betz limit as turbine electrical efficiency.
+- Extending the cubic law beyond rated speed or through cut-out.
+- Calculating energy from mean wind speed; because of the cubic relationship, $P(\bar v)$ generally differs from $\overline{P(v)}$.
+- Randomly shuffling time-series data before forecasting.
+- Averaging wind directions arithmetically or reversing the meteorological convention.
+
+## Check your understanding
+
+Continue with the [wind-physics quiz](../section7/renewableEnergyquizzes/windEnergy.md) and the [wind data lab](../section7/renewableEnergyquizzes/eolicenergy.md).

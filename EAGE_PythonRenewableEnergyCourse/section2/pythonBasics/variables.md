@@ -135,11 +135,19 @@ print(type(name))
 ---
 
 
-```{admonition} Exercise 1
+:::{admonition} Exercise 1 — Variables and types
+:class: note
+
+**Reference:** Python tutorial [@pythonDocs]; NumPy [@numpyDocs]; pandas [@pandasDocs]; Matplotlib [@matplotlibDocs].
 Write a program that
 * Store the value of your name, age, height, and Python experience, 
 * Print its values, and the data type.
+
+```python
+# TODO: create name, age, height, and python_experience
+# TODO: print every value and its type
 ```
+:::
 
 :::{admonition} Error
 :class: error
@@ -153,18 +161,24 @@ SyntaxError: invalid syntax
 In order to remove the error, **please complete the code with the requested and correct information**.
 :::
 
+:::{admonition} Exercise 1 — Solution
+:class: tip, dropdown
+
 ```{code-cell} python
 name = "Roderick" # String
 age = 39 # Integer
 height = 1.75 # Float
-pythonExperience = False # Boolean
+python_experience = False # Boolean
 
-print(name, age, height, pythonExperience)
-print(type(name))
-print(type(age))
-print(type(height))
-print(type(pythonExperience))
+for value in [name, age, height, python_experience]:
+    print(value, type(value))
+
+assert isinstance(name, str)
+assert isinstance(age, int)
+assert isinstance(height, float)
+assert isinstance(python_experience, bool)
 ```
+:::
 
 :::{admonition} Single or Double Quotes?
 :class: tip

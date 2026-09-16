@@ -3,188 +3,256 @@ kernelspec:
   name: python3
   display_name: Python 3
 ---
-# Quiz: Solar Energy
 
-Test your knowledge of solar photovoltaic systems and Python calculations.
+# Solar PV Quiz and Python Challenge
 
----
+These eight questions progress from units and concepts to functions, arrays, validation, and plots.
 
-:::{admonition} Question 1
+:::{admonition} Quiz 1 — Irradiance or irradiation?
 :class: note
 
-**PV Panel Power**
+**Reference:** Wade, Chapters 2–3 and 9 [@wade2003]; Foster et al., photovoltaic systems [@foster2010].
 
-The DC power output of a PV panel is:
+Classify each quantity: `850 W/m²`, `5.2 kWh/m²/day`, `3 MW`, and `18 MWh`.
 
-$$P_{DC} = G \cdot A \cdot \eta_{panel}$$
-
-where $G$ is solar irradiance (W/m²), $A$ is panel area (m²), and $\eta_{panel}$ is panel efficiency.
-
-Calculate the DC power (W) for:
-- $G = 850$ W/m², $A = 1.6$ m², $\eta_{panel} = 0.19$.
 :::
 
-:::{admonition} Question 1 (Solution)
+:::{admonition} Solution
 :class: tip, dropdown
 
-A direct substitution into the formula:
-
-```{code-cell} python
-G        = 850    # W/m²
-A        = 1.6    # m²
-eta      = 0.19   # panel efficiency
-
-P_DC = G * A * eta
-print(f"DC Power output: {P_DC:.2f} W")
-```
+- 850 W/m²: irradiance.
+- 5.2 kWh/m²/day: daily irradiation.
+- 3 MW: electrical power.
+- 18 MWh: electrical energy.
 :::
 
----
-
-:::{admonition} Question 2
+:::{admonition} Quiz 2 — Panel calculation
 :class: note
 
-**Temperature Derating**
+**Reference:** Wade, Chapters 2–3 and 9 [@wade2003]; Foster et al., photovoltaic systems [@foster2010].
 
-PV panel power decreases with temperature above the Standard Test Condition (STC) of 25 °C.
-The corrected power is:
+A 2.1 m² panel has 21% efficiency. Calculate ideal DC power at 780 W/m² and explain why it is not guaranteed AC output.
 
-$$P_T = P_{STC} \left[1 + \gamma (T - 25)\right]$$
-
-where $\gamma = -0.004$ /°C (temperature coefficient).
-
-Calculate $P_T$ for $P_{STC} = 380$ W and temperatures `T = [20, 25, 35, 45, 55, 65]` °C.
-Print a table of results.
 :::
 
-:::{admonition} Question 2 (Solution)
+:::{admonition} Solution
 :class: tip, dropdown
-
-We loop over the temperature list and apply the derating formula:
-
-```{code-cell} python
-P_stc = 380      # W
-gamma = -0.004   # /°C
-temps = [20, 25, 35, 45, 55, 65]
-
-print(f"{'Temp (°C)':>10}  {'P_T (W)':>10}")
-print("-" * 25)
-for T in temps:
-    P_T = P_stc * (1 + gamma * (T - 25))
-    print(f"{T:>10}  {P_T:>10.2f}")
-```
-:::
-
----
-
-:::{admonition} Question 3
-:class: note
-
-**Solar Farm Energy**
-
-A solar farm has 2000 panels, each rated at 400 W (STC).  
-The farm operates for 5 peak sun hours (PSH) per day with a system efficiency of 80 % (accounting for inverter losses, cabling, etc.).
-
-Calculate:
-1. Total installed capacity (kW).
-2. Daily energy production (kWh).
-3. Annual energy production (MWh).
-:::
-
-:::{admonition} Question 3 (Solution)
-:class: tip, dropdown
-
-We scale from individual panel to farm level:
-
-```{code-cell} python
-n_panels    = 2000
-P_panel_W   = 400      # W
-PSH         = 5        # hours/day
-eta_system  = 0.80
-
-capacity_kW = n_panels * P_panel_W / 1000
-daily_kWh   = capacity_kW * PSH * eta_system
-annual_MWh  = daily_kWh * 365 / 1000
-
-print(f"Installed capacity:       {capacity_kW:,.0f} kW")
-print(f"Daily energy production:  {daily_kWh:,.0f} kWh")
-print(f"Annual energy production: {annual_MWh:,.1f} MWh")
-```
-:::
-
----
-
-:::{admonition} Question 4
-:class: note
-
-**Irradiance vs. Power Curve**
-
-For a single PV panel ($A = 1.65$ m², $\eta = 0.20$), plot power output (W) as a function of irradiance from 0 to 1000 W/m² in steps of 50 W/m².
-
-Add axis labels and a title.
-:::
-
-:::{admonition} Question 4 (Solution)
-:class: tip, dropdown
-
-We use NumPy for the irradiance array and Matplotlib to plot:
 
 ```{code-cell} python
 import numpy as np
-import matplotlib.pyplot as plt
 
-A   = 1.65   # m²
-eta = 0.20
-
-G_values = np.arange(0, 1050, 50)   # W/m²
-P_values = G_values * A * eta
-
-plt.figure(figsize=(7, 4))
-plt.plot(G_values, P_values, color="goldenrod", linewidth=2, marker="o", markersize=4)
-plt.xlabel("Solar Irradiance (W/m²)")
-plt.ylabel("Power Output (W)")
-plt.title("PV Panel Power vs. Solar Irradiance")
-plt.grid(True, linestyle="--", alpha=0.5)
-plt.tight_layout()
-plt.show()
+irradiance_wm2, area_m2, efficiency = 780, 2.1, 0.21
+dc_power_w = irradiance_wm2 * area_m2 * efficiency
+print(f"Idealized DC power: {dc_power_w:.1f} W")
+assert np.isclose(dc_power_w, 343.98)
 ```
+
+The calculation omits temperature, inverter behavior, wiring, mismatch, soiling, shading, and availability.
 :::
 
----
-
-:::{admonition} Question 5
+:::{admonition} Quiz 3 — Build the temperature-aware function
 :class: note
 
-**Capacity Factor**
+**Reference:** Wade, Chapters 2–3 and 9 [@wade2003]; Foster et al., photovoltaic systems [@foster2010].
 
-A solar plant with a rated capacity of 10 MW produces the following monthly energy (MWh):
+Write a function that estimates cell temperature with NOCT and then AC power with temperature coefficient, inverter efficiency, and AC clipping. It must accept arrays and reject negative irradiance.
 
-```python
-monthly_energy = [1200, 1350, 2100, 2800, 3500, 3800,
-                  3700, 3400, 2500, 1800, 1300, 1100]
-```
-
-Calculate:
-1. Total annual energy (MWh).
-2. The annual capacity factor (%).
-
-> *Capacity Factor = Annual Energy / (Rated Power × 8760 hours)*
 :::
 
-:::{admonition} Question 5 (Solution)
+:::{admonition} Solution
 :class: tip, dropdown
 
-We sum the monthly values and apply the capacity factor formula:
+```{code-cell} python
+import numpy as np
+
+def pv_power_mw(irradiance, ambient_c, dc_mw, ac_mw,
+                noct_c=45, gamma=-0.004, inverter_efficiency=0.97):
+    if not all(np.isfinite(np.asarray(value, dtype=float)).all() for value in [irradiance, ambient_c, dc_mw, ac_mw, noct_c, gamma, inverter_efficiency]):
+        raise ValueError("model inputs must be finite")
+    irradiance = np.asarray(irradiance, dtype=float)
+    if np.any(irradiance < 0) or dc_mw < 0 or ac_mw < 0:
+        raise ValueError("irradiance and ratings must be non-negative")
+    if not 0 < inverter_efficiency <= 1:
+        raise ValueError("invalid inverter efficiency")
+    cell_c = np.asarray(ambient_c) + irradiance / 800 * (noct_c - 20)
+    factor = np.maximum(1 + gamma * (cell_c - 25), 0)
+    dc_power = dc_mw * irradiance / 1000 * factor
+    ac_power = np.minimum(dc_power * inverter_efficiency, ac_mw)
+    return float(ac_power) if ac_power.ndim == 0 else ac_power
+
+assert pv_power_mw(0, 25, 10, 8) == 0
+assert np.all(pv_power_mw([0, 500, 1000], 25, 10, 8) <= 8)
+```
+:::
+
+:::{admonition} Quiz 4 — Plot a solar day
+:class: note
+
+**Reference:** Wade, Chapters 2–3 and 9 [@wade2003]; Foster et al., photovoltaic systems [@foster2010].
+
+Create 15-minute samples for a synthetic day, calculate irradiance, ambient temperature, cell temperature, and AC power, then make two labelled plots. Calculate daily MWh using the correct 0.25-hour step.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
 
 ```{code-cell} python
-rated_MW = 10
-monthly_energy = [1200, 1350, 2100, 2800, 3500, 3800,
-                  3700, 3400, 2500, 1800, 1300, 1100]
+import matplotlib.pyplot as plt
 
-annual_MWh   = sum(monthly_energy)
-CF           = annual_MWh / (rated_MW * 8760) * 100
+hour = np.arange(0, 24, 0.25)
+daylight = (hour >= 6) & (hour <= 18)
+irradiance = np.zeros_like(hour)
+irradiance[daylight] = 1000 * np.sin(np.pi * (hour[daylight] - 6) / 12)
+ambient = 20 + 8 * np.sin(2 * np.pi * (hour - 9) / 24)
+cell = ambient + irradiance / 800 * 25
+power = pv_power_mw(irradiance, ambient, 12, 10)
+energy_mwh = power.sum() * 0.25
 
-print(f"Annual energy production: {annual_MWh:,} MWh")
-print(f"Annual capacity factor:   {CF:.1f}%")
+fig, axes = plt.subplots(2, 1, figsize=(9, 6), sharex=True)
+axes[0].plot(hour, irradiance, color="goldenrod", label="Irradiance")
+axes[0].set(ylabel="W/m²", title="Synthetic solar resource")
+axes[1].plot(hour, power, color="tab:blue", label="AC power")
+axes[1].set(xlabel="Hour", ylabel="MW", title=f"AC energy = {energy_mwh:.1f} MWh")
+for ax in axes:
+    ax.grid(alpha=0.3)
+plt.tight_layout()
+assert energy_mwh > 0
+```
+:::
+
+:::{admonition} Quiz 5 — Find inverter clipping
+:class: note
+
+**Reference:** Wade, Chapters 2–3 and 9 [@wade2003]; Foster et al., photovoltaic systems [@foster2010].
+
+For DC/AC ratios 1.0, 1.2, and 1.4 with a 10 MW AC inverter, calculate energy and clipped energy for the same day. Plot energy versus DC/AC ratio.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+```{code-cell} python
+ratios = np.array([1.0, 1.2, 1.4])
+energies, clipped = [], []
+for ratio in ratios:
+    temperature_factor = np.maximum(1 - 0.004 * (cell - 25), 0)
+    dc_unclipped = ratio * 10 * irradiance / 1000 * temperature_factor
+    ac = pv_power_mw(irradiance, ambient, ratio * 10, 10)
+    energies.append(ac.sum() * 0.25)
+    clipping_mwh = np.maximum(dc_unclipped * 0.97 - 10, 0).sum() * 0.25
+    clipped.append(clipping_mwh)
+    assert np.isclose(dc_unclipped.sum() * 0.97 * 0.25, energies[-1] + clipping_mwh)
+
+plt.figure(figsize=(7, 4))
+plt.plot(ratios, energies, marker="o", label="Delivered AC energy")
+plt.plot(ratios, clipped, marker="s", label="Clipped energy estimate")
+plt.xlabel("DC/AC ratio")
+plt.ylabel("Energy (MWh/day)")
+plt.title("Array sizing and inverter clipping")
+plt.grid(alpha=0.3)
+plt.legend()
+plt.tight_layout()
+```
+:::
+
+:::{admonition} Quiz 6 — Validate monthly performance ratio
+:class: note
+
+**Reference:** Wade, Chapters 2–3 and 9 [@wade2003]; Foster et al., photovoltaic systems [@foster2010].
+
+Given monthly irradiation and AC energy, calculate PR and flag suspicious values for investigation. PR above one is not automatically impossible; cold conditions and rating/measurement conventions can cause it. Use a DataFrame and a bar plot.
+
+```python
+irradiation_kwh_m2 = [58, 82, 118, 145, 170, 188, 194, 176, 132, 94, 62, 48]
+energy_mwh = [420, 620, 900, 1120, 1280, 1420, 1480, 1320, 1010, 710, 450, 350]
+```
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+```{code-cell} python
+import pandas as pd
+
+monthly = pd.DataFrame({
+    "irradiation_kwh_m2": [58, 82, 118, 145, 170, 188, 194, 176, 132, 94, 62, 48],
+    "energy_mwh": [420, 620, 900, 1120, 1280, 1420, 1480, 1320, 1010, 710, 450, 350],
+}, index=pd.period_range("2025-01", periods=12, freq="M").astype(str))
+rated_mw = 10  # DC nameplate at STC
+monthly["reference_yield_h"] = monthly["irradiation_kwh_m2"] / 1.0
+monthly["final_yield_h"] = monthly["energy_mwh"] / rated_mw
+monthly["pr"] = monthly["final_yield_h"] / monthly["reference_yield_h"]
+monthly["flag"] = ~monthly["pr"].between(0, 1)
+
+monthly["pr"].plot.bar(figsize=(9, 4), color="darkorange", ylim=(0, 1.05),
+                       title="Monthly PV performance ratio")
+plt.ylabel("Performance ratio")
+plt.tight_layout()
+assert not monthly["flag"].any()
+```
+:::
+
+:::{admonition} Quiz 7 — Temperature–irradiance map
+:class: note
+
+**Reference:** Wade, Chapters 2–3 and 9 [@wade2003]; Foster et al., photovoltaic systems [@foster2010].
+
+Use `np.meshgrid` to evaluate power for irradiance 0–1100 W/m² and ambient temperature -10–45 °C. Plot a filled contour and identify the clipped plateau.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+```{code-cell} python
+irradiance_axis = np.linspace(0, 1100, 80)
+temperature_axis = np.linspace(-10, 45, 60)
+G_grid, T_grid = np.meshgrid(irradiance_axis, temperature_axis)
+P_grid = pv_power_mw(G_grid, T_grid, 12, 10)
+
+plt.figure(figsize=(8, 5))
+contour = plt.contourf(G_grid, T_grid, P_grid, levels=20, cmap="YlOrRd")
+plt.colorbar(contour, label="AC power (MW)")
+plt.xlabel("Irradiance (W/m²)")
+plt.ylabel("Ambient temperature (°C)")
+plt.title("PV power sensitivity and clipping")
+plt.tight_layout()
+```
+:::
+
+:::{admonition} Quiz 8 — Lifetime degradation
+:class: note
+
+**Reference:** Wade, Chapters 2–3 and 9 [@wade2003]; Foster et al., photovoltaic systems [@foster2010].
+
+Write a function returning annual and cumulative energy for a degradation rate. Compare 0.3%, 0.5%, and 0.8% over 25 years using a plot. Verify that year-one energy is identical for all scenarios and that every sequence is non-increasing.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+```{code-cell} python
+def degraded_energy(year_one_mwh, annual_rate, years=25):
+    if year_one_mwh < 0 or not 0 <= annual_rate < 1 or years < 1:
+        raise ValueError("invalid degradation inputs")
+    year = np.arange(1, years + 1)
+    annual = year_one_mwh * (1 - annual_rate) ** (year - 1)
+    return year, annual, np.cumsum(annual)
+
+plt.figure(figsize=(8, 4))
+for rate in [0.003, 0.005, 0.008]:
+    year, annual, cumulative = degraded_energy(15000, rate)
+    plt.plot(year, annual / 1000, label=f"{rate:.1%}/year")
+    assert annual[0] == 15000 and np.all(np.diff(annual) <= 0)
+plt.xlabel("Operating year")
+plt.ylabel("Annual energy (GWh)")
+plt.title("PV degradation scenarios")
+plt.grid(alpha=0.3)
+plt.legend()
+plt.tight_layout()
 ```
 :::

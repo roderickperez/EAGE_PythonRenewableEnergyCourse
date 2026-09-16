@@ -1,6 +1,6 @@
 # IDE
 
-**Objetives**
+**Objectives**
 * Provide an *overview* of Python IDEs and code editors for beginners and professionals.
 ---
 
@@ -15,14 +15,13 @@ On Google we can find several IDEs, such as:
 
 * [Sublime Text](https://www.sublimetext.com/): Sublime Text is a popular code editor that supports many languages including Python. It's fast, highly customizable and has a huge community.
 * [Visual Studio Code](https://code.visualstudio.com/): a code editor with Python, notebook, debugging, and environment extensions.
-* [Visual Studio Code](https://code.visualstudio.com/): Visual Studio Code (VS Code) is a free and open-source IDE created by Microsoft that can be used for Python development.
 * [PyCharm](https://www.jetbrains.com/pycharm/): PyCharm is an IDE for professional developers. It is created by JetBrains, a company known for creating great software development tools.
 * [Eclipse](https://www.eclipse.org/): Eclipse is a free and open-source IDE that can be used for Python development.
 * [Spyder](https://www.spyder-ide.org/): It is an IDE for Python under Anaconda.
 * others.
 
 ## Anaconda
-According to their website, [Anaconda](https://www.anaconda.com/products/distribution) is a free Python (and also R) distribution (including for commercial use and redistribution). It includes more than 400 of the most popular Python packages for science, math, engineering, and data analysis. The default IDE bundled with Anaconda is Spyder which is just another Python package that can be installed even without Anaconda.
+Anaconda bundles Python and scientific packages. Licensing and repository access depend on the organization and intended use; check the [current Anaconda terms](https://www.anaconda.com/legal/terms/terms-of-service). This course can run with standard Python and `venv`.
 
 Anaconda provides its own package manager (```conda```) and package repository. But it allows installation of packages from **PyPI** using ```pip``` if the package is not in Anaconda repositories. It is especially good if you are installing on Microsoft Windows as it can easily install packages that would otherwise require you to install C/C++ compilers and libraries if you were using ```pip```. It is certainly an added advantage that **conda**, in addition to being a package manager, is also a virtual environment manager allowing you to install independent development environments and switch from one to the other (similar to virtualenv).
 
@@ -30,7 +29,7 @@ One of the most popular features of Anaconda is that allows to create notebooks,
 
 ## Jupyter
 
-[Jupyter project](https://github.com/jupyter/), or **Jupyter** (**Ju**lia, **Py**thon, **R**), is a free web-based software for interactive computing across multiple programming languages, under Anaconda distribution. You can also call it a web application under Anaconda. For some reseachers, it is their prefered tool to prototype their data analysis algorithms.
+[Jupyter project](https://github.com/jupyter/), or **Jupyter** (**Ju**lia, **Py**thon, **R**), is a free web-based software for interactive computing across multiple programming languages. Jupyter is an independent project and does not require Anaconda. For some reseachers, it is their prefered tool to prototype their data analysis algorithms.
 
 ### Jypiter Lab
 Jupyter Lab ia a web-based application that allows you to lets you collect multiple Jupyter Notebooks under one tab. It is also part of Anaconda distribution and it is a good way to prototype your data analysis algorithms.

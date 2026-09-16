@@ -46,18 +46,18 @@ Exercises reinforce Python, NumPy, pandas, plotting, and renewable-energy calcul
 
 ## Section 8 — Final project
 
-The final project integrates source interpretation, data quality, visualisation, monthly forecasting, SQLite, reconciliation checks, an engineering scenario, and technical communication.
+The final project models one synthetic week of a hybrid solar, wind, hydro and geothermal portfolio, reconciles supply and demand, and compares design scenarios. Monthly forecasting and SQLite are separate case studies in Sections 4 and 5.
 
 ## Core completion checklist
 
-- [x] Explain the difference between power and energy.
-- [x] Validate units, grain, date coverage, and missing values before analysis.
-- [x] Manipulate arrays and DataFrames without hidden shape assumptions.
-- [x] Produce charts with accurate titles, axes, units, and scope.
-- [x] Avoid double-counting aggregate and component energy categories.
-- [x] Use a chronological holdout and a simple forecast baseline.
-- [x] Create and query a relational SQLite database.
-- [x] Apply the main hydro, solar, wind, and geothermal equations with stated assumptions.
-- [x] Communicate data freshness and limitations.
+- [ ] Explain the difference between power and energy.
+- [ ] Validate units, grain, date coverage, and missing values before analysis.
+- [ ] Manipulate arrays and DataFrames without hidden shape assumptions.
+- [ ] Produce charts with accurate titles, axes, units, and scope.
+- [ ] Avoid double-counting aggregate and component energy categories.
+- [ ] Use a chronological holdout and a simple forecast baseline.
+- [ ] Create and query a relational SQLite database.
+- [ ] Apply the main hydro, solar, wind, and geothermal equations with stated assumptions.
+- [ ] Communicate data freshness and limitations.
 
 Deep learning, operational forecasting, power-system optimisation, satellite classification, and bankable resource assessment are optional next steps, not claimed core outcomes of this short course.

@@ -108,23 +108,7 @@ There is another kind of distribution — better known as spread— which shows 
 :align: center
 ```
 
-A boxplot is a standardized way of displaying the distribution of data based on a five number summary ("minimum", first quartile (Q1), median, third quartile (Q3), and "maximum"). 
-
-* Median (Q2/50th Percentile): the middle value of the dataset.
-
-* First quartile (Q1/25th Percentile): the middle number between the smallest number (not the “minimum”) and the median of the dataset.
-
-* Third quartile (Q3/75th Percentile): the middle value between the median and the highest value (not the “maximum”) of the dataset.
-
-* Interquartile range (IQR): 25th to the 75th percentile.
-
-* Whiskers (shown in blue)
-
-* Outliers (shown as green circles)
-
-* "Maximum": Q3 + 1.5*IQR
-
-* "Minimum": Q1 -1.5*IQR
+A standard Tukey boxplot displays Q1, the median and Q3. IQR = Q3 - Q1. The fences are Q1 - 1.5 × IQR and Q3 + 1.5 × IQR; whiskers extend to the most extreme **observed values inside** these fences. Points outside are shown individually. Fences are not necessarily the sample minimum and maximum, and a flagged value is not automatically erroneous [@matplotlibDocs].
 
 Also, it can tell you about your outliers and what their values are. It can also tell you if your data is symmetrical, how tightly your data is grouped, and if and how your data is skewed.
 
@@ -135,7 +119,7 @@ sns.boxplot(x =  df["bill_length_mm"])
 
 If we compare the boxplot to a histogram or density plot, they have the advantage of taking up less space, which is useful when comparing distributions between many groups or datasets. 
 
-In case we would like to plot a boxplot for all the variables in the data set, we need to change the `x` parameter to `"columns"`.
+In case we would like to plot a boxplot for all the variables in the data set, select the numeric columns and pass them as `data`; compare variables with compatible units.
 
 ```{code-cell} python
 plt.figure(figsize=(20, 12))

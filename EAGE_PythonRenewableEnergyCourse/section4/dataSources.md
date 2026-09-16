@@ -1,5 +1,7 @@
 # Energy Data Sources
 
+Legacy figures below are historical illustrations. Establish their provenance and observation periods before reusing numerical values. Use official source tables for updated analysis; these figure files are not live feeds.
+
 ## Our World in Data
 
 Our World in Data publishes energy indicators with detailed metadata [@owid_energy_mix]. Always inspect the measure definition: primary energy, electricity generation, final energy, and consumption are not interchangeable.
@@ -52,7 +54,9 @@ Global Energy by Source (in TWh) from the "global-energy-substitution.csv" datas
 
 ## EIA
 
-## euroStat
+The [U.S. Energy Information Administration](https://www.eia.gov/opendata/) provides energy data and an API. Record series identifier, units, geography, frequency and retrieval date. API access can require a key; keep credentials out of shared notebooks.
+
+## Eurostat
 
 Link: https://ec.europa.eu/eurostat/cache/infographs/energy_portal/enviz.html?language=EN
 

@@ -12,6 +12,8 @@ Test your knowledge of NumPy — the foundation for numerical computing in Pytho
 :::{admonition} Question 1
 :class: note
 
+**Reference:** NumPy user guide [@numpyDocs].
+
 **Array Creation**
 
 Create the following arrays using NumPy:
@@ -46,6 +48,8 @@ print("zeros:\n", arr3)
 
 :::{admonition} Question 2
 :class: note
+
+**Reference:** NumPy user guide [@numpyDocs].
 
 **Indexing and Slicing**
 
@@ -87,6 +91,8 @@ print("Greater than 300:", power_output[power_output > 300])
 :::{admonition} Question 3
 :class: note
 
+**Reference:** NumPy user guide [@numpyDocs].
+
 **Mathematical Operations**
 
 A wind turbine array has the following power readings (in kW):
@@ -98,7 +104,7 @@ turbines = np.array([150.5, 200.0, 175.3, 220.8, 195.6])
 Calculate:
 1. Total power output.
 2. Mean power output.
-3. Standard deviation.
+3. Population standard deviation (`ddof=0`; pandas defaults to sample `ddof=1`).
 4. Power in MW (divide by 1000).
 :::
 
@@ -123,6 +129,8 @@ print(f"Power in MW:  {turbines / 1000}")
 
 :::{admonition} Question 4
 :class: note
+
+**Reference:** NumPy user guide [@numpyDocs].
 
 **Reshaping and Broadcasting**
 
@@ -159,9 +167,11 @@ print("Row-scaled:\n", arr_scaled)
 :::{admonition} Question 5
 :class: note
 
+**Reference:** NumPy user guide [@numpyDocs].
+
 **Random and Statistics**
 
-Simulate 365 days of solar irradiance data (W/m²) using a normal distribution with:
+Simulate 365 synthetic midday solar irradiance observations, one per day, (W/m²) using a normal distribution with:
 - Mean = 550 W/m²
 - Standard deviation = 120 W/m²
 
@@ -180,7 +190,8 @@ We use `np.random.normal` and statistical functions:
 import numpy as np
 
 np.random.seed(42)
-irradiance = np.random.normal(loc=550, scale=120, size=365)
+irradiance = np.maximum(np.random.normal(loc=550, scale=120, size=365), 0)
+# Truncated teaching sample; not a realistic annual radiation model.
 
 print(f"Min: {irradiance.min():.2f} W/m²")
 print(f"Max: {irradiance.max():.2f} W/m²")

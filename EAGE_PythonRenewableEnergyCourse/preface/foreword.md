@@ -1,8 +1,8 @@
 # Prologue
 
-As of March 2026, the world is living through two major transformations at the same time: the acceleration of Artificial Intelligence (AI) and the restructuring of the global energy system. Both are deeply connected. AI is increasing our ability to model, predict, optimize, and automate; energy systems are being pushed to become cleaner, more resilient, and more efficient.
+In this course, the world is living through two major transformations at the same time: the acceleration of Artificial Intelligence (AI) and the restructuring of the global energy system. Both are deeply connected. AI is increasing our ability to model, predict, optimize, and automate; energy systems are being pushed to become cleaner, more resilient, and more efficient.
 
-## The Current State of AI (March 2026)
+## AI as a programming aid
 
 AI has moved from experimental tools to operational infrastructure in many industries. Large language models and multimodal systems are now used for software development, technical documentation, customer support, scientific workflows, and decision support. In engineering and geoscience contexts, AI is increasingly applied to data quality control, forecasting, classification, anomaly detection, and workflow automation.
 
@@ -45,7 +45,7 @@ Energy production remains geographically concentrated:
 - **Hydropower:** large contributions from countries with abundant water resources (for example China, Brazil, Canada, and parts of Europe).
 - **Wind and solar:** strongest growth in China, the United States, the European Union, and India, with additional momentum in Latin America, Africa, and Southeast Asia.
 
-### Structural Trends Defining 2026
+### Energy-system challenges
 
 1. **Electrification is expanding** in transport, buildings, and parts of industry.
 2. **Grid modernization is now critical,** including storage, transmission expansion, and digital monitoring.
@@ -57,3 +57,7 @@ Energy production remains geographically concentrated:
 Understanding Python and data workflows is no longer optional for modern energy professionals. AI and data science are becoming core tools for forecasting demand, integrating renewables, improving operational efficiency, reducing emissions, and supporting evidence-based decisions.
 
 This course is designed to help you build those capabilities: not only to analyze data, but also to translate technical results into actions that contribute to a more reliable, efficient, and sustainable energy future.
+
+## Evidence and scope
+
+For dated energy statistics use the [reviewed course context](../section0/introRenewableEnergy.md) and [reference catalogue](../references.md). Broad statements about AI productivity are motivations for learning, not measured outcomes of this course.

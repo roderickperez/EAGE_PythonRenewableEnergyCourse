@@ -1,16 +1,16 @@
 # Python Introduction
 
-**Objetives**
+**Objectives**
 * Provide an *overview* of Python.
 ---
 
-## Python 
+## Python
 
-Programming language is the language we use to *talk* with the machine (0's and 1's). In this Programming language we need to write the instructions that are going to be executed by the machine in a precise *structure* form (*syntax*), with a precise *meaning* (*semantic*). **Python** is one of many *programming languages​​* that we have right know in the market.
+A programming language expresses instructions with defined syntax and meaning. Python lets us turn renewable-energy questions into reproducible calculations, data checks and plots.
 
 Python is an *interpreted* programming language created by Guido van Rossum and first released in 1991. In the standard CPython implementation, source code is compiled to bytecode and executed by the Python virtual machine. Python is also **dynamically typed**: names do not have fixed declared types, and type checking occurs at runtime. An object still has a definite type.
 
-Since it is an *interpreted* language, the code is interpreted during run time rather than being compiled to native code hence it is a bit **slower**. When we run a Python script this pieces of instructions are first compiled into *Byte Code*. Then, this *Byte Code* is then interpreted and executed by the PVM (Python Virtual Machine). However, the computational power of current machines is very high, that for regular and common scripts this weakness is practically imperceptible. 
+Performance depends on the task and implementation. Python-level loops can be slow for large numerical problems; NumPy performs many array operations in compiled code. First make a calculation correct and readable, then measure performance before optimising it.
 
 ### What can I do with Python?
 
@@ -20,7 +20,7 @@ The universe of applications and possibilities with Python is practically infini
 
 In addition to its high versatility, another advantage of using Python is that works on different platforms (Windows, Mac, Linux, Raspberry Pi, etc). Since it has a simple syntax (similar to the English language), allows developers to write programs with fewer lines than some other programming languages. Also, Python runs on an interpreter system, meaning that code can be executed as soon as it is written. This means that prototyping can be very quick.
 
-Python was designed for *readability*, and has some similarities to the English language with influence from mathematics. It is important to keep in mind that Python uses new lines to complete a command (as opposed to other programming languages which often use semicolons or parentheses). You will notice that Python relies on indentation, using whitespace, to define scope; such as the scope of loops, functions and classes. Other programming languages often use curly-brackets for this purpose.
+Python uses indentation to group statements into blocks, including function bodies, loops and conditions. A loop or an `if` block does not create a separate variable scope. Statements usually end at a newline, although an expression inside parentheses can span several lines.
 
 ### Download & Official Python Packages Repository
 
@@ -35,4 +35,4 @@ Python 3 is the supported major version used in this course. Install a currently
 Python 2 reached end of life on January 1, 2020 and no longer receives security fixes. New work must use Python 3. See the [official Python 2 sunset notice](https://www.python.org/doc/sunset-python-2/).
 
 ## Package and a library
-**Packages** are a set of modules that contain scripts and functions. You can write your own modules and packages, and then distributed under *PyPi*. When many packages come together, they build **libraries**. A package manager also manages the libraries because libraries are the collections of packages.
+A module is an importable unit (often a `.py` file). A package organizes modules under an import namespace. “Library” is an informal term for reusable code and may contain one or many packages. Installable distributions are published on PyPI; distribution names and import names need not match.

@@ -3,205 +3,242 @@ kernelspec:
   name: python3
   display_name: Python 3
 ---
-# Quiz: Eolic (Wind) Energy — Fundamentals
 
-This quiz focuses on the fundamental concepts of eolic (wind) energy, wind resource assessment, and turbine components.
+# Wind Data Lab: Direction, Quality, and Time Series
 
----
+“Eolic” and “wind” refer to the same energy source. This second wind assessment concentrates on data-processing skills that are easy to miss in a purely physical power-curve exercise.
 
-:::{admonition} Question 1
-:class: note
+## Setup: a reproducible teaching dataset
 
-**Wind Resource Assessment**
-
-The average wind power density (W/m²) is an indicator of wind resource quality. The 12 monthly mean speeds below support only a coarse teaching approximation: true wind power density requires higher-frequency speed observations because submonthly variability is lost.  
-It is calculated as:
-
-$$WPD = \frac{1}{2} \rho \overline{v^3}$$
-
-Given 12 monthly average wind speeds (m/s):
-
-```python
-v_monthly = [6.1, 6.8, 7.4, 8.2, 9.1, 10.3,
-             10.8, 9.7, 8.5, 7.3, 6.6, 6.2]
-```
-
-Calculate:
-1. The annual average wind speed.
-2. The average wind power density (assuming $\rho = 1.225$ kg/m³).
-:::
-
-:::{admonition} Question 1 (Solution)
-:class: tip, dropdown
-
-For this approximate exercise, $\overline{v^3}$ is the mean of the cubed monthly means, not the cube of their annual mean. Do not interpret it as a bankable resource assessment:
+The dataset below is synthetic. It deliberately contains one missing speed, one impossible negative speed, and one direction outside the conventional range so that validation is part of the exercise.
 
 ```{code-cell} python
 import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
 
-v_monthly = [6.1, 6.8, 7.4, 8.2, 9.1, 10.3,
-             10.8, 9.7, 8.5, 7.3, 6.6, 6.2]
+rng = np.random.default_rng(24)
+index = pd.date_range("2025-01-01", periods=24 * 30, freq="h")
+wind = pd.DataFrame({
+    "speed_ms": rng.weibull(2.1, len(index)) * 8.2,
+    "direction_deg": (235 + rng.normal(0, 45, len(index))) % 360,
+}, index=index)
+wind.iloc[20, wind.columns.get_loc("speed_ms")] = np.nan
+wind.iloc[80, wind.columns.get_loc("speed_ms")] = -2
+wind.iloc[120, wind.columns.get_loc("direction_deg")] = 370
+wind.head()
+```
 
-rho = 1.225
-v_arr = np.array(v_monthly)
+:::{admonition} Quiz 1 — Quality profile
+:class: note
 
-annual_avg = v_arr.mean()
-WPD = 0.5 * rho * np.mean(v_arr**3)
+**Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
-print(f"Annual average wind speed: {annual_avg:.2f} m/s")
-print(f"Wind Power Density:        {WPD:.2f} W/m²")
+Report row count, missingness, duplicate timestamps, negative speeds, and invalid directions. Do not repair the data yet.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+```{code-cell} python
+quality = pd.Series({
+    "rows": len(wind),
+    "duplicate_timestamps": wind.index.duplicated().sum(),
+    "missing_speed": wind["speed_ms"].isna().sum(),
+    "negative_speed": wind["speed_ms"].lt(0).sum(),
+    "invalid_direction": (~wind["direction_deg"].between(0, 360, inclusive="left")).sum(),
+})
+print(quality)
+assert quality["negative_speed"] == 1 and quality["invalid_direction"] == 1
 ```
 :::
 
----
-
-:::{admonition} Question 2
+:::{admonition} Quiz 2 — Repair with explicit rules
 :class: note
 
-**Capacity Factor**
+**Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
-A 3 MW wind turbine generates 7,500 MWh of electricity in one year.
+Replace impossible negative speed with missing, wrap direction with modulo 360, and interpolate only short speed gaps in time. Preserve the original table.
 
-1. What is the annual capacity factor (%)?  
-   > $CF = \frac{\text{Annual Energy}}{P_{rated} \times 8760}$
-2. How many full-load equivalent hours does this represent?
 :::
 
-:::{admonition} Question 2 (Solution)
+:::{admonition} Solution
 :class: tip, dropdown
 
-We apply the capacity factor formula:
-
 ```{code-cell} python
-P_rated_MW     = 3
-annual_MWh     = 7500
-hours_per_year = 8760
-
-CF = annual_MWh / (P_rated_MW * hours_per_year) * 100
-full_load_hours = annual_MWh / P_rated_MW
-
-print(f"Annual capacity factor:     {CF:.1f}%")
-print(f"Full-load equivalent hours: {full_load_hours:.0f} h/year")
+clean = wind.copy()
+clean.loc[clean["speed_ms"] < 0, "speed_ms"] = np.nan
+clean["direction_deg"] = clean["direction_deg"] % 360
+clean["speed_ms"] = clean["speed_ms"].interpolate(method="time", limit=2)
+assert clean["speed_ms"].notna().all()
+assert clean["speed_ms"].ge(0).all()
+assert clean["direction_deg"].between(0, 360, inclusive="left").all()
 ```
 :::
 
----
-
-:::{admonition} Question 3
+:::{admonition} Quiz 3 — Circular mean
 :class: note
 
-**Wind Shear — Logarithmic Profile**
+**Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
-Wind speed increases with height above ground according to the log-law:
+Write `circular_mean_deg`. Confirm that the mean of 350° and 10° is north, not south. Then calculate the cleaned dataset's mean direction.
 
-$$v(z) = v_{ref} \cdot \frac{\ln(z / z_0)}{\ln(z_{ref} / z_0)}$$
-
-where:
-- $v_{ref} = 8$ m/s measured at $z_{ref} = 10$ m  
-- $z_0 = 0.03$ m (roughness length — grassland)
-
-Calculate the wind speed at hub heights of 60, 80, 100, and 120 m.
 :::
 
-:::{admonition} Question 3 (Solution)
+:::{admonition} Solution
 :class: tip, dropdown
 
-We apply the log-law at each hub height:
-
 ```{code-cell} python
-import numpy as np
+def circular_mean_deg(direction):
+    values = np.asarray(direction, dtype=float)
+    if values.size == 0 or not np.isfinite(values).all():
+        raise ValueError("directions must be nonempty and finite")
+    radians = np.deg2rad(values)
+    if np.hypot(np.sin(radians).mean(), np.cos(radians).mean()) < 1e-12:
+        raise ValueError("mean direction is undefined for cancelling vectors")
+    angle = np.rad2deg(np.arctan2(np.sin(radians).mean(),
+                                  np.cos(radians).mean()))
+    return np.round(angle % 360, 12) % 360
 
-v_ref = 8.0    # m/s
-z_ref = 10.0   # m
-z0    = 0.03   # m (grassland)
-
-hub_heights = [60, 80, 100, 120]
-
-print(f"{'Height (m)':>12}  {'Wind Speed (m/s)':>18}")
-print("-" * 35)
-for z in hub_heights:
-    v_z = v_ref * np.log(z / z0) / np.log(z_ref / z0)
-    print(f"{z:>12}  {v_z:>18.3f}")
+assert np.isclose(circular_mean_deg([350, 10]), 0)
+print(f"Circular mean direction: {circular_mean_deg(clean['direction_deg']):.1f}°")
 ```
 :::
 
----
-
-:::{admonition} Question 4
+:::{admonition} Quiz 4 — Direction sectors
 :class: note
 
-**Turbine Comparison**
+**Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
-Compare two turbines at the same site with average wind speed $\bar{v} = 9$ m/s:
+Assign every observation to one of eight named compass sectors using a function. Produce counts and percentages that sum to 100%.
 
-| Turbine | Rotor Diameter (m) | $C_P$ |
-|---------|-------------------|-------|
-| A       | 82                | 0.40  |
-| B       | 112               | 0.45  |
-
-For $\rho = 1.225$ kg/m³, calculate the power output of each turbine and determine which is more efficient per unit swept area.
 :::
 
-:::{admonition} Question 4 (Solution)
+:::{admonition} Solution
 :class: tip, dropdown
 
-Power efficiency per unit area = $P / A$:
-
 ```{code-cell} python
-import math
+sector_names = np.array(["N", "NE", "E", "SE", "S", "SW", "W", "NW"])
 
-rho = 1.225
-v   = 9.0
+def direction_sector(direction_deg):
+    direction = np.asarray(direction_deg, dtype=float) % 360
+    index = ((direction + 22.5) // 45).astype(int) % 8
+    return sector_names[index]
 
-turbines = {
-    "A": {"D": 82,  "Cp": 0.40},
-    "B": {"D": 112, "Cp": 0.45},
-}
-
-print(f"{'Turbine':>8}  {'A (m²)':>10}  {'P (kW)':>10}  {'P/A (W/m²)':>12}")
-print("-" * 46)
-for name, t in turbines.items():
-    A = math.pi * (t["D"] / 2)**2
-    P = 0.5 * rho * A * t["Cp"] * v**3
-    print(f"{name:>8}  {A:>10.1f}  {P/1000:>10.2f}  {P/A:>12.2f}")
+clean["sector"] = direction_sector(clean["direction_deg"])
+sector_share = clean["sector"].value_counts(normalize=True).reindex(sector_names, fill_value=0)
+assert np.isclose(sector_share.sum(), 1)
+print((sector_share * 100).round(1))
 ```
 :::
 
----
-
-:::{admonition} Question 5
+:::{admonition} Quiz 5 — Frequency wind rose
 :class: note
 
-**Wind Farm Wake Effect**
+**Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
-In a wind farm, downstream turbines experience reduced wind speeds due to wake effects.
-A simplified model assumes that each turbine row reduces wind speed by 8 %.
+Create a polar bar chart of sector frequency. Use meteorological orientation: north at the top and clockwise rotation.
 
-Starting with $v_0 = 10$ m/s, a turbine with $D = 90$ m, $C_P = 0.42$, and $\rho = 1.225$ kg/m³:
-
-Compute the power output (kW) for each of 5 successive turbine rows (the first row sees $v_0$, each subsequent row sees 8 % less).
 :::
 
-:::{admonition} Question 5 (Solution)
+:::{admonition} Solution
 :class: tip, dropdown
 
-We iteratively reduce the wind speed and calculate power for each row:
+```{code-cell} python
+angles = np.deg2rad(np.arange(0, 360, 45))
+fig, ax = plt.subplots(figsize=(6, 6), subplot_kw={"projection": "polar"})
+ax.bar(angles, sector_share.to_numpy(), width=np.deg2rad(40), color="skyblue", edgecolor="navy")
+ax.set_theta_zero_location("N")
+ax.set_theta_direction(-1)
+ax.set_xticks(angles, sector_names)
+ax.set_title("Wind-direction frequency")
+plt.tight_layout()
+```
+:::
+
+:::{admonition} Quiz 6 — Add a turbine function and energy
+:class: note
+
+**Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
+
+Write a simplified 3 MW curve, calculate hourly power and energy, and assert that no power lies outside 0–3 MW.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
 
 ```{code-cell} python
-import math
+def turbine_power_mw(speed, rated=3.0, cut_in=3.0, rated_speed=12.0, cut_out=25.0):
+    speed = np.asarray(speed, dtype=float)
+    power = np.zeros_like(speed)
+    ramp = (speed >= cut_in) & (speed < rated_speed)
+    power[ramp] = rated * (speed[ramp]**3 - cut_in**3) / (rated_speed**3 - cut_in**3)
+    power[(speed >= rated_speed) & (speed < cut_out)] = rated
+    return power
 
-rho   = 1.225
-D     = 90
-Cp    = 0.42
-v     = 10.0
-A     = math.pi * (D / 2)**2
-wake  = 0.08   # 8% speed reduction per row
+clean["power_mw"] = turbine_power_mw(clean["speed_ms"])
+monthly_energy_mwh = clean["power_mw"].sum()
+assert clean["power_mw"].between(0, 3).all()
+print(f"Thirty-day energy: {monthly_energy_mwh:.1f} MWh")
+```
+:::
 
-print(f"{'Row':>5}  {'v (m/s)':>10}  {'P (kW)':>10}")
-print("-" * 30)
-for row in range(1, 6):
-    P = 0.5 * rho * A * Cp * v**3 / 1000
-    print(f"{row:>5}  {v:>10.3f}  {P:>10.2f}")
-    v *= (1 - wake)
+:::{admonition} Quiz 7 — Energy-weighted wind rose
+:class: note
+
+**Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
+
+Sum energy by sector and plot a second polar chart. Which directions matter most for energy, and why can this differ from frequency?
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+```{code-cell} python
+energy_by_sector = clean.groupby("sector")["power_mw"].sum().reindex(sector_names, fill_value=0)
+fig, ax = plt.subplots(figsize=(6, 6), subplot_kw={"projection": "polar"})
+ax.bar(angles, energy_by_sector.to_numpy(), width=np.deg2rad(40), color="seagreen", edgecolor="darkgreen")
+ax.set_theta_zero_location("N")
+ax.set_theta_direction(-1)
+ax.set_xticks(angles, sector_names)
+ax.set_title("Energy contribution by incoming wind direction")
+plt.tight_layout()
+```
+
+Frequent low-speed winds may contribute less energy than less-frequent high-speed winds because the power curve is nonlinear.
+:::
+
+:::{admonition} Quiz 8 — Chronological baseline
+:class: note
+
+**Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
+
+Aggregate hourly power to daily energy. Use the first 23 days as training and the last 7 as testing. Forecast each test day with the training mean, calculate MAE, and plot observations and forecast. Do not shuffle.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+```{code-cell} python
+daily_energy = clean["power_mw"].resample("D").sum()
+train, test = daily_energy.iloc[:-7], daily_energy.iloc[-7:]
+forecast = pd.Series(train.mean(), index=test.index)
+mae = (test - forecast).abs().mean()
+
+plt.figure(figsize=(9, 4))
+plt.plot(daily_energy.index, daily_energy, marker="o", label="Observed")
+plt.plot(forecast.index, forecast, marker="s", label="Training-mean forecast")
+plt.axvline(test.index.min(), color="red", linestyle="--", label="Test starts")
+plt.xlabel("Date")
+plt.ylabel("Daily energy (MWh)")
+plt.title(f"Chronological baseline; MAE = {mae:.1f} MWh")
+plt.grid(alpha=0.3)
+plt.legend()
+plt.tight_layout()
+assert train.index.max() < test.index.min()
 ```
 :::

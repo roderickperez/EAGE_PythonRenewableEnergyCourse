@@ -1,6 +1,6 @@
 # Introduction to Programming
 
-**Objetives**
+**Objectives**
 * Provide an *overview* of basic computational practices, and why they should learn them.
 ---
 
@@ -10,7 +10,7 @@ An important part of this course is aimed at developing **basic** programming sk
 
 A question that I am very frequently asked is: "I am a Geoscientist. Is it necessary to learn to program?" and my answer is **YES**. Currently, there is a trend in the job market for geoscientists, where employers are looking for comprehensive profiles that allow more quantitative analysis, as well as the candidate having (basic) programming skills, as well as an understanding of the fundamentals of the algorithms that are applied. Additionally, one of the advantages of increasing your competitiveness in the labor market will also allow you to be able to go beyond the software that you currently have in your organization, as well as go further and develop your own algorithms that allow you to stand out as a professional. best professional.
 
-It is becoming more common than open source (ArcGIS, QGIS, ParaView, Google Earth) and commercial sofware in the field of geoscience (ArcGIS, Hampton & Russell, Petrel, OpendTect, PaleoScan, among others) include Python modules, in which users can apply their own algorithms and expand the possibilities of the software. When you leave this course you may not be a *super star*, but you will learn to take your first steps.
+It is becoming more common than open-source tools (QGIS, ParaView) and commercial sofware in the field of geoscience (ArcGIS, Hampton & Russell, Petrel, OpendTect, PaleoScan, among others) include Python modules, in which users can apply their own algorithms and expand the possibilities of the software. When you leave this course you may not be a *super star*, but you will learn to take your first steps.
 
 Before start to dive into a specific programming languages (such as Python) we need to know the concepts and skills necessary to be able to transmit the instructions so that the system (computer) understands them and can generate the results we expect.
 

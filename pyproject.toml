@@ -8,6 +8,7 @@ dependencies = [
     "jupyter-book>=2.1.2,<3",
     "nbformat>=5.10,<6",
     "nbclient>=0.10,<1",
+    "ipykernel>=6,<8",
     "numpy>=1.26,<3",
     "scipy>=1.11,<2",
     "pandas>=2.2,<4",

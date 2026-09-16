@@ -13,6 +13,8 @@ Each question includes a solution — try to answer on your own before revealing
 :::{admonition} Question 1
 :class: note
 
+**Reference:** Python tutorial [@pythonDocs]; NumPy [@numpyDocs]; pandas [@pandasDocs]; Matplotlib [@matplotlibDocs].
+
 **Variables and Data Types**
 
 What will the following code print? Explain the data type of each variable.
@@ -49,9 +51,11 @@ print(type(a), type(b), type(c), type(d))
 :::{admonition} Question 2
 :class: note
 
+**Reference:** Python tutorial [@pythonDocs]; NumPy [@numpyDocs]; pandas [@pandasDocs]; Matplotlib [@matplotlibDocs].
+
 **Arithmetic Operations**
 
-Write a Python program that calculates the **kinetic energy** of a turbine blade with:
+Write a Python program that calculates the **kinetic energy** of a translating parcel of water with:
 - mass `m = 1500` kg  
 - velocity `v = 12` m/s
 
@@ -77,6 +81,8 @@ print(f"Kinetic Energy: {KE} J")
 
 :::{admonition} Question 3
 :class: note
+
+**Reference:** Python tutorial [@pythonDocs]; NumPy [@numpyDocs]; pandas [@pandasDocs]; Matplotlib [@matplotlibDocs].
 
 **String Operations**
 
@@ -109,6 +115,8 @@ print("Contains 'Energy':", "Energy" in text)
 
 :::{admonition} Question 4
 :class: note
+
+**Reference:** Python tutorial [@pythonDocs]; NumPy [@numpyDocs]; pandas [@pandasDocs]; Matplotlib [@matplotlibDocs].
 
 **Conditionals**
 
@@ -143,6 +151,8 @@ else:
 :::{admonition} Question 5
 :class: note
 
+**Reference:** Python tutorial [@pythonDocs]; NumPy [@numpyDocs]; pandas [@pandasDocs]; Matplotlib [@matplotlibDocs].
+
 **Loops**
 
 A solar farm records hourly irradiance values (W/m²) over 6 hours:
@@ -152,7 +162,7 @@ irradiance = [320, 450, 610, 700, 580, 390]
 ```
 
 Using a `for` loop, calculate and print:
-1. The total irradiance over all hours.
+1. The irradiation over the six one-hour intervals in Wh/m² (assume interval-average irradiance).
 2. The average irradiance.
 :::
 
@@ -169,7 +179,9 @@ for value in irradiance:
     total += value
 
 average = total / len(irradiance)
-print(f"Total irradiance: {total} W/m²")
+irradiation_wh_m2 = total * 1.0  # one-hour intervals
+print(f"Irradiation: {irradiation_wh_m2} Wh/m²")
+assert irradiation_wh_m2 == 3050
 print(f"Average irradiance: {average:.2f} W/m²")
 ```
 :::
@@ -178,6 +190,8 @@ print(f"Average irradiance: {average:.2f} W/m²")
 
 :::{admonition} Question 6
 :class: note
+
+**Reference:** Python tutorial [@pythonDocs]; NumPy [@numpyDocs]; pandas [@pandasDocs]; Matplotlib [@matplotlibDocs].
 
 **Functions**
 

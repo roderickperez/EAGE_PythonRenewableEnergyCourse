@@ -12,6 +12,8 @@ Test your ability to create clear and informative visualisations with Matplotlib
 :::{admonition} Question 1
 :class: note
 
+**Reference:** Matplotlib user guide [@matplotlibDocs]; energy interpretation [@manwell2009; @foster2010].
+
 **Line Plot**
 
 Monthly average wind speed (m/s) for a wind farm site is recorded over one year:
@@ -55,6 +57,8 @@ plt.show()
 
 :::{admonition} Question 2
 :class: note
+
+**Reference:** Matplotlib user guide [@matplotlibDocs]; energy interpretation [@manwell2009; @foster2010].
 
 **Bar Chart**
 
@@ -104,15 +108,17 @@ plt.show()
 :::{admonition} Question 3
 :class: note
 
+**Reference:** Matplotlib user guide [@matplotlibDocs]; energy interpretation [@manwell2009; @foster2010].
+
 **Scatter Plot**
 
-For 20 randomly generated wind turbines, plot wind speed (x-axis) vs. power output (y-axis) as a scatter plot. Use:
+For 20 synthetic observations of a 100 kW turbine (a cubic teaching curve capped at rated power), plot wind speed (x-axis) vs. power output (y-axis) as a scatter plot. Use:
 
 ```python
 import numpy as np
 np.random.seed(7)
 wind_speed = np.random.uniform(3, 15, 20)
-power_output = 0.5 * wind_speed**2 + np.random.normal(0, 5, 20)
+power_output = np.clip(100 * (wind_speed**3 - 3**3) / (12**3 - 3**3), 0, 100)
 ```
 
 Label axes and add a title.
@@ -129,7 +135,7 @@ import matplotlib.pyplot as plt
 
 np.random.seed(7)
 wind_speed = np.random.uniform(3, 15, 20)
-power_output = 0.5 * wind_speed**2 + np.random.normal(0, 5, 20)
+power_output = np.clip(100 * (wind_speed**3 - 3**3) / (12**3 - 3**3), 0, 100)
 
 plt.figure(figsize=(7, 5))
 plt.scatter(wind_speed, power_output, color="darkorange", edgecolors="black", s=80)
@@ -146,6 +152,8 @@ plt.show()
 
 :::{admonition} Question 4
 :class: note
+
+**Reference:** Matplotlib user guide [@matplotlibDocs]; energy interpretation [@manwell2009; @foster2010].
 
 **Subplots**
 
@@ -192,6 +200,8 @@ plt.show()
 
 :::{admonition} Question 5
 :class: note
+
+**Reference:** Matplotlib user guide [@matplotlibDocs]; energy interpretation [@manwell2009; @foster2010].
 
 **Customisation**
 

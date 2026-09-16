@@ -81,7 +81,8 @@ if b > a:
 ### elif
 When we use the keyword `elif` we build a statement that says: *if the previous conditions were not true, then try this condition*.
 
-```{code-cell} python
+```python
+# Interactive example: run in a notebook cell and enter a value.
 age = int(input('Enter your age: '))
 
 if age < 0:
@@ -104,7 +105,8 @@ print("A") if a > b else print("B")
 
 Now, if we want to catches anything which isn't caught by the preceding conditions, we can use the `else` keyword.
 
-```{code-cell} python
+```python
+# Interactive example: run in a notebook cell and enter a value.
 age = int(input('Enter your age: '))
 
 if age < 0:
@@ -165,15 +167,43 @@ if a > b or a > c:
 
 ```
 
-```{admonition} Exercise 7
-Using the conditional statements and logical operators explained in this section, write a program that based on the monthly production rates prints out the if a hydrocarbon field is :
-* Excellent (greater than or equal to 1,000,000)
-* Good (between 100,000 and 999,999)
-* Poor (less than 100,000)
-* Close (no production)
+:::{admonition} Exercise 7 — Conditional classification
+:class: note
 
-after the user input the monthly production rates manually.
+**Reference:** Python tutorial [@pythonDocs]; NumPy [@numpyDocs]; pandas [@pandasDocs]; Matplotlib [@matplotlibDocs].
+Using the conditional statements and logical operators explained in this section, classify monthly renewable-electricity generation in MWh as:
+* Excellent (greater than or equal to 1,000,000)
+* Good (100,000 up to but excluding 1,000,000)
+* Poor (greater than zero and less than 100,000)
+* No generation (zero production)
+
+These are arbitrary teaching labels, not industry performance thresholds. Enter monthly generation manually.
+
+```python
+production = float(input("Monthly production: "))
+# TODO: validate that production is not negative
+# TODO: classify closed, poor, good, or excellent
 ```
+:::
+
+:::{admonition} Exercise 7 — Solution
+:class: tip, dropdown
+
+```python
+production = float(input("Monthly production: "))
+if production < 0:
+    raise ValueError("production cannot be negative")
+elif production == 0:
+    classification = "No generation"
+elif production < 100_000:
+    classification = "Poor"
+elif production < 1_000_000:
+    classification = "Good"
+else:
+    classification = "Excellent"
+print(classification)
+```
+:::
 
 ## Loops
 

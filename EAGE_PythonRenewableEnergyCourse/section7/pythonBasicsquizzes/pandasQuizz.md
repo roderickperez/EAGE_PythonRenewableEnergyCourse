@@ -12,6 +12,8 @@ Test your knowledge of Pandas for data manipulation and analysis.
 :::{admonition} Question 1
 :class: note
 
+**Reference:** pandas indexing and data selection [@pandasDocs].
+
 **DataFrame Creation**
 
 Create a Pandas DataFrame representing a small renewable energy project dataset with the following columns and data:
@@ -51,6 +53,8 @@ print("Shape:", df.shape)
 
 :::{admonition} Question 2
 :class: note
+
+**Reference:** pandas indexing and data selection [@pandasDocs].
 
 **Filtering and Selection**
 
@@ -94,6 +98,8 @@ print(df[df["Type"] == "Wind"])
 :::{admonition} Question 3
 :class: note
 
+**Reference:** pandas indexing and data selection [@pandasDocs].
+
 **GroupBy and Aggregation**
 
 Using the DataFrame from Question 1, group the data by `Type` and compute:
@@ -131,11 +137,13 @@ print(summary)
 :::{admonition} Question 4
 :class: note
 
+**Reference:** pandas indexing and data selection [@pandasDocs].
+
 **Adding and Transforming Columns**
 
 Add two new columns to the DataFrame from Question 1:
 1. `Capacity_GW` — capacity converted to GW (divide by 1000).
-2. `Age` — age of the plant in years (assume current year = 2024).
+2. `Age` — age of the plant in years (use the fixed reference year 2026; year-only age is approximate).
 
 Print the updated DataFrame.
 :::
@@ -157,7 +165,8 @@ data = {
 df = pd.DataFrame(data)
 
 df["Capacity_GW"] = df["Capacity_MW"] / 1000
-df["Age"] = 2024 - df["Year"]
+reference_year = 2026
+df["Age"] = reference_year - df["Year"]
 print(df)
 ```
 :::
@@ -166,6 +175,8 @@ print(df)
 
 :::{admonition} Question 5
 :class: note
+
+**Reference:** pandas indexing and data selection [@pandasDocs].
 
 **Sorting and Summary Statistics**
 

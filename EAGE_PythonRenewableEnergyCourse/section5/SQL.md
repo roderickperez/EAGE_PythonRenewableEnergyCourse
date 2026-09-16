@@ -18,7 +18,7 @@ SELECT country, energy_source, energy_generated,
 FROM energy_data;
 ```
 
-**Example output:**
+**Illustrative output (not a result of running all snippets in sequence):**
 
 | Country   | Energy_Source | Energy_Generated (MWh) | Adjusted_Energy (MWh) |
 |-----------|---------------|------------------------|-----------------------|
@@ -106,7 +106,7 @@ FROM energy_data
 GROUP BY energy_source;
 ```
 
-**Example output:**
+**Illustrative output (not a result of running all snippets in sequence):**
 
 | Energy_Source | Total_Energy (MWh) |
 |---------------|--------------------|
@@ -233,7 +233,7 @@ FROM energy_data
 WHERE energy_source LIKE 'S%';
 ```
 
-**Example output:**
+**Illustrative output (not a result of running all snippets in sequence):**
 
 | Country   | Energy_Source | Energy_Generated (MWh) |
 |-----------|---------------|------------------------|
@@ -255,5 +255,5 @@ ORDER BY Customers.CustomerName;
 ```
 
 :::{note}
-SQLite supports `FULL OUTER JOIN` only in recent releases. For portable teaching examples, demonstrate the equivalent with `LEFT JOIN`, `UNION ALL`, and an anti-join for unmatched rows from the right table.
+SQLite supports `FULL OUTER JOIN` from version 3.39.0 (25 June 2022); check `sqlite3.sqlite_version`. For portable teaching examples, demonstrate the equivalent with `LEFT JOIN`, `UNION ALL`, and an anti-join for unmatched rows from the right table.
 :::

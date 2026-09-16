@@ -91,6 +91,111 @@ def check_python_code_cells() -> None:
                 fail(f"Invalid Python code-cell {path.relative_to(ROOT)} #{number}: {exc.msg}")
 
 
+def check_energy_curriculum() -> None:
+    source_pages = sorted((ROOT / "section6").glob("*Energy.md"))
+    expected_sources = {"hydroelectricEnergy.md", "solarEnergy.md", "windEnergy.md", "geothermalEnergy.md"}
+    if {path.name for path in source_pages} != expected_sources:
+        fail("Section 6 must contain hydro, solar, wind, and geothermal source lessons")
+
+    for path in source_pages:
+        text = path.read_text(encoding="utf-8")
+        exercise_count = len(re.findall(r"^:::\{admonition\} Exercise \d+[^\n]*\n:class: note", text, flags=re.MULTILINE))
+        if exercise_count < 6:
+            fail(f"{path.relative_to(ROOT)} has only {exercise_count} guided exercises; expected at least 6")
+        for required in ["## Learning goals", "## Concepts and equations", "## Common mistakes"]:
+            if required not in text:
+                fail(f"{path.relative_to(ROOT)} is missing {required}")
+
+    quiz_dir = ROOT / "section7" / "renewableEnergyquizzes"
+    core_quizzes = [
+        quiz_dir / "hydroelectricEnergy.md",
+        quiz_dir / "solarEnergy.md",
+        quiz_dir / "windEnergy.md",
+        quiz_dir / "geothermalEnergy.md",
+    ]
+    for path in core_quizzes:
+        question_count = len(re.findall(r"^:::\{admonition\} Quiz \d+", path.read_text(encoding="utf-8"), flags=re.MULTILINE))
+        if question_count < 8:
+            fail(f"{path.relative_to(ROOT)} has only {question_count} quiz questions; expected at least 8")
+
+
+def execute_energy_code_cells() -> None:
+    """Execute every core Markdown lesson in its own namespace, in cell order."""
+    import contextlib
+    import io
+    import matplotlib
+
+    matplotlib.use("Agg")
+    marker = re.compile(r"```\{code-cell\}\s+python[^\n]*\n(.*?)```", re.DOTALL)
+    pages = [p for p in sorted(ROOT.rglob('*.md'))
+             if '_build' not in p.parts and 'node_modules' not in p.parts]
+    count = 0
+    for path in pages:
+        namespace = {"__name__": "__course_validation__"}
+        text = path.read_text(encoding="utf-8")
+        for number, match in enumerate(marker.finditer(text), start=1):
+            try:
+                with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                    exec(compile(match.group(1), str(path), "exec"), namespace)
+                count += 1
+            except Exception as exc:
+                fail(f"Runtime error in {path.relative_to(ROOT)} code-cell #{number}: {type(exc).__name__}: {exc}")
+                break
+        try:
+            namespace.get("plt").close("all") if namespace.get("plt") is not None else None
+        except Exception:
+            pass
+    print(f"Executed {count} Markdown Python cells")
+
+
+def check_workbook() -> None:
+    """Check distribution, per-exercise references, reveal controls and independence."""
+    import contextlib
+    import io
+    import matplotlib.pyplot as plt
+    text = (ROOT / 'section7/renewableExercises.md').read_text(encoding='utf-8')
+    levels = re.findall(r'\*\*Difficulty:\*\* (Easy|Medium|Hard)', text)
+    if {level: levels.count(level) for level in ['Easy', 'Medium', 'Hard']} != {
+        'Easy': 5, 'Medium': 10, 'Hard': 5,
+    }:
+        fail('Workbook must have exactly 5 easy, 10 medium and 5 hard exercises')
+    exercises = re.split(r'\n## Exercise \d+ — ', text)[1:]
+    for i, exercise in enumerate(exercises, 1):
+        if '**Reference:**' not in exercise or '[@' not in exercise:
+            fail(f'Workbook exercise {i} has no reference')
+        if exercise.count('::::{dropdown} Solution') != 1 or ':open:' in exercise:
+            fail(f'Workbook exercise {i} must have one initially closed solution')
+        cells = re.findall(r'```\{code-cell\} python\n(.*?)```', exercise, re.S)
+        if len(cells) != 2 or 'assert ' not in cells[-1]:
+            fail(f'Workbook exercise {i} needs a starter and checked solution')
+            continue
+        try:
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                exec(compile(cells[-1], f'workbook-{i}', 'exec'), {})
+        except Exception as exc:
+            fail(f'Workbook exercise {i} does not run independently: {exc}')
+        finally:
+            plt.close('all')
+
+
+def check_energy_boundaries() -> None:
+    """Regression checks independent of the worked-example input choices."""
+    import numpy as np
+    marker = re.compile(r'```\{code-cell\} python\n(.*?)```', re.S)
+    wind = {}
+    source = (ROOT / 'section6/windEnergy.md').read_text(encoding='utf-8')
+    exec(marker.findall(source)[0], wind)
+    assert np.allclose(wind['wind_at_height'](6, np.array([10, 100])), [6, 6 * 10**0.14])
+    assert np.allclose(wind['turbine_power_mw']([0, 3, 12, 25]), [0, 0, 3, 0])
+    for invalid in [-1, np.nan, np.inf]:
+        try:
+            wind['turbine_power_mw'](invalid)
+        except ValueError:
+            pass
+        else:
+            fail(f'Wind curve accepted invalid speed {invalid}')
+
+
 def check_database() -> None:
     path = ROOT / "section5" / "energy_generation.db"
     if not path.exists():
@@ -114,6 +219,10 @@ def main() -> int:
     check_references()
     check_known_regressions()
     check_python_code_cells()
+    check_energy_curriculum()
+    execute_energy_code_cells()
+    check_workbook()
+    check_energy_boundaries()
     check_database()
     if errors:
         print("COURSE VALIDATION FAILED")

@@ -12,7 +12,7 @@ There are four collection data types in the Python programming language:
 * **List** is a collection which is *ordered* and *changeable*. Allows duplicate members.
 * **Tuple** is a collection which is *ordered* and *unchangeable*. Allows duplicate members.
 * **Set** is a mutable, unordered collection of unique hashable elements. A set is not indexed.
-* **Dictionary** is a collection which is *ordered* and *changeable*. No duplicate members.
+* **Dictionary** is a collection which is *ordered* and *changeable*. Unique keys; values may repeat.
 
 ---
 
@@ -65,11 +65,24 @@ print('The first element of the list of name is: ' , names[0])
 ```
 
 :::{admonition} Exercise 4
+:class: note
+
+**Reference:** Python tutorial [@pythonDocs]; NumPy [@numpyDocs]; pandas [@pandasDocs]; Matplotlib [@matplotlibDocs].
 Now is your time. Show what is the third element inside the list `names`:
+
+```python
+names = ["Maria", "Pedro", "Juana", "Omar"]
+# TODO: print the third element
+```
+:::
+
+:::{admonition} Exercise 4 — Solution
+:class: tip, dropdown
 
 ```{code-cell} python
 names = ["Maria", "Pedro", "Juana", "Omar"]
-print('The third element in the list of names is: ' , names[2])
+print("The third element is:", names[2])
+assert names[2] == "Juana"
 ```
 :::
 
@@ -83,12 +96,26 @@ lengthList = len(nameList)
 
 :::
 
-:::{admonition} Exercise 6
+:::{admonition} Exercise 5
+:class: note
+
+**Reference:** Python tutorial [@pythonDocs]; NumPy [@numpyDocs]; pandas [@pandasDocs]; Matplotlib [@matplotlibDocs].
 Try yourself, write a list of `n` elements, and using the `len` function, print the length of the list.
 
+```python
+my_list = [10, 20, 30, 40]
+# TODO: calculate and print its length
+```
+:::
+
+:::{admonition} Exercise 5 — Solution
+:class: tip, dropdown
+
 ```{code-cell} python
-myList = [10, 20, 30, 40]
-print('The length of the elements in myList is: ' , len(myList))
+my_list = [10, 20, 30, 40]
+length = len(my_list)
+print("List length:", length)
+assert length == 4
 ```
 :::
 
@@ -101,13 +128,27 @@ print('The variable names is a' , type(names))
 
 as well as the variable stored in a specific index in a list.
 
-:::{admonition} Exercise 5
+:::{admonition} Exercise 6
+:class: note
+
+**Reference:** Python tutorial [@pythonDocs]; NumPy [@numpyDocs]; pandas [@pandasDocs]; Matplotlib [@matplotlibDocs].
 
 Check by yourself the type of variable in different locations in the list `allDataTypes`.
 
+```python
+all_data_types = ["Roderick", 1.85, 39, True]
+# TODO: print the type at each index
+```
+:::
+
+:::{admonition} Exercise 6 — Solution
+:class: tip, dropdown
+
 ```{code-cell} python
-allDataTypes = ["Roderick", 1.85, 39, True]
-print('The variable at index 2 is of type:', type(allDataTypes[2]))
+all_data_types = ["Roderick", 1.85, 39, True]
+for index, value in enumerate(all_data_types):
+    print(index, value, type(value))
+assert [type(value) for value in all_data_types] == [str, float, int, bool]
 ```
 :::
 
@@ -188,7 +229,11 @@ print('The length of the list is: ' , lengthList)
 If we want to add a new element to the integer, and using the same `append` function.
 
 ```{code-cell} python
-lengthList.append(4)
+# Deliberate error demonstration: catch it so the lesson can continue.
+try:
+    lengthList.append(4)
+except AttributeError as error:
+    print("Expected AttributeError:", error)
 ```
 
 we got an error.
@@ -226,11 +271,15 @@ print('Bogota is located in the index ', indexBogota)
 Now, in case the value is not found in the list, we will get an error. Remember that you do not have to fear programming errors. The most important thing is to be able to read and understand the error message. For example,
 
 ```{code-cell} python
-cities.index("Buenos Aires")
+# Deliberate error demonstration: catch it so the lesson can continue.
+try:
+    cities.index("Buenos Aires")
+except ValueError as error:
+    print("Expected ValueError:", error)
 ```
 
 ### Reverse a list
-The `reverse()` method returns the list in reverse order.
+The `reverse()` method reverses the list in place and returns `None`.
 ```{code-cell} python
 cities = ["Caracas", "Bogota", "Rio", "Vienna"]
 
@@ -267,8 +316,12 @@ print('The sorted list is: ' , names)
 We are going to try to sort a list, which contains different types of data. For example:
 
 ```{code-cell} python
-allDataTypes = ["Roderick", 1.85, 39, True]
-allDataTypes.sort()
+# Deliberate error demonstration: catch it so the lesson can continue.
+try:
+    allDataTypes = ["Roderick", 1.85, 39, True]
+    allDataTypes.sort()
+except TypeError as error:
+    print("Expected TypeError:", error)
 ```
 
 This error message occurs because there are different types of data in the list.
@@ -304,10 +357,13 @@ print('The first item in the tupleExample tuple is : ' , tupleExample[0])
 Tuples are immutable, meaning that we cannot change, add or remove items after the tuple has been created.
 
 ```{code-cell} python
-tupleExample = ("Roderick", 1.85, 39, True)
-
-tupleExample.append("Caracas")
-
+# Deliberate error demonstration: catch it so the lesson can continue.
+try:
+    tupleExample = ("Roderick", 1.85, 39, True)
+    
+    tupleExample.append("Caracas")
+except AttributeError as error:
+    print("Expected AttributeError:", error)
 ```
 
 This code generate the following error:
@@ -460,7 +516,7 @@ print('The dictionaryExample has : ' , len(dictionaryExample), 'items.')
 
 ## Sets
 
-A set is a data type in Python used to store multiple items (with different data types) in a single variable, which is unordered, inmutable*, unindexed, and do not allow duplicate values. In order to define a set, we need to use curly brackets `{ }`.
+A set is a data type in Python used to store multiple items (with different data types) in a single variable, which is unordered, mutable, unindexed, and do not allow duplicate values. In order to define a set, we need to use curly brackets `{ }`.
 
 ```{code-cell} python
 setExample = {"Roderick", 1.85, 39, True}
@@ -472,11 +528,14 @@ print('The tupleExample is a: ' , type(setExample))
 When we say that sets are unordered means that the items does not have a defined order, and you cannot refer to an item by using an index.
 
 ```{code-cell} python
-setExample = {"Roderick", 1.85, 39, True}
-
-# Ordered
-print('The first item in the setExample set is : ' , setExample[0])
-
+# Deliberate error demonstration: catch it so the lesson can continue.
+try:
+    setExample = {"Roderick", 1.85, 39, True}
+    
+    # Ordered
+    print('The first item in the setExample set is : ' , setExample[0])
+except TypeError as error:
+    print("Expected TypeError:", error)
 ```
 
 If we execute this code, we will get the following error message:
@@ -494,15 +553,14 @@ TypeError: 'set' object is not subscriptable
 
 meaning that in Python a set are unordered, and we can not use the index to get the items.
 
-### Inmutable
+### Mutable collection, hashable elements
 
 A set can be changed with methods such as `add()`, `remove()`, and `discard()`. Individual elements must be hashable, so mutable objects such as lists cannot be set elements.
 
 ```{code-cell} python
 setExample = {"Roderick", 1.85, 39, True}
-
-setExample.append("Caracas")
-
+setExample.add("Caracas")
+print(setExample)
 ```
 
 ### Do not allow duplicate values
@@ -548,6 +606,6 @@ print('The setExample has : ' , len(setExample), 'items.')
 
 * **Set** objects are mutable collections of unique, hashable elements.
 
-* As of Python version 3.7, **dictionaries** are *ordered*. In Python 3.6 and earlier, dictionaries are *unordered*.
+* As of Python version 3.7, **dictionaries** are *ordered*. CPython 3.6 preserved insertion order as an implementation detail; the language guarantee begins with Python 3.7.
 
 :::

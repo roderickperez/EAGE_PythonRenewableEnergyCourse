@@ -152,7 +152,34 @@ print(pandasDataFrame.iloc[2:5, 0])
 ```
 
 :::{admonition} Exercise 10
+:class: note
+
+**Reference:** pandas indexing and data selection [@pandasDocs].
 Can you create a `DataFrame` (4 columns and 8 rows), and then slice the `DataFrame` between the rows 3 and 6, and the columns 2 and 3 using the `loc` and `iloc` attributes?
+
+```python
+# TODO: create an 8-row, 4-column DataFrame
+# TODO: select rows 3–6 and columns 2–3 with iloc
+# TODO: repeat with loc using labels
+```
+:::
+
+:::{admonition} Exercise 10 — Solution
+:class: tip, dropdown
+
+```{code-cell} python
+exercise_frame = pd.DataFrame({
+    "month": range(1, 9),
+    "solar_mwh": [12, 18, 27, 35, 42, 39, 31, 22],
+    "wind_mwh": [30, 28, 33, 25, 24, 29, 36, 40],
+    "hydro_mwh": [20, 21, 23, 25, 24, 22, 21, 20],
+}, index=[f"row_{number}" for number in range(1, 9)])
+
+with_iloc = exercise_frame.iloc[2:6, 1:3]
+with_loc = exercise_frame.loc["row_3":"row_6", "solar_mwh":"wind_mwh"]
+print(with_iloc)
+assert with_iloc.equals(with_loc)
+```
 :::
 
 ## Load Files
@@ -166,17 +193,30 @@ print(precipitationDataFrame)
 ```
 
 :::{admonition} Exercise 11
+:class: note
+
+**Reference:** pandas indexing and data selection [@pandasDocs].
 Explore the **Precipitation dataset**, and show the first 10 rows and the last 7 of the dataset using the `head` and `tail` functions.
 
-```{code-cell} python
-print(precipitationDataFrame.head(10))
-```
-
-```{code-cell} python
-print(precipitationDataFrame.tail(7))
+```python
+# TODO: print the first 10 rows
+# TODO: print the last 7 rows
 ```
 
 Note: Use the to `help()` to find the documentation.
+:::
+
+:::{admonition} Exercise 11 — Solution
+:class: tip, dropdown
+
+```{code-cell} python
+first_ten = precipitationDataFrame.head(10)
+last_seven = precipitationDataFrame.tail(7)
+print(first_ten)
+print(last_seven)
+assert len(first_ten) <= 10
+assert len(last_seven) <= 7
+```
 :::
 
 ## Files Analysis
@@ -190,7 +230,7 @@ The DataFrames object has a method called `info()`, that gives you more informat
 print(precipitationDataFrame.info())
 ```
 
-The result tells us the number of rows and columns. Also, the name of each column, with their corresponding data type, as well as how many `Non-Null` values there are present in each column. In this case, this `DataFrame` do not have `Non-Null` values.
+The result tells us the number of rows and columns. Also, the name of each column, with their corresponding data type, as well as how many `Non-Null` values there are present in each column. Compare each non-null count with the row count to identify missing values; a non-null entry is a present value.
 
 ### Describe
 

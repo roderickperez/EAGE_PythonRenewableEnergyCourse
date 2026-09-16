@@ -34,3 +34,5 @@ EAGE_PythonRenewableEnergyCourse/section5/section5/
 # IDE/editor
 .vscode/
 .idea/
+
+/tmp/

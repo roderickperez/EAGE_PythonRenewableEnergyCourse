@@ -87,8 +87,29 @@ plt.show()
 
 :::{admonition} Exercise 12
 :class: note
+
+**Reference:** Matplotlib user guide [@matplotlibDocs]; energy interpretation [@manwell2009; @foster2010].
 Repeat the previous exercise, but this time, use the `marker` keyword argument to plot the points as a line with a star [Reference](https://matplotlib.org/stable/api/markers_api.html).
 
+```python
+y_points = np.array([1, 1, 3, 4])
+# TODO: plot the values with a star marker
+# TODO: add axis labels, a title, and a grid
+```
+:::
+
+:::{admonition} Exercise 12 — Solution
+:class: tip, dropdown
+
+```{code-cell} python
+y_points = np.array([1, 1, 3, 4])
+plt.plot(y_points, marker="*")
+plt.xlabel("Sample")
+plt.ylabel("Value")
+plt.title("Values with star markers")
+plt.grid(alpha=0.3)
+plt.show()
+```
 :::
 
 #### Line Style
@@ -232,7 +253,7 @@ plt.subplot(1, 2, 2)
 
 ### Vertically Stacked Subplots
 
-In case we want to ouput our results in a horizontal layout, we can use the `subplot()` function selecting that our p[lot will have 1 columns, and 2 rows.
+For vertically stacked plots, use two rows and one column: `subplot(2, 1, ...)`.
 
 ```{code-cell} python
 # Plot 1:
@@ -257,7 +278,33 @@ plt.show()
 
 :::{admonition} Exercise 13
 :class: note
+
+**Reference:** Matplotlib user guide [@matplotlibDocs]; energy interpretation [@manwell2009; @foster2010].
 Can you think of a way to plot the same data in a vertical layout?
+
+```python
+# TODO: create two rows and one column of subplots
+# TODO: plot one series in each axis and label both
+```
+:::
+
+:::{admonition} Exercise 13 — Solution
+:class: tip, dropdown
+
+```{code-cell} python
+x = np.array([0, 1, 2, 3])
+y_top = np.array([3, 8, 1, 10])
+y_bottom = np.array([10, 20, 30, 40])
+fig, axes = plt.subplots(2, 1, figsize=(7, 6), sharex=True)
+axes[0].plot(x, y_top)
+axes[0].set(ylabel="Series A", title="Vertical subplot layout")
+axes[1].plot(x, y_bottom, color="tab:orange")
+axes[1].set(xlabel="x", ylabel="Series B")
+for axis in axes:
+    axis.grid(alpha=0.3)
+plt.tight_layout()
+plt.show()
+```
 :::
 
 ## Super Title
@@ -331,8 +378,30 @@ plt.show()
 :::{admonition} Exercise 14
 :class: note
 
+**Reference:** Matplotlib user guide [@matplotlibDocs]; energy interpretation [@manwell2009; @foster2010].
+
 Can you think of a way to generate a bar plot, where the bars are oriented horizontally, red, with a height of 0.5?
 
+```python
+sources = ["Solar", "Wind", "Hydro"]
+energy_gwh = [42, 57, 35]
+# TODO: create a horizontal red bar chart with bar height 0.5
+# TODO: label the energy axis and add a title
+```
+:::
+
+:::{admonition} Exercise 14 — Solution
+:class: tip, dropdown
+
+```{code-cell} python
+sources = ["Solar", "Wind", "Hydro"]
+energy_gwh = [42, 57, 35]
+plt.barh(sources, energy_gwh, height=0.5, color="red")
+plt.xlabel("Energy (GWh)")
+plt.title("Renewable energy by source")
+plt.grid(axis="x", alpha=0.3)
+plt.show()
+```
 :::
 
 ### Histogram

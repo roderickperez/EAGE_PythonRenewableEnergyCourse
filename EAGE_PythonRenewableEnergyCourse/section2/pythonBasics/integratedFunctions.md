@@ -52,7 +52,8 @@ help(myFunction)
 ## `input()`
 If the prompt argument is present, it is written to standard output without a trailing newline. The function then reads a line from input, converts it to a string (stripping a trailing newline), and returns that ([Reference](https://docs.python.org/3/library/functions.html)).
 
-```{code-cell} python
+```python
+# Interactive example: run in a notebook cell and enter a value.
 age = int(input('Enter your age: '))
 
 print("Your age is: ", age)
@@ -181,4 +182,4 @@ print('The type of data stored in the variable name is: ', type(name))
 
 ---
 
-Even that these are the only built-in functions, they are not the only way to interact with Python. We can visit the official repository of Python ([PyPi](https://pypi.org/)) and download other useful libraries and take advantage of modules and libraries that other members of the Python community had developed. Then, using the `import` statement we can import these modules into our code. Some of these libraries, such as NumPy, SciPy and Matplotlib, provide useful data analysis tools for scientists and engineers. These libraries can be used to analyze, graph and visualize data. They can also be used to create complex mathematical equations and 3D animations.
+These are only a selection of Python’s built-in functions; they are not the only way to interact with Python. We can visit the official repository of Python ([PyPi](https://pypi.org/)) and download other useful libraries and take advantage of modules and libraries that other members of the Python community had developed. Then, using the `import` statement we can import these modules into our code. Some of these libraries, such as NumPy, SciPy and Matplotlib, provide useful data analysis tools for scientists and engineers. These libraries can be used to analyze, graph and visualize data. They can also be used to create complex mathematical equations and 3D animations.

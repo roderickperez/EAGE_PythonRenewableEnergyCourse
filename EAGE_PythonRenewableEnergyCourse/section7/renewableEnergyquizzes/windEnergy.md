@@ -3,231 +3,247 @@ kernelspec:
   name: python3
   display_name: Python 3
 ---
-# Quiz: Wind Energy
 
-Test your knowledge of wind power theory and Python calculations.
+# Wind-Energy Quiz and Python Challenge
 
----
+Complete these eight cumulative questions before opening the solutions.
 
-:::{admonition} Question 1
+:::{admonition} Quiz 1 — Power concepts
 :class: note
 
-**Wind Power Formula**
+**Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
-The theoretical power available in the wind is:
+Which expression gives the kinetic-power flux through rotor area $A$?
 
-$$P = \frac{1}{2} \rho A v^3$$
+A. $\rho Av$  
+B. $\tfrac12\rho Av^2$  
+C. $\tfrac12\rho Av^3$  
+D. $C_p\rho Av^3$
 
-where $\rho$ is air density (kg/m³), $A$ is the rotor swept area (m²), and $v$ is wind speed (m/s).
-
-Calculate the theoretical power (kW) for a turbine with:
-- Rotor diameter: $D = 90$ m
-- Wind speed: $v = 11$ m/s
-- Air density: $\rho = 1.225$ kg/m³
 :::
 
-:::{admonition} Question 1 (Solution)
+:::{admonition} Solution
 :class: tip, dropdown
 
-We first compute the swept area $A = \pi (D/2)^2$, then apply the power formula:
+**C.** $\tfrac12\rho Av^3$ is available wind power. Multiplying it by $C_p$ gives aerodynamic rotor power. Electrical output includes additional losses and controls.
+:::
+
+:::{admonition} Quiz 2 — Betz reasoning
+:class: note
+
+**Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
+
+At fixed density and rotor area, by what factor does available power change when wind speed rises from 5 to 10 m/s? Can a turbine with $C_p=0.65$ be consistent with the ideal Betz model?
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+The speed doubles, so available power changes by $2^3=8$. No: $0.65>16/27\approx0.593$.
 
 ```{code-cell} python
-import math
-
-rho = 1.225     # kg/m³
-D   = 90        # m
-v   = 11        # m/s
-
-A   = math.pi * (D / 2)**2
-P_W = 0.5 * rho * A * v**3
-P_kW = P_W / 1000
-
-print(f"Swept area: {A:.2f} m²")
-print(f"Theoretical power: {P_kW:.2f} kW")
+betz_limit = 16 / 27
+power_ratio = (10 / 5) ** 3
+print(f"Power ratio: {power_ratio:.0f}; Betz limit: {betz_limit:.3f}")
+assert power_ratio == 8 and 0.65 > betz_limit
 ```
 :::
 
----
-
-:::{admonition} Question 2
+:::{admonition} Quiz 3 — Implement a bounded power curve
 :class: note
 
-**Betz Limit**
+**Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
-The Betz limit states that the maximum fraction of wind power that can theoretically be extracted is:
+Write a vectorized turbine function with 3 m/s cut-in, 12 m/s rated speed, 25 m/s cut-out, and 4 MW rating. Use a cubic ramp that is continuous at cut-in and rated speed. Test all boundaries.
 
-$$C_{P,max} = \frac{16}{27} \approx 0.593$$
-
-For the turbine in Question 1 ($D = 90$ m, $v = 11$ m/s, $\rho = 1.225$ kg/m³):
-1. Calculate the maximum power extractable by the turbine (kW).
-2. If the turbine has a real power coefficient $C_P = 0.42$, what is the actual power output (kW)?
 :::
 
-:::{admonition} Question 2 (Solution)
+:::{admonition} Solution
 :class: tip, dropdown
-
-We apply the Betz limit and then a realistic $C_P$:
-
-```{code-cell} python
-import math
-
-rho  = 1.225
-D    = 90
-v    = 11
-Cp_betz = 16 / 27
-Cp_real = 0.42
-
-A       = math.pi * (D / 2)**2
-P_wind  = 0.5 * rho * A * v**3
-P_betz  = Cp_betz * P_wind / 1000
-P_real  = Cp_real * P_wind / 1000
-
-print(f"Total wind power:        {P_wind/1000:.2f} kW")
-print(f"Betz limit power:        {P_betz:.2f} kW  (Cp = {Cp_betz:.3f})")
-print(f"Actual turbine power:    {P_real:.2f} kW  (Cp = {Cp_real})")
-```
-:::
-
----
-
-:::{admonition} Question 3
-:class: note
-
-**Wind Speed vs. Power Curve**
-
-For a turbine with $D = 100$ m, $\rho = 1.225$ kg/m³, and $C_P = 0.45$, plot the output power (kW) against wind speeds from 0 to 25 m/s.
-
-Add:
-- Vertical dashed lines for cut-in (3 m/s), rated (12 m/s), and cut-out (25 m/s) speeds.
-- Appropriate axis labels and a title.
-:::
-
-:::{admonition} Question 3 (Solution)
-:class: tip, dropdown
-
-We use NumPy for the speed array, calculate power, then plot with annotations:
 
 ```{code-cell} python
 import numpy as np
+
+def turbine_power_mw(speed, rated_mw=4, cut_in=3, rated_speed=12, cut_out=25):
+    if not all(np.isfinite(np.asarray(value, dtype=float)).all() for value in [speed, rated_mw, cut_in, rated_speed, cut_out]):
+        raise ValueError("model inputs must be finite")
+    speed = np.asarray(speed, dtype=float)
+    if np.any(speed < 0) or rated_mw < 0 or not 0 <= cut_in < rated_speed < cut_out:
+        raise ValueError("invalid speed or turbine thresholds")
+    power = np.zeros_like(speed)
+    ramp = (speed >= cut_in) & (speed < rated_speed)
+    power[ramp] = rated_mw * (speed[ramp]**3 - cut_in**3) / (rated_speed**3 - cut_in**3)
+    power[(speed >= rated_speed) & (speed < cut_out)] = rated_mw
+    return float(power) if power.ndim == 0 else power
+
+assert turbine_power_mw(3) == 0
+assert turbine_power_mw(12) == 4
+assert turbine_power_mw(24.9) == 4
+assert turbine_power_mw(25) == 0
+```
+:::
+
+:::{admonition} Quiz 4 — Plot and annotate operating regions
+:class: note
+
+**Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
+
+Plot the curve from 0–30 m/s and shade the ramp, rated, and shutdown regions. Label axes in m/s and MW.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+```{code-cell} python
 import matplotlib.pyplot as plt
 
-rho = 1.225
-D   = 100
-Cp  = 0.45
-A   = np.pi * (D / 2)**2
-
-v = np.linspace(0, 25, 200)
-v_cut_in, v_rated, v_cut_out = 3, 12, 25
-P_rated = 0.5 * rho * A * Cp * v_rated**3 / 1000
-P = np.zeros_like(v)
-ramp = (v >= v_cut_in) & (v < v_rated)
-P[ramp] = P_rated * (v[ramp]**3 - v_cut_in**3) / (v_rated**3 - v_cut_in**3)
-P[(v >= v_rated) & (v < v_cut_out)] = P_rated
-
-plt.figure(figsize=(8, 5))
-plt.plot(v, P, color="steelblue", linewidth=2.5, label="Power curve")
-plt.axvline(3,  color="green",  linestyle="--", alpha=0.7, label="Cut-in (3 m/s)")
-plt.axvline(12, color="orange", linestyle="--", alpha=0.7, label="Rated (12 m/s)")
-plt.axvline(25, color="red",    linestyle="--", alpha=0.7, label="Cut-out (25 m/s)")
-plt.xlabel("Wind Speed (m/s)")
-plt.ylabel("Power Output (kW)")
-plt.title("Wind Turbine Power Curve")
+speed = np.linspace(0, 30, 301)
+power = turbine_power_mw(speed)
+plt.figure(figsize=(9, 4))
+plt.plot(speed, power, color="navy", linewidth=2)
+plt.axvspan(3, 12, color="orange", alpha=0.18, label="Ramp")
+plt.axvspan(12, 25, color="green", alpha=0.12, label="Rated")
+plt.axvspan(25, 30, color="red", alpha=0.10, label="Shutdown")
+plt.xlabel("Wind speed (m/s)")
+plt.ylabel("Electrical power (MW)")
+plt.title("Simplified 4 MW turbine power curve")
+plt.grid(alpha=0.3)
 plt.legend()
-plt.grid(True, linestyle="--", alpha=0.4)
 plt.tight_layout()
-plt.show()
 ```
 :::
 
----
-
-:::{admonition} Question 4
+:::{admonition} Quiz 5 — Density and hub-height correction
 :class: note
 
-**Weibull Distribution**
+**Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
-Wind speed at a site follows a Weibull distribution. Generate 5000 samples with shape parameter $k = 2.2$ and scale parameter $\lambda = 8.5$ m/s using:
+Wind speed is 6.5 m/s at 10 m. Estimate speed at 100 m for shear exponents 0.10, 0.14, and 0.25. Calculate air density at 90 kPa and 5 °C. Plot the vertical profiles.
 
-```python
-np.random.weibull(k, 5000) * lam
-```
-
-Then:
-1. Plot a histogram of the generated wind speeds (30 bins).
-2. Print the mean and standard deviation.
 :::
 
-:::{admonition} Question 4 (Solution)
+:::{admonition} Solution
 :class: tip, dropdown
 
-The Weibull distribution models wind speed frequency distributions:
-
 ```{code-cell} python
-import numpy as np
-import matplotlib.pyplot as plt
+def wind_at_height(speed_ref, height, ref_height=10, alpha=0.14):
+    return np.asarray(speed_ref) * (np.asarray(height) / ref_height) ** alpha
 
-np.random.seed(42)
-k   = 2.2
-lam = 8.5
+def air_density(pressure_pa, temperature_c):
+    return pressure_pa / (287.05 * (temperature_c + 273.15))
 
-samples = np.random.weibull(k, 5000) * lam
-
-print(f"Mean wind speed: {samples.mean():.2f} m/s")
-print(f"Std deviation:   {samples.std():.2f} m/s")
-
-plt.figure(figsize=(7, 4))
-plt.hist(samples, bins=30, color="cornflowerblue", edgecolor="black", density=True)
-plt.xlabel("Wind Speed (m/s)")
-plt.ylabel("Probability Density")
-plt.title("Weibull Wind Speed Distribution (k=2.2, λ=8.5)")
-plt.grid(True, linestyle="--", alpha=0.5)
+heights = np.linspace(10, 150, 100)
+alphas = [0.10, 0.14, 0.25]
+plt.figure(figsize=(6, 5))
+for alpha in alphas:
+    profile = wind_at_height(6.5, heights, alpha=alpha)
+    plt.plot(profile, heights, label=f"alpha={alpha}")
+    print(f"alpha={alpha}: 100 m speed = {wind_at_height(6.5, 100, alpha=alpha):.2f} m/s")
+plt.xlabel("Wind speed (m/s)")
+plt.ylabel("Height (m)")
+plt.title("Power-law wind-shear scenarios")
+plt.grid(alpha=0.3)
+plt.legend()
 plt.tight_layout()
-plt.show()
+print(f"Air density: {air_density(90000, 5):.3f} kg/m³")
 ```
 :::
 
----
-
-:::{admonition} Question 5
+:::{admonition} Quiz 6 — AEP from a Weibull distribution
 :class: note
 
-**Annual Energy Production (AEP)**
+**Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
-A wind turbine has the following simplified power curve (wind speed [m/s] → power [kW]):
+For shape $k=2.0$ and scale $c=8.0$ m/s, discretize 0–35 m/s into 0.25 m/s bins. Calculate AEP and capacity factor from the turbine curve. Confirm probabilities do not exceed one.
 
-```python
-v_curve = [0, 3, 5, 7, 9, 11, 13, 24.999, 25]
-P_curve = [0, 0, 100, 400, 900, 1500, 2000, 2000, 0]
-```
-
-Using the Weibull samples from Question 4 (`k=2.2`, `lam=8.5`, 5000 samples):
-1. Interpolate the power for each wind speed sample.
-2. Estimate the mean power output (kW).
-3. Estimate the annual energy production (MWh).
 :::
 
-:::{admonition} Question 5 (Solution)
+:::{admonition} Solution
 :class: tip, dropdown
 
-We use `np.interp` to map each wind speed sample to a power value:
+```{code-cell} python
+k, c = 2.0, 8.0
+edges = np.arange(0, 35.25, 0.25)
+centres = (edges[:-1] + edges[1:]) / 2
+cdf = lambda v: 1 - np.exp(-(v / c) ** k)
+probability = cdf(edges[1:]) - cdf(edges[:-1])
+bin_power = turbine_power_mw(centres)
+aep_mwh = np.sum(probability * bin_power) * 8760
+capacity_factor = aep_mwh / (4 * 8760)
+print(f"AEP: {aep_mwh/1000:.2f} GWh; capacity factor: {capacity_factor:.1%}")
+assert probability.sum() <= 1 and 0 <= capacity_factor <= 1
+```
+:::
+
+:::{admonition} Quiz 7 — Compare $P(\bar v)$ with $\overline{P(v)}$
+:class: note
+
+**Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
+
+Generate 8760 reproducible Weibull wind speeds. Compare annual energy from the hourly series with an estimate that applies the power curve only to mean wind speed. Plot the speed and power distributions. Explain the difference.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
 
 ```{code-cell} python
-import numpy as np
+rng = np.random.default_rng(10)
+hourly_speed = rng.weibull(2.0, 8760) * 8.0
+hourly_power = turbine_power_mw(hourly_speed)
+energy_from_series = hourly_power.sum()
+energy_from_mean = turbine_power_mw(hourly_speed.mean()) * 8760
 
-np.random.seed(42)
-k   = 2.2
-lam = 8.5
-samples = np.random.weibull(k, 5000) * lam
-
-v_curve = [0, 3, 5, 7, 9, 11, 13, 24.999, 25]
-P_curve = [0, 0, 100, 400, 900, 1500, 2000, 2000, 0]
-
-power_samples = np.interp(samples, v_curve, P_curve, left=0, right=0)
-
-mean_power_kW = power_samples.mean()
-AEP_MWh = mean_power_kW * 8760 / 1000
-
-print(f"Mean power output:       {mean_power_kW:.2f} kW")
-print(f"Annual energy production:{AEP_MWh:,.1f} MWh")
+fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+axes[0].hist(hourly_speed, bins=35, color="skyblue", edgecolor="white")
+axes[0].set(xlabel="Wind speed (m/s)", ylabel="Hours", title="Wind-speed distribution")
+axes[1].hist(hourly_power, bins=25, color="seagreen", edgecolor="white")
+axes[1].set(xlabel="Power (MW)", ylabel="Hours", title="Power distribution")
+plt.tight_layout()
+print(f"Hourly method: {energy_from_series/1000:.2f} GWh")
+print(f"Mean-speed method: {energy_from_mean/1000:.2f} GWh")
 ```
+
+The nonlinear and clipped power curve means a mean input does not preserve mean output.
+:::
+
+:::{admonition} Quiz 8 — Loss waterfall
+:class: note
+
+**Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
+
+Starting with gross AEP, apply wake 8%, availability 4%, electrical 3%, and curtailment 2% sequentially. Write a function, calculate net AEP, and plot each stage. Explain why summing the percentages is only an approximation.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+```{code-cell} python
+def apply_sequential_losses(gross_energy, losses):
+    stages = {"Gross": float(gross_energy)}
+    remaining = float(gross_energy)
+    for name, fraction in losses.items():
+        if not 0 <= fraction < 1:
+            raise ValueError("loss fractions must be in [0, 1)")
+        remaining *= 1 - fraction
+        stages[f"After {name}"] = remaining
+    return stages
+
+stages = apply_sequential_losses(aep_mwh, {
+    "wake": 0.08, "availability": 0.04,
+    "electrical": 0.03, "curtailment": 0.02,
+})
+plt.figure(figsize=(9, 4))
+plt.bar(stages.keys(), np.array(list(stages.values())) / 1000, color="slateblue")
+plt.xticks(rotation=25, ha="right")
+plt.ylabel("Annual energy (GWh)")
+plt.title("Sequential wind-energy losses")
+plt.tight_layout()
+assert list(stages.values())[-1] <= aep_mwh
+```
+
+Each percentage acts on the energy remaining after prior losses, so the combined factor is multiplicative.
 :::

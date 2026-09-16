@@ -9,14 +9,14 @@ kernelspec:
 
 As we discussed in the previous section, ny default, in Python we can use lists in order to storage data arrays. Arrays are very frequently used in data science, where speed and resources are very important. However, when we have large volumes of data, traditional data structures (in this case lists) are slow and inefficient. Therefore, it is necessary to resort to external libraries, such as Numpy.
 
-**NumPy** (**Num**erical **Py**thon) was created in 2005 by Travis Oliphant. It is an open source project [open source project](https://github.com/numpy/numpy), used for working with arrays in Python. Numpy is a Python package for large array handling, which provide us with an array object that is up to 50x faster than traditional Python lists. It is written in Python, but most of the parts that require fast computation are written in C or C++.
+**NumPy** (**Num**erical **Py**thon) was created in 2005 by Travis Oliphant. It is an open source project [open source project](https://github.com/numpy/numpy), used for working with arrays in Python. Numpy is a Python package for large array handling, which provides typed multidimensional arrays and compiled numerical operations. Speed depends on the operation, array size, dtype and memory layout; no fixed speed-up is guaranteed. It is written in Python, but most of the parts that require fast computation are written in C or C++.
 
 ## Array creation
 
 The array object in NumPy is called `ndarray`, it provides a lot of supporting functions that make working with `ndarray` very easy.
 
 :::{admonition} Why Numpy is faster?
-NumPy arrays are stored at one continuous place in memory unlike lists, so processes can access and manipulate them very efficiently.
+NumPy uses typed buffers and compiled operations. Arrays can be contiguous, but sliced or transposed views may be non-contiguous.
 :::
 
 The first step to work with Numpy in Python is to installed the `numpy` library, and then import iy into our code. Due to its popularity in Python code development, Numpy is usually one of the default libraries found in many Python distributions. Therefore, in most of the times, it is not necessary to install it. However, if necessary, this can be done via the `pip install numpy` command.
@@ -77,7 +77,7 @@ print('The arrayNumpyConverted array is a ', type(arrayNumpyConverted))
 :::{admonition} 'numpy.array()` and 'numpy.asarray()'
 :class: warning
 
-The difference between both is that `numpy.array()` will make a duplicate of the original object and `numpy.asarray()` would mirror the changes in the original object.
+`np.array()` copies by default. `np.asarray()` reuses a compatible array without copying, but may allocate when dtype or layout conversion is required. It does not keep a Python list synchronized with an array. Use `.copy()` when independent storage is needed [@numpyDocs].
 
 ```{code-cell} python
 
@@ -127,7 +127,7 @@ A dimension in arrays is one level of array depth (nested arrays). The following
 0-D arrays, or Scalars, are the elements in an array. Each value in an array is a 0-D array.
 
 :::{admonition} Check Number of Dimensions
-: class: tip
+:class: tip
 NumPy Arrays provides the `ndim` attribute that returns an integer that tells us how many dimensions the array have.
 :::
 
@@ -274,7 +274,7 @@ print(arr_1D[-3:-1])
 We can control the number of steps of the slicing, adding the `step` parameter. Remember that it is set to 1 by default.
 :::
 
-Finally, if we want to take the elements from the first index to the last index, but we want to skip every other element, we can use the `::` operator.
+Finally, if we want to take the elements from the first index to the last index, but we want to skip every other element, we can use `array[::2]`; `array[::]` keeps every element.
 
 ```{code-cell} python
 arr_1D = np.array([1, 2, 3, 4, 5, 6, 7])
@@ -329,7 +329,16 @@ print('The shape of the reshaped arr_1D is: ', arr_2D.shape)
 ```
 
 :::{admonition} Exercise 8
-First, build a 2D Numpy array, of 2 rows and 3 columns. Then, using the reshape function, reshape it into a 2D array of 2 columns and 3 rows. Print the dimensions of the originanl and new array.
+:class: note
+
+**Reference:** NumPy user guide [@numpyDocs].
+First, build a 2D NumPy array with 2 rows and 3 columns. Then reshape it into 3 rows and 2 columns. Print the dimensions of the original and new arrays.
+
+```python
+original = np.array([[1, 2, 3], [4, 5, 6]])
+# TODO: reshape original to 3 rows and 2 columns
+# TODO: print both shapes
+```
 
 ```{image} ../../images/numpyReshapeExercise.png
 :alt: numpyReshapeExercise
@@ -338,6 +347,19 @@ First, build a 2D Numpy array, of 2 rows and 3 columns. Then, using the reshape 
 :align: center
 ```
 
+:::
+
+:::{admonition} Exercise 8 — Solution
+:class: tip, dropdown
+
+```{code-cell} python
+original = np.array([[1, 2, 3], [4, 5, 6]])
+reshaped = original.reshape(3, 2)
+print("Original shape:", original.shape)
+print("Reshaped shape:", reshaped.shape)
+assert original.size == reshaped.size == 6
+assert reshaped.shape == (3, 2)
+```
 :::
 
 :::{admonition} Can We Reshape An Array Into any Shape?
@@ -355,7 +377,11 @@ print('The shape of the new arr_1D (reshaped) is: ', arr_2D.shape)
 Although, we cannot reshape it into a 3 elements 3 rows 2D array as that would require 3x3 = 9 elements.
 
 ```{code-cell} python
-arr_2D = arr_1D.reshape(3, 3)
+# Deliberate error demonstration: catch it so the lesson can continue.
+try:
+    arr_2D = arr_1D.reshape(3, 3)
+except ValueError as error:
+    print("Expected ValueError:", error)
 ```
 
 In this case we will get an error.
@@ -706,13 +732,17 @@ print('The sum of array1 and array2 is: ', arraySum)
 Try yourself, what will happen if the arrays have different shapes?
 
 ```{code-cell} python
-array1 = np.array([1, 2, 3, 4, 5])
-
-array2 = np.array([6, 7, 8, 9])
-
-arraySum = array1 + array2
-
-print('The sum of array1 and array2 is: ', arraySum)
+# Deliberate error demonstration: catch it so the lesson can continue.
+try:
+    array1 = np.array([1, 2, 3, 4, 5])
+    
+    array2 = np.array([6, 7, 8, 9])
+    
+    arraySum = array1 + array2
+    
+    print('The sum of array1 and array2 is: ', arraySum)
+except ValueError as error:
+    print("Expected ValueError:", error)
 ```
 
 :::
@@ -804,18 +834,30 @@ Now, try yourself, what will happen if we divide one scalar with and array, or a
 :::{admonition} Exercise 9
 :class: note
 
-What can you say about diving two arrays?
+**Reference:** NumPy user guide [@numpyDocs].
 
-```{code-cell} python
+What can you say about dividing two equal-length arrays?
+
+```python
 array1 = np.array([2, 4, 6, 8, 10])  # replace with a scalar to compare broadcasting
-
 array2 = np.array([24, 60, 12, 40, 15])
-
-arrayDiv = array1 / array2
-
-print('The division of array1 and array2 is: ', arrayDiv)
+# TODO: divide element by element
+# TODO: print the result and its shape
 ```
 
+:::
+
+:::{admonition} Exercise 9 — Solution
+:class: tip, dropdown
+
+```{code-cell} python
+array1 = np.array([2, 4, 6, 8, 10], dtype=float)
+array2 = np.array([24, 60, 12, 40, 15], dtype=float)
+array_division = array1 / array2
+print("Element-wise division:", array_division)
+assert array_division.shape == array1.shape
+assert np.allclose(array_division * array2, array1)
+```
 :::
 
 ### Dot Product
@@ -843,5 +885,5 @@ print('The dot product of array1 and array2 is: ', arrayDotProd)
 
 :::{admonition} Dot Product using `@` keyword
 :class: note
-Python 3.5 introduced the `@` operator to calculate the dot product of n-dimensional arrays created using NumPy.
+The `@` operator performs matrix multiplication; NumPy defines stacked matrix multiplication for higher dimensions, not a general dot-product contraction.
 :::

@@ -7,7 +7,9 @@
 :align: center
 ```
 
-Last technical review: August 31, 2026
+Last technical review: September 16, 2026
+
+Start with the [learning guide](learningGuide.md), use the [20-exercise workbook](section7/renewableExercises.md), and consult the [reference catalogue](references.md).
 
 ## Course Description
 

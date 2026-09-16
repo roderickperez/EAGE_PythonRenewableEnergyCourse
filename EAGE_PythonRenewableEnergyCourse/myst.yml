@@ -114,6 +114,10 @@ project:
 
         - file: section6/geothermalEnergy.md
 
+    - title: Applied Python Workbook
+      children:
+        - file: section7/renewableExercises.md
+
     - title: Quizzes
       children:
         - file: section7/pythonBasicsquizzes/pythonBasicQuizz.md
@@ -134,6 +138,8 @@ project:
 
         - file: section7/renewableEnergyquizzes/solarEnergy.md
 
+        - file: section7/renewableEnergyquizzes/geothermalEnergy.md
+
     - title: Course Final Project
       children:
         - file: section8/projectIntro.md
@@ -145,6 +151,11 @@ project:
         - file: section9/courseSummary.md
 
         - file: section9/courseConclusions.md
+
+    - title: References and Learning Guide
+      children:
+        - file: references.md
+        - file: learningGuide.md
 
 site:
   options:
