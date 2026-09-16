@@ -2,6 +2,16 @@
 
 ## Completed
 
+- Expanded the theory before the exercises in all five energy chapters: physical
+  mechanisms, components, definitions, equations and units, operating assumptions,
+  limitations, environmental context and worked numerical examples. The complete
+  theory also appears in each downloadable notebook; all 100 exercises are retained.
+- Added Duffie and Beckman's solar textbook and the third edition of *Wind Energy
+  Handbook* to the supplementary reading. Verified publisher metadata for the
+  existing Kalogirou, Burton and DiPippo references, including the DiPippo
+  release-year/copyright-year distinction. Supplementary previews are not presented
+  as access to full books; the supplied PDFs remain the primary teaching basis.
+
 - Reviewed the course sections from introductory material through the final project and conclusions.
 - Catalogued 10 supplied PDF files representing 9 distinct works; the two solar-energy copies are identical. Added bibliographic metadata, topic locators and a reading guide.
 - Embedded 100 original, source-linked Python exercises across five chapters: general renewable energy, solar, hydro, wind and geothermal. Each chapter has 5 easy, 10 medium and 5 hard exercises with a starter cell, numbered answer directly below, initially collapsed solution, interpretation and executable checks.
@@ -34,6 +44,9 @@ checks and independent SQL/pandas reconciliation.
 - Executed all seven student notebooks from clean kernels and saved their outputs.
 - Executed the private project reference solution against all five supplied datasets, with timestamp, physical-boundary, capacity-factor and energy-balance checks.
 - Checked bibliography identifiers, table-of-contents targets, exercise difficulty counts, solution containers and database integrity.
+- Checked that substantial theory is retained before all five chapter exercise
+  sections and reproduced in the notebooks; independently checked the five new
+  worked-example calculations.
 - Built the HTML book and inspected the rendered workbook, reference catalogue and notebook charts.
 
 Run `python tools/execute_course_notebooks.py` followed by

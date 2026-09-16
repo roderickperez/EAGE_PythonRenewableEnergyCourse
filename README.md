@@ -26,6 +26,13 @@ contain **20 exercises (5 easy, 10 medium, 5 hard)**. Each question has a refere
 step-by-step answer directly below it. Practice answers start collapsed in the
 book. Complete chapter `.ipynb` companions are supplied alongside the MyST sources.
 
+Before the exercises, every energy chapter includes detailed physical descriptions,
+component and definition tables, equations with symbols and units, assumptions,
+operating limits, a worked numerical example and links to the supplied and additional
+textbook reading. The generator preserves these theory sections and carries their
+full text into the notebook downloads. `tools/validate_theory.py` checks preservation
+and the worked-example arithmetic.
+
 The question-only test is `section7/renewableEnergyTest.md`. The final project is
 `section8/projectIntro.md` and loads five separate CSV files from `section8/data`.
 

@@ -19,7 +19,158 @@ After this lesson you should be able to:
 
 A photovoltaic (PV) cell converts part of incident solar radiation directly into DC electricity. An inverter converts DC to grid-compatible AC. Irradiance and cell temperature affect instantaneous output; shading, soiling, wiring, mismatch, inverter behavior, availability, and degradation affect delivered energy. Standard Test Conditions (STC) use 1000 W/m$^2$ irradiance, 25 °C cell temperature and the AM1.5 reference spectrum [@doePVPerformance; @doePVLongevity].
 
-## Concepts and equations
+<!-- expanded-theory:solar:start -->
+
+## Physical description: what solar energy systems do
+
+Solar energy is electromagnetic radiation arriving from the Sun. A useful solar system must intercept that radiation, convert part of it into a useful form, and deliver that output to a load. The resource at a site depends on time, location, atmospheric conditions and the orientation of the receiving surface. A sunny location alone does not specify how much electricity a particular installation will deliver [@foster2010; @wade2003].
+
+Two conversion routes must be distinguished. **Photovoltaic (PV) systems** convert absorbed light directly into DC electricity in semiconductor devices. **Solar thermal systems** absorb radiation as heat; that heat can supply hot water or an industrial process, or drive a heat engine in a concentrating solar power plant. A PV inverter is an electrical converter, whereas a solar thermal turbine is part of a thermodynamic cycle. Neither a PV module nor a thermal collector is, by itself, an energy-storage device.
+
+This chapter develops PV in detail because the Python exercises and final project model electrical PV output. The solar-thermal comparison below explains the wider meaning of solar energy without treating thermal and electrical output as interchangeable. The supplied Foster and Wade texts are the primary learning references; Duffie and Beckman and Kalogirou provide additional reading on radiation, collectors and system modelling [@foster2010; @wade2003; @duffie2013; @kalogirou2014solar].
+
+### From sunlight to delivered electricity
+
+The system sequence is **solar resource → module surface → PV cells → DC wiring → inverter → AC wiring and transformer → meter/load**. Losses and limits can occur at every stage. A grid-connected system usually exports or self-consumes AC electricity. An off-grid system may use a battery and charge controller; then the chosen model must also track stored energy and battery conversion losses.
+
+| Component or term | Meaning and role |
+|---|---|
+| Cell | Semiconductor device that produces a current–voltage response under illumination |
+| Module or panel | Connected cells packaged for electrical insulation and environmental protection |
+| String | Modules connected in series; their operating voltages add |
+| Array | One or more strings forming the installed DC generating system |
+| Inverter | Converts DC to AC and controls the electrical operating point within its limits |
+| Maximum-power-point tracking (MPPT) | Control that seeks the voltage/current combination with maximum available DC power |
+| Balance of system | Wiring, switches, protection, mounting and other equipment beyond the modules |
+| DC and AC nameplate | Ratings at different electrical boundaries; they must be distinguished in ratios and capacity factors |
+
+Series and parallel connections change voltage and current differently. For identical modules operating compatibly, series connection adds voltage while maintaining string current; parallel connection adds current at the common voltage. Real mismatch, partial shading, cable losses, bypass diodes and inverter operating limits complicate this ideal picture. A shaded module is therefore not always represented accurately by reducing the whole array's irradiance by one average percentage [@wade2003; @foster2010].
+
+## Solar resource and measurement definitions
+
+### Irradiance, irradiation and the receiving plane
+
+**Irradiance**, denoted here by $G$, is radiant power incident per unit area, in W/m². **Irradiation**, denoted by $H_{POA}$ for a module plane, is incident radiant energy per unit area over a specified period, often kWh/m². The subscripts identify the measurement surface: a horizontal sensor and a tilted module generally receive different irradiance.
+
+The principal resource components are global horizontal irradiance (GHI), direct normal irradiance (DNI), and diffuse horizontal irradiance (DHI). For a sun above the horizon, consistent measurements approximately satisfy
+
+$$GHI=DNI\cos\theta_z+DHI,$$
+
+where $\theta_z$ is solar zenith angle, measured from the vertical. DNI is defined on a plane normal to the direct solar beam. DHI represents sky-diffuse radiation on the horizontal plane. Do not substitute DNI directly into a flat-plate PV model as though it were the total radiation on the modules.
+
+**Plane-of-array irradiance** $G_{POA}$ includes the direct beam projected onto the module plane, sky diffuse radiation and ground-reflected radiation. A useful conceptual decomposition is
+
+$$G_{POA}=DNI\max(\cos\theta_i,0)+G_{sky,POA}+G_{ground,POA},$$
+
+where $\theta_i$ is the beam incidence angle on the front face. The diffuse and reflected terms require a radiation-transposition model; they are not generally equal to DHI. Module tilt, azimuth, horizon obstruction, trackers and albedo affect the result. The exercise inputs explicitly provide POA irradiance so that a separate solar-position and transposition model is not silently omitted [@foster2010; @duffie2013].
+
+For interval-average measurements,
+
+$$H_{POA}=\frac{1}{1000}\sum_i G_{POA,i}\Delta t_i,$$
+
+when $G$ is in W/m² and $\Delta t$ is in hours; $H$ is then kWh/m². The factor of 1000 converts Wh to kWh. For instantaneous samples, a chosen numerical integration method, such as a trapezoidal approximation, is needed instead. Always state which type of observation the dataset contains.
+
+### Time and data quality
+
+Record the timestamp convention, time zone, interval length and whether each timestamp marks an interval start or end. Nighttime zero irradiance can be valid; missing data are not zero. Sensor misalignment, shading of the sensor, snow, soiling, calibration drift and time shifts can distort a production comparison. A radiation sensor at one point does not necessarily represent every module in a large array.
+
+## PV conversion: definitions, equations and limits
+
+### The current–voltage characteristic
+
+An illuminated PV device does not supply an arbitrary fixed voltage and current simultaneously. Its operating point lies on an **I–V curve** determined by irradiance, cell temperature and device properties. Electrical DC power is
+
+$$P_{DC}=VI.$$
+
+At open circuit, current is zero and voltage is $V_{oc}$; at short circuit, voltage is zero and current is $I_{sc}$. Neither condition delivers useful electrical power. At the maximum-power point, $P_{mp}=V_{mp}I_{mp}$. The fill factor
+
+$$FF=\frac{V_{mp}I_{mp}}{V_{oc}I_{sc}}$$
+
+describes the shape of the I–V curve and is dimensionless. It is not conversion efficiency or capacity factor. Irradiance strongly affects photocurrent, while voltage and power also respond to temperature. MPPT attempts to operate near the available maximum rather than at either I–V endpoint [@wade2003; @foster2010].
+
+For a simple area model,
+
+$$P_{DC}=G_{POA}A\eta_{PV},\qquad
+\eta_{PV}=\frac{P_{DC}}{G_{POA}A}.$$
+
+Here $A$ is the module area defined consistently with the efficiency specification, in m². With irradiance in W/m², output is W. Holding $\eta_{PV}$ constant is useful for a first calculation but omits operating-temperature, spectral and low-light effects.
+
+### STC, nameplate and temperature
+
+**Standard Test Conditions (STC)** use 1000 W/m² irradiance, 25°C **cell** temperature and the AM1.5 reference spectrum. A kWp rating commonly denotes rated DC kilowatts under these conditions. Ambient air at 25°C does not imply cells at 25°C: absorbed sunlight usually warms the module. Actual output can occasionally exceed the STC rating under favorable conditions, so nameplate is not a universal hard ceiling on DC power.
+
+The course uses a first-order DC model:
+
+$$P_{DC}=P_{STC}\frac{G_{POA}}{G_{STC}}
+\left[1+\gamma_P(T_c-T_{STC})\right].$$
+
+$\gamma_P$ is the fractional power-temperature coefficient in K⁻¹ or °C⁻¹; a datasheet value of −0.4%/°C becomes −0.004/°C in Python. Celsius and kelvin temperature **differences** are equal. Use cell temperature $T_c$, not ambient temperature $T_a$, in the correction. For the negative coefficient assumed here, warmer cells reduce output at fixed irradiance [@foster2010; @pvlibDocs].
+
+The introductory thermal approximation is
+
+$$T_c=T_a+\frac{G_{POA}}{800\ \mathrm{W/m^2}}
+\left(T_{NOCT}-20\ ^\circ\mathrm{C}\right).$$
+
+The nominal operating cell temperature parameter summarizes specified reference operating conditions. This simplified equation does not explicitly model wind cooling, mounting geometry, heat capacity or transient behavior. Use appropriate thermal models and datasheet conventions in a detailed study. Flooring a negative extrapolated DC estimate at zero avoids impossible negative generation but does not make the underlying extrapolation physically valid.
+
+### Inverter efficiency, clipping and loss accounting
+
+Define potential AC output before clipping as $P_{AC,pot}=\eta_{inv}P_{DC}$. A simple inverter-limited model gives
+
+$$P_{AC}=\min(P_{AC,pot},P_{AC,r}),\qquad
+P_{clip}=\max(P_{AC,pot}-P_{AC,r},0).$$
+
+This assumes a constant inverter efficiency and omits startup thresholds and standby consumption. Inverter conversion loss is $P_{DC}-P_{AC,pot}$, while clipping is discarded potential AC output above the AC limit. They are different quantities. A manufacturer AC power model may already include conversion losses; multiplying by the same efficiency again would double-count them.
+
+The **DC/AC ratio** is $P_{STC,DC}/P_{AC,r}$. Increasing it can improve use of an inverter at lower irradiance but may increase clipping near peak resource. It is an engineering and economic trade-off, not a guarantee of higher performance ratio. Independent sequential fractional losses $\ell_j$ give a retained fraction $\prod_j(1-\ell_j)$, provided the loss boundaries do not overlap.
+
+## Energy, yield and performance indicators
+
+Electrical energy is $E_{AC}=\sum_i P_{AC,i}\Delta t_i$. Use kW with hours for kWh or MW with hours for MWh. Annual energy requires annual coverage or a documented extrapolation; a clear-sky day is not an annual resource model.
+
+| Indicator | Definition | What it answers |
+|---|---|---|
+| Specific/final yield $Y_f$ | $E_{AC}/P_{STC,DC}$, often kWh/kWp | How much AC energy was delivered per DC nameplate unit? |
+| Reference yield $Y_r$ | $H_{POA}/G_{STC}$, in hours | What equivalent full-reference-irradiance duration was available? |
+| Performance ratio $PR$ | $Y_f/Y_r$, dimensionless | What normalized system yield was achieved under the stated boundary? |
+| AC capacity factor | $E_{AC}/(P_{AC,r}T)$ | How much energy was delivered relative to continuous AC-rated output? |
+| Availability | Fraction of a defined time or energy opportunity when equipment is available | Was the system able to operate? |
+
+PR is not module efficiency: its denominator is an irradiation-normalized nameplate yield. Temperature, soiling, downtime and measurement conventions affect it. An unexpectedly high PR calls for checking definitions, sensors and conditions; it is not resolved simply by clipping every ratio to one. Keep DC-rated and AC-rated denominators explicit.
+
+## Solar thermal: the related but different conversion route
+
+A thermal collector delivers useful heat to a circulating fluid. For a single-phase fluid with approximately constant heat capacity,
+
+$$\dot Q_u=\dot m c_p(T_{out}-T_{in}).$$
+
+$\dot Q_u$ is heat-transfer rate in W when mass flow is kg/s and $c_p$ is J/(kg K). Collector thermal efficiency is $\eta_{th}=\dot Q_u/(G A)$ under specified measurement boundaries. It is not a PV electrical efficiency. Heat loss to the surroundings grows as the collector becomes hotter relative to ambient conditions, so a fixed thermal efficiency is generally inadequate over a broad temperature range.
+
+Concentrating systems use optics and tracking to deliver beam radiation to a receiver; their resource assessment relies strongly on DNI. A concentrating solar power plant then converts collected heat to electricity through a heat engine, potentially using thermal storage between collection and generation. A flat-plate PV array can use direct and diffuse radiation without concentrating it. These distinctions matter when choosing the input dataset and interpreting a claimed solar conversion efficiency [@foster2010; @duffie2013; @kalogirou2014solar].
+
+## Worked calculation before coding
+
+Consider a synthetic 10 kW DC array with an 8 kW AC inverter, POA irradiance 800 W/m², ambient temperature 25°C, NOCT 45°C, $\gamma_P=-0.004$/°C and inverter efficiency 0.97.
+
+1. Estimate cell temperature: $T_c=25+(800/800)(45-20)=50$°C.
+2. Calculate the temperature multiplier: $1-0.004(50-25)=0.90$.
+3. Calculate DC output: $10(800/1000)(0.90)=7.20$ kW.
+4. Apply inverter conversion: $7.20(0.97)=6.984$ kW potential AC.
+5. Compare with the inverter rating: $\min(6.984,8)=6.984$ kW, with no clipping.
+6. If these are mean conditions for a half-hour teaching interval, estimate $6.984(0.5)=3.492$ kWh.
+
+The last calculation applies a nonlinear model to interval-average inputs. Rapid irradiance or temperature changes can make this differ from the average of higher-resolution modeled output. The numerical result is a model estimate, not a measured performance guarantee.
+
+## From the explanation to the Python exercises
+
+Begin with irradiance, area, electrical rating and time units in exercises 1–5. Exercises 6–15 add temperature, clipping, losses, normalization and data checks. Exercises 16–20 combine design comparisons, storage, discounted cost and chronological performance evaluation. The tested functions below deliberately model the simpler PV relationships; they do not replace a detailed shading, electrical string-design or solar-thermal simulation.
+
+For preparation, read Wade's electricity and PV sections and Foster's PV-system treatment. Use Duffie and Beckman for additional radiation/thermal-system reading and Kalogirou for a broader comparison of solar conversion systems. Keep dated textbook prices or market statistics separate from the physical principles used here [@wade2003; @foster2010; @duffie2013; @kalogirou2014solar].
+
+
+<!-- expanded-theory:solar:end -->
+
+## Concepts and equations: compact reference
 
 ### Irradiance versus irradiation
 

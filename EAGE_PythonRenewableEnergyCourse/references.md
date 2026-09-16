@@ -114,7 +114,38 @@ The exercises are original teaching adaptations of these concepts, with syntheti
 
 ## Further reading already cited in the lessons
 
-Wind Energy Handbook [@burton2011wind]; Solar Energy Engineering [@kalogirou2014solar]; Geothermal Power Plants [@diPippo2016geothermal]; Small Hydro Power [@paish2002hydro]. These are additional references, not additional supplied PDF files.
+These works supplement the supplied PDF collection. They are **not additional local
+PDFs**. Publisher records and available previews were checked for edition and scope;
+the course does not claim that their full texts were downloaded or reviewed.
+The detailed chapter explanations are original teaching syntheses grounded primarily
+in the supplied books. External textbooks identify where to extend that study.
+
+| Additional work | Verified edition and identifier | How to use it |
+|---|---|---|
+| Duffie and Beckman, *Solar Engineering of Thermal Processes* | 4th edition, 2013; DOI 10.1002/9781118671603 | Radiation geometry, solar collectors and thermal-system background [@duffie2013] |
+| Kalogirou, *Solar Energy Engineering: Processes and Systems* | 2nd edition, 2014; DOI 10.1016/C2011-0-07038-2 | Broader solar conversion and engineering context [@kalogirou2014solar] |
+| Burton, Jenkins, Sharpe and Bossanyi, *Wind Energy Handbook* | 2nd edition, 2011; DOI 10.1002/9781119992714 | Additional turbine and wind-farm design reading [@burton2011wind] |
+| Burton, Jenkins, Bossanyi, Sharpe and Graham, *Wind Energy Handbook* | 3rd edition, 2021; ISBN 9781119451099 | Updated supplementary coverage of wakes, loads, offshore structures and integration [@burton2021wind] |
+| DiPippo, *Geothermal Power Plants: Principles, Applications, Case Studies and Environmental Impact* | 4th edition, copyright 2016; ISBN 9780081008799; DOI 10.1016/C2014-0-02885-7 | Surface conversion cycles and case studies beyond the simple reservoir heat balance [@diPippo2016geothermal] |
+| Paish, “Small Hydro Power: Technology and Current Status” | Review article, 2002; DOI 10.1016/S1364-0321(02)00006-0 | Supplementary small-hydro technology background; this is an article, not a textbook [@paish2002hydro] |
+
+DiPippo's publisher records include a late-2015 release date, while the fourth-edition
+copyright page states 2016. The bibliography follows that edition year. Technical
+principles in older books remain useful, but their market figures and installed-
+capacity statistics should be dated rather than presented as current observations.
+
+## Reading route before the chapter exercises
+
+| Chapter | Primary supplied reading | What the expanded explanation prepares you to calculate |
+|---|---|---|
+| General renewable energy | Wade Chapter 2, JICA Chapter 3, and the technology texts | Boundaries, power versus energy, efficiency versus capacity factor, storage and simultaneous supply/demand balances |
+| Solar | Wade's electricity and PV sections; Foster, Ghassemi and Cota's PV and solar-resource treatment | Radiation components, POA inputs, I–V terms, temperature correction, inverter limits, PR and energy |
+| Hydro | JICA Chapters 3 and 8; IFC's hydrology, energy and environmental discussions | Head and flow, conversion efficiencies, losses, water allocation, reservoir routing and pumped storage |
+| Wind | Manwell et al.'s resource and aerodynamic chapters; Wagner and Mathur's introduction | Kinetic flux, rotor coefficients, shear, the power curve, distributions, direction and AEP |
+| Geothermal | Grant and Bixley Chapters 2–3 | Reservoir properties, conduction and fluid flow, enthalpy, net electricity and decline assumptions |
+
+Chapter equations define symbols, units and assumptions. Worked numerical examples
+use synthetic inputs and are separate from the existing 20 exercises per chapter.
 
 ## How to cite an exercise
 

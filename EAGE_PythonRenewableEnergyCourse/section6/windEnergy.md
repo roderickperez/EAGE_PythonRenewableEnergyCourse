@@ -20,7 +20,181 @@ After this lesson you should be able to:
 
 Wind turbines convert part of the kinetic-energy flux through the rotor area into electricity. Real production depends on air density, wind speed at hub height, the turbine power curve, availability, wakes, electrical losses, curtailment, icing, and environmental limits. DOE describes the standard cut-in/rated/cut-out behavior, while Betz's ideal actuator-disk result bounds aerodynamic extraction [@doeWindWeather; @doeSmallWind].
 
-## Concepts and equations
+<!-- expanded-theory:wind:start -->
+
+## Physical description: extracting energy from moving air
+
+Wind is air motion driven by atmospheric pressure gradients, with Earth's rotation, surface friction, terrain and thermal structure influencing the resulting flow. A turbine extracts part of the kinetic-energy flux passing through its rotor. The air must continue moving downstream; extracting all its kinetic energy at the rotor would prevent a continuing through-flow. This is why a rotor cannot convert all of the undisturbed wind power into shaft power [@manwell2009; @wagner2009].
+
+Most modern large electricity-generating wind turbines use lift-producing blades. The relative flow over a blade section produces aerodynamic forces, whose tangential component drives the rotor. The turbine's mechanical and electrical systems then convert rotor torque into useful electrical output. The visible rotation of the blades is one stage of an integrated aerodynamic, structural, control and electrical system.
+
+### Components and system boundaries
+
+The conversion sequence is **undisturbed wind → rotor aerodynamic extraction → shaft and drivetrain → generator and power electronics → transformer and network**. A wind farm introduces another level: turbines interact through wakes and share electrical and operational infrastructure.
+
+| Term or component | Definition and significance |
+|---|---|
+| Rotor swept area | Disk area through which the horizontal-axis rotor intercepts the flow, not the area of blade material |
+| Hub height | Height of the rotor centre; a wind-speed measurement should identify its height |
+| Nacelle | Housing for major drivetrain and generating equipment atop the tower |
+| Gearbox or direct drive | Alternative arrangements relating rotor speed and generator operation |
+| Pitch control | Adjustment of blade angle to regulate aerodynamic loading and power |
+| Yaw control | Alignment of a horizontal-axis rotor with the incident wind direction |
+| Rated electrical power | Specified output limit under defined operating conditions |
+| Power curve | Relationship between wind speed and electrical output for a specified turbine and reference conditions |
+| Wake | Downstream flow modified by energy extraction and rotor-generated turbulence |
+
+Onshore and offshore machines use the same fundamental conversion relationships, but access, support structures, environmental loading and maintenance differ. A technology description is not enough to calculate production: the model also needs a resource time series or distribution and a suitable turbine power curve.
+
+The supplied *Wind Energy Explained* is the principal reference for the physics and statistical treatment below. Wagner and Mathur offer a shorter introduction. The additional *Wind Energy Handbook* extends the reading to machine design, controls and wind-farm interactions [@manwell2009; @wagner2009; @burton2011wind; @burton2021wind].
+
+## Deriving the main aerodynamic relationships
+
+### Why available power contains the cube of wind speed
+
+For air density $\rho$, uniform undisturbed speed $v$ and rotor area $A$, the mass crossing the area in one second is $\dot m=\rho Av$. The kinetic energy per unit mass is $v^2/2$. Multiplying the two gives
+
+$$P_{wind}=\dot m\frac{v^2}{2}=\frac12\rho Av^3.$$
+
+The cubic dependence combines two effects: faster air carries more kinetic energy per kilogram and more kilograms pass the rotor each second. At fixed density and area, doubling speed gives eight times the **available kinetic-energy flux**. It does not imply eight times electrical output once turbine operating limits are involved.
+
+For a circular rotor, $A=\pi R^2=\pi D^2/4$. Doubling diameter gives four times the swept area, not twice the area. With density in kg/m³, area in m² and speed in m/s, power is watts. The relationship assumes a representative speed across the rotor; real shear, turbulence and spatial variation complicate that approximation [@manwell2009].
+
+### Power coefficient, drivetrain efficiency and Betz's limit
+
+The rotor power coefficient is
+
+$$C_p=\frac{P_{rotor}}{\tfrac12\rho Av^3}.$$
+
+It is an aerodynamic extraction ratio. A separate drivetrain/generator efficiency gives a simplified electrical relationship,
+
+$$P_e=\eta_{drive}C_p\frac12\rho Av^3.$$
+
+The ideal actuator-disk analysis yields $C_p\le16/27\approx0.593$ under its assumptions of steady, incompressible, unconfined ideal flow. The bound concerns power extracted from the undisturbed kinetic-energy flux. It is not a typical operating value, an electrical efficiency, or a capacity factor. Real rotors incur additional aerodynamic and mechanical losses [@manwell2009; @wagner2009].
+
+Both $C_p$ and $\eta_{drive}$ can vary with operating point. If a supplied power curve already represents electrical output, do **not** multiply it by $C_p$ and generator efficiency again. First identify whether the input model describes wind power, rotor power, generator power or exported power.
+
+### Torque and tip-speed ratio
+
+Rotating-shaft power is
+
+$$P_{shaft}=\tau\Omega,$$
+
+where torque $\tau$ is N m and angular velocity $\Omega$ is radians/s. Convert rotational speed $n$ in revolutions/minute with $\Omega=2\pi n/60$. The tip-speed ratio is
+
+$$\lambda=\frac{\Omega R}{v}.$$
+
+It compares blade-tip speed with undisturbed wind speed. Aerodynamic performance depends on tip-speed ratio and blade pitch, commonly represented as $C_p(\lambda,\beta)$, where $\beta$ is pitch angle under the chosen convention. Variable-speed control can adjust rotor speed to operate efficiently below rated output; above rated conditions, pitch and other controls constrain power and structural loads. A constant $C_p$ approximation is therefore a learning model, not a complete control model [@manwell2009].
+
+## Resource characterization: density, height and variability
+
+### Air density
+
+For an ideal dry-air approximation,
+
+$$\rho=\frac{p}{R_dT},\qquad R_d\approx287.05\ \mathrm{J/(kg\,K)}.$$
+
+Pressure $p$ is in pascals and absolute temperature $T$ is kelvin. Humidity and local conditions modify density; 1.225 kg/m³ is a stated reference assumption, not a universal site value. At fixed speed and swept area, lower density reduces available power. Applying a density adjustment to a manufacturer power curve requires that curve's specified correction procedure, especially near rated output [@manwell2009; @wagner2009].
+
+### Wind shear and extrapolation to hub height
+
+Surface friction and atmospheric structure produce a vertical wind profile. An often-used empirical approximation is
+
+$$v(z)=v(z_r)\left(\frac{z}{z_r}\right)^\alpha.$$
+
+Both heights must be positive and measured relative to a consistent reference; $\alpha$ is an assumed or fitted shear exponent. It changes with roughness, atmospheric stability and conditions. Treating 0.14 or $1/7$ as an immutable physical constant can introduce resource bias. The final project supplies hub-height wind speed, so applying another height correction there would double-adjust the data.
+
+A neutral-atmosphere log-law model is another approximation,
+
+$$v(z)=\frac{u_*}{\kappa}\ln\left(\frac{z-d}{z_0}\right),$$
+
+where $u_*$ is friction velocity, $\kappa$ is the von Kármán constant, $z_0$ is roughness length and $d$ is displacement height. It requires an appropriate surface-layer setting and height range; it is not a universal replacement for the power law over complex terrain. The beginner calculations use the power law and explicitly state its exponent rather than fitting a more advanced atmospheric model without adequate data [@manwell2009].
+
+### Turbulence, gusts and averaging
+
+**Turbulence intensity** for a defined observation window is $TI=\sigma_v/\bar v$ for positive mean speed. State the sampling window, data filtering and standard-deviation convention. It describes variability relative to the mean, not the same quantity as a gust speed. Turbulence influences loads, fatigue and power fluctuations; an energy-only model does not assess structural safety.
+
+For a nonlinear power model, $P(\bar v)$ is generally different from the average $\overline{P(v)}$. With equal-duration speeds of 4 and 8 m/s, the mean cubed speed is $(4^3+8^3)/2=288$, while the cube of the mean is $6^3=216$. Above rated speed or around cut-out, clipping and shutdown create further differences. Use interval data or an explicit probability distribution rather than assuming mean speed fully characterizes the resource.
+
+## The electrical power curve
+
+The course's idealized curve is
+
+$$
+P(v)=\begin{cases}
+0,&v<v_{in},\\
+P_r\dfrac{v^3-v_{in}^3}{v_r^3-v_{in}^3},&v_{in}\le v<v_r,\\
+P_r,&v_r\le v<v_{out},\\
+0,&v\ge v_{out}.
+\end{cases}
+$$
+
+$v_{in}$ is cut-in speed, $v_r$ is rated speed, $v_{out}$ is cut-out speed, and $P_r$ is rated electrical power. These thresholds are turbine-specific. The ramp interpolates continuously between zero and rated power, while the ideal cut-out model has an abrupt shutdown. Actual controllers may use hysteresis, delayed restart, derating or different storm-control behavior. The simple curve teaches conditionals and boundary testing; it does not reproduce every modern controller [@manwell2009; @doeWindWeather].
+
+Testing exactly at the thresholds is important. For the exercise convention, output is zero at cut-in, rated at rated speed, and zero at cut-out. Reject negative or non-finite resource inputs before calculating output. Do not permit an unconstrained cubic equation to predict power above the equipment limit.
+
+## From resource distributions to annual energy
+
+For interval-average modeled electrical power,
+
+$$E=\sum_iP(v_i)\Delta t_i.$$
+
+When speed is represented by a probability density $f(v)$ instead of an ordered time series,
+
+$$\bar P=\int_0^\infty P(v)f(v)\,dv,\qquad E=T\bar P.$$
+
+The integral averages **electrical power**, not wind speed. Use $T=8760$ h for a non-leap year only when that is the intended period. Multiplying a short or unrepresentative sample by annual hours is an extrapolation whose assumptions must be stated.
+
+### Weibull resource model and numerical integration
+
+A two-parameter Weibull model for nonnegative speed has cumulative distribution
+
+$$F(v)=1-\exp[-(v/c)^k],$$
+
+where $k>0$ is dimensionless shape and $c>0$ is scale in m/s. The probability of a bin $[a_i,b_i]$ is $p_i=F(b_i)-F(a_i)$. A midpoint approximation gives
+
+$$\bar P\approx\sum_i P\!\left(\frac{a_i+b_i}{2}\right)p_i.$$
+
+Bin probability is dimensionless, while density has inverse-speed units; they cannot be substituted for one another without the bin width. Refine the bins to check numerical convergence and account for the probability beyond the integration range. A Weibull fit is a statistical approximation, not a law that all sites must follow [@manwell2009].
+
+### Losses, wakes and uncertainty
+
+A downstream turbine may encounter reduced wind speed and altered turbulence due to an upstream wake. Wake interaction depends on direction, spacing, controls and atmospheric conditions. Other energy reductions include equipment downtime, electrical losses, icing and curtailment. A simple retained-energy factor can summarize explicitly stated assumptions, but it does not represent the detailed physics or hourly coincidence of those effects.
+
+Separate variability from uncertainty. Weather changes from hour to hour and year to year; uncertainty also arises from measurement, long-term adjustment and modelling choices. In common wind-project terminology, an annual-energy **P90** is an energy level expected to be exceeded with 90% probability under the defined uncertainty model—thus a lower quantile than P50. It is not “90% of the mean.” Synthetic bootstrap or Monte Carlo exercises demonstrate methods; they do not create a bankable uncertainty estimate from a few invented observations.
+
+## Wind direction and circular data
+
+Meteorological direction convention normally describes where wind comes **from**, measured clockwise from north. Directions 350° and 10° are close together, even though their ordinary numerical difference is large. Compute an equal-weight circular mean using
+
+$$\bar\theta=\operatorname{atan2}\!\left(\overline{\sin\theta},\overline{\cos\theta}\right),$$
+
+then express it on the desired 0–360° interval. Convert degrees to radians before using NumPy trigonometric functions. The resultant length $R=\sqrt{\overline{\sin\theta}^{\,2}+\overline{\cos\theta}^{\,2}}$ measures directional concentration. If $R$ is near zero, the mean direction is unstable or undefined; opposing observations must not be assigned a spurious meaningful direction.
+
+An equal-weight mean direction is not a speed-weighted vector-mean wind. For east/north velocity components under the meteorological “from” convention, $u=-v\sin\theta$ and $w_N=-v\cos\theta$. Distinguish these definitions when combining speed and direction. A wind rose groups directional frequencies, speed ranges or energy contributions; its weighting should be identified.
+
+## Worked calculation before coding
+
+Take a synthetic rotor radius of 20 m, density 1.225 kg/m³, undisturbed speed 8 m/s, $C_p=0.40$ and drivetrain efficiency 0.95.
+
+1. Swept area is $\pi20^2\approx1256.64$ m².
+2. Available wind power is $0.5(1.225)(1256.64)(8^3)\approx394{,}082$ W. Divide by 1000 to obtain **394.08 kW**.
+3. Rotor extraction is about $0.40(394.08)=157.63$ kW.
+4. Electrical output is about $0.95(157.63)=149.75$ kW before additional site losses or equipment limits.
+5. At a constant mean electrical output of 149.75 kW for two hours, energy is about 299.5 kWh.
+
+Check the ordering: electrical power is below rotor power, which is below available wind power. This example uses a fixed coefficient at one operating point; the piecewise electrical curve is a separate alternative model, not another factor to multiply into the same calculation.
+
+## Environmental context and the route to Python
+
+Wind-energy development must consider land or sea use, wildlife, noise, visual effects, access, materials and end-of-life management, as well as grid connection. A production calculation does not establish that a site is suitable. The supplementary *Wind Energy Handbook*, third edition, provides further reading on wakes, design loads, offshore structures and grid integration; its publisher information was checked for the reading list, not treated as a substitute for access to the full text [@burton2021wind].
+
+Exercises 1–5 introduce area, kinetic power and conversion ratios. Exercises 6–15 develop resource adjustments, operating boundaries, statistics and direction. Exercises 16–20 integrate probability distributions, fitting, scenario comparisons and uncertainty methods. Read the supplied *Wind Energy Explained*, especially the wind-resource and aerodynamic discussions, before interpreting those models [@manwell2009; @wagner2009].
+
+
+<!-- expanded-theory:wind:end -->
+
+## Concepts and equations: compact reference
 
 ### Available wind power
 

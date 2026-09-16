@@ -2,6 +2,13 @@
 
 ## A practical route
 
+Each energy chapter now follows this sequence: physical description and components,
+definitions and units, detailed equations with assumptions, operating limits,
+a worked hand calculation, a compact equation reference, tested Python functions,
+and 20 graded exercises. Read the theory and work through the numerical example
+before revealing exercise answers. The downloadable notebook contains the complete
+chapter text as well as the code.
+
 1. Start with energy units in Section 0 and its easy exercises 1–5.
 2. Learn variables, conditions, loops and functions in Sections 1–2.
 3. Practice NumPy, pandas and plotting in Section 3, then attempt exercises 6–15 in each energy chapter.

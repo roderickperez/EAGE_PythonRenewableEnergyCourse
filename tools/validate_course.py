@@ -151,6 +151,8 @@ def execute_energy_code_cells() -> None:
 def check_workbook() -> None:
     from validate_chapter_delivery import validate
     validate()
+    from validate_theory import validate as validate_theory
+    validate_theory()
 
 
 def check_energy_boundaries() -> None:
