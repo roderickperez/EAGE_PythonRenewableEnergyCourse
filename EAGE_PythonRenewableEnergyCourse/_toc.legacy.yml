@@ -84,7 +84,6 @@ parts:
   - caption: Course Final Project
     chapters:
       - file: section8/projectIntro
-      - file: section8/projectSolution
 
   - caption: Summary and Conclusions
     chapters:

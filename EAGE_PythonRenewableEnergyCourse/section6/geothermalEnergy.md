@@ -142,224 +142,685 @@ plt.tight_layout()
 
 The plot varies only mass flow. In a real reservoir, temperature, pressure, scaling, downtime, reinjection response, and parasitic pumping may also change.
 
-## Guided exercises
 
-:::{admonition} Exercise 1 — Depth-temperature scenarios
-:class: note
+[Download this complete chapter as a Jupyter notebook](geothermalEnergy.ipynb). In standard Jupyter viewers, answer headings and code are visible below each prompt; the book provides collapse controls.
 
-**Reference:** Grant and Bixley, Chapters 2–3 [@grant2011].
+## Chapter practice — 20 Python exercises
 
-Plot profiles from 0–6 km for gradients 20, 30, and 45 °C/km. Write a function returning minimum depth for a target temperature and reject a zero gradient.
+**5 easy · 10 medium · 5 hard.** Work through the exercises in order. All inputs are synthetic teaching data. Each solution is directly below its question and starts collapsed in the book. Open it after trying your own code. Each solution runs independently; run the full notebook from the first cell when studying the chapter. References identify the underlying concepts rather than copied textbook problems.
 
-```python
-def depth_for_temperature(target_c, surface_c, gradient_c_per_km):
-    # TODO: validate the gradient and calculate depth
-    pass
-```
-:::
+(geothermal-exercise-01)=
+### Exercise 01 — Temperature at depth
 
-:::{admonition} Exercise 1 — Solution
-:class: tip, dropdown
+**Difficulty:** Easy
 
-1. Calculate linear temperature profiles.
-2. Invert the equation for depth.
-3. Reject non-positive gradients.
+**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+
+**Task:** Surface temperature 15 °C and gradient 30 °C/km: calculate temperature at 2 km with a linear model.
 
 ```{code-cell} python
-def depth_for_temperature(target_c, surface_c, gradient_c_per_km):
-    if gradient_c_per_km <= 0:
-        raise ValueError("gradient must be positive")
-    return max((target_c - surface_c) / gradient_c_per_km, 0)
-
-depths_km = np.linspace(0, 6, 100)
-plt.figure(figsize=(7, 5))
-for gradient in [20, 30, 45]:
-    plt.plot(temperature_at_depth_c(depths_km, 15, gradient), depths_km, label=f"{gradient} °C/km")
-plt.gca().invert_yaxis()
-plt.xlabel("Temperature (°C)")
-plt.ylabel("Depth (km)")
-plt.grid(alpha=0.3)
-plt.legend()
-plt.tight_layout()
-assert np.isclose(depth_for_temperature(150, 15, 30), 4.5)
+# Your solution for geothermal exercise 01.
 ```
-:::
 
-:::{admonition} Exercise 2 — Thermal, gross, and net power
-:class: note
+::::{dropdown} Step-by-step answer — Geothermal 01
 
-**Reference:** Grant and Bixley, Chapters 2–3 [@grant2011].
-
-For 75 kg/s, 155/65 °C, 12% conversion efficiency, and 10% parasitic fraction, calculate all three power stages and validate their ordering.
-
-```python
-# TODO: calculate thermal_mw, gross_mw, and net_mw separately
-# TODO: print a formatted energy-balance table
-```
-:::
-
-:::{admonition} Exercise 2 — Solution
-:class: tip, dropdown
-
-1. Calculate thermal power first.
-2. Apply electrical efficiency.
-3. Subtract the parasitic fraction of gross power.
+1. Store depth and gradient with matching kilometre units.
+2. Add the gradient-induced temperature increase.
+3. Check and label the estimate.
 
 ```{code-cell} python
-thermal_mw = 75 * 4180 * (155 - 65) / 1e6
-gross_mw = thermal_mw * 0.12
-net_mw = gross_mw * (1 - 0.10)
-print(f"Thermal {thermal_mw:6.2f} MW\nGross   {gross_mw:6.2f} MW\nNet     {net_mw:6.2f} MW")
-assert thermal_mw >= gross_mw >= net_mw >= 0
+# Step 1: Store depth and gradient with matching kilometre units.
+surface,gradient,depth=15,30,2
+# Step 2: Add the gradient-induced temperature increase.
+temperature=surface+gradient*depth
+# Step 3: Check and label the estimate.
+print(temperature,'°C'); assert temperature==75
 ```
-:::
 
-:::{admonition} Exercise 3 — Kelvin check
-:class: note
+**Interpretation:** A linear conductive gradient is not a prediction of a convective reservoir.
 
-**Reference:** Grant and Bixley, Chapters 2–3 [@grant2011].
+::::
 
-Plot Carnot efficiency from 100–250 °C for a 25 °C sink and a practical scenario equal to 45% of the bound. Explain why Celsius ratios are invalid.
+(geothermal-exercise-02)=
+### Exercise 02 — Heat flow in produced water
 
-```python
-# TODO: calculate the Carnot bound with carnot_efficiency
-# TODO: calculate and plot the practical scenario
-```
-:::
+**Difficulty:** Easy
 
-:::{admonition} Exercise 3 — Solution
-:class: tip, dropdown
+**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
 
-1. Convert both temperatures to kelvin.
-2. Evaluate the reversible bound.
-3. Multiply by the assumed practical fraction.
+**Task:** Water flow 50 kg/s cools from 150 to 70 °C. With cp 4180 J/(kg K), calculate thermal MW.
 
 ```{code-cell} python
-hot_source_c = np.linspace(100, 250, 100)
-carnot_bound = carnot_efficiency(hot_source_c, 25)
-practical_scenario = 0.45 * carnot_bound
-plt.figure(figsize=(8, 4))
-plt.plot(hot_source_c, carnot_bound, label="Carnot bound")
-plt.plot(hot_source_c, practical_scenario, label="45% of bound")
-plt.xlabel("Hot-source temperature (°C)")
-plt.ylabel("Efficiency")
-plt.grid(alpha=0.3)
-plt.legend()
-plt.tight_layout()
-assert np.all(practical_scenario < carnot_bound)
+# Your solution for geothermal exercise 02.
 ```
-:::
 
-:::{admonition} Exercise 4 — Multiple wells
-:class: note
+::::{dropdown} Step-by-step answer — Geothermal 02
 
-**Reference:** Grant and Bixley, Chapters 2–3 [@grant2011].
-
-Store well flow and temperature in a DataFrame, calculate net MW by well, flag invalid temperatures, and plot valid output.
-
-```python
-# TODO: create a well DataFrame
-# TODO: validate production > reinjection
-# TODO: calculate and plot net power
-```
-:::
-
-:::{admonition} Exercise 4 — Solution
-:class: tip, dropdown
-
-1. Build and validate the well table.
-2. Leave invalid results missing.
-3. Compute and plot only valid wells.
+1. Calculate the temperature difference.
+2. Apply sensible heat flow and convert W to MW.
+3. Check the hand calculation.
 
 ```{code-cell} python
+# Step 1: Calculate the temperature difference.
+delta=150-70
+# Step 2: Apply sensible heat flow and convert W to MW.
+thermal=50*4180*delta/1e6
+# Step 3: Check the hand calculation.
+print(thermal,'MW thermal'); assert abs(thermal-16.72)<1e-12
+```
+
+**Interpretation:** The model assumes single-phase liquid and constant heat capacity.
+
+::::
+
+(geothermal-exercise-03)=
+### Exercise 03 — Gross and net electricity
+
+**Difficulty:** Easy
+
+**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+
+**Task:** Thermal power 20 MW has gross electrical efficiency 12% and parasitic load 10% of gross electricity. Calculate gross and net MW.
+
+```{code-cell} python
+# Your solution for geothermal exercise 03.
+```
+
+::::{dropdown} Step-by-step answer — Geothermal 03
+
+1. Convert thermal input into gross electricity.
+2. Subtract the parasitic fraction of gross electricity.
+3. Check the result and distinguish the two powers.
+
+```{code-cell} python
+# Step 1: Convert thermal input into gross electricity.
+gross=20*0.12
+# Step 2: Subtract the parasitic fraction of gross electricity.
+net=gross*(1-0.10)
+# Step 3: Check the result and distinguish the two powers.
+print(gross,net,'MW gross/net'); assert abs(net-2.16)<1e-12
+```
+
+**Interpretation:** Parasitic fraction here applies to gross electrical power, not thermal input.
+
+::::
+
+(geothermal-exercise-04)=
+### Exercise 04 — Availability-adjusted energy
+
+**Difficulty:** Easy
+
+**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+
+**Task:** A plant produces 3 MW net when available, with 95% availability in a 365-day year. Calculate GWh.
+
+```{code-cell} python
+# Your solution for geothermal exercise 04.
+```
+
+::::{dropdown} Step-by-step answer — Geothermal 04
+
+1. Calculate expected operating hours.
+2. Integrate net power and convert to GWh.
+3. Check the numerical result.
+
+```{code-cell} python
+# Step 1: Calculate expected operating hours.
+hours=365*24*0.95
+# Step 2: Integrate net power and convert to GWh.
+energy=3*hours/1000
+# Step 3: Check the numerical result.
+print(energy,'GWh'); assert abs(energy-24.966)<1e-12
+```
+
+**Interpretation:** This assumes full net output whenever available.
+
+::::
+
+(geothermal-exercise-05)=
+### Exercise 05 — Kelvin and temperature differences
+
+**Difficulty:** Easy
+
+**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+
+**Task:** Convert 150 and 70 °C to kelvin, then show that the temperature difference is unchanged.
+
+```{code-cell} python
+# Your solution for geothermal exercise 05.
+```
+
+::::{dropdown} Step-by-step answer — Geothermal 05
+
+1. Store Celsius temperatures.
+2. Add273.15 to both absolute temperatures.
+3. Check that the difference is80 K.
+
+```{code-cell} python
+# Step 1: Store Celsius temperatures.
+hot,cold=150,70
+# Step 2: Add273.15 to both absolute temperatures.
+hot_k,cold_k=hot+273.15,cold+273.15
+# Step 3: Check that the difference is80 K.
+print(hot_k,cold_k,'K; difference:',hot_k-cold_k,'K')
+assert abs((hot_k-cold_k)-(hot-cold))<1e-10
+```
+
+**Interpretation:** Use absolute kelvin temperatures in thermodynamic ratios; Celsius differences are valid for sensible heat.
+
+::::
+
+(geothermal-exercise-06)=
+### Exercise 06 — Depth-temperature table
+
+**Difficulty:** Medium
+
+**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+
+**Task:** At depths[1,2,3] km, compare gradients 25 and 35 °C/km with surface 15 °C. Build a pandas table.
+
+```{code-cell} python
+# Your solution for geothermal exercise 06.
+```
+
+::::{dropdown} Step-by-step answer — Geothermal 06
+
+1. Store depths in a common unit.
+2. Calculate each gradient scenario separately.
+3. Print labelled values and check one scenario.
+
+```{code-cell} python
+import numpy as np
 import pandas as pd
-
-wells = pd.DataFrame({"well": ["A", "B", "C", "D"],
-                      "flow_kgs": [62, 78, 55, 90],
-                      "production_c": [150, 168, 60, 175]})
-wells["valid"] = wells["production_c"] > 70
-wells["net_mw"] = np.nan
-valid = wells["valid"]
-wells.loc[valid, "net_mw"] = geothermal_net_power_mw(wells.loc[valid, "flow_kgs"], wells.loc[valid, "production_c"], 70, 0.12, 0.11)
-wells.loc[valid].plot.bar(x="well", y="net_mw", legend=False, color="firebrick", figsize=(7, 4))
-plt.ylabel("Net power (MW)")
-plt.tight_layout()
-print(wells)
-assert wells.loc[valid, "net_mw"].ge(0).all()
-assert wells.loc[~valid, "net_mw"].isna().all()
+# Step 1: Store depths in a common unit.
+depth=np.array([1,2,3])
+# Step 2: Calculate each gradient scenario separately.
+table=pd.DataFrame({f'{g} C_per_km':15+g*depth for g in [25,35]},index=depth)
+# Step 3: Print labelled values and check one scenario.
+print(table.rename_axis('Depth km')); assert table.iloc[-1,1]==120
 ```
-:::
 
-:::{admonition} Exercise 5 — Parasitic-load sensitivity
-:class: note
+**Interpretation:** Gradient uncertainty changes inferred temperature substantially at depth.
 
-**Reference:** Grant and Bixley, Chapters 2–3 [@grant2011].
+::::
 
-Use `np.meshgrid` for conversion efficiency 8–18% and parasitic fraction 5–20%. Plot net power with `contourf`.
+(geothermal-exercise-07)=
+### Exercise 07 — Compare well flows
 
-```python
-# TODO: build the efficiency/parasitic grid
-# TODO: calculate and plot net power
-```
-:::
+**Difficulty:** Medium
 
-:::{admonition} Exercise 5 — Solution
-:class: tip, dropdown
+**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
 
-1. Create an efficiency/parasitic grid.
-2. Calculate thermal MW once.
-3. Multiply by conversion and retained fractions.
+**Task:** For flows[30,50,70] kg/s, temperatures 150/70 °C, cp 4180, efficiency 0.12 and parasitic fraction 0.1, calculate net MW.
 
 ```{code-cell} python
-conversion_axis = np.linspace(0.08, 0.18, 60)
-parasitic_axis = np.linspace(0.05, 0.20, 50)
-conversion_grid, parasitic_grid = np.meshgrid(conversion_axis, parasitic_axis)
-thermal_reference_mw = 80 * 4180 * (165 - 70) / 1e6
-net_grid = thermal_reference_mw * conversion_grid * (1 - parasitic_grid)
-plt.figure(figsize=(8, 5))
-contour = plt.contourf(conversion_grid * 100, parasitic_grid * 100, net_grid, levels=20)
-plt.colorbar(contour, label="Net power (MW)")
-plt.xlabel("Conversion efficiency (%)")
-plt.ylabel("Parasitic fraction (%)")
-plt.tight_layout()
+# Your solution for geothermal exercise 07.
 ```
-:::
 
-:::{admonition} Exercise 6 — Decline and cumulative energy
-:class: note
+::::{dropdown} Step-by-step answer — Geothermal 07
 
-**Reference:** Grant and Bixley, Chapters 2–3 [@grant2011].
-
-Calculate 30-year power and annual energy for several decline rates with 95% availability. Plot annual output and compare cumulative energy.
-
-```python
-# TODO: loop over decline scenarios
-# TODO: calculate annual GWh and cumulative GWh
-```
-:::
-
-:::{admonition} Exercise 6 — Solution
-:class: tip, dropdown
-
-1. Create operating years.
-2. Compound decline.
-3. Multiply by availability and hours and sum the energy.
+1. Store well-flow cases.
+2. Apply the same thermal and electrical assumptions.
+3. Check proportionality to flow and display power.
 
 ```{code-cell} python
-operating_years = np.arange(1, 31)
-plt.figure(figsize=(8, 4))
-for decline_rate in [0.00, 0.01, 0.02]:
-    annual_power = 12 * (1 - decline_rate) ** (operating_years - 1)
-    annual_energy_gwh = annual_power * 8760 * 0.95 / 1000
-    plt.plot(operating_years, annual_energy_gwh, label=f"{decline_rate:.0%}/year")
-    print(decline_rate, annual_energy_gwh.sum())
-plt.xlabel("Operating year")
-plt.ylabel("Annual energy (GWh)")
-plt.grid(alpha=0.3)
-plt.legend()
-plt.tight_layout()
+import numpy as np
+# Step 1: Store well-flow cases.
+flow=np.array([30,50,70])
+# Step 2: Apply the same thermal and electrical assumptions.
+net=flow*4180*(150-70)*0.12*0.9/1e6
+# Step 3: Check proportionality to flow and display power.
+print(net,'MW net'); assert np.allclose(net/net[0],flow/flow[0])
 ```
-:::
+
+**Interpretation:** Pump demand is represented only by a fixed fractional loss in this model.
+
+::::
+
+(geothermal-exercise-08)=
+### Exercise 08 — Reinjection temperature sensitivity
+
+**Difficulty:** Medium
+
+**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+
+**Task:** At 50 kg/s and production 160 °C, compare reinjection[60,80,100]°C with cp 4180, efficiency 0.12 and parasitic 0.1.
+
+```{code-cell} python
+# Your solution for geothermal exercise 08.
+```
+
+::::{dropdown} Step-by-step answer — Geothermal 08
+
+1. Store reinjection-temperature alternatives.
+2. Calculate thermal drawdown and net electrical power.
+3. Verify the direction of the simplified sensitivity.
+
+```{code-cell} python
+import numpy as np
+# Step 1: Store reinjection-temperature alternatives.
+reinjection=np.array([60,80,100])
+# Step 2: Calculate thermal drawdown and net electrical power.
+net=50*4180*(160-reinjection)*0.12*0.9/1e6
+# Step 3: Verify the direction of the simplified sensitivity.
+print(net,'MW net'); assert np.all(np.diff(net)<0)
+```
+
+**Interpretation:** Lower reinjection temperatures may increase modeled heat recovery but create chemical and reservoir constraints.
+
+::::
+
+(geothermal-exercise-09)=
+### Exercise 09 — Multiple well-field totals
+
+**Difficulty:** Medium
+
+**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+
+**Task:** Two wells have flows[40,60] kg/s and production[150,170]°C. Reinjection is 70 °C, cp 4180, conversion 0.12 and parasitic 0.1. Calculate individual and total net MW.
+
+```{code-cell} python
+# Your solution for geothermal exercise 09.
+```
+
+::::{dropdown} Step-by-step answer — Geothermal 09
+
+1. Align each well flow with its production temperature.
+2. Calculate and sum net well contributions.
+3. Compare the total against direct thermal accounting.
+
+```{code-cell} python
+import numpy as np
+# Step 1: Align each well flow with its production temperature.
+flow=np.array([40,60]); temperature=np.array([150,170])
+# Step 2: Calculate and sum net well contributions.
+net=flow*4180*(temperature-70)*0.12*0.9/1e6
+# Step 3: Compare the total against direct thermal accounting.
+print(net,'MW by well;',net.sum(),'MW total')
+assert np.isclose(net.sum(),4180*(40*80+60*100)*0.12*0.9/1e6)
+```
+
+**Interpretation:** Adding well powers assumes the shared plant can accept all of the available resource.
+
+::::
+
+(geothermal-exercise-10)=
+### Exercise 10 — Parasitic-load scenarios
+
+**Difficulty:** Medium
+
+**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+
+**Task:** Gross output is 5 MW. Compare parasitic fractions[0.05,0.10,0.20] and calculate net MW and 24-hour MWh.
+
+```{code-cell} python
+# Your solution for geothermal exercise 10.
+```
+
+::::{dropdown} Step-by-step answer — Geothermal 10
+
+1. Store alternative operating-loss assumptions.
+2. Deduct each parasitic fraction from gross output.
+3. Check ordering and label both quantities.
+
+```{code-cell} python
+import numpy as np
+# Step 1: Store alternative operating-loss assumptions.
+fraction=np.array([0.05,0.10,0.20])
+# Step 2: Deduct each parasitic fraction from gross output.
+net=5*(1-fraction); energy=net*24
+# Step 3: Check ordering and label both quantities.
+print(net,'MW;',energy,'MWh'); assert np.all(np.diff(net)<0)
+```
+
+**Interpretation:** Parasitic demand includes pumps and auxiliaries; a constant fraction simplifies their operating behavior.
+
+::::
+
+(geothermal-exercise-11)=
+### Exercise 11 — Thermodynamic upper bound
+
+**Difficulty:** Medium
+
+**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+
+**Task:** Compute Carnot efficiency for hot 150 °C and cold 25 °C using kelvin. Compare a 12% conversion assumption.
+
+```{code-cell} python
+# Your solution for geothermal exercise 11.
+```
+
+::::{dropdown} Step-by-step answer — Geothermal 11
+
+1. Convert both reservoir temperatures to kelvin.
+2. Calculate the ideal reversible-engine efficiency.
+3. Verify the illustrative actual conversion is below the bound.
+
+```{code-cell} python
+# Step 1: Convert both reservoir temperatures to kelvin.
+hot=150+273.15; cold=25+273.15
+# Step 2: Calculate the ideal reversible-engine efficiency.
+carnot=1-cold/hot
+# Step 3: Verify the illustrative actual conversion is below the bound.
+print(carnot,'Carnot fraction; assumed actual:',0.12); assert 0<0.12<carnot<1
+```
+
+**Interpretation:** Carnot is an upper bound between fixed-temperature reservoirs, not a practical geothermal cycle model.
+
+::::
+
+(geothermal-exercise-12)=
+### Exercise 12 — Conductive heat flux
+
+**Difficulty:** Medium
+
+**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+
+**Task:** Use thermal conductivity 2.5 W/(m K) and gradient 30 K/km. Calculate upward conductive heat-flux magnitude W/m².
+
+```{code-cell} python
+# Your solution for geothermal exercise 12.
+```
+
+::::{dropdown} Step-by-step answer — Geothermal 12
+
+1. Convert the temperature gradient to K per metre.
+2. Apply the magnitude form of Fourier conduction.
+3. Check units and numerical value.
+
+```{code-cell} python
+# Step 1: Convert the temperature gradient to K per metre.
+gradient=30/1000
+# Step 2: Apply the magnitude form of Fourier conduction.
+flux=2.5*gradient
+# Step 3: Check units and numerical value.
+print(flux,'W/m²'); assert abs(flux-0.075)<1e-12
+```
+
+**Interpretation:** The magnitude is75 mW/m². Heat flux requires conductivity; a temperature gradient alone is not flux.
+
+::::
+
+(geothermal-exercise-13)=
+### Exercise 13 — Compounded net-power decline
+
+**Difficulty:** Medium
+
+**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+
+**Task:** A 5 MW net plant declines 2% per year. Calculate years 1–10 and annual GWh at 95% availability.
+
+```{code-cell} python
+# Your solution for geothermal exercise 13.
+```
+
+::::{dropdown} Step-by-step answer — Geothermal 13
+
+1. Start the decline exponent at zero for year1.
+2. Calculate annual net power and availability-adjusted energy.
+3. Check first-year energy and decreasing power.
+
+```{code-cell} python
+import numpy as np
+# Step 1: Start the decline exponent at zero for year1.
+years=np.arange(1,11)
+# Step 2: Calculate annual net power and availability-adjusted energy.
+power=5*0.98**(years-1); energy=power*8760*0.95/1000
+# Step 3: Check first-year energy and decreasing power.
+print(energy,'GWh/year'); assert np.isclose(energy[0],41.61) and np.all(np.diff(power)<0)
+```
+
+**Interpretation:** A prescribed decline curve is a scenario, not a calibrated reservoir forecast.
+
+::::
+
+(geothermal-exercise-14)=
+### Exercise 14 — Invalid well records
+
+**Difficulty:** Medium
+
+**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+
+**Task:** Flows[40,−2,50] kg/s and production[150,160,60]°C have reinjection 70 °C. Retain only finite positive-flow records hotter than reinjection; report exclusions.
+
+```{code-cell} python
+# Your solution for geothermal exercise 14.
+```
+
+::::{dropdown} Step-by-step answer — Geothermal 14
+
+1. Preserve aligned well observations.
+2. Construct a physical-validity mask before calculating heat.
+3. Report excluded records and verify the retained count.
+
+```{code-cell} python
+import numpy as np
+# Step 1: Preserve aligned well observations.
+flow=np.array([40,-2,50]); production=np.array([150,160,60])
+# Step 2: Construct a physical-validity mask before calculating heat.
+valid=np.isfinite(flow)&np.isfinite(production)&(flow>0)&(production>70)
+thermal=flow[valid]*4180*(production[valid]-70)/1e6
+# Step 3: Report excluded records and verify the retained count.
+print('Excluded indices:',np.where(~valid)[0],'; thermal MW:',thermal)
+assert valid.sum()==1 and np.isclose(thermal[0],13.376)
+```
+
+**Interpretation:** Excluded values need investigation; silently converting negative heat to positive power would hide errors.
+
+::::
+
+(geothermal-exercise-15)=
+### Exercise 15 — Plot decline scenarios
+
+**Difficulty:** Medium
+
+**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+
+**Task:** Compare initial 5 MW with annual decline 0%,1%,3% over 20 years and 95% availability. Plot annual GWh and print cumulative values.
+
+```{code-cell} python
+# Your solution for geothermal exercise 15.
+```
+
+::::{dropdown} Step-by-step answer — Geothermal 15
+
+1. Create the year axis and initialise a labelled plot.
+2. Model each prescribed decline path and retain total energy.
+3. Check cumulative ordering and show units and legend.
+
+```{code-cell} python
+import numpy as np
+import matplotlib.pyplot as plt
+# Step 1: Create the year axis and initialise a labelled plot.
+years=np.arange(1,21); totals=[]; fig,ax=plt.subplots(figsize=(6,3))
+# Step 2: Model each prescribed decline path and retain total energy.
+for rate in [0,0.01,0.03]:
+    energy=5*(1-rate)**(years-1)*8760*0.95/1000
+    totals.append(energy.sum()); ax.plot(years,energy,label=f'{rate:.0%} decline')
+# Step 3: Check cumulative ordering and show units and legend.
+ax.set(xlabel='Operating year',ylabel='Annual energy (GWh)',title='Synthetic geothermal scenarios'); ax.legend(); fig.tight_layout(); plt.show()
+print(totals,'GWh cumulative'); assert np.all(np.diff(totals)<0)
+```
+
+**Interpretation:** Long-run scenarios are sensitive to decline assumptions and intervention choices.
+
+::::
+
+(geothermal-exercise-16)=
+### Exercise 16 — Fit decline without future leakage
+
+**Difficulty:** Hard
+
+**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+
+**Task:** Create ten annual powers 5×0.98^(year−1) MW. Fit log(power) on years 1–7 only, predict 8–10, and compare MAE against the last training observation.
+
+```{code-cell} python
+# Your solution for geothermal exercise 16.
+```
+
+::::{dropdown} Step-by-step answer — Geothermal 16
+
+1. Generate the synthetic series and split chronologically.
+2. Estimate log-linear parameters using training data only.
+3. Evaluate holdout predictions and recover the known decline rate.
+
+```{code-cell} python
+import numpy as np
+# Step 1: Generate the synthetic series and split chronologically.
+year=np.arange(1,11); power=5*0.98**(year-1); split=7
+# Step 2: Estimate log-linear parameters using training data only.
+slope,intercept=np.polyfit(year[:split]-1,np.log(power[:split]),1)
+prediction=np.exp(intercept+slope*(year[split:]-1))
+# Step 3: Evaluate holdout predictions and recover the known decline rate.
+mae=np.abs(prediction-power[split:]).mean(); baseline=np.abs(power[split:]-power[split-1]).mean()
+print('Annual decline:',1-np.exp(slope),'MAE/baseline MW:',mae,baseline)
+assert np.isclose(1-np.exp(slope),0.02) and mae<baseline
+```
+
+**Interpretation:** Exact recovery occurs because the noiseless observations follow the fitted model by construction.
+
+::::
+
+(geothermal-exercise-17)=
+### Exercise 17 — Well field with plant clipping
+
+**Difficulty:** Hard
+
+**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+
+**Task:** Three wells have flows[40,50,60] kg/s and production[150,160,170]°C. Use reinjection 70 °C, cp 4180, conversion 0.12, parasitic 0.1 and a 4 MW net plant cap. Compare all operating versus outage of each well.
+
+```{code-cell} python
+# Your solution for geothermal exercise 17.
+```
+
+::::{dropdown} Step-by-step answer — Geothermal 17
+
+1. Calculate each well potential net contribution.
+2. Apply the shared plant limit after summing operating wells.
+3. Verify outages cannot increase output and compare with baseline.
+
+```{code-cell} python
+import numpy as np
+# Step 1: Calculate each well potential net contribution.
+flow=np.array([40,50,60]); temp=np.array([150,160,170])
+potential=flow*4180*(temp-70)*0.12*0.9/1e6
+# Step 2: Apply the shared plant limit after summing operating wells.
+all_on=min(potential.sum(),4)
+outage=[min(potential.sum()-p,4) for p in potential]
+# Step 3: Verify outages cannot increase output and compare with baseline.
+print('Baseline MW:',all_on,'single-well outages MW:',outage)
+assert all_on==4 and all(0<=p<=all_on for p in outage)
+```
+
+**Interpretation:** Clipping can hide some well loss. This allocation ignores interactions between wells and shared equipment.
+
+::::
+
+(geothermal-exercise-18)=
+### Exercise 18 — Net output with pumping penalty
+
+**Difficulty:** Hard
+
+**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+
+**Task:** Compare flows 20–100 kg/s in steps 10. Gross MW=m×4180×80×0.12/1e 6 and pump MW=0.00004 m². Find the discrete flow maximising net power.
+
+```{code-cell} python
+# Your solution for geothermal exercise 18.
+```
+
+::::{dropdown} Step-by-step answer — Geothermal 18
+
+1. Define candidate flow rates and a synthetic pump-load model.
+2. Calculate gross and net power consistently in MW.
+3. Select the best candidate and verify the energy subtraction.
+
+```{code-cell} python
+import numpy as np
+# Step 1: Define candidate flow rates and a synthetic pump-load model.
+flow=np.arange(20,101,10); pump=0.00004*flow**2
+# Step 2: Calculate gross and net power consistently in MW.
+gross=flow*4180*80*0.12/1e6; net=gross-pump
+# Step 3: Select the best candidate and verify the energy subtraction.
+best=np.argmax(net)
+print('Best flow:',flow[best],'kg/s; net:',net[best],'MW')
+assert np.allclose(net+pump,gross) and flow[best]==100
+```
+
+**Interpretation:** The best candidate is the upper search boundary, not an established physical optimum; do not extrapolate the pump model.
+
+::::
+
+(geothermal-exercise-19)=
+### Exercise 19 — Lifetime energy with an intervention
+
+**Difficulty:** Hard
+
+**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+
+**Task:** Starting at 5 MW, power declines 3% per year through year 10. At the start of year 11 restore power to 5 MW and then decline 3% again through year 20. Compare cumulative GWh with uninterrupted decline;95% availability.
+
+```{code-cell} python
+# Your solution for geothermal exercise 19.
+```
+
+::::{dropdown} Step-by-step answer — Geothermal 19
+
+1. Calculate the uninterrupted reference trajectory.
+2. Reset the age exponent at the intervention year.
+3. Integrate the incremental generation and verify the reset.
+
+```{code-cell} python
+import numpy as np
+# Step 1: Calculate the uninterrupted reference trajectory.
+year=np.arange(1,21); baseline=5*0.97**(year-1)
+# Step 2: Reset the age exponent at the intervention year.
+age=np.where(year<=10,year-1,year-11)
+intervention=5*0.97**age
+# Step 3: Integrate the incremental generation and verify the reset.
+gain=np.sum(intervention-baseline)*8760*0.95/1000
+print(gain,'GWh additional'); assert intervention[10]==5 and gain>0
+```
+
+**Interpretation:** Intervention cost, downtime and reservoir feasibility are omitted; additional energy is not automatically economic benefit.
+
+::::
+
+(geothermal-exercise-20)=
+### Exercise 20 — Joint uncertainty in flow and temperature
+
+**Difficulty:** Hard
+
+**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+
+**Task:** With seed 5 sample 2000 independent flows uniform 40–60 kg/s and production temperatures uniform 140–170 °C. Use reinjection 70 °C, cp 4180, eta 0.12, parasitic 0.1. Report net-power median,5th/95th percentiles and probability above 2 MW.
+
+```{code-cell} python
+# Your solution for geothermal exercise 20.
+```
+
+::::{dropdown} Step-by-step answer — Geothermal 20
+
+1. State the synthetic uncertainty distributions and independence assumption.
+2. Propagate paired samples through the net-power model.
+3. Summarise outcomes and check the physical range.
+
+```{code-cell} python
+import numpy as np
+# Step 1: State the synthetic uncertainty distributions and independence assumption.
+rng=np.random.default_rng(5); flow=rng.uniform(40,60,2000); temp=rng.uniform(140,170,2000)
+# Step 2: Propagate paired samples through the net-power model.
+net=flow*4180*(temp-70)*0.12*0.9/1e6
+# Step 3: Summarise outcomes and check the physical range.
+print('5th/median/95th MW:',np.quantile(net,[0.05,0.5,0.95]),'P(net>2):',np.mean(net>2))
+assert np.all(net>0) and np.all(net<=60*4180*100*0.12*0.9/1e6)
+```
+
+**Interpretation:** The distributions and independence are assumptions, not measured reservoir uncertainty or a confidence interval.
+
+::::
 
 ## Common mistakes
 

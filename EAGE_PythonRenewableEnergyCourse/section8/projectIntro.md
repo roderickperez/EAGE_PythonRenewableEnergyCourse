@@ -15,6 +15,44 @@ A small isolated grid is considering four renewable resources:
 
 Analyse one synthetic week at hourly resolution. The synthetic weather and demand make every submission reproducible and avoid implying that the results describe a real site.
 
+## Load the separate input datasets
+
+Download and read each CSV separately before joining on `timestamp`:
+
+- [Solar resource](data/solar.csv): `irradiance_wm2`, `ambient_c`.
+- [Wind resource](data/wind.csv): `wind_speed_ms` at hub height.
+- [Hydro resource](data/hydro.csv): `river_flow_m3s` before environmental reservation.
+- [Geothermal resource](data/geothermal.csv): `mass_flow_kgs`, `production_c`, `reinjection_c`.
+- [Electricity demand](data/demand.csv): `demand_mw`.
+
+See the [dataset definitions](data/README.md). Every file contains 168 hourly
+interval-average inputs with UTC timestamps, from 1 June 2025 at 00:00 through
+7 June at 23:00. Each interval lasts one hour. These are synthetic observations,
+not current data for a real location. **Read all five files; do not replace them
+with newly generated data or hard-code geothermal output.**
+
+In the repository the files are in `EAGE_PythonRenewableEnergyCourse/section8/data`.
+In Colab upload the five CSVs to a single folder. Select the dataset folder explicitly
+with `pathlib.Path`, read each file using `pandas.read_csv`, parse times with
+`pandas.to_datetime(..., utc=True)`, and validate before joining. Do not rely on
+matching row positions. The first timestamp labels the start of its interval.
+
+### Common model parameters
+
+| Source | Required parameters |
+|---|---|
+| Solar | 16 MW DC, 13 MW AC, NOCT 45°C, gamma −0.004/°C, inverter efficiency 0.97 |
+| Wind | 12 MW rated, cut-in 3 m/s, rated speed 12 m/s, cut-out 25 m/s |
+| Hydro | 8 MW rated, net head 42 m, efficiency 0.88, environmental reservation 6 m³/s |
+| Geothermal | 3.5 MW **net nameplate**, gross thermal-to-electric efficiency 0.12, parasitic fraction 0.10 of gross electricity |
+
+Use water density 1000 kg/m³, gravity 9.81 m/s² and single-phase water heat
+capacity 4180 J/(kg K). Read geothermal flow and both temperatures from its CSV
+for every interval; cap the resulting net electrical output at 3.5 MW. Use this
+fixed rating for geothermal capacity factor, not the observed maximum.
+There is no storage, import or export in the base case: unused surplus is curtailed
+and uncovered demand is shortfall.
+
 ## Required engineering models
 
 Use these simplified boundaries consistently:
@@ -30,6 +68,8 @@ $$P_{AC}=\min(P_{DC}\eta_{inv},P_{AC,r})$$
 ### Wind
 
 Use a four-region turbine curve: zero below cut-in, a continuous ramp to rated power, rated power until cut-out, and zero at or above cut-out. Do not extend $v^3$ through the rated and shutdown regions.
+
+In the ramp region use $P=P_r(v^3-v_{in}^3)/(v_r^3-v_{in}^3)$.
 
 ### Hydropower
 
@@ -125,7 +165,7 @@ Change at least two design parameters—for example PV DC/AC ratio, wind capacit
 
 1. Goal, scope, and model limitations
 2. Imports and parameters
-3. Synthetic input data
+3. Load the five separate supplied CSV datasets
 4. Data-quality checks
 5. Technology functions and unit tests
 6. Hourly generation model
@@ -145,7 +185,7 @@ Change at least two design parameters—for example PV DC/AC ratio, wind capacit
 | Plots and interpretation | 15% |
 | Scenario reasoning and limitations | 10% |
 
-The project is complete only when the notebook runs from the first cell to the last in a fresh kernel. A fully executable reference implementation follows in the solution guide.
+The project is complete only when the notebook runs from the first cell to the last in a fresh kernel. Submit the executed notebook, a source-energy and balance table, a scenario table, four labelled figures, and a short interpretation. The instructor's reference solution is separate and is not included in this student book.
 
 ## References
 

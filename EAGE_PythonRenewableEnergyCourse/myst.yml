@@ -144,7 +144,9 @@ project:
       children:
         - file: section8/projectIntro.md
 
-        - file: section8/projectSolution.md
+    - title: Assessment — Questions Only
+      children:
+        - file: section7/renewableEnergyTest.md
 
     - title: Summary and Conclusions
       children:

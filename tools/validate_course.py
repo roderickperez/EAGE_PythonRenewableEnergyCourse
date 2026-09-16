@@ -99,9 +99,9 @@ def check_energy_curriculum() -> None:
 
     for path in source_pages:
         text = path.read_text(encoding="utf-8")
-        exercise_count = len(re.findall(r"^:::\{admonition\} Exercise \d+[^\n]*\n:class: note", text, flags=re.MULTILINE))
-        if exercise_count < 6:
-            fail(f"{path.relative_to(ROOT)} has only {exercise_count} guided exercises; expected at least 6")
+        exercise_count = len(re.findall(r"^### Exercise \d+ —", text, flags=re.MULTILINE))
+        if exercise_count != 20:
+            fail(f"{path.relative_to(ROOT)} has {exercise_count} chapter exercises; expected 20")
         for required in ["## Learning goals", "## Concepts and equations", "## Common mistakes"]:
             if required not in text:
                 fail(f"{path.relative_to(ROOT)} is missing {required}")
@@ -149,33 +149,8 @@ def execute_energy_code_cells() -> None:
 
 
 def check_workbook() -> None:
-    """Check distribution, per-exercise references, reveal controls and independence."""
-    import contextlib
-    import io
-    import matplotlib.pyplot as plt
-    text = (ROOT / 'section7/renewableExercises.md').read_text(encoding='utf-8')
-    levels = re.findall(r'\*\*Difficulty:\*\* (Easy|Medium|Hard)', text)
-    if {level: levels.count(level) for level in ['Easy', 'Medium', 'Hard']} != {
-        'Easy': 5, 'Medium': 10, 'Hard': 5,
-    }:
-        fail('Workbook must have exactly 5 easy, 10 medium and 5 hard exercises')
-    exercises = re.split(r'\n## Exercise \d+ — ', text)[1:]
-    for i, exercise in enumerate(exercises, 1):
-        if '**Reference:**' not in exercise or '[@' not in exercise:
-            fail(f'Workbook exercise {i} has no reference')
-        if exercise.count('::::{dropdown} Solution') != 1 or ':open:' in exercise:
-            fail(f'Workbook exercise {i} must have one initially closed solution')
-        cells = re.findall(r'```\{code-cell\} python\n(.*?)```', exercise, re.S)
-        if len(cells) != 2 or 'assert ' not in cells[-1]:
-            fail(f'Workbook exercise {i} needs a starter and checked solution')
-            continue
-        try:
-            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
-                exec(compile(cells[-1], f'workbook-{i}', 'exec'), {})
-        except Exception as exc:
-            fail(f'Workbook exercise {i} does not run independently: {exc}')
-        finally:
-            plt.close('all')
+    from validate_chapter_delivery import validate
+    validate()
 
 
 def check_energy_boundaries() -> None:

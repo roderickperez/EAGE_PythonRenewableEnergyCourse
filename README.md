@@ -19,10 +19,34 @@ The Eurostat notebooks use the bundled August 2024 exports for reproducibility. 
 
 Optional geospatial and deep-learning packages are declared separately in `pyproject.toml`; they are not required to compile the core course.
 
-## Updated teaching material
+## Teaching material
 
-Start with `EAGE_PythonRenewableEnergyCourse/learningGuide.md`. The reference catalogue lists all supplied PDFs, and `section7/renewableExercises.md` contains 5 easy, 10 medium and 5 hard exercises with initially collapsed, step-by-step solutions and individual references.
+The general renewable-energy, solar, hydro, wind and geothermal chapters each
+contain **20 exercises (5 easy, 10 medium, 5 hard)**. Each question has a referenced,
+step-by-step answer directly below it. Practice answers start collapsed in the
+book. Complete chapter `.ipynb` companions are supplied alongside the MyST sources.
 
-`python tools/validate_course.py` executes core Markdown cells and tests every new solution independently. Interactive input snippets and optional tools are identified separately. The workbook can be regenerated with `python tools/build_exercise_workbook.py`.
+The question-only test is `section7/renewableEnergyTest.md`. The final project is
+`section8/projectIntro.md` and loads five separate CSV files from `section8/data`.
 
-The Eurostat examples report a selected-category sum including broad hydro; it is not a verified renewable-only or EU-27 total. See notebook accounting caveats.
+**Instructor-only:** `instructor_private/test_answer_key.md` and
+`instructor_private/final_project_solution.md` exist locally, outside the book
+source and are excluded from Git. They are not included in the HTML build or
+uploaded with commits. Do not move them under the book directory. Existing
+technology quizzes remain optional practice with answers; they are not the test.
+The earlier project solution is removed from the current student source; old Git
+commits still contain the previously published version.
+
+Regenerate practice material with `python tools/build_chapter_exercises.py`,
+execute notebooks with `python tools/execute_course_notebooks.py`, and validate
+with `python tools/validate_course.py`. Rebuild synthetic input files only when
+needed using `python tools/build_project_datasets.py`.
+
+After building HTML, run `python tools/check_student_build.py` before publication.
+The Pages workflow runs this check before uploading the student artifact. Clean
+generated output when removing a previously published page so stale downloads do
+not survive. The pipeline follows the [GitHub Pages workflow guidance](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)
+and [MyST base-URL guidance](https://mystmd.org/guide/deployment-github-pages).
+
+The Eurostat examples report a selected-category sum including broad hydro;
+it is not a verified renewable-only or EU-27 total. See notebook accounting caveats.

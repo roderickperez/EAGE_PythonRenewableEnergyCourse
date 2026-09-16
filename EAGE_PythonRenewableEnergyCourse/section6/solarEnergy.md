@@ -131,225 +131,693 @@ plt.tight_layout()
 
 Because each sample represents one hour, summing MW values yields MWh. With 15-minute data, multiply the sum by 0.25 h.
 
-## Guided exercises
 
-:::{admonition} Exercise 1 — Panel and array scaling
-:class: note
+[Download this complete chapter as a Jupyter notebook](solarEnergy.ipynb). In standard Jupyter viewers, answer headings and code are visible below each prompt; the book provides collapse controls.
 
-**Reference:** Wade, Chapters 2–3 and 9 [@wade2003]; Foster et al., photovoltaic systems [@foster2010].
+## Chapter practice — 20 Python exercises
 
-Calculate one 2.0 m$^2$, 21%-efficient panel at 800 W/m$^2$. Write a function that scales to any panel count and test zero panels.
+**5 easy · 10 medium · 5 hard.** Work through the exercises in order. All inputs are synthetic teaching data. Each solution is directly below its question and starts collapsed in the book. Open it after trying your own code. Each solution runs independently; run the full notebook from the first cell when studying the chapter. References identify the underlying concepts rather than copied textbook problems.
 
-```python
-def array_power_kw(irradiance_wm2, panel_area_m2, efficiency, panel_count):
-    # TODO: validate inputs and return kW
-    pass
-```
-:::
+(solar-exercise-01)=
+### Exercise 01 — Panel DC power
 
-:::{admonition} Exercise 1 — Solution
-:class: tip, dropdown
+**Difficulty:** Easy
 
-1. Multiply irradiance, panel area and efficiency.
-2. Scale by count.
-3. Convert watts to kw and test zero panels.
+**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+
+**Task:** At 800 W/m², a 2 m² panel has efficiency 20%. Calculate DC watts.
 
 ```{code-cell} python
-def array_power_kw(irradiance_wm2, panel_area_m2, efficiency, panel_count):
-    if min(irradiance_wm2, panel_area_m2, panel_count) < 0 or not 0 <= efficiency <= 1:
-        raise ValueError("invalid PV input")
-    return irradiance_wm2 * panel_area_m2 * efficiency * panel_count / 1000
-
-print(f"One panel: {array_power_kw(800, 2.0, 0.21, 1):.3f} kW")
-assert array_power_kw(800, 2.0, 0.21, 0) == 0
+# Your solution for solar exercise 01.
 ```
-:::
 
-:::{admonition} Exercise 2 — Temperature table
-:class: note
+::::{dropdown} Step-by-step answer — Solar 01
 
-**Reference:** Wade, Chapters 2–3 and 9 [@wade2003]; Foster et al., photovoltaic systems [@foster2010].
+1. Store irradiance, area and efficiency.
+2. Multiply incident power by conversion efficiency.
+3. Label and verify the result.
 
-For ambient temperatures 0–40 °C and irradiance 900 W/m$^2$, calculate cell temperature and AC power. Store the results in a DataFrame.
-
-```python
-ambient_values = np.arange(0, 41, 5)
-# TODO: calculate cell temperature and AC power
-# TODO: create and print a DataFrame
+```{code-cell} python
+# Step 1: Store irradiance, area and efficiency.
+g, area, eta = 800, 2, 0.20
+# Step 2: Multiply incident power by conversion efficiency.
+power_w = g*area*eta
+# Step 3: Label and verify the result.
+print(power_w, 'W DC'); assert power_w == 320
 ```
-:::
 
-:::{admonition} Exercise 2 — Solution
-:class: tip, dropdown
+**Interpretation:** 320 W assumes constant efficiency and uniform irradiance.
 
-1. Make the ambient-temperature array.
-2. Calculate cell temperature before output.
-3. Store labelled columns.
+::::
+
+(solar-exercise-02)=
+### Exercise 02 — Array nameplate
+
+**Difficulty:** Easy
+
+**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+
+**Task:** An array contains 24 modules rated at 400 W DC. Calculate its STC rating in kW.
+
+```{code-cell} python
+# Your solution for solar exercise 02.
+```
+
+::::{dropdown} Step-by-step answer — Solar 02
+
+1. Enter module count and rating.
+2. Add module ratings and convert to kW.
+3. Print and check the nameplate.
+
+```{code-cell} python
+# Step 1: Enter module count and rating.
+count, module_w = 24, 400
+# Step 2: Add module ratings and convert to kW.
+array_kw = count*module_w/1000
+# Step 3: Print and check the nameplate.
+print(array_kw,'kW DC'); assert array_kw == 9.6
+```
+
+**Interpretation:** Nameplate describes STC; actual operating output varies.
+
+::::
+
+(solar-exercise-03)=
+### Exercise 03 — Daily irradiation
+
+**Difficulty:** Easy
+
+**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+
+**Task:** Four hourly mean irradiances are 0,200,600,400 W/m². Calculate four-hour irradiation in kWh/m².
+
+```{code-cell} python
+# Your solution for solar exercise 03.
+```
+
+::::{dropdown} Step-by-step answer — Solar 03
+
+1. Store hourly means and duration.
+2. Integrate and convert Wh to kWh.
+3. Verify and label the four-hour result.
+
+```{code-cell} python
+# Step 1: Store hourly means and duration.
+irradiance = [0,200,600,400]; hours = 1
+# Step 2: Integrate and convert Wh to kWh.
+irradiation = sum(irradiance)*hours/1000
+# Step 3: Verify and label the four-hour result.
+print(irradiation,'kWh/m²'); assert irradiation == 1.2
+```
+
+**Interpretation:** This is a four-hour window, not necessarily a complete day.
+
+::::
+
+(solar-exercise-04)=
+### Exercise 04 — Inverter conversion
+
+**Difficulty:** Easy
+
+**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+
+**Task:** A PV array delivers 5 kW DC to a 96%-efficient inverter with a 6 kW AC limit. Find AC kW.
+
+```{code-cell} python
+# Your solution for solar exercise 04.
+```
+
+::::{dropdown} Step-by-step answer — Solar 04
+
+1. Enter the DC input and equipment assumptions.
+2. Apply conversion efficiency and the output limit.
+3. Check the output cannot exceed input or rating.
+
+```{code-cell} python
+# Step 1: Enter the DC input and equipment assumptions.
+dc_kw, efficiency, rating_kw = 5, 0.96, 6
+# Step 2: Apply conversion efficiency and the output limit.
+ac_kw = min(dc_kw*efficiency, rating_kw)
+# Step 3: Check the output cannot exceed input or rating.
+print(ac_kw,'kW AC'); assert ac_kw == 4.8 and ac_kw <= dc_kw
+```
+
+**Interpretation:** No clipping occurs in this example; efficiency is held constant.
+
+::::
+
+(solar-exercise-05)=
+### Exercise 05 — Capacity factor from AC energy
+
+**Difficulty:** Easy
+
+**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+
+**Task:** A 10 kW AC plant exports 48 kWh in 24 hours. Calculate AC-based CF and state the denominator.
+
+```{code-cell} python
+# Your solution for solar exercise 05.
+```
+
+::::{dropdown} Step-by-step answer — Solar 05
+
+1. Set exported energy, AC capacity and duration.
+2. Calculate the AC-based capacity factor.
+3. Print a labelled percentage.
+
+```{code-cell} python
+# Step 1: Set exported energy, AC capacity and duration.
+energy_kwh, capacity_kw, hours = 48, 10, 24
+# Step 2: Calculate the AC-based capacity factor.
+cf = energy_kwh/(capacity_kw*hours)
+# Step 3: Print a labelled percentage.
+print(f'AC-based CF: {cf:.0%}'); assert cf == 0.2
+```
+
+**Interpretation:** 20% uses AC nameplate. A DC-based capacity factor would have a different denominator.
+
+::::
+
+(solar-exercise-06)=
+### Exercise 06 — Cell-temperature estimate
+
+**Difficulty:** Medium
+
+**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+
+**Task:** At ambient 25 °C and irradiance [0,400,800] W/m², use NOCT 45 °C and Tc=Ta+G(NOCT−20)/800. Calculate temperatures.
+
+```{code-cell} python
+# Your solution for solar exercise 06.
+```
+
+::::{dropdown} Step-by-step answer — Solar 06
+
+1. Store irradiance and temperature parameters.
+2. Apply the approximate NOCT relationship.
+3. Verify the 800 W/m² case.
+
+```{code-cell} python
+import numpy as np
+# Step 1: Store irradiance and temperature parameters.
+g = np.array([0,400,800]); ambient = 25; noct = 45
+# Step 2: Apply the approximate NOCT relationship.
+cell = ambient+g*(noct-20)/800
+# Step 3: Verify the 800 W/m² case.
+print(cell,'°C'); assert np.allclose(cell,[25,37.5,50])
+```
+
+**Interpretation:** This simple thermal relationship omits wind and mounting effects.
+
+::::
+
+(solar-exercise-07)=
+### Exercise 07 — Temperature coefficient
+
+**Difficulty:** Medium
+
+**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+
+**Task:** At 1000 W/m², a 10 kW STC array has gamma −0.004/°C. Evaluate DC output at cell temperatures [25,45,65]°C.
+
+```{code-cell} python
+# Your solution for solar exercise 07.
+```
+
+::::{dropdown} Step-by-step answer — Solar 07
+
+1. Convert temperature cases to an array.
+2. Apply the temperature multiplier relative to 25°C.
+3. Check direction and expected output.
+
+```{code-cell} python
+import numpy as np
+# Step 1: Convert temperature cases to an array.
+temperature = np.array([25,45,65]); gamma = -0.004
+# Step 2: Apply the temperature multiplier relative to 25°C.
+dc_kw = 10*(1+gamma*(temperature-25))
+# Step 3: Check direction and expected output.
+print(dc_kw,'kW DC'); assert np.allclose(dc_kw,[10,9.2,8.4])
+```
+
+**Interpretation:** Higher cell temperature reduces output for a negative power coefficient.
+
+::::
+
+(solar-exercise-08)=
+### Exercise 08 — Clipping budget
+
+**Difficulty:** Medium
+
+**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+
+**Task:** Hourly DC output [0,4,8,10] kW passes through a 97% inverter capped at 7 kW AC. Calculate AC kWh and clipping kWh.
+
+```{code-cell} python
+# Your solution for solar exercise 08.
+```
+
+::::{dropdown} Step-by-step answer — Solar 08
+
+1. Calculate AC power before applying the rating.
+2. Clip output and calculate discarded potential AC energy.
+3. Check energy accounting across one-hour intervals.
+
+```{code-cell} python
+import numpy as np
+# Step 1: Calculate AC power before applying the rating.
+dc = np.array([0,4,8,10]); available_ac = dc*0.97
+# Step 2: Clip output and calculate discarded potential AC energy.
+ac = np.minimum(available_ac,7); clipping = available_ac-ac
+# Step 3: Check energy accounting across one-hour intervals.
+print(ac.sum(),'kWh AC;',clipping.sum(),'kWh clipping')
+assert np.allclose(ac+clipping,available_ac) and np.isclose(ac.sum(),17.88)
+```
+
+**Interpretation:** Clipping is measured after modeled inverter conversion; it is distinct from inverter losses.
+
+::::
+
+(solar-exercise-09)=
+### Exercise 09 — Sequential losses
+
+**Difficulty:** Medium
+
+**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+
+**Task:** Start with 1000 kWh DC; apply 3% soiling, 2% wiring and 4% inverter losses sequentially. Compare with simply subtracting 9%.
+
+```{code-cell} python
+# Your solution for solar exercise 09.
+```
+
+::::{dropdown} Step-by-step answer — Solar 09
+
+1. Express loss fractions as retained fractions.
+2. Multiply the successive retained fractions.
+3. Print the difference and check the product.
+
+```{code-cell} python
+import numpy as np
+# Step 1: Express loss fractions as retained fractions.
+retained = 1-np.array([0.03,0.02,0.04])
+# Step 2: Multiply the successive retained fractions.
+output = 1000*np.prod(retained); additive = 1000*(1-0.09)
+# Step 3: Print the difference and check the product.
+print(output,'kWh;',output-additive,'kWh difference')
+assert np.isclose(output,912.576)
+```
+
+**Interpretation:** Multiplicative losses apply to changing energy bases; simple addition is an approximation.
+
+::::
+
+(solar-exercise-10)=
+### Exercise 10 — Performance ratio
+
+**Difficulty:** Medium
+
+**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+
+**Task:** A 100 kW DC array exports 12,000 kWh with POA irradiation 150 kWh/m². Use reference irradiance 1 kW/m² to calculate PR.
+
+```{code-cell} python
+# Your solution for solar exercise 10.
+```
+
+::::{dropdown} Step-by-step answer — Solar 10
+
+1. Calculate final yield in hours from AC energy and DC rating.
+2. Calculate reference yield and their ratio.
+3. Verify and display the dimensionless result.
+
+```{code-cell} python
+# Step 1: Calculate final yield in hours from AC energy and DC rating.
+final_yield = 12000/100
+# Step 2: Calculate reference yield and their ratio.
+reference_yield = 150/1; pr = final_yield/reference_yield
+# Step 3: Verify and display the dimensionless result.
+print(f'PR: {pr:.0%}'); assert pr == 0.8
+```
+
+**Interpretation:** PR normalises for irradiation; it is not cell conversion efficiency.
+
+::::
+
+(solar-exercise-11)=
+### Exercise 11 — Specific yield
+
+**Difficulty:** Medium
+
+**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+
+**Task:** Two systems generate [4000,9000] kWh from [5,10] kW DC. Calculate kWh/kWp and identify the higher specific yield.
+
+```{code-cell} python
+# Your solution for solar exercise 11.
+```
+
+::::{dropdown} Step-by-step answer — Solar 11
+
+1. Store energy and DC nameplate values.
+2. Normalise production by installed capacity.
+3. Compare the normalised values.
+
+```{code-cell} python
+import numpy as np
+# Step 1: Store energy and DC nameplate values.
+energy = np.array([4000,9000]); capacity = np.array([5,10])
+# Step 2: Normalise production by installed capacity.
+specific_yield = energy/capacity
+# Step 3: Compare the normalised values.
+print(specific_yield,'kWh/kWp'); assert np.argmax(specific_yield)==1
+```
+
+**Interpretation:** The periods must match before comparing yields; higher yield does not alone establish lower cost.
+
+::::
+
+(solar-exercise-12)=
+### Exercise 12 — Unequal daylight intervals
+
+**Difficulty:** Medium
+
+**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+
+**Task:** Average AC powers [1,4,2] kW persist for [0.5,2,1.5] hours. Integrate their energy.
+
+```{code-cell} python
+# Your solution for solar exercise 12.
+```
+
+::::{dropdown} Step-by-step answer — Solar 12
+
+1. Store paired power and duration arrays.
+2. Multiply each interval before summing.
+3. Verify the hand calculation.
+
+```{code-cell} python
+import numpy as np
+# Step 1: Store paired power and duration arrays.
+power = np.array([1,4,2]); duration = np.array([0.5,2,1.5])
+# Step 2: Multiply each interval before summing.
+energy = (power*duration).sum()
+# Step 3: Verify the hand calculation.
+print(energy,'kWh'); assert energy == 11.5
+```
+
+**Interpretation:** A sum of kW samples without duration is not energy for unequal intervals.
+
+::::
+
+(solar-exercise-13)=
+### Exercise 13 — Nighttime and invalid data
+
+**Difficulty:** Medium
+
+**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+
+**Task:** For readings [0,200,missing,−10] W/m², preserve night zero, mark negative values missing, and report valid fraction.
+
+```{code-cell} python
+# Your solution for solar exercise 13.
+```
+
+::::{dropdown} Step-by-step answer — Solar 13
+
+1. Load readings without replacing missing values.
+2. Flag negatives and mask them.
+3. Check the valid night zero and report coverage.
 
 ```{code-cell} python
 import pandas as pd
-
-ambient_values = np.arange(0, 41, 5)
-temperature_table = pd.DataFrame({
-    "ambient_c": ambient_values,
-    "cell_c": cell_temperature_c(900, ambient_values),
-    "ac_power_mw": pv_ac_power_mw(900, ambient_values, 12, 10),
-})
-print(temperature_table.round(2))
-assert temperature_table["ac_power_mw"].ge(0).all()
+# Step 1: Load readings without replacing missing values.
+g = pd.Series([0,200,None,-10],dtype=float)
+# Step 2: Flag negatives and mask them.
+invalid = g.lt(0); clean = g.mask(invalid)
+# Step 3: Check the valid night zero and report coverage.
+print(clean, 'Valid fraction:', clean.notna().mean())
+assert clean.iloc[0]==0 and clean.notna().mean()==0.5
 ```
-:::
 
-:::{admonition} Exercise 3 — Sensitivity surface
-:class: note
+**Interpretation:** Zero at night is a valid observation; a missing daylight observation cannot be treated as zero.
 
-**Reference:** Wade, Chapters 2–3 and 9 [@wade2003]; Foster et al., photovoltaic systems [@foster2010].
+::::
 
-Use `np.meshgrid` for irradiance 0–1100 W/m$^2$ and ambient temperature -10–45 °C. Plot AC power with `contourf` and identify clipping.
+(solar-exercise-14)=
+### Exercise 14 — Compounded degradation
 
-```python
-# TODO: build the two-dimensional grid
-# TODO: evaluate pv_ac_power_mw and plot it
-```
-:::
+**Difficulty:** Medium
 
-:::{admonition} Exercise 3 — Solution
-:class: tip, dropdown
+**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
 
-1. Create the irradiance/temperature grid.
-2. Evaluate clipped AC power.
-3. Plot with a labelled color scale.
+**Task:** First-year output is 100 MWh. With 0.5% annual degradation, calculate output in years 1–5 and cumulative MWh.
 
 ```{code-cell} python
-irradiance_axis = np.linspace(0, 1100, 80)
-temperature_axis = np.linspace(-10, 45, 60)
-irradiance_grid, temperature_grid = np.meshgrid(irradiance_axis, temperature_axis)
-power_grid = pv_ac_power_mw(irradiance_grid, temperature_grid, 12, 10)
-plt.figure(figsize=(8, 5))
-contour = plt.contourf(irradiance_grid, temperature_grid, power_grid, levels=20, cmap="YlOrRd")
-plt.colorbar(contour, label="AC power (MW)")
-plt.xlabel("Irradiance (W/m²)")
-plt.ylabel("Ambient temperature (°C)")
-plt.title("PV power and inverter clipping")
-plt.tight_layout()
+# Your solution for solar exercise 14.
 ```
-:::
 
-:::{admonition} Exercise 4 — Sampling interval
-:class: note
+::::{dropdown} Step-by-step answer — Solar 14
 
-**Reference:** Wade, Chapters 2–3 and 9 [@wade2003]; Foster et al., photovoltaic systems [@foster2010].
-
-Create `energy_mwh(power_mw, step_hours)`. Use 30-minute samples and demonstrate why omitting the 0.5-hour multiplier doubles the estimate.
-
-```python
-def energy_mwh(power_mw, step_hours):
-    # TODO: validate the time step and integrate power
-    pass
-```
-:::
-
-:::{admonition} Exercise 4 — Solution
-:class: tip, dropdown
-
-1. Multiply each interval-average MW by hours.
-2. Add interval energies.
-3. Compare with the unweighted sum.
+1. Index years with no degradation in the first year.
+2. Apply annual retained output multiplicatively.
+3. Check the first and last years and print the sum.
 
 ```{code-cell} python
-def energy_mwh(power_mw, step_hours):
-    if step_hours <= 0:
-        raise ValueError("step_hours must be positive")
-    return np.asarray(power_mw, dtype=float).sum() * step_hours
-
-half_hour_power = np.repeat(power_mw, 2)
-correct_energy = energy_mwh(half_hour_power, 0.5)
-incorrect_energy = half_hour_power.sum()
-assert np.isclose(incorrect_energy, 2 * correct_energy)
+import numpy as np
+# Step 1: Index years with no degradation in the first year.
+years = np.arange(1,6)
+# Step 2: Apply annual retained output multiplicatively.
+energy = 100*0.995**(years-1)
+# Step 3: Check the first and last years and print the sum.
+print(energy,'MWh/year;',energy.sum(),'MWh total')
+assert energy[0]==100 and np.isclose(energy[-1],98.0149500625)
 ```
-:::
 
-:::{admonition} Exercise 5 — Monthly performance ratio
-:class: note
+**Interpretation:** The rate is an assumption; weather and availability are held constant.
 
-**Reference:** Wade, Chapters 2–3 and 9 [@wade2003]; Foster et al., photovoltaic systems [@foster2010].
+::::
 
-Calculate and plot monthly PR from plane-of-array irradiation and AC energy. Flag values outside 0–1 for investigation. PR above one can occur in cold conditions or because of measurement and rating conventions; this is not automatically a violation of energy conservation.
+(solar-exercise-15)=
+### Exercise 15 — Daily profile plot
 
-```python
-# TODO: write performance_ratio(energy_mwh, rated_mw, irradiation_kwh_m2)
-# TODO: calculate, validate, and plot 12 monthly values
-```
-:::
+**Difficulty:** Medium
 
-:::{admonition} Exercise 5 — Solution
-:class: tip, dropdown
+**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
 
-1. Divide AC energy by DC nameplate for final yield.
-2. Divide irradiation by stc irradiance.
-3. Form their ratio.
+**Task:** Model 24 hourly mean irradiances as max(0,800 sin(pi(h−6)/12)). Use 20 m² and 20% efficiency. Plot DC kW and integrate MWh.
 
 ```{code-cell} python
-def performance_ratio(energy_mwh, rated_mw, irradiation_kwh_m2):
-    energy = np.asarray(energy_mwh, dtype=float)
-    irradiation = np.asarray(irradiation_kwh_m2, dtype=float)
-    if rated_mw <= 0 or np.any(irradiation <= 0):
-        raise ValueError("rating and irradiation must be positive")
-    return (energy / rated_mw) / irradiation
-
-irradiation = np.array([58, 82, 118, 145, 170, 188, 194, 176, 132, 94, 62, 48])
-measured_energy = np.array([420, 620, 900, 1120, 1280, 1420, 1480, 1320, 1010, 710, 450, 350])
-monthly_pr = performance_ratio(measured_energy, 10, irradiation)
-plt.figure(figsize=(9, 4))
-plt.bar(np.arange(1, 13), monthly_pr)
-plt.xlabel("Month")
-plt.ylabel("Performance ratio")
-plt.ylim(0, 1)
-plt.tight_layout()
-assert np.all((monthly_pr >= 0) & (monthly_pr <= 1))
+# Your solution for solar exercise 15.
 ```
-:::
 
-:::{admonition} Exercise 6 — Degradation scenarios
-:class: note
+::::{dropdown} Step-by-step answer — Solar 15
 
-**Reference:** Wade, Chapters 2–3 and 9 [@wade2003]; Foster et al., photovoltaic systems [@foster2010].
-
-Compare annual degradation rates 0.3%, 0.5%, and 0.8% over 25 years using compounding. Plot annual energy and compare cumulative output.
-
-```python
-# TODO: write degraded_energy(year_one_mwh, rate, years)
-# TODO: loop over the three rates and plot each sequence
-```
-:::
-
-:::{admonition} Exercise 6 — Solution
-:class: tip, dropdown
-
-1. Create years beginning at one.
-2. Compound the retained fraction.
-3. Compare annual and cumulative energy.
+1. Generate a labelled synthetic hourly irradiance profile.
+2. Convert incident radiation to DC power and energy.
+3. Plot with units and verify the maximum.
 
 ```{code-cell} python
-def degraded_energy(year_one_mwh, rate, years=25):
-    if year_one_mwh < 0 or not 0 <= rate < 1 or years < 1:
-        raise ValueError("invalid degradation inputs")
-    year = np.arange(1, years + 1)
-    return year_one_mwh * (1 - rate) ** (year - 1)
-
-plt.figure(figsize=(8, 4))
-for degradation_rate in [0.003, 0.005, 0.008]:
-    annual_energy = degraded_energy(15000, degradation_rate)
-    plt.plot(np.arange(1, 26), annual_energy / 1000, label=f"{degradation_rate:.1%}/year")
-    print(f"{degradation_rate:.1%}/year: cumulative {annual_energy.sum():.1f} MWh")
-    assert np.all(np.diff(annual_energy) <= 0)
-plt.xlabel("Operating year")
-plt.ylabel("Annual energy (GWh)")
-plt.grid(alpha=0.3)
-plt.legend()
-plt.tight_layout()
+import numpy as np
+import matplotlib.pyplot as plt
+# Step 1: Generate a labelled synthetic hourly irradiance profile.
+h = np.arange(24); g = np.maximum(0,800*np.sin(np.pi*(h-6)/12))
+# Step 2: Convert incident radiation to DC power and energy.
+dc_kw = g*20*0.2/1000; energy_mwh = dc_kw.sum()/1000
+# Step 3: Plot with units and verify the maximum.
+fig,ax=plt.subplots(figsize=(6,3)); ax.plot(h,dc_kw)
+ax.set(xlabel='UTC hour',ylabel='DC power (kW)',title='Synthetic PV day'); fig.tight_layout(); plt.show()
+print(energy_mwh,'MWh'); assert np.isclose(dc_kw.max(),3.2)
 ```
-:::
+
+**Interpretation:** The irradiance values are treated as interval means; no real location or date is represented.
+
+::::
+
+(solar-exercise-16)=
+### Exercise 16 — Size an inverter by clipping target
+
+**Difficulty:** Hard
+
+**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+
+**Task:** For hourly DC [0,2,5,9,12,8,3,0] kW and 97% efficiency, search integer AC ratings 5–12 kW for at most 5% clipped potential AC energy.
+
+```{code-cell} python
+# Your solution for solar exercise 16.
+```
+
+::::{dropdown} Step-by-step answer — Solar 16
+
+1. Calculate the common available AC profile.
+2. Evaluate each candidate using the same clipping denominator.
+3. Select the smallest rating that satisfies the target.
+
+```{code-cell} python
+import numpy as np
+# Step 1: Calculate the common available AC profile.
+available = np.array([0,2,5,9,12,8,3,0])*0.97
+# Step 2: Evaluate each candidate using the same clipping denominator.
+trials = [(rating, np.maximum(available-rating,0).sum()/available.sum()) for rating in range(5,13)]
+# Step 3: Select the smallest rating that satisfies the target.
+best = next(t for t in trials if t[1]<=0.05)
+print('Rating kW and clipping fraction:',best)
+assert best[0]==10 and all(f>0.05 for r,f in trials if r<best[0])
+```
+
+**Interpretation:** An energy constraint is not a financial optimum; inverter prices and lifetime behavior are omitted.
+
+::::
+
+(solar-exercise-17)=
+### Exercise 17 — Temperature and irradiance sensitivity grid
+
+**Difficulty:** Hard
+
+**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+
+**Task:** For G=[200,600,1000] W/m² and ambient=[10,25,40]°C, calculate a 3×3 grid of AC power for 10 kW DC, 8 kW AC, NOCT 45, gamma−0.004 and eta 0.97.
+
+```{code-cell} python
+# Your solution for solar exercise 17.
+```
+
+::::{dropdown} Step-by-step answer — Solar 17
+
+1. Broadcast irradiance columns against ambient-temperature rows.
+2. Calculate cell temperature, DC and limited AC power.
+3. Check bounds and thermal direction and print a labelled grid.
+
+```{code-cell} python
+import numpy as np
+import pandas as pd
+# Step 1: Broadcast irradiance columns against ambient-temperature rows.
+g=np.array([200,600,1000])[None,:]; ambient=np.array([10,25,40])[:,None]
+# Step 2: Calculate cell temperature, DC and limited AC power.
+cell=ambient+g*25/800
+dc=np.maximum(10*g/1000*(1-0.004*(cell-25)),0); ac=np.minimum(dc*0.97,8)
+# Step 3: Check bounds and thermal direction and print a labelled grid.
+assert ac.shape==(3,3) and np.all(ac<=8) and np.all(np.diff(ac,axis=0)<=0)
+print(pd.DataFrame(ac,index=[10,25,40],columns=[200,600,1000]).rename_axis('Ambient °C / G W m⁻²'))
+```
+
+**Interpretation:** At fixed irradiance, higher modeled cell temperature cannot increase power here; clipping can flatten sensitivity.
+
+::::
+
+(solar-exercise-18)=
+### Exercise 18 — PV and battery self-consumption
+
+**Difficulty:** Hard
+
+**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+
+**Task:** PV hourly AC [0,4,6,0] kW meets constant 2 kW load with an initially empty 3 kWh battery, 2 kW limits and 90% efficiencies. Report unmet load, curtailed PV and final SOC.
+
+```{code-cell} python
+# Your solution for solar exercise 18.
+```
+
+::::{dropdown} Step-by-step answer — Solar 18
+
+1. Initialise storage and bookkeeping in kWh.
+2. Route each one-hour interval through direct use, charging and discharge.
+3. Verify storage limits and show final energy accounting.
+
+```{code-cell} python
+import numpy as np
+# Step 1: Initialise storage and bookkeeping in kWh.
+soc=0.; unmet_total=0.; curtailed_total=0.; rows=[]
+# Step 2: Route each one-hour interval through direct use, charging and discharge.
+for pv in [0,4,6,0]:
+    before=soc; direct=min(pv,2)
+    charge=min(pv-direct,2,(3-soc)/0.9); discharge=min(2-direct,2,soc*0.9)
+    soc+=charge*0.9-discharge/0.9
+    unmet=2-direct-discharge; curtailed=pv-direct-charge
+    assert np.isclose(before+charge*0.9,soc+discharge/0.9)
+    unmet_total+=unmet; curtailed_total+=curtailed; rows.append(soc)
+# Step 3: Verify storage limits and show final energy accounting.
+print(unmet_total,curtailed_total,soc,'kWh unmet, curtailed, final SOC')
+assert np.isclose(unmet_total,2) and all(0<=s<=3+1e-12 for s in rows)
+```
+
+**Interpretation:** Stored energy remaining at the end has not yet served the load. Battery economic sizing needs longer data.
+
+::::
+
+(solar-exercise-19)=
+### Exercise 19 — PV LCOE with degradation
+
+**Difficulty:** Hard
+
+**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+
+**Task:** Use €1m capital, €20k annual O&M, 1500 MWh first-year AC, 0.5% annual degradation and 25 years. Calculate LCOE at 0%,3%,6% real discount rates.
+
+```{code-cell} python
+# Your solution for solar exercise 19.
+```
+
+::::{dropdown} Step-by-step answer — Solar 19
+
+1. Define year-end energy and a reusable discounted-cost calculation.
+2. Evaluate the interest-rate scenarios with identical technical inputs.
+3. Check the undiscounted result and scenario direction.
+
+```{code-cell} python
+import numpy as np
+# Step 1: Define year-end energy and a reusable discounted-cost calculation.
+years=np.arange(1,26); energy=1500*0.995**(years-1)
+def lcoe(rate):
+    discount=(1+rate)**years
+    return (1_000_000+np.sum(20_000/discount))/np.sum(energy/discount)
+# Step 2: Evaluate the interest-rate scenarios with identical technical inputs.
+values=[lcoe(r) for r in [0,0.03,0.06]]
+# Step 3: Check the undiscounted result and scenario direction.
+print(values,'EUR/MWh')
+assert np.isclose(values[0],1_500_000/energy.sum()) and np.all(np.diff(values)>0)
+```
+
+**Interpretation:** See IFC Chapter 14 and IRENA cost methodology. Costs are synthetic; taxes, replacements and salvage are omitted.
+
+::::
+
+(solar-exercise-20)=
+### Exercise 20 — Detect underperformance without future leakage
+
+**Difficulty:** Hard
+
+**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+
+**Task:** Expected daily energy is [10,20,30,40,50,60] kWh; observed is [9,18,27,36,30,36]. Calibrate an observed/expected ratio on days 1–4, then flag holdout days below 80% of calibrated expectation.
+
+```{code-cell} python
+# Your solution for solar exercise 20.
+```
+
+::::{dropdown} Step-by-step answer — Solar 20
+
+1. Split the chronological observations before calibration.
+2. Estimate one scale factor only from training energy.
+3. Flag and check the holdout underperformance.
+
+```{code-cell} python
+import numpy as np
+# Step 1: Split the chronological observations before calibration.
+expected=np.array([10,20,30,40,50,60]); observed=np.array([9,18,27,36,30,36])
+train=slice(0,4); test=slice(4,None)
+# Step 2: Estimate one scale factor only from training energy.
+factor=observed[train].sum()/expected[train].sum()
+prediction=expected[test]*factor; relative=observed[test]/prediction
+# Step 3: Flag and check the holdout underperformance.
+flags=relative<0.8
+print('Calibration:',factor,'holdout relative performance:',relative,'flags:',flags)
+assert np.isclose(factor,0.9) and flags.all()
+```
+
+**Interpretation:** Flags identify a discrepancy, not its cause. Weather-model errors, outages or sensor faults need separate diagnosis.
+
+::::
 
 ## Common mistakes
 

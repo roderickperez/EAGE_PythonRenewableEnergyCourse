@@ -6,7 +6,7 @@ kernelspec:
 
 # Exercises Review
 
-These are the same corrected exercises introduced in the Python and library lessons. Run this setup first; later solutions on this page may use its data. For twenty additional self-contained energy problems, use the [graded workbook](../renewableExercises.md).
+These are the same corrected exercises introduced in the Python and library lessons. Run this setup first; later solutions on this page may use its data. For one hundred self-contained energy problems, use the [chapter exercise guide](../renewableExercises.md).
 
 ```{code-cell} python
 import numpy as np

@@ -118,4 +118,4 @@ Wind Energy Handbook [@burton2011wind]; Solar Energy Engineering [@kalogirou2014
 
 ## How to cite an exercise
 
-Give its number and course title, the underlying book/chapter, the code revision used, and any external data’s provider, product/version, retrieval date, units, location and observation period. State all model assumptions. For synthetic data, say so explicitly. See the [20-exercise workbook](section7/renewableExercises.md).
+Give its number and course title, the underlying book/chapter, the code revision used, and any external data’s provider, product/version, retrieval date, units, location and observation period. State all model assumptions. For synthetic data, say so explicitly. See the [100-exercise chapter guide](section7/renewableExercises.md).

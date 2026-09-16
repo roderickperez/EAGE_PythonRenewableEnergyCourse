@@ -2,14 +2,14 @@
 
 ## A practical route
 
-1. Start with energy units in Section 0 and workbook exercises 1–5.
+1. Start with energy units in Section 0 and its easy exercises 1–5.
 2. Learn variables, conditions, loops and functions in Sections 1–2.
-3. Practice NumPy, pandas and plotting in Section 3 and exercises 6–15.
+3. Practice NumPy, pandas and plotting in Section 3, then attempt exercises 6–15 in each energy chapter.
 4. Check data definitions, missingness and SQL totals in Sections 4–5.
-5. Study the energy models in Section 6 and exercises 16–20.
-6. Complete the Section 8 portfolio project before revealing its solution.
+5. Study each energy model in Section 6 and its hard exercises 16–20.
+6. Take the question-only test, then complete the Section 8 portfolio project from its separate CSV datasets. The test answer key and project solution are instructor-only.
 
-The 20 new exercises supplement the existing quizzes. Allow roughly 10–15 minutes per easy exercise, 20–35 per medium exercise and 45–75 per hard exercise. Hard exercises can be follow-up assignments.
+The five chapters each contain 20 exercises: 5 easy, 10 medium and 5 hard. These 100 chapter exercises supplement the existing quizzes. Allow roughly 10–15 minutes per easy exercise, 20–35 per medium exercise and 45–75 per hard exercise. Hard exercises can be follow-up assignments.
 
 ## Running the examples
 
@@ -36,4 +36,4 @@ Submit code, a result with units, one or more checks, interpretation, reference 
 
 Core exercises need Python, NumPy, pandas and Matplotlib; SQLite comes with Python. Geospatial tools, Earth Engine, external map services and deep learning are optional. Browser kernels may not support every package or local file. Use the local environment for full validation.
 
-See the [reference catalogue](references.md) and [20-exercise workbook](section7/renewableExercises.md).
+See the [reference catalogue](references.md) and [100-exercise chapter guide](section7/renewableExercises.md).
