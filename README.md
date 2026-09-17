@@ -57,7 +57,8 @@ and [MyST base-URL guidance](https://mystmd.org/guide/deployment-github-pages).
 
 The Eurostat examples report a selected-category sum including broad hydro;
 it is not a verified renewable-only or EU-27 total. See notebook accounting caveats.
-# Browser Python sandbox
+
+## Browser Python sandbox
 
 Open the [public participant sandbox](https://roderickperez.github.io/EAGE_PythonRenewableEnergyCourse/sandbox/)
 or run `./start_sandbox.sh` from this repository and visit `http://localhost:8766`.
