@@ -90,7 +90,7 @@ assert names[2] == "Juana"
 :::{admonition} Length of a list
 Additionally, if we want to know the total number of elements in a list, we use the `len` function, which is equivalent to length.
 
-```python
+```text
 lengthList = len(nameList)
 ```
 
@@ -202,7 +202,7 @@ print('The list after deleting a item is: ' , names)
 
 ### Add a value
 In case we want to add something new to the list we can follow this syntax:
-```python
+```text
 variable_name.append("Item")
 ```
 
@@ -246,7 +246,7 @@ The `append()` method cannot be used on **all** Python data types. This is exclu
 ### Count the number of times a value appears in a list
 Other very popular Python list methods, like finding how many times a certain value appears in my list, using `count()` in the following syntax:
 
-```python
+```text
 nameList.count("valueFind")
 ```
 

@@ -2,6 +2,25 @@
 
 ## Completed
 
+- Rebuilt the participant Python sandbox around the book's public table of
+  contents, with all chapter explanations, references, practice exercises and
+  quizzes; generated source hashes prevent silent curriculum drift.
+- Added saved code and written-answer workspaces for each of the 25 assessment
+  questions and for final-project sections. Their reference answers remain absent
+  from the sandbox. The five project input CSVs retain their original bytes.
+- Corrected undefined variables and missing inputs in introductory plotting,
+  xarray/netCDF and CSV examples. Distinguished syntax templates from executable
+  code and bundled the existing NOAA/Seaborn examples with provenance so browser
+  execution does not depend on Python making live HTTP requests.
+- Integrated sandbox deployment into the existing GitHub Pages workflow under
+  `/sandbox/`, preserving the book at the site root.
+- Browser validation completed with 133 checks passed, zero failures and 67
+  figures emitted: all 100 independent energy solutions, all quiz chapters,
+  basic Python/library lessons, optional plotting/geospatial examples, and the
+  two data-analysis notebooks. Separately executed 333 basic/quiz code cells
+  in the local validator. Checked draft restoration and interruption of an
+  infinite loop through the actual interface.
+
 - Expanded the theory before the exercises in all five energy chapters: physical
   mechanisms, components, definitions, equations and units, operating assumptions,
   limitations, environmental context and worked numerical examples. The complete

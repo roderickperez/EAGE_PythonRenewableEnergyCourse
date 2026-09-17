@@ -78,14 +78,14 @@ The main differences between the two are:
 
 Both `loc` and `iloc` allow input to be a single value. We can use the following syntax for data selection:
 
-```python
-loc[row_label, column_label]
+```text
+dataframe.loc[row_label, column_label]
 ```
 
 or
 
-```python
-iloc[row_position, column_position]
+```text
+dataframe.iloc[row_position, column_position]
 ```
 
 ## `loc[]`
@@ -126,8 +126,8 @@ print(pandasDataFrame.loc["City 3", "cities"])
 As we saw in the introduction, we can use the `iloc` attribute to return one or more specified row(s). For example, we can the same result as before (using `iloc`) by using the index position of our `DataFrame`:
 
 ```python
-loc["City 3", "cities"]
-iloc[2, 0]
+pandasDataFrame.loc["City 3", "cities"]
+pandasDataFrame.iloc[2, 0]
 ```
 
 ```{code-cell} python
@@ -186,11 +186,19 @@ assert with_iloc.equals(with_loc)
 One of the most common functionalities that we are going to use from Pandas is the `read_csv` function, to read (light-weight) text files with comma separated files (`.csv`) extension.
 
 ```{code-cell} python
-filename = 'https://www1.ncdc.noaa.gov/pub/data/cdo/samples/PRECIP_HLY_sample_csv.csv'
+from pathlib import Path
+book_root = next(candidate for parent in [Path.cwd(), *Path.cwd().parents]
+                 for candidate in [parent, parent / "EAGE_PythonRenewableEnergyCourse"]
+                 if (candidate / "data/examples/precipitation_hourly.csv").exists())
+filename = book_root / "data/examples/precipitation_hourly.csv"
 precipitationDataFrame = pd.read_csv(filename)
 
 print(precipitationDataFrame)
 ```
+
+This is the bundled [NOAA hourly-precipitation example](../../data/examples/README.md),
+not a current weather feed. Loading the local snapshot makes the same code work
+in the browser sandbox and from any directory within the book folder.
 
 :::{admonition} Exercise 11
 :class: note

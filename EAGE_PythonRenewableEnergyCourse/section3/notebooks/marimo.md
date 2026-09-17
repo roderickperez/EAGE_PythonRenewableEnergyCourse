@@ -13,6 +13,10 @@ marimo edit
 
 A minimal reactive notebook can contain ordinary Python code and interactive elements:
 
+Run this application in your local Python environment with Marimo installed.
+The EAGE sandbox includes this explanation, but its worker does not host a Marimo
+web server; use its normal Python workspace for calculations instead.
+
 ```python
 import marimo
 

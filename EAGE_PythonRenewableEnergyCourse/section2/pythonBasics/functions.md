@@ -26,7 +26,7 @@ def myFunction(parameters):
 
 After the function is defined, we can call it by using the name of the function, and passing the values of the parameters. For example:
 
-```python
+```text
 myFunction(parameters)
 ```
 

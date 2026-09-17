@@ -31,7 +31,7 @@ In python programming, the second name given to a piece of data is known as an a
 
 For example,
 
-```python
+```text
 
 import nameLibrary as nickName
 
@@ -541,7 +541,7 @@ print(arrZeros_2D)
 
 Based on the same structure as before, we can now generate arrays of ones, using the following syntax:
 
-```python
+```text
 numpy.ones(shape, dtype = None, order = 'C')
 ```
 
@@ -656,7 +656,7 @@ The output values are the same, although `range()` returns a range object, which
 
 Similar to the previous case, we can use the `numpy.logspace()` function to generate evenly spaced logarithmic values. The syntax of this function is:
 
-```python
+```text
 numpy.logspace(start, stop, num = 50, endpoint = True, base = 10.0, dtype = None)
 ```
 

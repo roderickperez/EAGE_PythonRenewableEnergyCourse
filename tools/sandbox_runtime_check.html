@@ -1,0 +1,45 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Sandbox runtime validation</title>
+<h1>Sandbox runtime validation</h1><p>Developer check: executes the 100 public practice solutions in independent Python namespaces, then checks project data access and plotting. No private answers are used.</p>
+<button id="start">Run browser checks</button><pre id="log"></pre><script type="module">
+const log=document.getElementById('log');const write=s=>log.textContent+=s+'\n';
+document.getElementById('start').onclick=async()=>{
+ document.getElementById('start').disabled=true;
+ const course=await(await fetch('./generated/course.json')).json();
+ const worker=new Worker('./python-worker.js',{type:'module'});
+ let receive,images=0;
+ worker.onmessage=({data:m})=>{if(m.type==='image')images++;if(m.type==='fatal'){write(m.error);receive?.(m);}if(m.type==='done')receive?.(m);};
+ worker.onerror=e=>write('WORKER ERROR '+e.message);
+ worker.postMessage({type:'init',assets:course.assets,path:'section8/projectIntro.md'});
+ let passed=0,failed=0;
+ const run=(path,code)=>new Promise(resolve=>{receive=resolve;worker.postMessage({type:'run',path,code,stdin:Array(20).fill('7').join('\n'),fresh:true});});
+ for(const page of course.pages.filter(p=>p.id.startsWith('section6/')||p.id==='section0/introRenewableEnergy.md')){
+   for(const cell of page.codes.filter(c=>c.solution)){
+     const r=await run(page.id,cell.code);if(r.error){failed++;write('FAIL '+page.id+' '+cell.id+' '+r.error);}else passed++;
+   }write(page.title+': checked; total passed '+passed);
+ }
+ const checks=[['project datasets', 'section8/projectIntro.md', `from pathlib import Path
+import pandas as pd
+for name in ['solar','wind','hydro','geothermal','demand']:
+    frame=pd.read_csv(Path('data')/(name+'.csv'))
+    assert len(frame)==168
+    times=pd.to_datetime(frame['timestamp'],utc=True)
+    assert times.is_unique and times.is_monotonic_increasing
+print('Five CSV files loaded and validated')`],
+ ['SQLite','section5/SQL_Pandas.ipynb', `import sqlite3
+from pathlib import Path
+assert Path('energy_generation.db').exists()
+conn=sqlite3.connect('energy_generation.db')
+assert conn.execute('PRAGMA integrity_check').fetchone()[0]=='ok'
+print(conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall())
+conn.close()`]];
+ for(const [name,path,code] of checks){const r=await run(path,code);if(r.error){failed++;write('FAIL '+name+' '+r.error);}else{passed++;write('PASS '+name);}}
+ for(const id of ['section3/advancedLibraries/seaborn.md','section3/advancedLibraries/plotly.md','section3/advancedLibraries/folium.md','section3/advancedLibraries/geopandas.md','section3/extra/cartopy.md','section4/dataTypes/netcfd.md','section4/dataTypes/xArray.md','section3/extra/quiver.md','section3/extra/streamplots.md','section4/EDA.md','section4/timeSeriesEnergyConsumption.ipynb','section5/SQL_Pandas.ipynb']){
+   const page=course.pages.find(p=>p.id===id);const r=await run(id,page.codes.map(c=>c.code).join('\n\n'));if(r.error){failed++;write('FAIL '+id+' '+r.error);}else{passed++;write('PASS '+id);}
+ }
+ for(const page of course.pages.filter(p=>p.group==='Quizzes'||p.group==='Python Basics'||(p.group==='Python Libraries'&&p.id.includes('/basicLibraries/')))){
+   const code=page.codes.filter(c=>c.runnable).map(c=>c.code).join('\n\n');
+   const r=await run(page.id,code);if(r.error){failed++;write('FAIL '+page.id+' '+r.error);}else{passed++;write('PASS '+page.id);}
+ }
+ write(`COMPLETE: ${passed} passed; ${failed} failed; ${images} figures emitted.`);worker.terminate();
+};
+</script></html>

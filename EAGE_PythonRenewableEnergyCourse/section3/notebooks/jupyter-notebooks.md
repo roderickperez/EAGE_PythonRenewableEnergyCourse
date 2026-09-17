@@ -14,6 +14,8 @@ Notebook files use the `.ipynb` extension and can be opened in JupyterLab, Jupyt
 ```python
 import pandas as pd
 
-energy = pd.read_csv("data/energy.csv")
+# Small synthetic dataset, so the first notebook example needs no external file.
+from io import StringIO
+energy = pd.read_csv(StringIO("source,energy_mwh\nsolar,12\nwind,18\nhydro,24\n"))
 energy.head()
 ```

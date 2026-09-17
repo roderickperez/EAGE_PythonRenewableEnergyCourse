@@ -58,6 +58,7 @@ if a == 10:
 :class: tip, dropdown
 
 ```python
+a, b = 5, 3
 if a > b: print("a is greater than b")
 ```
 :::

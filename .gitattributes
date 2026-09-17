@@ -1,0 +1,2 @@
+# Preserve downloaded CSV bytes, including NOAA's meaningful blank flag fields.
+EAGE_PythonRenewableEnergyCourse/data/examples/*.csv -text whitespace=-blank-at-eol

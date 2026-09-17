@@ -33,7 +33,11 @@ In practice, there is no specific recipe that we must apply to carry out a succe
 
 ## Datasets
 
-In order to better understand what we can do during the EDA we are going to select and load a dataset from the Seaborn database (just like we did in the Seaborn section).
+We use the bundled Palmer penguins sample distributed with Seaborn to practise
+general EDA methods. This is a biological teaching dataset, not an energy dataset;
+apply the same checks to the renewable-energy project inputs afterwards. The
+[dataset notes](../data/examples/README.md) identify its source. A local snapshot
+avoids a network dependency during the lesson.
 
 
 First, let's import all the required libraries:
@@ -47,14 +51,18 @@ import matplotlib.pyplot as plt
 :::{admonition} Seaborn built-in datasets
 :class: note
 ```{code-cell} python
-sns.get_dataset_names()
+from pathlib import Path
+book_root = next(candidate for parent in [Path.cwd(), *Path.cwd().parents]
+                 for candidate in [parent, parent / "EAGE_PythonRenewableEnergyCourse"]
+                 if (candidate / "data/examples/penguins.csv").exists())
+print("Bundled example: penguins")
 ```
 :::
 
-For example, we can select the `penguins` dataset from the Seaborn database, and display the first five rows of the dataset.
+Load the bundled `penguins` CSV and display its first five rows.
 
 ```{code-cell} python
-df = sns.load_dataset("penguins")
+df = pd.read_csv(book_root / "data/examples/penguins.csv")
 df.head()
 ```
 
@@ -96,7 +104,7 @@ sns.displot(df["bill_length_mm"], kde = False)
 
 Note that Seaborn offers us a more sophisticated version of this frequency distribution used in statistics called the probability distribution. You can plot that as well.
 ```{code-cell} python
-sns.kdeplot(df["bill_length_mm"], shade  = True)
+sns.kdeplot(df["bill_length_mm"], fill=True)
 ```
 
 There is another kind of distribution — better known as spread— which shows how a variable is dispersed/spread with respect to its central tendency. Boxplot is best known to demonstrate the dispersion of a variable with values such as the median, the minimum, the maximum and the outliers — all in the same plot.
@@ -129,7 +137,7 @@ sns.boxplot(x =  df["species"], y = df["bill_length_mm"])
 However, Seaborn offers a one-liner to do this. The `paiplot()` function creates a grid of Axes such that each variable in data will by shared in the y-axis across a single row and in the x-axis across a single column.
 
 ```{code-cell} python
-penguins = sns.load_dataset("penguins")
+penguins = pd.read_csv(book_root / "data/examples/penguins.csv")
 sns.pairplot(penguins)
 ```
 

@@ -7,6 +7,10 @@ on:
       - main
       - master
 
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
 jobs:
   deploy-book:
     runs-on: ubuntu-latest
@@ -51,6 +55,12 @@ jobs:
 
       - name: Verify instructor answers are excluded
         run: python tools/check_student_build.py
+
+      - name: Build and validate the participant sandbox
+        run: |
+          python tools/build_sandbox.py --deploy
+          python tools/validate_sandbox.py
+          python tools/check_student_build.py
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4

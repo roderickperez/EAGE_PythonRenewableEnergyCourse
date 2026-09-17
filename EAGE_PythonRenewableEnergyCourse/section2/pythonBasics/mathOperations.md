@@ -151,7 +151,11 @@ print(a+b)
 It is important that the letter "j" must always be accompanied by a number and attached to it. For example, if you try the following expression:
 
 ```python
-1 + j
+# This intentionally demonstrates a NameError: bare j is an undefined variable.
+try:
+    1 + j
+except NameError as error:
+    print(type(error).__name__ + ": " + str(error))
 ```
 Python will return the following error
 ```python

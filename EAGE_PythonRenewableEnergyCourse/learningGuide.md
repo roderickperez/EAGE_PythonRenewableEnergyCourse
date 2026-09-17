@@ -2,6 +2,11 @@
 
 ## A practical route
 
+Use the [EAGE Python sandbox](https://roderickperez.github.io/EAGE_PythonRenewableEnergyCourse/sandbox/)
+to read these lessons and write Python side by side. It includes the chapter
+exercises, quizzes, a question-only assessment and a final-project workspace.
+Save and export your own code and written explanations before submitting them.
+
 Each energy chapter now follows this sequence: physical description and components,
 definitions and units, detailed equations with assumptions, operating limits,
 a worked hand calculation, a compact equation reference, tested Python functions,

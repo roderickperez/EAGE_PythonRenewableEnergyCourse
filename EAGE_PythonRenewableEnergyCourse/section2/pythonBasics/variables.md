@@ -11,7 +11,7 @@ Variables are containers for storing data values. In Python a variable is create
 
 The general syntax for declaring a variable is:
 
-```python
+```text
 variableName = value
 ```
 
@@ -30,6 +30,7 @@ Did you changed the value of the variable `a` but the result is not displayed?.
 If do you want to print the result of our code, we need to call one of the most important functions inside of Python, `print( )`
 
 ```python
+name = "Alex"
 print(name)
 ```
 :::
@@ -195,6 +196,7 @@ Try yourself changing the quote symbols from `"` to `'`:
 ```{code-cell} python
 name = "Roderick"
 
+name = "Alex"
 print(name)
 ```
 
@@ -225,6 +227,7 @@ Now, in this case can you see a difference when we use `"` and / or  `'`?
 ```{code-cell} python
 name = "Roderick's notebook"
 
+name = "Alex"
 print(name)
 ```
 
