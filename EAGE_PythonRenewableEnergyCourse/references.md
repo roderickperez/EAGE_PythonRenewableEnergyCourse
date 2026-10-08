@@ -150,3 +150,9 @@ use synthetic inputs and are separate from the existing 20 exercises per chapter
 ## How to cite an exercise
 
 Give its number and course title, the underlying book/chapter, the code revision used, and any external data’s provider, product/version, retrieval date, units, location and observation period. State all model assumptions. For synthetic data, say so explicitly. See the [100-exercise chapter guide](section7/renewableExercises.md).
+
+## Sandbox technology documentation
+
+- **Pyodide contributors. Pyodide.** [Official website](https://pyodide.org/). Explains the CPython/WebAssembly runtime used to execute Python in the browser.
+- **Pyodide contributors. Packages built in Pyodide, version 314.0.7.** [Complete package and version table](https://pyodide.org/en/stable/usage/packages-in-pyodide.html), accessed 8 October 2026. A snapshot of all 286 entries appears in [How the browser sandbox was made](courseIntro.md#how-the-browser-sandbox-was-made); versions were checked against the [314.0.7 package manifest](https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide-lock.json). The `stable` documentation follows future releases.
+- **Pyodide contributors. Loading packages; Using Pyodide in a web worker.** [Package-loading guide](https://pyodide.org/en/stable/usage/loading-packages.html) and [Web Worker guide](https://pyodide.org/en/stable/usage/webworker.html), accessed 8 October 2026. Describe package installation and running Python in a background browser task.
