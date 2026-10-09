@@ -1,0 +1,6 @@
+# Optional local Qwen3 voice tutorials; separate from the course environment.
+qwen-tts>=0.1.1
+accelerate>=1.12.0
+soundfile>=0.13.1
+librosa>=0.11.0
+flash-attn>=2.8.3
