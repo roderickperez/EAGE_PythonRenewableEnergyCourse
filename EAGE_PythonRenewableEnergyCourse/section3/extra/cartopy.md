@@ -1,6 +1,6 @@
 # Cartopy
 
-Cartopy provides map projections and geospatial plotting for Matplotlib. A projection describes how the curved Earth is represented on a plane; every plotted dataset also needs the correct source coordinate system through `transform=`.
+Cartopy provides map projections and geospatial plotting for Matplotlib. A projection describes how the curved Earth is represented on a plane; every plotted dataset also needs the correct source coordinate system through `transform=`. [Cartopy projections and transforms](https://cartopy.readthedocs.io/stable/tutorials/understanding_transform.html).
 
 ```python
 import cartopy.crs as ccrs
@@ -18,3 +18,4 @@ In a local environment, `ax.coastlines()` can add Natural Earth coastline data;
 the first call downloads those files. The example avoids that network dependency.
 Cartopy is an optional compiled package; use local Jupyter/Colab if it is unavailable
 in your browser's Python distribution.
+ [Cartopy projections and transforms](https://cartopy.readthedocs.io/stable/tutorials/understanding_transform.html).

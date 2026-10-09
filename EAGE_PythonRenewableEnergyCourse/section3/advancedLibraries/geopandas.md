@@ -18,3 +18,4 @@ These are synthetic demonstration locations. In a real workflow, replace their
 construction with `gpd.read_file(...)` and inspect the source CRS. Geospatial
 dependencies are optional; use the documented local/Colab environment if your
 browser cannot load the required compiled packages.
+ [GeoPandas projections](https://geopandas.org/en/stable/docs/user_guide/projections.html).

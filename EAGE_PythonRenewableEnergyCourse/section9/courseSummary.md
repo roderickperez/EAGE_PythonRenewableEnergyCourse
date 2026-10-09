@@ -12,7 +12,7 @@ Python 3, development environments, Jupyter/Colab, Markdown, and reproducible co
 
 ## Section 2 — Python basics
 
-Variables, numeric operations, functions, lists, tuples, dictionaries, sets, conditions, `for` loops, and selected built-in functions. Function naming is a convention rather than a syntax restriction, and functions without `return` yield `None`.
+Variables, numeric operations, functions, lists, tuples, dictionaries, sets, conditions, `for` loops, and selected built-in functions. Function naming is a convention rather than a syntax restriction, and functions without `return` yield `None`. [Python functions](https://docs.python.org/3/tutorial/controlflow.html#defining-functions).
 
 ## Section 3 — Scientific Python libraries
 
@@ -27,16 +27,16 @@ Source definitions, units, tidy data, missingness, duplicate keys, coverage, exp
 
 ## Section 5 — Databases and SQL
 
-Relational design, primary and foreign keys, SQLite, SQL filtering and aggregation, a country–month–source generation table, and reconciliation of SQL totals against pandas.
+Relational design, primary and foreign keys, SQLite, SQL filtering and aggregation, a live Eurostat download with raw-data provenance, a country–month–source generation table, and reconciliation of SQL totals against pandas.
 
 ## Section 6 — Renewable-energy calculations
 
 | Technology | Principal relationship | Important interpretation |
 |---|---|---|
-| Hydroelectric | $P=\eta\rho gQH$ | Annual energy uses net rated capacity and capacity factor |
-| Solar PV | $P\approx P_{STC}(G/G_{STC})[1+\alpha(T_c-T_{STC})]$ | Irradiance and temperature both affect DC output |
-| Wind | $P=\tfrac12\rho A v^3 C_P$ | Expected power requires a speed distribution and turbine power curve |
-| Geothermal | $q=-k\,dT/dz$ and $P_{th}=\dot m c_p\Delta T$ | Thermal and electrical power must be kept distinct |
+| Hydroelectric | $P_e=\eta\rho gQH_{net}$ | Use net head; $E=P_r CF T$ at a consistent electrical boundary [@jica2011], Chapter 3 |
+| Solar PV | $P\approx P_{STC}(G/G_{STC})[1+\alpha(T_c-T_{STC})]$ | Irradiance and cell temperature both affect DC output; here $\alpha$ is the fractional power-temperature coefficient [@pvlibDocs] |
+| Wind | $P_{rotor}=\tfrac12\rho A v^3 C_P$ | Shaft power precedes drivetrain/generator losses; electrical energy uses the turbine curve [@manwell2009], §§2.5 and 3.2 |
+| Geothermal | $q=-k\,dT/dz$ and $P_{th}=\dot m c_p\Delta T$ | Thermal and electrical power must be kept distinct [@grant2011], Chapters 2–3 |
 
 These are simplified engineering models. Site assessment requires technology-specific loss models, uncertainty, environmental constraints, and current project data.
 

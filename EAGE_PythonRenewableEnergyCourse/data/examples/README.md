@@ -18,3 +18,7 @@ They are examples, not current observations for a renewable-energy assessment.
 The sandbox manifest records SHA-256 hashes of the exact bundled bytes. This
 snapshot is intentionally stable; update it explicitly and rerun the lesson checks
 when adopting different data.
+
+## Eurostat download tutorial snapshot
+
+`eurostat_at_wind_2023.csv` and `.json` contain twelve monthly Austrian wind-generation observations (GWh), January–December 2023. The `.provenance.json` file records the exact API filters, retrieval time, provider update, source label and raw-response SHA-256. This is real public statistical data; it is neither synthetic nor the older August 2024 export. Follow [the download tutorial](../../section5/download-to-database.md) to reproduce it or explicitly select offline mode.

@@ -7,6 +7,7 @@ from pathlib import Path
 from textwrap import dedent
 import re
 import nbformat
+from course_reference_map import EXERCISE_REFERENCES
 
 ROOT = Path(__file__).resolve().parents[1] / 'EAGE_PythonRenewableEnergyCourse'
 BANK = {key: [] for key in ['general', 'solar', 'hydro', 'wind', 'geothermal']}
@@ -1093,10 +1094,28 @@ def render(topic):
         e['prompt']=re.sub(r'(?<=[A-Za-z])(?=\d)', ' ', e['prompt'])
         e['prompt']=re.sub(r'(?<=\d)(?=(?:MW|GW|kW|W/|m³|m²|m/s|kg|°C|km|h\b))',' ',e['prompt'])
         level='Easy' if i<=5 else 'Medium' if i<=15 else 'Hard'
-        text+=f'({topic}-exercise-{i:02})=\n### Exercise {i:02} — {e["title"]}\n\n**Difficulty:** {level}\n\n**Reference:** {REFERENCES[topic]}\n\n**Task:** {e["prompt"]}\n\n```{{code-cell}} python\n# Your solution for {topic} exercise {i:02}.\n```\n\n::::{{dropdown}} Step-by-step answer — {topic.title()} {i:02}\n\n'
+        text+=f'({topic}-exercise-{i:02})=\n### Exercise {i:02} — {e["title"]}\n\n**Difficulty:** {level}\n\n**Reference:** {EXERCISE_REFERENCES[topic][i-1]}\n\n**Task:** {e["prompt"]}\n\n```{{code-cell}} python\n# Your solution for {topic} exercise {i:02}.\n```\n\n::::{{dropdown}} Step-by-step answer — {topic.title()} {i:02}\n\n'
         text+='\n'.join(f'{j}. {s}' for j,s in enumerate(e['steps'],1))
         text+=f'\n\n```{{code-cell}} python\n{e["code"]}\n```\n\n**Interpretation:** {e["interpretation"]}\n\n::::\n\n'
     return text
+
+def notebook_citations(text):
+    """Make MyST citations usable in ordinary Jupyter Markdown renderers."""
+    bibliography=(ROOT/'references.bib').read_text(encoding='utf-8')
+    labels={}
+    for key,body in re.findall(r'@\w+\{([^,]+),\s*(.*?)\n\}',bibliography,re.S):
+        def field(name):
+            match=re.search(r'\b'+name+r'\s*=\s*\{(.*?)\}\s*[,\n]',body+'\n',re.S|re.I)
+            return match.group(1).replace('{','').replace('}','') if match else ''
+        author=field('author') or field('editor') or key
+        people=author.split(' and ')
+        surnames=[person.split(',')[0] for person in people]
+        short=(' & '.join(surnames) if len(surnames)<=2 else surnames[0]+' et al.')
+        labels[key]=short+', '+field('year')
+    def replace(match):
+        keys=[part.strip().lstrip('@') for part in match[1].split(';')]
+        return '; '.join(f'[{labels.get(key,key)}](#reference-{key})' for key in keys)
+    return re.sub(r'\[@([^\]]+)\]',replace,text)
 
 def export_notebook(path):
     """Create a companion .ipynb from the complete MyST chapter, not just exercises."""
@@ -1114,6 +1133,7 @@ def export_notebook(path):
             cell.source=re.sub(r'^::::\{dropdown\} (.*)$',r'#### \1',cell.source,flags=re.M)
             cell.source=re.sub(r'^::::\s*$','',cell.source,flags=re.M)
             cell.source=re.sub(r'^\([a-z]+-exercise-\d+\)=\n','',cell.source,flags=re.M)
+            cell.source=notebook_citations(cell.source)
     # Preserve checked code outputs when only surrounding teaching text changes.
     destination=path.with_suffix('.ipynb')
     if destination.exists():
@@ -1134,7 +1154,7 @@ def export_notebook(path):
         def field(name):
             match=re.search(r'\b'+name+r'\s*=\s*\{(.*?)\}\s*[,\n]',body+'\n',re.S|re.I)
             return match.group(1).replace('{','').replace('}','') if match else ''
-        details.append(f'- **{key}:** {field("author")}. {field("title")} ({field("year")}). '+field('url'))
+        details.append(f'<a id="reference-{key}"></a>\n\n- **{key}:** {field("author") or field("editor")}. {field("title")} ({field("year")}). '+field('url'))
     cells.append(nbformat.v4.new_markdown_cell('\n'.join(details)))
     nb=nbformat.v4.new_notebook(cells=cells,metadata={'kernelspec':{'name':'python3','display_name':'Python 3','language':'python'},'language_info':{'name':'python'}})
     nbformat.write(nb,destination)

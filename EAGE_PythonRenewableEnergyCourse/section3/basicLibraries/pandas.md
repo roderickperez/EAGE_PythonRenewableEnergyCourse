@@ -9,7 +9,7 @@ kernelspec:
 
 Pandas, created by Wes McKinney in 2008, is a [Python library](https://github.com/pandas-dev/pandas) used for working with data sets. It's name has a reference to both "Panel Data", and "Python Data Analysis". Pandas is mostly used for analyzing, cleaning, exploring, and manipulating data. Some people refers to it as the "Excel for Python" since it allows us to analyze big data and make conclusions based on statistical theories, as well as to clean messy data sets, and make them readable and relevant.
 
-In order to use Pandas, you need to install it, and then import it using the `import` keyword. It is common to use the `pd` keyword as alias for Pandas.
+In order to use Pandas, you need to install it, and then import it using the `import` keyword. It is common to use the name `pd` as an import alias for Pandas.
 
 
 ```{code-cell} python
@@ -28,7 +28,7 @@ mydataset = {
 print(type(mydataset))
 ```
 
-We can convert this dictionary to a Pandas DataFrame using the `pd.DataFrame` function.
+We can convert this dictionary to a Pandas DataFrame using the `pd.DataFrame` function. [pandas introductory guide](https://pandas.pydata.org/docs/user_guide/10min.html).
 
 ```{code-cell} python
 pandasDataFrame = pd.DataFrame(mydataset)
@@ -47,9 +47,9 @@ Now, we can visualize the new Pandas `DataFrame`, such as:
 print(pandasDataFrame)
 ```
 
-Notice that Pandas format the `DataFrame` labelling the `columns` with its corresponding names. Also, the `DataFrame` is indexed by its `index` (left column), and it is visualized in a nice manner.
+Notice that Pandas format the `DataFrame` labelling the `columns` with its corresponding names. Also, the `DataFrame` is indexed by its `index` (left column), and it is visualized in a nice manner. [pandas introductory guide](https://pandas.pydata.org/docs/user_guide/10min.html).
 
-We can use some Pandas functions to visualize the `DataFrame`, such as the `head` function, which displays the first five rows of the `DataFrame`.
+We can use some Pandas functions to visualize the `DataFrame`, such as the `head` function, which displays the first five rows of the `DataFrame`. [pandas introductory guide](https://pandas.pydata.org/docs/user_guide/10min.html).
 
 ```{code-cell} python
 print(pandasDataFrame.head())
@@ -63,11 +63,11 @@ print(pandasDataFrame.tail())
 
 ## Indexing and Slicing
 
-There are two ways to index and slice a Pandas `DataFrame`, `loc[]` and `iloc[]`:
+Two explicit indexers are `.loc[]` and `.iloc[]`; pandas also provides column selection, Boolean masks and scalar accessors. Label slices with `.loc` generally include both endpoints, while positional `.iloc` slices exclude the stop position. [pandas introductory guide](https://pandas.pydata.org/docs/user_guide/10min.html).
 
 The main differences between the two are:
 * `loc` is **label-based**, which means that you have to specify rows and columns based on their row and column labels.
-* `iloc` is **integer position-based**, so you have to specify rows and columns by their integer position values (0-based integer position).
+* `iloc` is **integer position-based**, so you have to specify rows and columns by their integer position values (0-based integer position). [pandas introductory guide](https://pandas.pydata.org/docs/user_guide/10min.html).
 
 ```{image} ../../images/pandas_loc_iloc.png
 :alt: pandas_loc_iloc
@@ -76,7 +76,7 @@ The main differences between the two are:
 :align: center
 ```
 
-Both `loc` and `iloc` allow input to be a single value. We can use the following syntax for data selection:
+Both `loc` and `iloc` allow input to be a single value. We can use the following syntax for data selection: [pandas introductory guide](https://pandas.pydata.org/docs/user_guide/10min.html).
 
 ```text
 dataframe.loc[row_label, column_label]
@@ -90,7 +90,7 @@ dataframe.iloc[row_position, column_position]
 
 ## `loc[]`
 
-As you can see, Pandas format the `DataFrame` as a table with rows and columns. Similar to indexing, we can use the `loc` attribute to return one or more specified row(s). For example, if we want to return the 3rd row (corresponding to the index 2) of our `DataFrame`, we can use the following code:
+As you can see, Pandas format the `DataFrame` as a table with rows and columns. Similar to indexing, we can use the `loc` attribute to return one or more specified row(s). For example, if we want to return the 3rd row (corresponding to the index 2) of our `DataFrame`, we can use the following code: [pandas introductory guide](https://pandas.pydata.org/docs/user_guide/10min.html).
 
 ```{code-cell} python
 print(pandasDataFrame.loc[2])
@@ -110,13 +110,13 @@ pandasDataFrame = pd.DataFrame(mydataset, index=["City 1", "City 2", "City 3", "
 print(pandasDataFrame)
 ```
 
-Based on this, instead of using the index 0, 1, 2, 3, 4, 5, 6, 7, we can use the index "City 1", "City 2", "City 3", "City 4", "City 5", "City 6", "City 7", "City 8" to locate a specific row in our `DataFrame`.
+Based on this, instead of using the index 0, 1, 2, 3, 4, 5, 6, 7, we can use the index "City 1", "City 2", "City 3", "City 4", "City 5", "City 6", "City 7", "City 8" to locate a specific row in our `DataFrame`. [pandas introductory guide](https://pandas.pydata.org/docs/user_guide/10min.html).
 
 ```{code-cell} python
 print(pandasDataFrame.loc["City 3"])
 ```
 
-Using `loc` we can return the specific rows of our `DataFrame` using the index labels.
+Using `loc` we can return the specific rows of our `DataFrame` using the index labels. [pandas introductory guide](https://pandas.pydata.org/docs/user_guide/10min.html).
 
 ```{code-cell} python
 print(pandasDataFrame.loc["City 3", "cities"])
@@ -138,7 +138,7 @@ print(pandasDataFrame.iloc[2, 0])
 We can also use `:` to return all data.
 :::
 
-We can also `slice` our `DataFrame` using the `loc` and `iloc` attributes. For example, we can return the first three rows of our `DataFrame` using the following code:
+We can also `slice` our `DataFrame` using the `loc` and `iloc` attributes. For example, we can return the first three rows of our `DataFrame` using the following code: [pandas introductory guide](https://pandas.pydata.org/docs/user_guide/10min.html).
 
 ```{code-cell} python
 print(pandasDataFrame.iloc[2:5, 0])
@@ -198,7 +198,7 @@ print(precipitationDataFrame)
 
 This is the bundled [NOAA hourly-precipitation example](../../data/examples/README.md),
 not a current weather feed. Loading the local snapshot makes the same code work
-in the browser sandbox and from any directory within the book folder.
+in the browser sandbox and from any directory within the book folder. [pandas introductory guide](https://pandas.pydata.org/docs/user_guide/10min.html).
 
 :::{admonition} Exercise 11
 :class: note
@@ -229,7 +229,7 @@ assert len(last_seven) <= 7
 
 ## Files Analysis
 
-Another of the advantages of using Pandas is the ability to analyze the data, and to perform various quick statistical analyses.
+Another of the advantages of using Pandas is the ability to analyze the data, and to perform various quick statistical analyses. [pandas introductory guide](https://pandas.pydata.org/docs/user_guide/10min.html).
 
 ### Info
 The DataFrames object has a method called `info()`, that gives you more information about the data set.
@@ -238,11 +238,11 @@ The DataFrames object has a method called `info()`, that gives you more informat
 print(precipitationDataFrame.info())
 ```
 
-The result tells us the number of rows and columns. Also, the name of each column, with their corresponding data type, as well as how many `Non-Null` values there are present in each column. Compare each non-null count with the row count to identify missing values; a non-null entry is a present value.
+The result tells us the number of rows and columns. Also, the name of each column, with their corresponding data type, as well as how many `Non-Null` values there are present in each column. Compare each non-null count with the row count to identify missing values; a non-null entry is a present value. [pandas introductory guide](https://pandas.pydata.org/docs/user_guide/10min.html).
 
 ### Describe
 
-The `describe()` method returns description of the data in the DataFrame. If the `DataFrame` contains numerical data, the description contains these information for each column:
+The `describe()` method returns description of the data in the DataFrame. If the `DataFrame` contains numerical data, the description contains these information for each column: [pandas introductory guide](https://pandas.pydata.org/docs/user_guide/10min.html).
 
 * count - The number of not-empty values.
 * mean - The average (mean) value.

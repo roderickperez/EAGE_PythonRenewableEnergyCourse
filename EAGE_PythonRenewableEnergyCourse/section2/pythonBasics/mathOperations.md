@@ -57,7 +57,7 @@ print(c)
 ```
 
 ## Floor division
-Divides the first operand (`x`) by the second (`y`). It is used to find the floorof the quotient when first operand is divided by the second.
+Divides the first operand (`x`) by the second (`y`). It is used to find the floor of the quotient when first operand is divided by the second.
 ```{code-cell} python
 a = 10
 b = 3
@@ -93,7 +93,7 @@ print(c)
 :class: tip
 Powers take precedence over multiplications and divisions.
 
-Using negative exponents or decimals, inverse powers or nth roots can be calculated. Since, 
+Using negative exponents or decimals, inverse powers or nth roots can be calculated. Since,  [Python numeric operations](https://docs.python.org/3/library/stdtypes.html#numeric-types-int-float-complex).
 
 $$a^{-b} = \frac{1}{a^{b}}$$
 
@@ -126,7 +126,7 @@ It is possible to write consecutive addition and subtraction, but it is not reco
 3 + - + 4
 ```
 What you cannot do is write multiplications and divisions in a row:
-```python
+ [Python numeric operations](https://docs.python.org/3/library/stdtypes.html#numeric-types-int-float-complex).```python
 3 * / 4
 ```
 
@@ -137,7 +137,7 @@ Python can handle complex number calculations. The imaginary part is accompanied
 ```python
 1 + 1j
 ```
-In the same way, basic operations can be done with complex numbers.
+In the same way, basic operations can be done with complex numbers. [Python numeric operations](https://docs.python.org/3/library/stdtypes.html#numeric-types-int-float-complex).
 
 ```{code-cell} python
 a = 1 + 1j

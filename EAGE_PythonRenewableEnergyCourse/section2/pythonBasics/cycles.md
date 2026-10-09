@@ -7,13 +7,13 @@ kernelspec:
 
 # Control Structures
 
-## Cycle
+## Conditions and loops
 
-Structures that allow me to execute sections of code based on a condition. This conditions are based on Conditional Statements and Logical Operators.
+An `if` statement selects a branch. A `for` or `while` loop repeats a block. Selection and repetition are different control structures. [Python control flow](https://docs.python.org/3/tutorial/controlflow.html).
 
 **Conditional Statements**
 
-Conditionals are handled as questions, and return booleans.
+For the built-in numeric values used here, comparisons produce `True` or `False`. An `if` statement tests truthiness; it does not itself return a Boolean. [Python comparisons and truth testing](https://docs.python.org/3/library/stdtypes.html#truth-value-testing).
 
 * Same as `==`
 * Not equal to `!=`
@@ -24,7 +24,7 @@ Conditionals are handled as questions, and return booleans.
 
 **Logical Operators**
 
-In the same way as the Conditional Statements, logical operators are used to combine multiple conditions.
+Boolean operators combine tests and short-circuit evaluation. `not` returns a Boolean; `and` and `or` return one of their operands, which need not be a Boolean (for example, `0 or 5` is `5`). [Python Boolean operations](https://docs.python.org/3/library/stdtypes.html#boolean-operations-and-or-not).
 * And `and`
 * Or `or`
 * Not `not`
@@ -33,16 +33,16 @@ In the same way as the Conditional Statements, logical operators are used to com
 
 ### if
 
-If cycle are control structures that allow to condition the execution of one blocks of code.
+An `if` statement executes its block when the condition is truthy. [Python if statements](https://docs.python.org/3/tutorial/controlflow.html#if-statements).
 
-```python
+```text
 if condition:
     run this section of code
 ```
 
 :::{admonition} Indentation
 :class: warning
-Python relies on indentation (whitespace at the beginning of a line) to define scope in the code. Other programming languages often use curly-brackets for this purpose.
+Indentation defines a statement block. An `if`, `for`, or `while` block does not introduce a separate local scope; a function does. Use four spaces consistently. [Python execution model](https://docs.python.org/3/reference/executionmodel.html#resolution-of-names).
 :::
 
 
@@ -171,14 +171,14 @@ if a > b or a > c:
 :::{admonition} Exercise 7 — Conditional classification
 :class: note
 
-**Reference:** Python tutorial [@pythonDocs]; NumPy [@numpyDocs]; pandas [@pandasDocs]; Matplotlib [@matplotlibDocs].
+**Reference:** [Python tutorial](https://docs.python.org/3/tutorial/). Exercise values are original teaching inputs.
 Using the conditional statements and logical operators explained in this section, classify monthly renewable-electricity generation in MWh as:
 * Excellent (greater than or equal to 1,000,000)
 * Good (100,000 up to but excluding 1,000,000)
 * Poor (greater than zero and less than 100,000)
 * No generation (zero production)
 
-These are arbitrary teaching labels, not industry performance thresholds. Enter monthly generation manually.
+These are arbitrary teaching labels, not industry performance thresholds. Enter monthly generation manually. [Python control flow](https://docs.python.org/3/tutorial/controlflow.html).
 
 ```python
 production = float(input("Monthly production: "))
@@ -210,7 +210,7 @@ print(classification)
 
 ### for
 
-A `for` loop is used for iterating over a sequence (that is either a list, a tuple, a dictionary, a set, or a string). This method is very convenient in case you want to repeat sequences of code. For example, if we wanted to print on the screen each of the elements that are stored in the following list, we can do the following:
+A `for` loop is used for iterating over a sequence (that is either a list, a tuple, a dictionary, a set, or a string). This method is very convenient in case you want to repeat sequences of code. For example, if we wanted to print on the screen each of the elements that are stored in the following list, we can do the following: [Python control flow](https://docs.python.org/3/tutorial/controlflow.html).
 
 ```{code-cell} python
 cities = ['London', 'Paris', 'Rome', 'Madrid', 'Berlin']
@@ -223,7 +223,7 @@ print(cities[4])
 
 ```
 
-As we can see, this method can be quite inconvenient in the case of having long sequences. This can be simplified via the `for` keywork:
+As we can see, this method can be quite inconvenient in the case of having long sequences. This can be simplified via the `for` keywork: [Python control flow](https://docs.python.org/3/tutorial/controlflow.html).
 
 ```{code-cell} python
 cities = ['London', 'Paris', 'Rome', 'Madrid', 'Berlin']
@@ -238,11 +238,11 @@ for city in cities:
 Notice that in this example, the keyword `city` is used to store the value of the current element in the sequence, and wasn't defined before the loop.
 :::
 
-The `for` loop does not require an indexing variable to set beforehand.
+The `for` loop does not require an indexing variable to set beforehand. [Python control flow](https://docs.python.org/3/tutorial/controlflow.html).
 
 ### `break` and `continue` Statements
 
-With the `break` statement we can stop the loop before it has looped through all the items:
+With the `break` statement we can stop the loop before it has looped through all the items: [Python control flow](https://docs.python.org/3/tutorial/controlflow.html).
 
 ```{code-cell} python
 cities = ['London', 'Paris', 'Rome', 'Madrid', 'Berlin']
@@ -253,7 +253,7 @@ for city in cities:
     break
 ```
 
-On the other hand, with the `continue` statement we can stop the current iteration of the loop, and continue with the next:
+On the other hand, with the `continue` statement we can stop the current iteration of the loop, and continue with the next: [Python control flow](https://docs.python.org/3/tutorial/controlflow.html).
 
 ```{code-cell} python
 cities = ['London', 'Paris', 'Rome', 'Madrid', 'Berlin']
@@ -273,7 +273,7 @@ for i in range(10):
   print(i)
 ```
 
-As we mentioned before, the `range()` function defaults to `0` as a starting value. Hwever it is possible to specify the starting value by adding a parameter: `range(2, 6)`, which means values from `2` to `6` (**but not including `6`**):
+As we mentioned before, the `range()` function defaults to `0` as a starting value. Hwever it is possible to specify the starting value by adding a parameter: `range(2, 6)`, which means values from `2` to `6` (**but not including `6`**): [Python control flow](https://docs.python.org/3/tutorial/controlflow.html).
 
 ```{code-cell} python
 
@@ -282,7 +282,7 @@ for i in range(2, 6):
 ```
 
 The `range()` function defaults to increment the sequence by `1`. However, it is possible to specify the increment value by adding a third parameter: 
-```{code-cell} python
+ [Python control flow](https://docs.python.org/3/tutorial/controlflow.html).```{code-cell} python
 
 for i in range(2, 30, 3):
   print(i)
@@ -290,7 +290,7 @@ for i in range(2, 30, 3):
 
 ## Nested Loops
 
-A nested loop is a loop inside a loop. It produces every combination of the two iterables. To pair corresponding cities and countries, use `zip()` instead:
+A nested loop is a loop inside a loop. It produces every combination of the two iterables. To pair corresponding cities and countries, use `zip()` instead: [Python control flow](https://docs.python.org/3/tutorial/controlflow.html).
 
 ```{code-cell} python
 
@@ -302,3 +302,4 @@ for city, country in zip(cities, countries):
 ```
 
 Use a true nested loop only when a Cartesian product is intended.
+ [Python control flow](https://docs.python.org/3/tutorial/controlflow.html).

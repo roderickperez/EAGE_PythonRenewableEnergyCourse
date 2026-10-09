@@ -7,14 +7,14 @@ kernelspec:
 
 # Matplotlib
 
-[Matplotlib](https://matplotlib.org/), created by John D. Hunter, is a [open source](https://github.com/matplotlib/matplotlib) low level graph plotting library in python that serves as a visualization utility. It is mostly written in python, a few segments are written in C, Objective-C and Javascript for Platform compatibility.
+Matplotlib is a Python plotting library. A `Figure` contains one or more `Axes`; each Axes holds its own data, scales and labels. The `pyplot` interface is convenient for short examples, while `fig, ax = plt.subplots()` makes the target Axes explicit. [Matplotlib quick-start guide](https://matplotlib.org/stable/users/explain/quick_start.html).
 
 :::{admonition} Matplotlib Examples
 :class: tip
 I suggest you to visit the official website of Matplotlib, where in the Examples section you can find some [examples](https://matplotlib.org/stable/gallery/index), and its code.
 :::
 
-As we did in the past, we can install Matplotlib using the `pip` command, and then import it using the `import` keyword.
+As we did in the past, we can install Matplotlib using the `pip` command, and then import it using the `import` keyword. [Matplotlib pyplot API](https://matplotlib.org/stable/api/pyplot_summary.html).
 
 
 ```python
@@ -30,13 +30,13 @@ import matplotlib.pyplot as plt
 
 ### Line Plot
 
-The `plot()` function is used to draw points (markers) in a diagram. By default, it will draw a line from point to point. The function takes parameters for specifying points in the diagram. 
+The `plot()` function is used to draw points (markers) in a diagram. By default, it will draw a line from point to point. The function takes parameters for specifying points in the diagram.  [Matplotlib pyplot API](https://matplotlib.org/stable/api/pyplot_summary.html).
 
 * Parameter 1 is an array containing the points on the x-axis.
 
 * Parameter 2 is an array containing the points on the y-axis.
 
-In case we want to draw a line from position $(x_{0}, y_{0})$ to position $(x_{1}, y_{1})$, we can use Numpy to define both arrays, and then use the `plot` function from Matplotlib.
+In case we want to draw a line from position $(x_{0}, y_{0})$ to position $(x_{1}, y_{1})$, we can use Numpy to define both arrays, and then use the `plot` function from Matplotlib. [Matplotlib pyplot API](https://matplotlib.org/stable/api/pyplot_summary.html).
 
 ```{code-cell} python
 import numpy as np
@@ -65,7 +65,7 @@ plt.show()
 If case that we do not specify the points in the x-axis, Matplotlib will get the default values 0, 1, 2, 3, ... (depending on the length of the y-points).
 
 So, if we take the same example as above, and leave out the x-points, the diagram will look like this:
-:::
+::: [Matplotlib pyplot API](https://matplotlib.org/stable/api/pyplot_summary.html).
 
 ```{code-cell} python
 y_points = np.array([1, 1, 3, 4])
@@ -148,7 +148,7 @@ plt.show()
 ```
 
 #### Line Width
-We can also vary the width of the line using the keyword argument `linewidth` (or the shorter `lw`). Notice that the width value must be a positive float.
+We can also vary the width of the line using the keyword argument `linewidth` (or the shorter `lw`). Notice that the width value is measured in points; use a nonnegative number.
 
 ```{code-cell} python
 
@@ -161,7 +161,7 @@ plt.show()
 
 ### Multiple Lines
 
-In case we want to plot multiple lines, we can use the `plot` function again, but this time, we can pass in multiple arrays.
+In case we want to plot multiple lines, we can use the `plot` function again, but this time, we can pass in multiple arrays. [Matplotlib pyplot API](https://matplotlib.org/stable/api/pyplot_summary.html).
 
 ```{code-cell} python
 array1 = np.array([1, 1, 3, 4])
@@ -253,7 +253,7 @@ plt.subplot(1, 2, 2)
 
 ### Vertically Stacked Subplots
 
-For vertically stacked plots, use two rows and one column: `subplot(2, 1, ...)`.
+For vertically stacked plots, use two rows and one column: `subplot(2, 1, ...)`. [Matplotlib pyplot API](https://matplotlib.org/stable/api/pyplot_summary.html).
 
 ```{code-cell} python
 # Plot 1:
@@ -309,7 +309,7 @@ plt.show()
 
 ## Super Title
 
-Notice that in the past we used the `plt.title()` function to set the title of the plot. However, this will add a title to the each specific figure, not just the plot in general. To accomplish this, we can use the `suptitle()` function.
+Notice that in the past we used the `plt.title()` function to set the title of the plot. However, this will add a title to the each specific figure, not just the plot in general. To accomplish this, we can use the `suptitle()` function. [Matplotlib pyplot API](https://matplotlib.org/stable/api/pyplot_summary.html).
 
 ```{code-cell} python
 # Plot 1:
@@ -335,7 +335,7 @@ plt.show()
 
 ### Scatter Plot
 
-In Matplotlib we can use the `scatter()` function to draw a scatter plot. It plots one dot for each observation. It needs two arrays of the same length, one for the values of the x-axis, and one for values on the y-axis:
+In Matplotlib we can use the `scatter()` function to draw a scatter plot. It plots one dot for each observation. It needs two arrays of the same length, one for the values of the x-axis, and one for values on the y-axis: [Matplotlib pyplot API](https://matplotlib.org/stable/api/pyplot_summary.html).
 
 ```{code-cell} python
 
@@ -364,7 +364,7 @@ plt.show()
 :class: note
 
 A variation of the `bar()` function is the `barh()` function, which draws horizontal bars.
-```{code-cell} python
+ [Matplotlib pyplot API](https://matplotlib.org/stable/api/pyplot_summary.html).```{code-cell} python
 
 x = np.array(["A", "B", "C", "D"])
 y = np.array([3, 8, 1, 10])
@@ -380,7 +380,7 @@ plt.show()
 
 **Reference:** Matplotlib user guide [@matplotlibDocs]; energy interpretation [@manwell2009; @foster2010].
 
-Can you think of a way to generate a bar plot, where the bars are oriented horizontally, red, with a height of 0.5?
+Can you think of a way to generate a bar plot, where the bars are oriented horizontally, red, with a height of 0.5? [Matplotlib pyplot API](https://matplotlib.org/stable/api/pyplot_summary.html).
 
 ```python
 sources = ["Solar", "Wind", "Hydro"]
@@ -406,7 +406,7 @@ plt.show()
 
 ### Histogram
 
-A histogram is a graph showing frequency distributions within each given interval. In Matplotlib, we use the `hist()` function to create histograms. It will use an array of numbers to create a histogram, the array is sent into the function as an argument.
+A histogram is a graph showing frequency distributions within each given interval. In Matplotlib, we use the `hist()` function to create histograms. It will use an array of numbers to create a histogram, the array is sent into the function as an argument. [Matplotlib pyplot API](https://matplotlib.org/stable/api/pyplot_summary.html).
 
 ```{code-cell} python
 

@@ -16,3 +16,4 @@ fig.show()
 ```
 
 Interactivity does not correct misleading scales or definitions. Include units, source, date scope, and accessible colour choices just as for a static chart.
+ [Plotly Python documentation](https://plotly.com/python/).

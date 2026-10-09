@@ -7,11 +7,11 @@ kernelspec:
 
 # Functions
 
-So far we have learned to perform simple operations, but this is not convenient if we want to evaluate the previous expression with different values. For that we define a function, which is a code that I can use as many times in my code.
+So far we have learned to perform simple operations, but this is not convenient if we want to evaluate the previous expression with different values. For that we define a function, which is a code that I can use as many times in my code. [Python function definitions](https://docs.python.org/3/tutorial/controlflow.html#defining-functions).
 
-In any programming language a function is a block of code that we can define once, and call it as many times as we want during the execution of our program. Inside the function, we can define variables (known as parameters or arguments) and use them to store data. This parameters are specified after the function name, inside the parentheses. Depeding of the function, you can add as many arguments as you want, just separate them with a comma. All required parameters must receive arguments. Parameters with defaults may be omitted; `*args` and `**kwargs` allow variable argument counts.
+In any programming language a function is a block of code that we can define once, and call it as many times as we want during the execution of our program. Inside the function, we can define variables (known as parameters or arguments) and use them to store data. This parameters are specified after the function name, inside the parentheses. Depeding of the function, you can add as many arguments as you want, just separate them with a comma. All required parameters must receive arguments. Parameters with defaults may be omitted; `*args` and `**kwargs` allow variable argument counts. [Python function definitions](https://docs.python.org/3/tutorial/controlflow.html#defining-functions).
 
-Python uses the keyword `def` to define a function. The function name is followed by its parameters and a colon (`:`). Names cannot contain spaces and normally follow the lowercase `snake_case` convention, although an uppercase first letter is syntactically valid. A function may use `return` to provide a value; without an explicit `return`, Python returns `None`. Parameters are the names in the definition, while arguments are the values supplied when the function is called. Clear docstrings make functions easier to understand and reuse.
+Python uses the keyword `def` to define a function. The function name is followed by its parameters and a colon (`:`). Names cannot contain spaces and normally follow the lowercase `snake_case` convention, although an uppercase first letter is syntactically valid. A function may use `return` to provide a value; without an explicit `return`, Python returns `None`. Parameters are the names in the definition, while arguments are the values supplied when the function is called. Clear docstrings make functions easier to understand and reuse. [Python function definitions](https://docs.python.org/3/tutorial/controlflow.html#defining-functions).
 
 For example:
 
@@ -21,10 +21,10 @@ def myFunction(parameters):
     This is the documentation of the myFunction, explaining the functionallity of it.
     """
     # code
-    return result
+    return parameters
 ```
 
-After the function is defined, we can call it by using the name of the function, and passing the values of the parameters. For example:
+After the function is defined, we can call it by using the name of the function, and passing the values of the parameters. For example: [Python function definitions](https://docs.python.org/3/tutorial/controlflow.html#defining-functions).
 
 ```text
 myFunction(parameters)
@@ -70,7 +70,7 @@ functionDefaultParameter()
 ```
 
 However, notice that we can also change the values of the default parameters.
-```{code-cell} python
+ [Python function definitions](https://docs.python.org/3/tutorial/controlflow.html#defining-functions).```{code-cell} python
 functionDefaultParameter(1, 6)
 ```
 
@@ -79,7 +79,7 @@ functionDefaultParameter(1, 6)
 :class: tip
 In IPython and Jupyter, appending `?` displays help for an object. Standard Python code should use `help(function_name)` instead.
 
-Also, by using the combination of Shift and Tab on your keyboard, you can see the documentation associated with it.
+Also, by using the combination of Shift and Tab on your keyboard, you can see the documentation associated with it. [Python function definitions](https://docs.python.org/3/tutorial/controlflow.html#defining-functions).
 
 ```{code-cell} python
 help(functionDefaultParameter)
@@ -90,7 +90,7 @@ help(functionDefaultParameter)
 :::{admonition} Exercise 2 — Celsius conversion
 :class: note
 
-**Reference:** Python tutorial [@pythonDocs]; NumPy [@numpyDocs]; pandas [@pandasDocs]; Matplotlib [@matplotlibDocs].
+**Reference:** [Python tutorial](https://docs.python.org/3/tutorial/). Exercise values are original teaching inputs.
 Knowing that:
 
 $$°F = °C \times \frac{9}{5} + 32$$
@@ -132,7 +132,7 @@ print(name)
 :::{admonition} Exercise 3
 :class: note
 
-**Reference:** Python tutorial [@pythonDocs]; NumPy [@numpyDocs]; pandas [@pandasDocs]; Matplotlib [@matplotlibDocs].
+**Reference:** [Python tutorial](https://docs.python.org/3/tutorial/). Exercise values are original teaching inputs.
 Continuing with our previous exercise, create a program in which the user can manually enter the value of degrees Celsius, and can know its correspondence in Fahrenheit.
 
 The result should look something like:
@@ -159,7 +159,7 @@ print(f"{celsius:g} degrees Celsius equals {fahrenheit:g} degrees Fahrenheit")
 
 ## Assertions: executable checks
 
-An `assert` states a condition that should be true while developing or testing a program. If the condition is false, Python raises `AssertionError` immediately. Assertions are especially useful after defining a function because they turn expected behaviour into executable examples.
+An `assert` states a condition that should be true while developing or testing a program. If the condition is false, Python raises `AssertionError` immediately. Assertions are especially useful after defining a function because they turn expected behaviour into executable examples. [Python function definitions](https://docs.python.org/3/tutorial/controlflow.html#defining-functions).
 
 ```{code-cell} python
 def celsius_to_fahrenheit(celsius):
@@ -171,14 +171,14 @@ assert celsius_to_fahrenheit(100) == 212
 assert celsius_to_fahrenheit(-40) == -40
 ```
 
-Use assertions for programmer assumptions and tests—not for validating user input. User input should be checked with conditionals and clear exceptions because Python can disable assertions when run with optimization.
+Use assertions for programmer assumptions and tests—not for validating user input. User input should be checked with conditionals and clear exceptions because Python can disable assertions when run with optimization. [Python function definitions](https://docs.python.org/3/tutorial/controlflow.html#defining-functions).
 
 :::{admonition} Exercise — Add function checks
 :class: note
 
-**Reference:** Python tutorial [@pythonDocs]; NumPy [@numpyDocs]; pandas [@pandasDocs]; Matplotlib [@matplotlibDocs].
+**Reference:** [Python tutorial](https://docs.python.org/3/tutorial/). Exercise values are original teaching inputs.
 
-Write `is_valid_efficiency(value)` so it returns `True` only for values from 0 to 1 inclusive. Add assertions for `0`, `0.85`, `1`, `-0.1`, and `1.2`.
+Write `is_valid_efficiency(value)` so it returns `True` only for values from 0 to 1 inclusive. Add assertions for `0`, `0.85`, `1`, `-0.1`, and `1.2`. [Python function definitions](https://docs.python.org/3/tutorial/controlflow.html#defining-functions).
 
 ```python
 def is_valid_efficiency(value):
@@ -206,7 +206,7 @@ assert not is_valid_efficiency(1.2)
 
 ## Lambda Functions
 
-A Python **Lambda function** is a small anonymous function which behaves like a normal function in regard to arguments. It can take any number of arguments, but can only have one expression. Therefore, a lambda parameter can be initialized with a default value: the parameter n takes the outer n as a default value. 
+A Python **Lambda function** is a small anonymous function which behaves like a normal function in regard to arguments. It can take any number of arguments, but can only have one expression. Like a function defined with `def`, a lambda may have default arguments. The default value is evaluated when the function is created; it is not automatically taken from an outer variable.  [Python function definitions](https://docs.python.org/3/tutorial/controlflow.html#defining-functions).
 
 ```python
 lambda arguments : expression
@@ -222,7 +222,7 @@ print(x(5))
 :::{admonition} Why Use Lambda Functions?
 The power of lambda is better shown when you use them as an anonymous function inside another function.
 
-Say you have a function definition that takes one argument, and that argument will be multiplied with an unknown number:
+Say you have a function definition that takes one argument, and that argument will be multiplied with an unknown number: [Python function definitions](https://docs.python.org/3/tutorial/controlflow.html#defining-functions).
 
 
 ```python
@@ -234,7 +234,7 @@ def myfunc(n):
 :::{admonition} Exercise 4
 :class: note
 
-**Reference:** Python tutorial [@pythonDocs]; NumPy [@numpyDocs]; pandas [@pandasDocs]; Matplotlib [@matplotlibDocs].
+**Reference:** [Python tutorial](https://docs.python.org/3/tutorial/). Exercise values are original teaching inputs.
 Using the previous syntax, define a (lambda) function to make a function that always doubles the number you input in:
 
 ```python

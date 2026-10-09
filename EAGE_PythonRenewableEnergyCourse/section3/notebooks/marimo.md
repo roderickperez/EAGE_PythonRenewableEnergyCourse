@@ -1,34 +1,46 @@
-# Marimo
+# marimo: a reactive Python notebook
 
-Marimo is a reactive Python notebook designed to keep code, outputs, and dependencies synchronized. When a variable changes, Marimo updates the cells that depend on it.
+**marimo** (the tool intended by “Marino”) tracks variables defined and read by cells. Running a changed cell normally reruns dependent cells; lazy mode marks them stale until requested. This differs from Jupyter's chosen execution order. [Reactivity](https://docs.marimo.io/guides/reactivity/)
 
-Marimo notebooks are stored as Python files, which makes them convenient to version-control and review alongside other source code.
+Notebooks are Python `.py` files. Reactivity does not automatically track every external CSV/API change or in-place mutation. Keep explicit provenance and refresh steps; avoid defining the same global name in several cells. [Reactivity](https://docs.marimo.io/guides/reactivity/), [multiple definitions](https://docs.marimo.io/guides/understanding_errors/multiple_definitions/)
 
-Install and run Marimo with:
+## Install and launch
+
+In an activated local environment, run these terminal commands:
 
 ```bash
-pip install marimo
-marimo edit
+python -m pip install marimo
+marimo edit energy_demo.py
 ```
 
-A minimal reactive notebook can contain ordinary Python code and interactive elements:
+The editor opens in your browser; Python runs in the environment hosting marimo. This application is separate from the EAGE sandbox worker. [Installation](https://docs.marimo.io/getting_started/installation/), [quickstart](https://docs.marimo.io/getting_started/quickstart/)
 
-Run this application in your local Python environment with Marimo installed.
-The EAGE sandbox includes this explanation, but its worker does not host a Marimo
-web server; use its normal Python workspace for calculations instead.
+## Reactive energy example
 
-```python
-import marimo
+Create four cells in the editor:
 
-app = marimo.App()
+```text
+Cell 1:
+import marimo as mo
 
-@app.cell
-def explore():
-    import pandas as pd
-    return pd
+Cell 2:
+power = mo.ui.slider(0, 10, value=2, label="Mean power (MW)")
+power
 
-if __name__ == "__main__":
-    app.run()
+Cell 3:
+hours = 3
+energy_mwh = power.value * hours
+
+Cell 4:
+mo.md(f"Energy in {hours} h: **{energy_mwh:.1f} MWh**")
 ```
 
-Marimo is a useful option for interactive data applications that need more structure than a traditional notebook.
+Move the slider from 2 to 5 MW: output changes from 6 to 15 MWh. Keep widget creation and reading `.value` in separate cells for dependency tracking. [Interactive elements](https://docs.marimo.io/guides/interactivity/), [slider API](https://docs.marimo.io/api/inputs/slider/). Physics: original example $E=P\Delta t$ [@jica2011], Chapter 3.
+
+Save; display without the editor using `marimo run energy_demo.py`. [Run as an app](https://docs.marimo.io/guides/apps/)
+
+## Practice
+
+- **Easy:** predict output before moving the slider.
+- **Medium:** replace `hours = 3` with a second widget.
+- **Challenge:** add a CSV and show its source, retrieval time and units. Explain which changes refresh automatically.

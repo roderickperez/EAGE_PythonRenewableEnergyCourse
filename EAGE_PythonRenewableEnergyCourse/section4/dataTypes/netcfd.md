@@ -1,6 +1,6 @@
 # netCDF
 
-netCDF is a self-describing binary format widely used for gridded weather, climate, and Earth-science data. Variables can include dimensions, coordinates, units, calendars, fill values, and other metadata. The format name is **netCDF**, not “NetCFD.”
+netCDF is a self-describing binary format widely used for gridded weather, climate, and Earth-science data. Variables can include dimensions, coordinates, units, calendars, fill values, and other metadata. The format name is **netCDF**, not “NetCFD.” [Unidata netCDF data model](https://docs.unidata.ucar.edu/netcdf-c/current/netcdf_data_model.html).
 
 Use xarray to preserve labelled dimensions:
 
@@ -23,3 +23,4 @@ Check longitude convention, latitude order, time calendar, units, chunking, and 
 
 The filename is illustrative: the three synthetic rows above are not an actual
 reanalysis product. For real analysis, record the downloaded provider and version.
+ [Unidata netCDF data model](https://docs.unidata.ucar.edu/netcdf-c/current/netcdf_data_model.html).

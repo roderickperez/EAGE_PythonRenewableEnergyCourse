@@ -25,13 +25,13 @@ A photovoltaic (PV) cell converts part of incident solar radiation directly into
 
 Solar energy is electromagnetic radiation arriving from the Sun. A useful solar system must intercept that radiation, convert part of it into a useful form, and deliver that output to a load. The resource at a site depends on time, location, atmospheric conditions and the orientation of the receiving surface. A sunny location alone does not specify how much electricity a particular installation will deliver [@foster2010; @wade2003].
 
-Two conversion routes must be distinguished. **Photovoltaic (PV) systems** convert absorbed light directly into DC electricity in semiconductor devices. **Solar thermal systems** absorb radiation as heat; that heat can supply hot water or an industrial process, or drive a heat engine in a concentrating solar power plant. A PV inverter is an electrical converter, whereas a solar thermal turbine is part of a thermodynamic cycle. Neither a PV module nor a thermal collector is, by itself, an energy-storage device.
+Two conversion routes must be distinguished. **Photovoltaic (PV) systems** convert absorbed light directly into DC electricity in semiconductor devices. **Solar thermal systems** absorb radiation as heat; that heat can supply hot water or an industrial process, or drive a heat engine in a concentrating solar power plant. A PV inverter is an electrical converter, whereas a solar thermal turbine is part of a thermodynamic cycle. Neither a PV module nor a thermal collector is, by itself, an energy-storage device. [@foster2010], Chapters 2, 4 and 5; [@wade2003], Chapter 3.
 
-This chapter develops PV in detail because the Python exercises and final project model electrical PV output. The solar-thermal comparison below explains the wider meaning of solar energy without treating thermal and electrical output as interchangeable. The supplied Foster and Wade texts are the primary learning references; Duffie and Beckman and Kalogirou provide additional reading on radiation, collectors and system modelling [@foster2010; @wade2003; @duffie2013; @kalogirou2014solar].
+This chapter develops PV in detail because the Python exercises and final project model electrical PV output. The solar-thermal comparison below explains the wider meaning of solar energy without treating thermal and electrical output as interchangeable. Foster and Wade provide the introductory reading; Goswami adds detailed radiation geometry, PV operating points and thermal storage. Duffie and Beckman and Kalogirou provide additional reading on radiation, collectors and system modelling [@foster2010; @wade2003; @goswami2015; @duffie2013; @kalogirou2014solar].
 
 ### From sunlight to delivered electricity
 
-The system sequence is **solar resource → module surface → PV cells → DC wiring → inverter → AC wiring and transformer → meter/load**. Losses and limits can occur at every stage. A grid-connected system usually exports or self-consumes AC electricity. An off-grid system may use a battery and charge controller; then the chosen model must also track stored energy and battery conversion losses.
+The system sequence is **solar resource → module surface → PV cells → DC wiring → inverter → AC wiring and transformer → meter/load**. Losses and limits can occur at every stage. A grid-connected system usually exports or self-consumes AC electricity. An off-grid system may use a battery and charge controller; then the chosen model must also track stored energy and battery conversion losses. [@wade2003], Chapters 3–5 and 9; [@foster2010], Chapters 5 and 7.
 
 | Component or term | Meaning and role |
 |---|---|
@@ -44,23 +44,29 @@ The system sequence is **solar resource → module surface → PV cells → DC w
 | Balance of system | Wiring, switches, protection, mounting and other equipment beyond the modules |
 | DC and AC nameplate | Ratings at different electrical boundaries; they must be distinguished in ratios and capacity factors |
 
+*Source for these definitions/calculations:* [@wade2003], Chapters 3–5 and 9; [@foster2010], Chapters 5 and 7.
+
 Series and parallel connections change voltage and current differently. For identical modules operating compatibly, series connection adds voltage while maintaining string current; parallel connection adds current at the common voltage. Real mismatch, partial shading, cable losses, bypass diodes and inverter operating limits complicate this ideal picture. A shaded module is therefore not always represented accurately by reducing the whole array's irradiance by one average percentage [@wade2003; @foster2010].
 
 ## Solar resource and measurement definitions
 
 ### Irradiance, irradiation and the receiving plane
 
-**Irradiance**, denoted here by $G$, is radiant power incident per unit area, in W/m². **Irradiation**, denoted by $H_{POA}$ for a module plane, is incident radiant energy per unit area over a specified period, often kWh/m². The subscripts identify the measurement surface: a horizontal sensor and a tilted module generally receive different irradiance.
+**Irradiance**, denoted here by $G$, is radiant power incident per unit area, in W/m². **Irradiation**, denoted by $H_{POA}$ for a module plane, is incident radiant energy per unit area over a specified period, often kWh/m². The subscripts identify the measurement surface: a horizontal sensor and a tilted module generally receive different irradiance. [@foster2010], Chapter 2, especially pp. 39–40; [Sandia POA irradiance](https://pvpmc.sandia.gov/modeling-guide/1-weather-design-inputs/plane-of-array-poa-irradiance/).
 
-The principal resource components are global horizontal irradiance (GHI), direct normal irradiance (DNI), and diffuse horizontal irradiance (DHI). For a sun above the horizon, consistent measurements approximately satisfy
+The principal resource components are global horizontal irradiance (GHI), direct normal irradiance (DNI), and diffuse horizontal irradiance (DHI). For a sun above the horizon, consistent measurements approximately satisfy [@foster2010], Chapter 2, especially pp. 39–40; [Sandia POA irradiance](https://pvpmc.sandia.gov/modeling-guide/1-weather-design-inputs/plane-of-array-poa-irradiance/).
 
 $$GHI=DNI\cos\theta_z+DHI,$$
 
-where $\theta_z$ is solar zenith angle, measured from the vertical. DNI is defined on a plane normal to the direct solar beam. DHI represents sky-diffuse radiation on the horizontal plane. Do not substitute DNI directly into a flat-plate PV model as though it were the total radiation on the modules.
+*Equation basis:* [@foster2010], Chapter 2, especially pp. 39–40; [Sandia POA irradiance](https://pvpmc.sandia.gov/modeling-guide/1-weather-design-inputs/plane-of-array-poa-irradiance/).
 
-**Plane-of-array irradiance** $G_{POA}$ includes the direct beam projected onto the module plane, sky diffuse radiation and ground-reflected radiation. A useful conceptual decomposition is
+where $\theta_z$ is solar zenith angle, measured from the vertical. DNI is defined on a plane normal to the direct solar beam. DHI represents sky-diffuse radiation on the horizontal plane. Do not substitute DNI directly into a flat-plate PV model as though it were the total radiation on the modules. [@foster2010], Chapter 2, especially pp. 39–40; [Sandia POA irradiance](https://pvpmc.sandia.gov/modeling-guide/1-weather-design-inputs/plane-of-array-poa-irradiance/).
+
+**Plane-of-array irradiance** $G_{POA}$ includes the direct beam projected onto the module plane, sky diffuse radiation and ground-reflected radiation. A useful conceptual decomposition is [@foster2010], Chapter 2, especially pp. 39–40; [Sandia POA irradiance](https://pvpmc.sandia.gov/modeling-guide/1-weather-design-inputs/plane-of-array-poa-irradiance/).
 
 $$G_{POA}=DNI\max(\cos\theta_i,0)+G_{sky,POA}+G_{ground,POA},$$
+
+*Equation basis:* [@foster2010], Chapter 2, especially pp. 39–40; [Sandia POA irradiance](https://pvpmc.sandia.gov/modeling-guide/1-weather-design-inputs/plane-of-array-poa-irradiance/).
 
 where $\theta_i$ is the beam incidence angle on the front face. The diffuse and reflected terms require a radiation-transposition model; they are not generally equal to DHI. Module tilt, azimuth, horizon obstruction, trackers and albedo affect the result. The exercise inputs explicitly provide POA irradiance so that a separate solar-position and transposition model is not silently omitted [@foster2010; @duffie2013].
 
@@ -68,41 +74,93 @@ For interval-average measurements,
 
 $$H_{POA}=\frac{1}{1000}\sum_i G_{POA,i}\Delta t_i,$$
 
-when $G$ is in W/m² and $\Delta t$ is in hours; $H$ is then kWh/m². The factor of 1000 converts Wh to kWh. For instantaneous samples, a chosen numerical integration method, such as a trapezoidal approximation, is needed instead. Always state which type of observation the dataset contains.
+*Equation basis:* [@foster2010], Chapter 2, especially pp. 39–40; [Sandia POA irradiance](https://pvpmc.sandia.gov/modeling-guide/1-weather-design-inputs/plane-of-array-poa-irradiance/).
+
+when $G$ is in W/m² and $\Delta t$ is in hours; $H$ is then kWh/m². The factor of 1000 converts Wh to kWh. For instantaneous samples, a chosen numerical integration method, such as a trapezoidal approximation, is needed instead. Always state which type of observation the dataset contains. [@foster2010], Chapter 2, especially pp. 39–40; [Sandia POA irradiance](https://pvpmc.sandia.gov/modeling-guide/1-weather-design-inputs/plane-of-array-poa-irradiance/).
+
+### A first model for a tilted module
+
+For an unobstructed front surface above uniform ground, an **isotropic-sky** approximation assumes that diffuse sky radiance is the same in every direction. With module tilt $\beta$ measured from horizontal and dimensionless ground albedo $\rho_g$, it gives
+
+$$G_{POA}=DNI\max(\cos\theta_i,0)
++DHI\frac{1+\cos\beta}{2}
++\rho_g GHI\frac{1-\cos\beta}{2}.$$
+
+All irradiances are in W/m². The two view factors represent the fractions of the sky and ground seen by the tilted front surface. The direct term is zero when the sun is behind that surface. This approximation excludes obstructions, row shading, rear-side collection and anisotropic diffuse radiation; it is an introductory transposition model, not a complete site simulation. [@goswami2015], §2.5.3, pp. 68–69, Eqs. 2.46–2.51; compare §2.6.2 for anisotropic radiation.
+
+The incidence angle is between the sun direction and the module normal. When solar and surface azimuth use the **same origin and positive direction**,
+
+$$\cos\theta_i=\cos\theta_z\cos\beta+
+\sin\theta_z\sin\beta\cos(\gamma_s-\gamma_p),$$
+
+where $\theta_z$ is solar zenith, $\gamma_s$ solar azimuth and $\gamma_p$ module azimuth. Goswami uses azimuth positive west of south; convert conventions before combining sources. Trigonometric Python functions require radians. The example assumes daylight and independently specifies the incidence angle so that students can inspect each irradiance term. [@goswami2015], §2.5.3, Eq. 2.48 and Figure 2.21; [Python math functions](https://docs.python.org/3/library/math.html#trigonometric-functions).
+
+```{code-cell} python
+import math
+
+# Synthetic daylight example: sun and panel face the same azimuth.
+dni_wm2, dhi_wm2 = 800.0, 100.0
+zenith_deg, tilt_deg, incidence_deg = 40.0, 30.0, 10.0
+albedo = 0.2
+ghi_wm2 = dni_wm2 * math.cos(math.radians(zenith_deg)) + dhi_wm2
+cos_tilt = math.cos(math.radians(tilt_deg))
+beam_wm2 = dni_wm2 * max(math.cos(math.radians(incidence_deg)), 0.0)
+sky_wm2 = dhi_wm2 * (1 + cos_tilt) / 2
+ground_wm2 = albedo * ghi_wm2 * (1 - cos_tilt) / 2
+poa_wm2 = beam_wm2 + sky_wm2 + ground_wm2
+print(f"GHI: {ghi_wm2:.2f}; POA: {poa_wm2:.2f} W/m²")
+print(f"Beam: {beam_wm2:.2f}; sky: {sky_wm2:.2f}; ground: {ground_wm2:.2f}")
+# A horizontal front surface recovers GHI under these assumptions.
+horizontal_poa = dni_wm2 * math.cos(math.radians(zenith_deg)) + dhi_wm2
+assert math.isclose(horizontal_poa, ghi_wm2)
+assert poa_wm2 >= 0  # keep valid when changing the example inputs
+```
+
+**Try it:** set tilt to zero and incidence equal to zenith; explain why ground reflection disappears. Then restore the original angles and change albedo to 0.8, treating it as a hypothetical bright-ground scenario. Explain which term changes and why this is not an increase in PV conversion efficiency. These are original exercises using the model above. [@goswami2015], §2.5.3.
 
 ### Time and data quality
 
-Record the timestamp convention, time zone, interval length and whether each timestamp marks an interval start or end. Nighttime zero irradiance can be valid; missing data are not zero. Sensor misalignment, shading of the sensor, snow, soiling, calibration drift and time shifts can distort a production comparison. A radiation sensor at one point does not necessarily represent every module in a large array.
+**Solar time is not generally clock time.** Longitude within a time zone, the equation of time and daylight-saving conventions affect the conversion. Do not interpret 12:00 on a dataset's clock as solar noon without checking its time basis. [@goswami2015], §2.3.1, pp. 42–45.
+
+Record the timestamp convention, time zone, interval length and whether each timestamp marks an interval start or end. Nighttime zero irradiance can be valid; missing data are not zero. Sensor misalignment, shading of the sensor, snow, soiling, calibration drift and time shifts can distort a production comparison. A radiation sensor at one point does not necessarily represent every module in a large array. [Sandia weather inputs](https://pvpmc.sandia.gov/modeling-guide/1-weather-design-inputs/); timestamp handling: Data handling: [pandas user guide](https://pandas.pydata.org/docs/user_guide/index.html).
 
 ## PV conversion: definitions, equations and limits
 
 ### The current–voltage characteristic
 
-An illuminated PV device does not supply an arbitrary fixed voltage and current simultaneously. Its operating point lies on an **I–V curve** determined by irradiance, cell temperature and device properties. Electrical DC power is
+An illuminated PV device does not supply an arbitrary fixed voltage and current simultaneously. Its operating point lies on an **I–V curve** determined by irradiance, cell temperature and device properties. Electrical DC power is [@foster2010], §5.13, pp. 125–126; [@wade2003], Chapter 3.
 
 $$P_{DC}=VI.$$
 
-At open circuit, current is zero and voltage is $V_{oc}$; at short circuit, voltage is zero and current is $I_{sc}$. Neither condition delivers useful electrical power. At the maximum-power point, $P_{mp}=V_{mp}I_{mp}$. The fill factor
+*Equation basis:* [@foster2010], §5.13, pp. 125–126; [@wade2003], Chapter 3.
+
+At open circuit, current is zero and voltage is $V_{oc}$; at short circuit, voltage is zero and current is $I_{sc}$. Neither condition delivers useful electrical power. At the maximum-power point, $P_{mp}=V_{mp}I_{mp}$. The fill factor [@foster2010], §5.13, pp. 125–126; [@wade2003], Chapter 3.
 
 $$FF=\frac{V_{mp}I_{mp}}{V_{oc}I_{sc}}$$
 
-describes the shape of the I–V curve and is dimensionless. It is not conversion efficiency or capacity factor. Irradiance strongly affects photocurrent, while voltage and power also respond to temperature. MPPT attempts to operate near the available maximum rather than at either I–V endpoint [@wade2003; @foster2010].
+*Equation basis:* [@foster2010], §5.13, pp. 125–126; [@wade2003], Chapter 3.
+
+describes the shape of the I–V curve and is dimensionless. It is not conversion efficiency or capacity factor. Irradiance strongly affects photocurrent, while voltage and power also respond to temperature. MPPT attempts to operate near the available maximum rather than at either I–V endpoint [@wade2003; @foster2010]; see also [@goswami2015], §§9.2–9.2.2, pp. 525–532. MPPT and inverter conversion efficiency describe different operations: choosing the available DC operating point and converting DC electrical power to AC.
 
 For a simple area model,
 
 $$P_{DC}=G_{POA}A\eta_{PV},\qquad
 \eta_{PV}=\frac{P_{DC}}{G_{POA}A}.$$
 
-Here $A$ is the module area defined consistently with the efficiency specification, in m². With irradiance in W/m², output is W. Holding $\eta_{PV}$ constant is useful for a first calculation but omits operating-temperature, spectral and low-light effects.
+*Equation basis:* [@foster2010], §5.13, pp. 125–126; [@wade2003], Chapter 3.
+
+Here $A$ is the module area defined consistently with the efficiency specification, in m². With irradiance in W/m², output is W. Holding $\eta_{PV}$ constant is useful for a first calculation but omits operating-temperature, spectral and low-light effects. [@foster2010], §5.13, pp. 125–126; [@wade2003], Chapter 3.
 
 ### STC, nameplate and temperature
 
-**Standard Test Conditions (STC)** use 1000 W/m² irradiance, 25°C **cell** temperature and the AM1.5 reference spectrum. A kWp rating commonly denotes rated DC kilowatts under these conditions. Ambient air at 25°C does not imply cells at 25°C: absorbed sunlight usually warms the module. Actual output can occasionally exceed the STC rating under favorable conditions, so nameplate is not a universal hard ceiling on DC power.
+**Standard Test Conditions (STC)** use 1000 W/m² irradiance, 25°C **cell** temperature and the AM1.5 reference spectrum. A kWp rating commonly denotes rated DC kilowatts under these conditions. Ambient air at 25°C does not imply cells at 25°C: absorbed sunlight usually warms the module. Actual output can occasionally exceed the STC rating under favorable conditions, so nameplate is not a universal hard ceiling on DC power. [@foster2010], §§5.13–5.14; [@pvlibDocs]. Specified simplified NOCT approximation; compare the fuller [Sandia/SAM thermal model](https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/cell-temperature/noct-cell-temperature/).
 
-The course uses a first-order DC model:
+The course uses a first-order DC model. It assumes the supplied POA irradiance equals effective irradiance: optical incidence-angle, spectral and soiling corrections are unity unless separately specified. This is a reduced model, not the complete PVWatts workflow [@pvlibDocs].
 
 $$P_{DC}=P_{STC}\frac{G_{POA}}{G_{STC}}
 \left[1+\gamma_P(T_c-T_{STC})\right].$$
+
+*Equation basis:* [@foster2010], §§5.13–5.14; [@pvlibDocs]. Specified simplified NOCT approximation; compare the fuller [Sandia/SAM thermal model](https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/cell-temperature/noct-cell-temperature/).
 
 $\gamma_P$ is the fractional power-temperature coefficient in K⁻¹ or °C⁻¹; a datasheet value of −0.4%/°C becomes −0.004/°C in Python. Celsius and kelvin temperature **differences** are equal. Use cell temperature $T_c$, not ambient temperature $T_a$, in the correction. For the negative coefficient assumed here, warmer cells reduce output at fixed irradiance [@foster2010; @pvlibDocs].
 
@@ -111,22 +169,26 @@ The introductory thermal approximation is
 $$T_c=T_a+\frac{G_{POA}}{800\ \mathrm{W/m^2}}
 \left(T_{NOCT}-20\ ^\circ\mathrm{C}\right).$$
 
-The nominal operating cell temperature parameter summarizes specified reference operating conditions. This simplified equation does not explicitly model wind cooling, mounting geometry, heat capacity or transient behavior. Use appropriate thermal models and datasheet conventions in a detailed study. Flooring a negative extrapolated DC estimate at zero avoids impossible negative generation but does not make the underlying extrapolation physically valid.
+*Equation basis:* [@foster2010], §§5.13–5.14; [@pvlibDocs]. Specified simplified NOCT approximation; compare the fuller [Sandia/SAM thermal model](https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/cell-temperature/noct-cell-temperature/).
+
+The nominal operating cell temperature (NOCT) convention refers to 800 W/m² irradiance, 20°C ambient air and 1 m/s wind under specified mounting and open-circuit conditions. Check the module datasheet: newer NMOT ratings use different electrical loading conventions. The equation above is a classroom reduction; the [Sandia/SAM NOCT model](https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/cell-temperature/noct-cell-temperature/) additionally accounts for wind, mounting and electrical efficiency. This simplified equation does not explicitly model wind cooling, mounting geometry, heat capacity or transient behavior. Use appropriate thermal models and datasheet conventions in a detailed study. Flooring a negative extrapolated DC estimate at zero avoids impossible negative generation but does not make the underlying extrapolation physically valid.
 
 ### Inverter efficiency, clipping and loss accounting
 
-Define potential AC output before clipping as $P_{AC,pot}=\eta_{inv}P_{DC}$. A simple inverter-limited model gives
+Define potential AC output before clipping as $P_{AC,pot}=\eta_{inv}P_{DC}$. A simple inverter-limited model gives [@foster2010], Chapter 7; [@wade2003], inverter/system-sizing sections. Constant efficiency and the hard AC cap are course assumptions.
 
 $$P_{AC}=\min(P_{AC,pot},P_{AC,r}),\qquad
 P_{clip}=\max(P_{AC,pot}-P_{AC,r},0).$$
 
-This assumes a constant inverter efficiency and omits startup thresholds and standby consumption. Inverter conversion loss is $P_{DC}-P_{AC,pot}$, while clipping is discarded potential AC output above the AC limit. They are different quantities. A manufacturer AC power model may already include conversion losses; multiplying by the same efficiency again would double-count them.
+*Equation basis:* [@foster2010], Chapter 7; [@wade2003], inverter/system-sizing sections. Constant efficiency and the hard AC cap are course assumptions.
 
-The **DC/AC ratio** is $P_{STC,DC}/P_{AC,r}$. Increasing it can improve use of an inverter at lower irradiance but may increase clipping near peak resource. It is an engineering and economic trade-off, not a guarantee of higher performance ratio. Independent sequential fractional losses $\ell_j$ give a retained fraction $\prod_j(1-\ell_j)$, provided the loss boundaries do not overlap.
+This assumes a constant inverter efficiency and omits startup thresholds and standby consumption. Inverter conversion loss is $P_{DC}-P_{AC,pot}$, while clipping is discarded potential AC output above the AC limit. They are different quantities. A manufacturer AC power model may already include conversion losses; multiplying by the same efficiency again would double-count them. [@foster2010], Chapter 7; [@wade2003], inverter/system-sizing sections. Constant efficiency and the hard AC cap are course assumptions.
+
+The **DC/AC ratio** is $P_{STC,DC}/P_{AC,r}$. Increasing it can improve use of an inverter at lower irradiance but may increase clipping near peak resource. It is an engineering and economic trade-off, not a guarantee of higher performance ratio. Independent sequential fractional losses $\ell_j$ give a retained fraction $\prod_j(1-\ell_j)$, provided the loss boundaries do not overlap. [@foster2010], Chapter 7; [@wade2003], inverter/system-sizing sections. Constant efficiency and the hard AC cap are course assumptions.
 
 ## Energy, yield and performance indicators
 
-Electrical energy is $E_{AC}=\sum_i P_{AC,i}\Delta t_i$. Use kW with hours for kWh or MW with hours for MWh. Annual energy requires annual coverage or a documented extrapolation; a clear-sky day is not an annual resource model.
+Electrical energy is $E_{AC}=\sum_i P_{AC,i}\Delta t_i$. Use kW with hours for kWh or MW with hours for MWh. Annual energy requires annual coverage or a documented extrapolation; a clear-sky day is not an annual resource model. Yield and performance-ratio definitions: [Sandia PV performance metrics](https://pvpmc.sandia.gov/modeling-guide/5-ac-system-output/pv-performance-metrics/). Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
 
 | Indicator | Definition | What it answers |
 |---|---|---|
@@ -136,21 +198,52 @@ Electrical energy is $E_{AC}=\sum_i P_{AC,i}\Delta t_i$. Use kW with hours for k
 | AC capacity factor | $E_{AC}/(P_{AC,r}T)$ | How much energy was delivered relative to continuous AC-rated output? |
 | Availability | Fraction of a defined time or energy opportunity when equipment is available | Was the system able to operate? |
 
-PR is not module efficiency: its denominator is an irradiation-normalized nameplate yield. Temperature, soiling, downtime and measurement conventions affect it. An unexpectedly high PR calls for checking definitions, sensors and conditions; it is not resolved simply by clipping every ratio to one. Keep DC-rated and AC-rated denominators explicit.
+*Source for these definitions/calculations:* Yield and performance-ratio definitions: [Sandia PV performance metrics](https://pvpmc.sandia.gov/modeling-guide/5-ac-system-output/pv-performance-metrics/). Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
+
+PR is not module efficiency: its denominator is an irradiation-normalized nameplate yield. Temperature, soiling, downtime and measurement conventions affect it. An unexpectedly high PR calls for checking definitions, sensors and conditions; it is not resolved simply by clipping every ratio to one. Keep DC-rated and AC-rated denominators explicit. Yield and performance-ratio definitions: [Sandia PV performance metrics](https://pvpmc.sandia.gov/modeling-guide/5-ac-system-output/pv-performance-metrics/). Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
 
 ## Solar thermal: the related but different conversion route
 
-A thermal collector delivers useful heat to a circulating fluid. For a single-phase fluid with approximately constant heat capacity,
+A thermal collector delivers useful heat to a circulating fluid. For a single-phase fluid with approximately constant heat capacity, [@foster2010], Chapters 3–4; the single-phase heat balance neglects shaft work and kinetic/potential energy changes.
 
 $$\dot Q_u=\dot m c_p(T_{out}-T_{in}).$$
 
-$\dot Q_u$ is heat-transfer rate in W when mass flow is kg/s and $c_p$ is J/(kg K). Collector thermal efficiency is $\eta_{th}=\dot Q_u/(G A)$ under specified measurement boundaries. It is not a PV electrical efficiency. Heat loss to the surroundings grows as the collector becomes hotter relative to ambient conditions, so a fixed thermal efficiency is generally inadequate over a broad temperature range.
+*Equation basis:* [@foster2010], Chapters 3–4; the single-phase heat balance neglects shaft work and kinetic/potential energy changes.
+
+$\dot Q_u$ is heat-transfer rate in W when mass flow is kg/s and $c_p$ is J/(kg K). Collector thermal efficiency is $\eta_{th}=\dot Q_u/(G A)$ under specified measurement boundaries. It is not a PV electrical efficiency. Heat loss to the surroundings grows as the collector becomes hotter relative to ambient conditions, so a fixed thermal efficiency is generally inadequate over a broad temperature range. [@foster2010], Chapters 3–4; the single-phase heat balance neglects shaft work and kinetic/potential energy changes.
 
 Concentrating systems use optics and tracking to deliver beam radiation to a receiver; their resource assessment relies strongly on DNI. A concentrating solar power plant then converts collected heat to electricity through a heat engine, potentially using thermal storage between collection and generation. A flat-plate PV array can use direct and diffuse radiation without concentrating it. These distinctions matter when choosing the input dataset and interpreting a claimed solar conversion efficiency [@foster2010; @duffie2013; @kalogirou2014solar].
 
+### Thermal storage: energy is not power
+
+For a well-mixed storage mass with no phase change, the increase in sensible thermal energy is
+
+$$Q_{stored}=m\int_{T_1}^{T_2}c_p(T)\,dT
+\approx m c_p(T_2-T_1).$$
+
+Here $m$ is mass in kg, $c_p$ specific heat in J/(kg K), and $T_2-T_1$ a temperature difference in K (numerically equal to the difference in °C). $Q_{stored}$ is in joules; divide by $3.6\times10^6$ to obtain kWh of **heat**. The approximation assumes constant specific heat and excludes losses during heating or storage. It is not the collector's heat-transfer rate $\dot Q_u$ or electrical output. [@goswami2015], §4.2.1, p. 206, Eq. 4.1.
+
+```{code-cell} python
+# Original teaching example: ideal heating of a water tank, no phase change.
+mass_kg = 200.0
+cp_j_kg_k = 4180.0  # assumed constant for this exercise
+initial_c, final_c = 20.0, 60.0
+stored_j = mass_kg * cp_j_kg_k * (final_c - initial_c)
+stored_kwh_heat = stored_j / 3_600_000
+net_heating_kw = 2.0  # assumed constant net heat rate reaching the water
+charging_hours = stored_kwh_heat / net_heating_kw
+print(f"Stored heat: {stored_kwh_heat:.3f} kWh_th")
+print(f"Ideal charging time: {charging_hours:.3f} h")
+assert abs(stored_kwh_heat * 3_600_000 - stored_j) < 1e-6
+```
+
+Latent storage also includes phase-change energy, $mL$, where $L$ is specific latent heat in J/kg; sensible heating before and after the transition must be accounted for when applicable. Neither $mc_p\Delta T$ alone nor a battery's electrical kWh rating describes that full thermal balance. [@goswami2015], §4.2.2, pp. 207–208, Eqs. 4.2–4.3.
+
+**Try it:** double tank mass while keeping the same temperatures and heating rate. Predict how stored heat and charging time change, then check in Python. For a harder extension, introduce a heat-loss rate that depends on tank temperature and explain why charging time can no longer be found using a constant net rate. [@goswami2015], §§4.2.1 and 4.3.
+
 ## Worked calculation before coding
 
-Consider a synthetic 10 kW DC array with an 8 kW AC inverter, POA irradiance 800 W/m², ambient temperature 25°C, NOCT 45°C, $\gamma_P=-0.004$/°C and inverter efficiency 0.97.
+Consider a synthetic 10 kW DC array with an 8 kW AC inverter, POA irradiance 800 W/m², ambient temperature 25°C, NOCT 45°C, $\gamma_P=-0.004$/°C and inverter efficiency 0.97. Original numerical substitution into the specified DC, temperature and inverter models. [@pvlibDocs]. Specified simplified NOCT approximation; compare the fuller [Sandia/SAM thermal model](https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/cell-temperature/noct-cell-temperature/).
 
 1. Estimate cell temperature: $T_c=25+(800/800)(45-20)=50$°C.
 2. Calculate the temperature multiplier: $1-0.004(50-25)=0.90$.
@@ -159,7 +252,9 @@ Consider a synthetic 10 kW DC array with an 8 kW AC inverter, POA irradiance 800
 5. Compare with the inverter rating: $\min(6.984,8)=6.984$ kW, with no clipping.
 6. If these are mean conditions for a half-hour teaching interval, estimate $6.984(0.5)=3.492$ kWh.
 
-The last calculation applies a nonlinear model to interval-average inputs. Rapid irradiance or temperature changes can make this differ from the average of higher-resolution modeled output. The numerical result is a model estimate, not a measured performance guarantee.
+*Source for these definitions/calculations:* Original numerical substitution into the specified DC, temperature and inverter models. [@pvlibDocs]. Specified simplified NOCT approximation; compare the fuller [Sandia/SAM thermal model](https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/cell-temperature/noct-cell-temperature/).
+
+The last calculation applies a nonlinear model to interval-average inputs. Rapid irradiance or temperature changes can make this differ from the average of higher-resolution modeled output. The numerical result is a model estimate, not a measured performance guarantee. Original numerical substitution into the specified DC, temperature and inverter models. [@pvlibDocs]. Specified simplified NOCT approximation; compare the fuller [Sandia/SAM thermal model](https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/cell-temperature/noct-cell-temperature/).
 
 ## From the explanation to the Python exercises
 
@@ -177,7 +272,9 @@ For preparation, read Wade's electricity and PV sections and Foster's PV-system 
 - **Irradiance** $G$ is instantaneous power per area, W/m$^2$.
 - **Irradiation** is irradiance integrated over time, commonly kWh/m$^2$.
 
-Do not label an hourly sum of irradiance values as W/m$^2$; after multiplying by the time step it is an energy-per-area quantity.
+*Source for these definitions/calculations:* [@foster2010], Chapter 2, pp. 39–40.
+
+Do not label an hourly sum of irradiance values as W/m$^2$; after multiplying by the time step it is an energy-per-area quantity. [@foster2010], Chapter 2, pp. 39–40.
 
 ### From solar resource to PV power
 
@@ -185,32 +282,44 @@ For area $A$ and conversion efficiency $\eta$:
 
 $$P_{DC}=GA\eta$$
 
+*Equation basis:* PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3. [@pvlibDocs]. Specified simplified NOCT approximation; compare the fuller [Sandia/SAM thermal model](https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/cell-temperature/noct-cell-temperature/).
+
 For a rated array, a convenient first-order model is
 
 $$P_{DC}=P_{STC}\frac{G}{G_{STC}}
 \left[1+\gamma_P(T_c-25)\right]$$
 
-where $\gamma_P$ is normally negative and $T_c$ is cell temperature in °C. A simple NOCT approximation is
+*Equation basis:* PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3. [@pvlibDocs]. Specified simplified NOCT approximation; compare the fuller [Sandia/SAM thermal model](https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/cell-temperature/noct-cell-temperature/).
+
+where $\gamma_P$ is normally negative and $T_c$ is cell temperature in °C. A simple NOCT approximation is PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3. [@pvlibDocs]. Specified simplified NOCT approximation; compare the fuller [Sandia/SAM thermal model](https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/cell-temperature/noct-cell-temperature/).
 
 $$T_c=T_a+\frac{G}{800}(NOCT-20)$$
 
-This is a teaching model, not a bankable performance model. The temperature equation is an empirical approximation and should not be extrapolated carelessly.
+*Equation basis:* PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3. [@pvlibDocs]. Specified simplified NOCT approximation; compare the fuller [Sandia/SAM thermal model](https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/cell-temperature/noct-cell-temperature/).
+
+This is a teaching model, not a bankable performance model. The temperature equation is an empirical approximation and should not be extrapolated carelessly. PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3. [@pvlibDocs]. Specified simplified NOCT approximation; compare the fuller [Sandia/SAM thermal model](https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/cell-temperature/noct-cell-temperature/).
 
 ### AC output and energy
 
-With inverter efficiency $\eta_{inv}$ and AC rating $P_{AC,r}$:
+With inverter efficiency $\eta_{inv}$ and AC rating $P_{AC,r}$: Yield and performance-ratio definitions: [Sandia PV performance metrics](https://pvpmc.sandia.gov/modeling-guide/5-ac-system-output/pv-performance-metrics/). PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
 
 $$P_{AC}=\min(P_{DC}\eta_{inv},P_{AC,r})$$
+
+*Equation basis:* Yield and performance-ratio definitions: [Sandia PV performance metrics](https://pvpmc.sandia.gov/modeling-guide/5-ac-system-output/pv-performance-metrics/). PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
 
 For hourly samples:
 
 $$E_{AC}=\sum_i P_{AC,i}\Delta t_i$$
 
-Performance ratio (PR) is a normalized energy-quality indicator. One common definition is
+*Equation basis:* Yield and performance-ratio definitions: [Sandia PV performance metrics](https://pvpmc.sandia.gov/modeling-guide/5-ac-system-output/pv-performance-metrics/). PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
+
+Performance ratio (PR) is a normalized energy-quality indicator. One common definition is Yield and performance-ratio definitions: [Sandia PV performance metrics](https://pvpmc.sandia.gov/modeling-guide/5-ac-system-output/pv-performance-metrics/). PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
 
 $$PR=\frac{E_{AC}/P_{rated}}{H_{POA}/G_{STC}}$$
 
-where $H_{POA}$ is plane-of-array irradiation and $P_{rated}$ is the DC nameplate rating at STC. Use consistent kW/kWh or MW/MWh units; $G_{STC}=1$ kW/m². State the exact convention because PR boundaries can differ.
+*Equation basis:* Yield and performance-ratio definitions: [Sandia PV performance metrics](https://pvpmc.sandia.gov/modeling-guide/5-ac-system-output/pv-performance-metrics/). PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
+
+where $H_{POA}$ is plane-of-array irradiation and $P_{rated}$ is the DC nameplate rating at STC. Use consistent kW/kWh or MW/MWh units; $G_{STC}=1$ kW/m². State the exact convention because PR boundaries can differ. Yield and performance-ratio definitions: [Sandia PV performance metrics](https://pvpmc.sandia.gov/modeling-guide/5-ac-system-output/pv-performance-metrics/). PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
 
 ## Tested Python functions
 
@@ -250,7 +359,7 @@ assert 0 <= pv_ac_power_mw(1000, 25, 10, 8) <= 8
 
 ### Why the checks matter
 
-Input validation stops physically impossible negative irradiance and invalid efficiency values. `np.asarray` lets the same function accept a number, list, or NumPy array. `np.maximum` prevents a linear temperature approximation from producing negative power outside its valid range.
+Input validation stops physically impossible negative irradiance and invalid efficiency values. `np.asarray` allows irradiance and ambient temperature to be scalars or broadcast-compatible arrays; ratings and efficiency parameters in this example are scalar configuration values. `np.maximum` prevents a linear temperature approximation from producing negative power outside its valid range. Array calculations: [@numpyDocs]. These checks enforce the stated teaching-model domain.
 
 ## Worked solar-day example
 
@@ -294,7 +403,7 @@ Because each sample represents one hour, summing MW values yields MWh. With 15-m
 
 **Difficulty:** Easy
 
-**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+**Reference:** PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2.
 
 **Task:** At 800 W/m², a 2 m² panel has efficiency 20%. Calculate DC watts.
 
@@ -326,7 +435,7 @@ print(power_w, 'W DC'); assert power_w == 320
 
 **Difficulty:** Easy
 
-**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+**Reference:** PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2.
 
 **Task:** An array contains 24 modules rated at 400 W DC. Calculate its STC rating in kW.
 
@@ -358,7 +467,7 @@ print(array_kw,'kW DC'); assert array_kw == 9.6
 
 **Difficulty:** Easy
 
-**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+**Reference:** Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units). PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2.
 
 **Task:** Four hourly mean irradiances are 0,200,600,400 W/m². Calculate four-hour irradiation in kWh/m².
 
@@ -390,7 +499,7 @@ print(irradiation,'kWh/m²'); assert irradiation == 1.2
 
 **Difficulty:** Easy
 
-**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+**Reference:** PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2.
 
 **Task:** A PV array delivers 5 kW DC to a 96%-efficient inverter with a 6 kW AC limit. Find AC kW.
 
@@ -422,7 +531,7 @@ print(ac_kw,'kW AC'); assert ac_kw == 4.8 and ac_kw <= dc_kw
 
 **Difficulty:** Easy
 
-**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+**Reference:** Capacity-factor energy accounting: [@manwell2009], §2.5; this exercise explicitly uses the AC plant rating.
 
 **Task:** A 10 kW AC plant exports 48 kWh in 24 hours. Calculate AC-based CF and state the denominator.
 
@@ -454,7 +563,7 @@ print(f'AC-based CF: {cf:.0%}'); assert cf == 0.2
 
 **Difficulty:** Medium
 
-**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+**Reference:** Specified simplified NOCT approximation; compare the fuller [Sandia/SAM thermal model](https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/cell-temperature/noct-cell-temperature/).
 
 **Task:** At ambient 25 °C and irradiance [0,400,800] W/m², use NOCT 45 °C and Tc=Ta+G(NOCT−20)/800. Calculate temperatures.
 
@@ -487,7 +596,7 @@ print(cell,'°C'); assert np.allclose(cell,[25,37.5,50])
 
 **Difficulty:** Medium
 
-**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+**Reference:** Linear temperature correction: [@pvlibDocs].
 
 **Task:** At 1000 W/m², a 10 kW STC array has gamma −0.004/°C. Evaluate DC output at cell temperatures [25,45,65]°C.
 
@@ -520,7 +629,7 @@ print(dc_kw,'kW DC'); assert np.allclose(dc_kw,[10,9.2,8.4])
 
 **Difficulty:** Medium
 
-**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+**Reference:** PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2. The constant-efficiency clipping rule is specified here.
 
 **Task:** Hourly DC output [0,4,8,10] kW passes through a 97% inverter capped at 7 kW AC. Calculate AC kWh and clipping kWh.
 
@@ -554,7 +663,7 @@ assert np.allclose(ac+clipping,available_ac) and np.isclose(ac.sum(),17.88)
 
 **Difficulty:** Medium
 
-**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+**Reference:** PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2.
 
 **Task:** Start with 1000 kWh DC; apply 3% soiling, 2% wiring and 4% inverter losses sequentially. Compare with simply subtracting 9%.
 
@@ -588,7 +697,7 @@ assert np.isclose(output,912.576)
 
 **Difficulty:** Medium
 
-**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+**Reference:** Yield and performance-ratio definitions: [Sandia PV performance metrics](https://pvpmc.sandia.gov/modeling-guide/5-ac-system-output/pv-performance-metrics/).
 
 **Task:** A 100 kW DC array exports 12,000 kWh with POA irradiation 150 kWh/m². Use reference irradiance 1 kW/m² to calculate PR.
 
@@ -620,7 +729,7 @@ print(f'PR: {pr:.0%}'); assert pr == 0.8
 
 **Difficulty:** Medium
 
-**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+**Reference:** Yield and performance-ratio definitions: [Sandia PV performance metrics](https://pvpmc.sandia.gov/modeling-guide/5-ac-system-output/pv-performance-metrics/).
 
 **Task:** Two systems generate [4000,9000] kWh from [5,10] kW DC. Calculate kWh/kWp and identify the higher specific yield.
 
@@ -653,7 +762,7 @@ print(specific_yield,'kWh/kWp'); assert np.argmax(specific_yield)==1
 
 **Difficulty:** Medium
 
-**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+**Reference:** Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
 
 **Task:** Average AC powers [1,4,2] kW persist for [0.5,2,1.5] hours. Integrate their energy.
 
@@ -686,7 +795,7 @@ print(energy,'kWh'); assert energy == 11.5
 
 **Difficulty:** Medium
 
-**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+**Reference:** PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2. Array calculations: [@numpyDocs].
 
 **Task:** For readings [0,200,missing,−10] W/m², preserve night zero, mark negative values missing, and report valid fraction.
 
@@ -720,7 +829,7 @@ assert clean.iloc[0]==0 and clean.notna().mean()==0.5
 
 **Difficulty:** Medium
 
-**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+**Reference:** Original compounded-degradation scenario; Array calculations: [@numpyDocs].
 
 **Task:** First-year output is 100 MWh. With 0.5% annual degradation, calculate output in years 1–5 and cumulative MWh.
 
@@ -754,7 +863,7 @@ assert energy[0]==100 and np.isclose(energy[-1],98.0149500625)
 
 **Difficulty:** Medium
 
-**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+**Reference:** PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2. Plotting: [@matplotlibDocs].
 
 **Task:** Model 24 hourly mean irradiances as max(0,800 sin(pi(h−6)/12)). Use 20 m² and 20% efficiency. Plot DC kW and integrate MWh.
 
@@ -790,7 +899,7 @@ print(energy_mwh,'MWh'); assert np.isclose(dc_kw.max(),3.2)
 
 **Difficulty:** Hard
 
-**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+**Reference:** PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2. Original discrete inverter search.
 
 **Task:** For hourly DC [0,2,5,9,12,8,3,0] kW and 97% efficiency, search integer AC ratings 5–12 kW for at most 5% clipped potential AC energy.
 
@@ -825,7 +934,7 @@ assert best[0]==10 and all(f>0.05 for r,f in trials if r<best[0])
 
 **Difficulty:** Hard
 
-**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+**Reference:** Specified simplified NOCT approximation; compare the fuller [Sandia/SAM thermal model](https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/cell-temperature/noct-cell-temperature/). [@pvlibDocs].
 
 **Task:** For G=[200,600,1000] W/m² and ambient=[10,25,40]°C, calculate a 3×3 grid of AC power for 10 kW DC, 8 kW AC, NOCT 45, gamma−0.004 and eta 0.97.
 
@@ -861,7 +970,7 @@ print(pd.DataFrame(ac,index=[10,25,40],columns=[200,600,1000]).rename_axis('Ambi
 
 **Difficulty:** Hard
 
-**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+**Reference:** Storage losses: [@wade2003], Chapter 5; [@manwell2009], §10.7. The dispatch policy is an original course assumption.
 
 **Task:** PV hourly AC [0,4,6,0] kW meets constant 2 kW load with an initially empty 3 kWh battery, 2 kW limits and 90% efficiencies. Report unmet load, curtailed PV and final SOC.
 
@@ -901,7 +1010,7 @@ assert np.isclose(unmet_total,2) and all(0<=s<=3+1e-12 for s in rows)
 
 **Difficulty:** Hard
 
-**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+**Reference:** Discounted cost and energy: [@ifc2015], §13.2.5 and Chapter 14; [@goswami2015], §1.4.3, Eq. 1.6; [@irena2026], methodology annex. Original degradation scenario.
 
 **Task:** Use €1m capital, €20k annual O&M, 1500 MWh first-year AC, 0.5% annual degradation and 25 years. Calculate LCOE at 0%,3%,6% real discount rates.
 
@@ -938,7 +1047,7 @@ assert np.isclose(values[0],1_500_000/energy.sum()) and np.all(np.diff(values)>0
 
 **Difficulty:** Hard
 
-**Reference:** PV conversion and systems: [@foster2010; @wade2003]; temperature model [@pvlibDocs].
+**Reference:** Data handling: [pandas user guide](https://pandas.pydata.org/docs/user_guide/index.html). Chronological baseline evaluation; thresholds are course assumptions.
 
 **Task:** Expected daily energy is [10,20,30,40,50,60] kWh; observed is [9,18,27,36,30,36]. Calibrate an observed/expected ratio on days 1–4, then flag holdout days below 80% of calibrated expectation.
 

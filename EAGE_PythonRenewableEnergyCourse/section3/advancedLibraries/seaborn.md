@@ -1,6 +1,6 @@
 # Seaborn
 
-Seaborn builds statistical graphics on Matplotlib and works naturally with tidy pandas DataFrames. It does not replace data validation: plot units, missingness, and category definitions must be checked first.
+Seaborn builds statistical graphics on Matplotlib and works naturally with tidy pandas DataFrames. It does not replace data validation: plot units, missingness, and category definitions must be checked first. [Seaborn introduction](https://seaborn.pydata.org/introduction.html).
 
 ```python
 import seaborn as sns
@@ -18,3 +18,4 @@ plt.show()
 ```
 
 Use `fill=True` for filled kernel-density plots in current Seaborn releases. Correlation or a fitted trend in a chart does not establish causation.
+ [Seaborn introduction](https://seaborn.pydata.org/introduction.html).

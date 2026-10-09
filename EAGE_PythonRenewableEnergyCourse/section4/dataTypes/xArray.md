@@ -1,6 +1,6 @@
 # xarray
 
-xarray provides labelled N-dimensional arrays. A `DataArray` contains values plus named dimensions and coordinates; a `Dataset` contains several aligned variables.
+xarray provides labelled N-dimensional arrays. A `DataArray` contains values plus named dimensions and coordinates; a `Dataset` contains several aligned variables. [xarray data structures](https://docs.xarray.dev/en/stable/user-guide/data-structures.html).
 
 ```python
 import xarray as xr
@@ -16,3 +16,4 @@ print(monthly)
 ```
 
 Label-aware operations reduce axis mistakes, but coordinate alignment can introduce missing values. Inspect dimensions and coordinates after merges, selections, and resampling.
+ [xarray data structures](https://docs.xarray.dev/en/stable/user-guide/data-structures.html).

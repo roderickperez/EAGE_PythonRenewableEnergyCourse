@@ -100,6 +100,9 @@ project:
       children:
         - file: section5/databases.md
 
+        - file: section5/download-to-database.md
+        - file: section5/world-energy-download.md
+
         - file: section5/SQL.md
 
         - file: section5/SQL_Pandas.ipynb

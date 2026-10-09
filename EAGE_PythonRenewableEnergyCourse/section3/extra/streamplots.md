@@ -17,3 +17,4 @@ plt.show()
 ```
 
 It is useful for conceptual flow fields, but it does not show measured particle trajectories and should not imply temporal evolution from a static field.
+ [Matplotlib streamplot](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.streamplot.html).

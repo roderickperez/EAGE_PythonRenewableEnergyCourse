@@ -1,132 +1,55 @@
-# IDE
+# Editors, IDEs and Python environments
 
-**Objectives**
-* Provide an *overview* of Python IDEs and code editors for beginners and professionals.
----
+An **editor** edits source files; an **integrated development environment (IDE)** also integrates development tools such as debugging and tests. Editors can acquire IDE features through extensions. VS Code, for example, supports Python interpreter selection, execution and debugging. [VS Code Python tutorial](https://code.visualstudio.com/docs/python/python-tutorial)
 
-## Code Editor
-A code editor is a tool that is used to write and edit code. They are usually lightweight and can be great for learning. However, once your program gets larger, you need to test and debug your code, that's where IDEs come in.
+A **Python interpreter** executes Python. An **environment** selects that interpreter and its packages. A notebook **kernel** is the process holding variables and executing cells. The browser is usually its interface; the EAGE sandbox instead runs Pyodide in a browser worker. [venv](https://docs.python.org/3/library/venv.html), [Jupyter architecture](https://docs.jupyter.org/en/latest/projects/architecture/content-architecture.html), [Pyodide](https://pyodide.org/en/stable/)
 
-## IDEs
+## Choose a workflow
 
-An **IDE** (Integrated Development Environment) understand your code much better than a text editor. It usually provides features such as build automation, code linting, testing and debugging. This can significantly speed up your work. The downside is that (sometimes) IDEs can be complicated to use.
+| Tool | Execution location | Saved work | Reproducibility check |
+|---|---|---|---|
+| EAGE sandbox | Browser worker | Exported drafts/files | Stop/reset clears variables and uploaded files |
+| Jupyter Notebook / JupyterLab | Local computer or kernel server | `.ipynb` plus separate inputs | Restart and run all |
+| Google Colab | Usually a Google-managed VM | Notebook in Drive; runtime files saved separately | Reconnect and rerun setup/download cells |
+| marimo | Local/server Python or configured browser deployment | `.py` notebook | Check dependencies and external-data refresh |
+| VS Code | Selected local/remote interpreter | Scripts and notebooks | Verify selected environment |
 
-On Google we can find several IDEs, such as: 
+Software sources: [JupyterLab](https://jupyterlab.readthedocs.io/en/stable/user/interface.html), [Colab FAQ](https://research.google.com/colaboratory/faq.html), [marimo](https://docs.marimo.io/guides/reactivity/), [VS Code environments](https://code.visualstudio.com/docs/python/environments). The sandbox row describes this course's implementation.
 
-* [Sublime Text](https://www.sublimetext.com/): Sublime Text is a popular code editor that supports many languages including Python. It's fast, highly customizable and has a huge community.
-* [Visual Studio Code](https://code.visualstudio.com/): a code editor with Python, notebook, debugging, and environment extensions.
-* [PyCharm](https://www.jetbrains.com/pycharm/): PyCharm is an IDE for professional developers. It is created by JetBrains, a company known for creating great software development tools.
-* [Eclipse](https://www.eclipse.org/): Eclipse is a free and open-source IDE that can be used for Python development.
-* [Spyder](https://www.spyder-ide.org/): It is an IDE for Python under Anaconda.
-* others.
+## Local setup
 
-## Anaconda
-Anaconda bundles Python and scientific packages. Licensing and repository access depend on the organization and intended use; check the [current Anaconda terms](https://www.anaconda.com/legal/terms/terms-of-service). This course can run with standard Python and `venv`.
-
-Anaconda provides its own package manager (```conda```) and package repository. But it allows installation of packages from **PyPI** using ```pip``` if the package is not in Anaconda repositories. It is especially good if you are installing on Microsoft Windows as it can easily install packages that would otherwise require you to install C/C++ compilers and libraries if you were using ```pip```. It is certainly an added advantage that **conda**, in addition to being a package manager, is also a virtual environment manager allowing you to install independent development environments and switch from one to the other (similar to virtualenv).
-
-One of the most popular features of Anaconda is that allows to create notebooks, which allow us to write and run code in a single file, combining *cells* of text and code very efficiently in a very interactive way.
-
-## Jupyter
-
-[Jupyter project](https://github.com/jupyter/), or **Jupyter** (**Ju**lia, **Py**thon, **R**), is a free web-based software for interactive computing across multiple programming languages. Jupyter is an independent project and does not require Anaconda. For some reseachers, it is their prefered tool to prototype their data analysis algorithms.
-
-### Jypiter Lab
-Jupyter Lab ia a web-based application that allows you to lets you collect multiple Jupyter Notebooks under one tab. It is also part of Anaconda distribution and it is a good way to prototype your data analysis algorithms.
-
-## Google CoLab
-Google Colaboratory, or "[Colab](https://colab.research.google.com/)", is a product from Google Research that is based on the open source [Jupyter project](https://github.com/jupyter/). It allows anybody to write and execute arbitrary Python code through the browser, and is especially well suited to machine learning, data analysis and education. In other words, Colab is a hosted Jupyter notebook service that requires no setup to use, while providing access free of charge to computing resources including GPUs. The only requirement is that you have a Google account.
-
-Google Colab provides hosted notebooks and, when available, access to CPU, GPU, or TPU runtimes. Accelerator availability, memory, session length, and performance vary by plan, region, workload, and current capacity; do not assume a fixed speed-up or runtime limit.
-
-### Where are my notebooks stored, and can I share them?link
-Colab notebooks are stored in Google Drive, or can be loaded from GitHub. Colab notebooks can be shared just as you would with Google Docs or Sheets. Simply click the Share button at the top right of any Colab notebook, or follow these Google Drive [file sharing instructions](https://support.google.com/drive/answer/2494822?co=GENIE.Platform%3DDesktop&hl=en).
-
-## Marimo
-
-[Marimo](https://marimo.io/) is a reactive Python notebook framework designed for reproducible scientific and data workflows. Unlike a classic notebook that executes cells in a linear order, Marimo keeps code, output, and dependencies synchronized so that a change in one variable can update the cells that depend on it automatically.
-
-This makes Marimo especially useful when you are building notebooks that behave more like executable analysis scripts than static teaching examples. It is also a good option for sharing notebooks that should be easier to review in version control because the notebook is stored as a Python file rather than a JSON-based `.ipynb` file.
-
-### Install Marimo
-
-To install Marimo locally:
+1. Install a supported Python 3 release compatible with the course requirements from [python.org](https://www.python.org/downloads/).
+2. Create a course folder, with `data` and `outputs` subfolders.
+3. Open a terminal there and create an environment:
 
 ```bash
-pip install marimo
+python -m venv .venv
 ```
 
-To launch it in a browser:
+4. Activate with `.venv\Scripts\activate.bat` in Windows Command Prompt, or `source .venv/bin/activate` in macOS/Linux. PowerShell users can invoke `.venv\Scripts\python.exe -m pip ...` directly without activation.
+5. In the activated environment:
 
 ```bash
-marimo edit
+python -m pip install jupyterlab ipykernel numpy pandas matplotlib
+python -m jupyterlab
 ```
 
-For official documentation and source code, see:
+These are terminal commands, not Python cells. `python -m pip` targets that interpreter. Activation changes command lookup; it does not install packages. [venv](https://docs.python.org/3/library/venv.html), [Jupyter installation](https://jupyter.org/install), [pip](https://pip.pypa.io/en/stable/user_guide/)
 
-- [Marimo documentation](https://docs.marimo.io/)
-- [Marimo GitHub repository](https://github.com/marimo-team/marimo)
-- [Marimo installation guide](https://docs.marimo.io/getting_started/installation/)
+## Check your environment
 
-### Why use Marimo?
-
-- Good for reproducible, reactive workflows.
-- Makes code easier to version-control and review in Git.
-- Works well for notebook-based data analysis and exploratory programming.
-- Can be a strong alternative when you want more structure than a traditional notebook but less overhead than a full app framework.
-
-## Comparative overview of notebook environments
-
-The following table compares the main notebook environments used in this course: Jupyter Notebook, Google Colab, and Marimo.
-
-| Tool | Access model | Setup required | Compute resources | GPU / TPU access | Collaboration | Agent coding support | Typical use |
-|---|---|---|---|---|---|---|---|
-| Jupyter Notebook | Local app in the browser; files saved on your machine | Download and install Python + Jupyter | Depends on your local machine | Usually only if your local hardware supports it | Good with Git and local sharing | Moderate; works well with VS Code and local editors | Classroom, local research, reproducible analysis |
-| Google Colab | Web-based; runs in the browser | No local install required | Cloud resources managed by Google | Often available through free and paid plans | Strong with Google Drive and sharing links | Good, especially with AI-assisted coding environments | Fast prototyping, teaching, cloud experiments |
-| Marimo | Local browser app or remote deployment | Install with `pip install marimo` | Depends on local machine or server | Depends on the host environment | Good with Git and code-based notebooks | Strong for code-first workflows and AI-assisted exploratory coding | Reproducible notebooks and reactive data apps |
-
-### Practical recommendation
-
-- Use **Jupyter Notebook** when you want a simple local workflow and full control over your environment.
-- Use **Google Colab** when you want a quick browser-based environment with cloud compute and no local installation.
-- Use **Marimo** when you want a reactive, code-first notebook workflow that feels more structured and version-control friendly.
-
-## Anatomy of a Google Colab Notebook
-
-* Cells
-  - Text
-  - Code
-* Code Snippets
-* Files
-* Share
-* Runtime
-  - None
-  - GPU
-  - TPU
-
-* Shortcuts
-  - UP / DOWN: Move between cells
-  - ESC: Exit cell edit mode
-  - Shift + Enter: Run cell
-  - Ctrl + M + Y: Convert a cell from text to code
-  - Ctrl + M + M: Convert a cell from code to text
-  - Tools > Keyboard shortcuts...
-
-
-```{image} ../images/section1/googleColabAnatomy.png
-:alt: googleColabAnatomy
-:class: bg-primary mb-1
-:width: 800px
-:align: center
+```{code-cell} python
+import sys
+from pathlib import Path
+print("Python:", sys.version.split()[0])
+print("Interpreter:", sys.executable)
+print("Current folder:", Path.cwd())
 ```
 
-## References
+A missing package may be installed in a different environment. A missing CSV may be in a different working folder. Inspect the paths first. [Import errors](https://docs.python.org/3/library/exceptions.html#ModuleNotFoundError), [pathlib](https://docs.python.org/3/library/pathlib.html)
 
-- [Jupyter Project](https://github.com/jupyter/)
-- [Jupyter Notebook documentation](https://jupyter.org/)
-- [JupyterLab documentation](https://jupyterlab.readthedocs.io/en/stable/)
-- [Google Colab](https://colab.research.google.com/)
-- [Google Drive sharing guide](https://support.google.com/drive/answer/2494822?co=GENIE.Platform%3DDesktop&hl=en)
-- [Marimo documentation](https://docs.marimo.io/)
-- [Marimo GitHub repository](https://github.com/marimo-team/marimo)
-- [Marimo installation guide](https://docs.marimo.io/getting_started/installation/)
+[Spyder](https://docs.spyder-ide.org/current/index.html) is a scientific IDE with a variable explorer; it does not require Anaconda. [PyCharm](https://www.jetbrains.com/help/pycharm/quick-start-guide.html) integrates Python development and debugging. [Sublime Text](https://www.sublimetext.com/docs/) is an extensible editor.
+
+Anaconda is a distribution; conda manages environments/packages; Jupyter is independent. A `venv` uses the Python installation that creates it. [conda concepts](https://docs.conda.io/projects/conda/en/stable/user-guide/concepts/index.html), [venv](https://docs.python.org/3/library/venv.html)
+
+Continue with [Jupyter](../section3/notebooks/jupyter-notebooks.md), [Colab](../section3/notebooks/google-colab.md), and [marimo](../section3/notebooks/marimo.md).

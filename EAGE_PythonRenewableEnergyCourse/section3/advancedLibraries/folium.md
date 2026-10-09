@@ -1,6 +1,6 @@
 # Folium
 
-Folium creates Leaflet web maps. Coordinates are normally supplied as latitude–longitude pairs in WGS84.
+Folium creates Leaflet web maps. Coordinates are normally supplied as latitude–longitude pairs in WGS84. [Folium getting started](https://python-visualization.github.io/folium/latest/getting_started.html).
 
 ```python
 import folium
@@ -11,3 +11,4 @@ energy_map
 ```
 
 Avoid exposing confidential infrastructure coordinates. For dense point data, use clustering or aggregation rather than thousands of overlapping markers.
+ [Folium getting started](https://python-visualization.github.io/folium/latest/getting_started.html).

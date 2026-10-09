@@ -29,7 +29,7 @@ OUT = SANDBOX / 'generated'
 ASSESSMENT = 'section7/renewableEnergyTest.md'
 PROJECT = 'section8/projectIntro.md'
 ALLOWED_ASSETS = {'.png', '.jpg', '.jpeg', '.svg', '.gif', '.webp', '.pdf', '.csv',
-                  '.xlsx', '.db', '.nc', '.geojson', '.ipynb', '.bib'}
+                  '.xlsx', '.db', '.nc', '.geojson', '.json', '.ipynb', '.bib'}
 
 
 def slug(text):
@@ -77,7 +77,7 @@ class Builder:
         path = path.resolve()
         if (path.suffix.lower() not in ALLOWED_ASSETS and path != BOOK / 'myst.yml') or not path.is_file():
             return None
-        if path.is_relative_to(BOOK) and '_build' not in path.parts:
+        if path.is_relative_to(BOOK) and not {'_build', 'outputs'}.intersection(path.relative_to(BOOK).parts):
             rel = path.relative_to(BOOK).as_posix()
         elif path.is_relative_to(ROOT / 'referenceBooks') and path.suffix == '.pdf':
             rel = 'referenceBooks/' + path.name
@@ -260,7 +260,7 @@ class Builder:
         pages = [self.page(path, group) for path, group in self.pages]
         # Data are fetched on demand into the worker, retaining book-relative paths.
         for path in BOOK.rglob('*'):
-            if path.suffix in {'.csv', '.xlsx', '.db', '.nc', '.geojson'} and '_build' not in path.parts:
+            if path.suffix in {'.csv', '.xlsx', '.db', '.nc', '.geojson', '.json'} and '_build' not in path.parts:
                 self.asset(path)
         payload = {'version': 2, 'pages': pages, 'assets': sorted(self.assets.values(), key=lambda x: x['path']),
                    'book_url': 'https://roderickperez.github.io/EAGE_PythonRenewableEnergyCourse/',

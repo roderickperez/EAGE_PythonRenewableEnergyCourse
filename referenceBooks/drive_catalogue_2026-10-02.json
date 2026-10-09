@@ -1,0 +1,56 @@
+{
+  "checked": "2026-10-02",
+  "folder": "https://drive.google.com/drive/folders/1Y_2BFwJEcVNszKsbznubi6oqsTHVyR3l",
+  "note": "Second listing after the user expanded folder access; metadata only. Titles and editions were compared, not file hashes.",
+  "files": [
+    {
+      "drive_id": "1zFF-LepowwmNCdC8LJw-qBXXXTrmhUEu",
+      "title": "Hydroelectric Power - A Guide for Developers and Investors.pdf",
+      "url": "https://drive.google.com/file/d/1zFF-LepowwmNCdC8LJw-qBXXXTrmhUEu/view?usp=drivesdk",
+      "size_bytes": 5652365,
+      "modified_time": "2026-09-16T16:43:26.651Z"
+    },
+    {
+      "drive_id": "1HU3_eJyiXUgJXV7uJP21vqeANb5aGnLP",
+      "title": "Wagner et Mathur - 2009 - Introduction to Wind Energy Systems.pdf",
+      "url": "https://drive.google.com/file/d/1HU3_eJyiXUgJXV7uJP21vqeANb5aGnLP/view?usp=drivesdk",
+      "size_bytes": 3172120,
+      "modified_time": "2026-09-16T16:42:54.268Z"
+    },
+    {
+      "drive_id": "1wZ_FiYOSjuPnUph_x2hH1NUxkNxFnFdd",
+      "title": "Wind Energy Explained.pdf",
+      "url": "https://drive.google.com/file/d/1wZ_FiYOSjuPnUph_x2hH1NUxkNxFnFdd/view?usp=drivesdk",
+      "size_bytes": 6338585,
+      "modified_time": "2026-09-16T16:42:54.251Z"
+    },
+    {
+      "drive_id": "167trq_9qFRPXoOUjp2kP5OqGTl791GtZ",
+      "title": "Solar-energy-Renewable-Energy-and-the-Environment.pdf",
+      "url": "https://drive.google.com/file/d/167trq_9qFRPXoOUjp2kP5OqGTl791GtZ/view?usp=drivesdk",
+      "size_bytes": 7633212,
+      "modified_time": "2026-09-16T16:42:38.788Z"
+    },
+    {
+      "drive_id": "17JF6pY5gFgpYTSF16wdHLm2FU0qDaPWZ",
+      "title": "Solar Photovoltaic Systems Technical Training Maunal.pdf",
+      "url": "https://drive.google.com/file/d/17JF6pY5gFgpYTSF16wdHLm2FU0qDaPWZ/view?usp=drivesdk",
+      "size_bytes": 6548399,
+      "modified_time": "2026-09-16T16:42:38.762Z"
+    },
+    {
+      "drive_id": "1Cqo7ZBPTQto7BJh4_TRqL0M2udGdDo-t",
+      "title": "Principles of Solar Eng.pdf",
+      "url": "https://drive.google.com/file/d/1Cqo7ZBPTQto7BJh4_TRqL0M2udGdDo-t/view?usp=drivesdk",
+      "size_bytes": 10641511,
+      "modified_time": "2026-09-16T16:42:38.724Z"
+    },
+    {
+      "drive_id": "1GvndWkvQeG8b-wDgsHqK_t0iH2xch37x",
+      "title": "(64) Geothermal Reservoir Engineering- Second Edition.pdf",
+      "url": "https://drive.google.com/file/d/1GvndWkvQeG8b-wDgsHqK_t0iH2xch37x/view?usp=drivesdk",
+      "size_bytes": 5312842,
+      "modified_time": "2026-09-12T21:11:45.368Z"
+    }
+  ]
+}

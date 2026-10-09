@@ -7,7 +7,7 @@ kernelspec:
 
 # Variables
 
-Variables are containers for storing data values. In Python a variable is created the moment you first assign a value to it. Every variable created is an object that reserves a memory location that can store value in Python. The memory location is stored according to the data type of the variable declared. Different from other programming languages, in Python variables need not be defined or declared any data type to the variable as we do in other programming languages. 
+A Python variable is a name bound to an object. Assignment binds or rebinds that name; the object has a type, while the name need not retain one type. Two names may refer to the same mutable object, so changing that object through one name can be visible through the other. [Python: names and binding](https://docs.python.org/3/reference/executionmodel.html#binding-of-names).
 
 The general syntax for declaring a variable is:
 
@@ -23,7 +23,7 @@ Now, try yourself! Click the **⚡ Launch** button in the top bar to activate th
 a = 5
 ```
 
-Did you changed the value of the variable `a` but the result is not displayed?.
+Did you changed the value of the variable `a` but the result is not displayed?. [Python objects and types](https://docs.python.org/3/library/stdtypes.html).
 
 :::{admonition} Print
 :class: tip
@@ -51,10 +51,10 @@ a = 5 # This is a comment
 ```
 :::
 
-Notice that the variables do not need to be declared with any particular type, and can even change type after they have been set.
+Notice that the variables do not need to be declared with any particular type, and can even change type after they have been set. [Python objects and types](https://docs.python.org/3/library/stdtypes.html).
 
 ## Basic Data Types
-If you want to specify the data type of a variable, this can be done with casting.
+Constructors such as `int`, `float`, and `str` convert or construct values; they do not permanently declare the type of a name. For example, `int(3.9)` truncates toward zero, while `int("3.9")` raises `ValueError`. [Python built-in types](https://docs.python.org/3/library/stdtypes.html#numeric-types-int-float-complex).
 
 ### Strings
 ```python
@@ -88,20 +88,18 @@ z = .6
 ```
 
 However, this notation is not recommendable since one of the key differential factors of Python is its **readability**.
-:::
+::: [Python objects and types](https://docs.python.org/3/library/stdtypes.html).
 
 :::{admonition} `,` and Tuples
 :class: error
-In case we use the `,` symbol (instead of a `.`), we will define a *Tuple*. A 
-
-In Python, we can define a float with or without a `0` before the decimal symbol (`.`). Tuple is one of 4 built-in data types in Python used to store collections of data. The other 3 are *List*, *Set*, and *Dictionary*, all with different qualities and usage. The main characteristic of a Tuple is that it is immutable. This means that once it is created, it cannot be changed. Also, the tuples are ordered, meaning that items have a defined order, and that order will not change.
+A decimal point makes `0.4` a float. A comma makes `(0, 4)` a two-item tuple. Tuple positions cannot be replaced, but a mutable object stored inside a tuple can still change. These are different values, not two local number formats. [Python tuples](https://docs.python.org/3/tutorial/datastructures.html#tuples-and-sequences).
 
 For example, if we define :
 
 ```python
-tuple = (0, 4)
+coordinates = (0, 4)
 
-print(tuple)
+print(coordinates)
 
 ```
 :::
@@ -139,7 +137,7 @@ print(type(name))
 :::{admonition} Exercise 1 — Variables and types
 :class: note
 
-**Reference:** Python tutorial [@pythonDocs]; NumPy [@numpyDocs]; pandas [@pandasDocs]; Matplotlib [@matplotlibDocs].
+**Reference:** [Python tutorial](https://docs.python.org/3/tutorial/). Exercise values are original teaching inputs.
 Write a program that
 * Store the value of your name, age, height, and Python experience, 
 * Print its values, and the data type.

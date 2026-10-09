@@ -7,7 +7,7 @@ kernelspec:
 
 # Data Structures
 
-There are four collection data types in the Python programming language:
+Four frequently used built-in collection types are listed below. Python also provides other containers and sequence types. [Python data structures](https://docs.python.org/3/tutorial/datastructures.html).
 
 * **List** is a collection which is *ordered* and *changeable*. Allows duplicate members.
 * **Tuple** is a collection which is *ordered* and *unchangeable*. Allows duplicate members.
@@ -18,7 +18,7 @@ There are four collection data types in the Python programming language:
 
 ## Lists
 
-The simplest data structure in Python is a **list**. It can be defined as a collection of data stored in a variable. They are grouped by `[ ]` and separated by a `,`.
+A **list** is a mutable sequence of object references; its elements can have different types. They are grouped by `[ ]` and separated by a `,`. [Python data structures](https://docs.python.org/3/tutorial/datastructures.html).
 
 In a list we can store strings:
 
@@ -57,7 +57,7 @@ What is the command (or function) that allows us to know the type of data stored
 ### Indexes
 Indices are used to access specific elements of a *list*. 
 
-If I want to access the **first** element of my list, using the `[ ] `, I can use the index `0`. If I want to access the **second** element of my list, I can use the index `1`. If I want to access the **third** element of my list, I can use the index `2`, etc.
+If I want to access the **first** element of my list, using the `[ ] `, I can use the index `0`. If I want to access the **second** element of my list, I can use the index `1`. If I want to access the **third** element of my list, I can use the index `2`, etc. [Python data structures](https://docs.python.org/3/tutorial/datastructures.html).
 
 ```{code-cell} python
 names = ["Maria", "Pedro", "Juana", "Omar"]
@@ -67,7 +67,7 @@ print('The first element of the list of name is: ' , names[0])
 :::{admonition} Exercise 4
 :class: note
 
-**Reference:** Python tutorial [@pythonDocs]; NumPy [@numpyDocs]; pandas [@pandasDocs]; Matplotlib [@matplotlibDocs].
+**Reference:** [Python tutorial](https://docs.python.org/3/tutorial/). Exercise values are original teaching inputs.
 Now is your time. Show what is the third element inside the list `names`:
 
 ```python
@@ -99,7 +99,7 @@ lengthList = len(nameList)
 :::{admonition} Exercise 5
 :class: note
 
-**Reference:** Python tutorial [@pythonDocs]; NumPy [@numpyDocs]; pandas [@pandasDocs]; Matplotlib [@matplotlibDocs].
+**Reference:** [Python tutorial](https://docs.python.org/3/tutorial/). Exercise values are original teaching inputs.
 Try yourself, write a list of `n` elements, and using the `len` function, print the length of the list.
 
 ```python
@@ -119,7 +119,7 @@ assert length == 4
 ```
 :::
 
-In the same way we did previously, we can combine the function `type()` which allow us to know what type of data is stored in a variable, we can use this function to know the type of data stored in a variable, as well as the variable stored in a specific index in a list.
+In the same way we did previously, we can combine the function `type()` which allow us to know what type of data is stored in a variable, we can use this function to know the type of data stored in a variable, as well as the variable stored in a specific index in a list. [Python data structures](https://docs.python.org/3/tutorial/datastructures.html).
 
 ```{code-cell} python
 names = ["Maria", "Pedro", "Juana", "Omar"]
@@ -131,7 +131,7 @@ as well as the variable stored in a specific index in a list.
 :::{admonition} Exercise 6
 :class: note
 
-**Reference:** Python tutorial [@pythonDocs]; NumPy [@numpyDocs]; pandas [@pandasDocs]; Matplotlib [@matplotlibDocs].
+**Reference:** [Python tutorial](https://docs.python.org/3/tutorial/). Exercise values are original teaching inputs.
 
 Check by yourself the type of variable in different locations in the list `allDataTypes`.
 
@@ -178,7 +178,7 @@ names = ["Maria", "Pedro", "Juana", "Omar"]
 print('The original list of names is: ' , names)
 ```
 
-If I want to replace the third value of my list with the value `"Daniela"`, I can use the index `2` to replace the value.
+If I want to replace the third value of my list with the value `"Daniela"`, I can use the index `2` to replace the value. [Python data structures](https://docs.python.org/3/tutorial/datastructures.html).
 
 ```{code-cell} python
 names[2]= "Daniela"
@@ -257,11 +257,11 @@ cities.count("Caracas")
 ```
 
 If the value **NOT** appears in the list, it will simply be `0`:
-```{code-cell} python
+ [Python data structures](https://docs.python.org/3/tutorial/datastructures.html).```{code-cell} python
 cities.count("Madrid")
 ```
 
-In the same way we can know what is the index of a specific value in a list, using the `index()` method:
+In the same way we can know what is the index of a specific value in a list, using the `index()` method: [Python data structures](https://docs.python.org/3/tutorial/datastructures.html).
 
 ```{code-cell} python
 indexBogota = cities.index("Bogota")
@@ -285,7 +285,7 @@ cities = ["Caracas", "Bogota", "Rio", "Vienna"]
 
 cities.reverse()
 ```
-Note that it does not return anything. However, if we call the list again:
+Note that it does not return anything. However, if we call the list again: [Python data structures](https://docs.python.org/3/tutorial/datastructures.html).
 
 ```{code-cell} python
 print(cities)
@@ -299,7 +299,7 @@ It is important to note that there are some methods in Python that modify the or
 
 ### Ordering a list
 
-Through the `sort()` method it is possible to sort the list:
+Through the `sort()` method it is possible to sort the list: [Python data structures](https://docs.python.org/3/tutorial/datastructures.html).
 
 ```{code-cell} python
 names = ["Maria", "Pedro", "Juana", "Omar"]
@@ -324,13 +324,13 @@ except TypeError as error:
     print("Expected TypeError:", error)
 ```
 
-This error message occurs because there are different types of data in the list.
+This error message occurs because there are different types of data in the list. [Python data structures](https://docs.python.org/3/tutorial/datastructures.html).
 
 :::
 
 ## Tuples
 
-Tuples is one the most popular data structures in Python. They are similar to lists, can be used to used to store multiple items (with different data types) in a single variable, but the main difference is that they are **immutable** . In order to define a tuple we need to use parenthesis `()`, and separate the items by commas `,`.
+Tuples is one the most popular data structures in Python. They are similar to lists, can be used to used to store multiple items (with different data types) in a single variable, but the main difference is that they are **immutable** . In order to define a tuple we need to use parenthesis `()`, and separate the items by commas `,`. [Python data structures](https://docs.python.org/3/tutorial/datastructures.html).
 
 ```{code-cell} python
 tupleExample = ("Roderick", 1.85, 39, True)
@@ -339,11 +339,11 @@ print('The tupleExample is a: ' , type(tupleExample))
 
 ```
 
-Another feature of the tuples is that the items are ordered, unchangeable and allow duplicate values.
+Another feature of the tuples is that the items are ordered, unchangeable and allow duplicate values. [Python data structures](https://docs.python.org/3/tutorial/datastructures.html).
 
 ### Ordered
 
-When we say that tuples are ordered, it means that the items have a defined order, and that order will not change.
+When we say that tuples are ordered, it means that the items have a defined order, and that order will not change. [Python data structures](https://docs.python.org/3/tutorial/datastructures.html).
 
 ```{code-cell} python
 tupleExample = ("Roderick", 1.85, 39, True)
@@ -354,7 +354,7 @@ print('The first item in the tupleExample tuple is : ' , tupleExample[0])
 ```
 
 ### Immutable
-Tuples are immutable, meaning that we cannot change, add or remove items after the tuple has been created.
+A tuple cannot have its element references replaced, inserted or removed. An embedded mutable object, such as a list, can still change; immutability is not recursive.
 
 ```{code-cell} python
 # Deliberate error demonstration: catch it so the lesson can continue.
@@ -378,7 +378,7 @@ AttributeError: 'tuple' object has no attribute 'append'
 
 ```
 
-As we can read Python is saying that the tuples are inmmutable.
+As we can read Python is saying that the tuples are inmmutable. [Python data structures](https://docs.python.org/3/tutorial/datastructures.html).
 
 
 ### Allow duplicate values
@@ -404,7 +404,7 @@ print('The tupleExample has : ' , len(tupleExample), 'items.')
 :::{admonition} Create a tuple with one item
 :class: tip
 
-Imagine that you want to define a tuple with one item. As we described before, we need to use parenthesis `()` and separate the items by commas `,`. But since we only have one item, we just use the parenthesis `()`, right?
+Imagine that you want to define a tuple with one item. As we described before, we need to use parenthesis `()` and separate the items by commas `,`. But since we only have one item, we just use the parenthesis `()`, right? [Python data structures](https://docs.python.org/3/tutorial/datastructures.html).
 
 ```{code-cell} python
 oneItemTuple1 = ("Roderick")
@@ -412,7 +412,7 @@ print('The tupleExample is a: ' , type(oneItemTuple1))
 ```
 What's is wrong?
 
-To create a tuple with only one item, we need to add a comma `,` after the item, otherwise Python will not recognize it as a tuple. For example:
+To create a tuple with only one item, we need to add a comma `,` after the item, otherwise Python will not recognize it as a tuple. For example: [Python data structures](https://docs.python.org/3/tutorial/datastructures.html).
 
 ```{code-cell} python
 oneItemTuple2 = ("Roderick",)
@@ -423,7 +423,7 @@ print('The tupleExample is a: ' , type(oneItemTuple2))
 
 ## Dictionaries
 
-Dictionaries are used to store data values in `key:value pairs`. In Python, a **dictionary** is a collection which is ordered*, changeable and do not allow duplicates. To define dictionaries we use curly brackets, and a set of keys and values.For example:
+A **dictionary** maps unique, hashable keys to values. It is mutable and preserves insertion order in Python 3.7 and later; values may repeat. To define dictionaries we use curly brackets, and a set of keys and values.For example: [Python data structures](https://docs.python.org/3/tutorial/datastructures.html).
 
 ```python
 dictionaryExample = {
@@ -433,7 +433,7 @@ dictionaryExample = {
     }
 ```
 
-Another way to build a dictionary in Python is using the `dict()` function. For example:
+Another way to build a dictionary in Python is using the `dict()` function. For example: [Python data structures](https://docs.python.org/3/tutorial/datastructures.html).
 
 ```python
 dictionaryExample = dict([
@@ -448,7 +448,7 @@ dictionaryExample = dict([
 
 ### Ordered*
 
-When we say that dictionaries are ordered, it means that the items have a defined order, and that order will not change. However, since the items in a dictionary are presented in `key:value pairs`, we can access to them by using the key name. For example:
+When we say that dictionaries are ordered, it means that iteration follows insertion order, not sorted order. Deleting and reinserting a key moves it to the end. Since dictionary items are presented in `key:value pairs`, we can access to them by using the key name. For example: [Python data structures](https://docs.python.org/3/tutorial/datastructures.html).
 
 ```{code-cell} python
 dictionaryExample = {
@@ -498,7 +498,7 @@ dictionaryExample = {
 print(dictionaryExample)
 ```
 
-Notice that if we define to keys, the dictionary will overwrite the last defined value in the key with the new value.
+Notice that if we define to keys, the dictionary will overwrite the last defined value in the key with the new value. [Python data structures](https://docs.python.org/3/tutorial/datastructures.html).
 
 ### Length
 To determine how many items a dictionary has, use the `len()` function:
@@ -516,7 +516,7 @@ print('The dictionaryExample has : ' , len(dictionaryExample), 'items.')
 
 ## Sets
 
-A set is a data type in Python used to store multiple items (with different data types) in a single variable, which is unordered, mutable, unindexed, and do not allow duplicate values. In order to define a set, we need to use curly brackets `{ }`.
+A set is a data type in Python used to store multiple items (with different data types) in a single variable, which is unordered, mutable, unindexed, and do not allow duplicate values. In order to define a set, we need to use curly brackets `{ }`. [Python data structures](https://docs.python.org/3/tutorial/datastructures.html).
 
 ```{code-cell} python
 setExample = {"Roderick", 1.85, 39, True}
@@ -525,7 +525,7 @@ print('The tupleExample is a: ' , type(setExample))
 
 ### Unordered
 
-When we say that sets are unordered means that the items does not have a defined order, and you cannot refer to an item by using an index.
+When we say that sets are unordered means that the items does not have a defined order, and you cannot refer to an item by using an index. [Python data structures](https://docs.python.org/3/tutorial/datastructures.html).
 
 ```{code-cell} python
 # Deliberate error demonstration: catch it so the lesson can continue.
@@ -538,7 +538,7 @@ except TypeError as error:
     print("Expected TypeError:", error)
 ```
 
-If we execute this code, we will get the following error message:
+If we execute this code, we will get the following error message: [Python data structures](https://docs.python.org/3/tutorial/datastructures.html).
 
 ```python
 ---------------------------------------------------------------------------
@@ -551,11 +551,11 @@ Input In [34], in <cell line: 4>()
 TypeError: 'set' object is not subscriptable
 ```
 
-meaning that in Python a set are unordered, and we can not use the index to get the items.
+meaning that in Python a set are unordered, and we can not use the index to get the items. [Python data structures](https://docs.python.org/3/tutorial/datastructures.html).
 
 ### Mutable collection, hashable elements
 
-A set can be changed with methods such as `add()`, `remove()`, and `discard()`. Individual elements must be hashable, so mutable objects such as lists cannot be set elements.
+A set can be changed with methods such as `add()`, `remove()`, and `discard()`. Individual elements must be hashable, so mutable objects such as lists cannot be set elements. [Python data structures](https://docs.python.org/3/tutorial/datastructures.html).
 
 ```{code-cell} python
 setExample = {"Roderick", 1.85, 39, True}
@@ -574,7 +574,7 @@ print('The items in my setExample set are : ' , setExample)
 
 ### Length
 
-To determine how many items a set has, we can use the same `len()` function as we did with previously.
+To determine how many items a set has, we can use the same `len()` function as we did with previously. [Python data structures](https://docs.python.org/3/tutorial/datastructures.html).
 
 ```{code-cell} python
 setExample = {"Roderick", 1.85, 39, True}

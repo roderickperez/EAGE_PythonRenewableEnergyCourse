@@ -32,7 +32,7 @@ not current data for a real location. **Read all five files; do not replace them
 with newly generated data or hard-code geothermal output.**
 
 In the repository the files are in `EAGE_PythonRenewableEnergyCourse/section8/data`.
-In Colab upload the five CSVs to a single folder. Select the dataset folder explicitly
+To download them, open each of the five links above and use the browser download/save control; save the raw CSV, not an HTML page. Keep the filenames `solar.csv`, `wind.csv`, `hydro.csv`, `geothermal.csv`, and `demand.csv` together. In Colab, open the left Files panel, choose Upload, and select all five CSVs. In Jupyter, use the file browser Upload control or copy them into your project folder. In the course sandbox, these files are already bundled under `section8/data`; no external download is needed to run there. Select the dataset folder explicitly
 with `pathlib.Path`, read each file using `pandas.read_csv`, parse times with
 `pandas.to_datetime(..., utc=True)`, and validate before joining. Do not rely on
 matching row positions. The first timestamp labels the start of its interval.
@@ -59,6 +59,8 @@ Use these simplified boundaries consistently:
 
 ### Solar PV
 
+Basis: [@pvlibDocs] for the linear DC approximation; [Sandia NOCT](https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/cell-temperature/noct-cell-temperature/) for the fuller thermal model. Here POA equals effective irradiance and the reduced NOCT equation, constant inverter efficiency and clipping are specified assumptions. $G$ is W/m²; all temperatures are °C; both electrical ratings are MW.
+
 $$T_c=T_a+\frac{G}{800}(NOCT-20)$$
 
 $$P_{DC}=P_{DC,r}\frac{G}{1000}[1+\gamma_P(T_c-25)]$$
@@ -67,11 +69,15 @@ $$P_{AC}=\min(P_{DC}\eta_{inv},P_{AC,r})$$
 
 ### Wind
 
+Basis: [@manwell2009], §§2.5 and 3.2. The piecewise cubic ramp is the stipulated teaching curve; $v$, $v_{in}$ and $v_r$ are m/s, and $P_r$ is MW.
+
 Use a four-region turbine curve: zero below cut-in, a continuous ramp to rated power, rated power until cut-out, and zero at or above cut-out. Do not extend $v^3$ through the rated and shutdown regions.
 
 In the ramp region use $P=P_r(v^3-v_{in}^3)/(v_r^3-v_{in}^3)$.
 
 ### Hydropower
+
+Basis: [@jica2011], §3.1.2 and §8.3; [@ifc2015], Chapters 7 and 12. Flows are m³/s, head is m, and efficiency is dimensionless. The hydraulic expression returns W; convert to MW before applying the 8 MW cap. The fixed environmental reservation is a scenario assumption.
 
 $$Q_{usable}=\max(Q_{river}-Q_{environmental},0)$$
 
@@ -81,7 +87,9 @@ $$P_h=\min(\eta\rho gQ_{usable}H_{net},P_{rated})$$
 
 $$P_{th}=\dot m c_p(T_p-T_r)$$
 
-$$P_{net}=P_{th}\eta_{conv}(1-f_{parasitic})$$
+$$P_{net}=\min\left(P_{th}\eta_{conv}(1-f_{parasitic}),P_{r,net}\right)$$
+
+Use a consistent unit before applying the cap: the sensible-heat formula returns W with the stated SI inputs, while $P_{r,net}=3.5$ MW. Divide W by $10^6$ before comparing with 3.5. [@grant2011], Chapters 2–3; the net rating is a specified project assumption.
 
 The geothermal formula is a simplified single-phase sensible-heat model. State that an enthalpy model is needed for flashing or two-phase fluid.
 
@@ -127,7 +135,7 @@ Calculate:
 - renewable energy served, curtailment, and shortfall;
 - renewable coverage $E_{served}/E_{demand}$.
 
-At every hour:
+At every hour, use the following original no-storage accounting identities. Each $E$ is energy over that same interval; the basis is conservation of energy [@foster2010], §3.8.1.
 
 $$E_{served}=\min(E_{renewable},E_{demand})$$
 

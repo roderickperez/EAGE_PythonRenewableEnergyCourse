@@ -25,7 +25,7 @@ Electricity generation requires useful heat plus a way to transport it to the su
 
 Geothermal energy is thermal energy in the Earth. A geothermal project does not produce energy merely by drilling to a high temperature: it needs a technically usable heat resource, a way to transfer heat to the surface, a suitable conversion or direct-use system, and an operating strategy that manages the subsurface response. Temperature, accessible fluid flow, pressure, chemistry and permeability all matter [@grant2011].
 
-Heat within the Earth includes contributions from its formation and radioactive decay. At a local project scale, however, the important question is how heat reaches and is stored in the reservoir and how quickly it can be extracted. Natural replenishment does not guarantee that a particular well field can support an arbitrary extraction rate. Some systems can be operated for long periods, while excessive drawdown, cooling or fluid-management problems can limit output.
+Heat within the Earth includes contributions from its formation and radioactive decay. At a local project scale, however, the important question is how heat reaches and is stored in the reservoir and how quickly it can be extracted. Natural replenishment does not guarantee that a particular well field can support an arbitrary extraction rate. Some systems can be operated for long periods, while excessive drawdown, cooling or fluid-management problems can limit output. [@grant2011], §§2.2–2.5.
 
 ### Resource and utilization categories
 
@@ -38,39 +38,45 @@ Heat within the Earth includes contributions from its formation and radioactive 
 | Geothermal power generation | Converts a portion of extracted heat into electricity | Include cycle efficiency, cooling and parasitic electricity consumption |
 | Ground-source heat pump | Uses the ground as a heat source or sink with electrical compressor work | Track electricity input and heat delivery; this is not geothermal electricity generation |
 
+*Source for these definitions/calculations:* [@grant2011], Chapter 2; [@doeEGS; @doeGeothermalElectricity]. Heat-pump accounting: Reversible heat-engine limit: [OpenStax, University Physics 2, §4.5, Eq. 4.5](https://openstax.org/books/university-physics-volume-2/pages/4-5-the-carnot-cycle).
+
 Hydrothermal, EGS and closed-loop describe aspects of the subsurface system; dry-steam, flash and binary describe surface electricity-conversion arrangements. These classifications answer different questions and should not be used interchangeably. The supplied Grant and Bixley book develops reservoir concepts and simplified models; DiPippo is additional reading for power-conversion systems [@grant2011; @diPippo2016geothermal].
 
 ## Reservoir terms and transport processes
 
-**Porosity** is the fraction of bulk rock volume occupied by pores or voids. **Permeability** describes the medium's ability to transmit fluid; connected pathways matter, so high porosity alone does not guarantee a productive well. Fractures can dominate fluid flow even when matrix permeability is low. **Transmissivity** incorporates the ability of a formation interval to transmit fluid over its effective thickness and depends on the convention used.
+**Porosity** is the fraction of bulk rock volume occupied by pores or voids. **Permeability** describes the medium's ability to transmit fluid; connected pathways matter, so high porosity alone does not guarantee a productive well. Fractures can dominate fluid flow even when matrix permeability is low. **Transmissivity** incorporates the ability of a formation interval to transmit fluid over its effective thickness and depends on the convention used. [@grant2011], §§2.3–2.5, §3.3.1 and §3.7.
 
 **Reservoir pressure** helps drive fluid toward a producing well, while pressure decline can reduce deliverability or increase pumping requirements. **Production wells** bring fluid to the surface; **injection wells** return fluid or supply circulation. Injection can help manage fluid mass and pressure, but poorly placed or strongly connected injection can cause premature cooling at producers. **Thermal breakthrough** is the arrival of a cooling influence along flow paths, not simply the passage of one calendar year [@grant2011].
 
-A conceptual fluid-flow relationship is Darcy's law. For a one-dimensional horizontal, single-phase flow without a gravity term,
+A conceptual fluid-flow relationship is Darcy's law. For a one-dimensional horizontal, single-phase flow without a gravity term, [@grant2011], §§2.3–2.5, §3.3.1 and §3.7.
 
 $$q_D=-\frac{k_{perm}}{\mu}\frac{dp}{dx}.$$
 
-$q_D$ is Darcy flux in m/s, $k_{perm}$ is intrinsic permeability in m², $\mu$ is dynamic viscosity in Pa s, and $dp/dx$ is pressure gradient in Pa/m. The negative sign represents flow toward decreasing pressure. Actual geothermal flow may involve gravity, temperature-dependent properties, fractures and multiple phases, so this reduced relationship is not a complete well model. It explains why temperature alone cannot establish producible mass flow.
+*Equation basis:* [@grant2011], §§2.3–2.5, §3.3.1 and §3.7.
+
+$q_D$ is Darcy flux in m/s, $k_{perm}$ is intrinsic permeability in m², $\mu$ is dynamic viscosity in Pa s, and $dp/dx$ is pressure gradient in Pa/m. The negative sign represents flow toward decreasing pressure. Actual geothermal flow may involve gravity, temperature-dependent properties, fractures and multiple phases, so this reduced relationship is not a complete well model. It explains why temperature alone cannot establish producible mass flow. [@grant2011], §§2.3–2.5, §3.3.1 and §3.7.
 
 ### Conduction and convection
 
 Conduction transfers heat through a material without bulk transport of that material. Advection carries heat with moving fluid; buoyancy-driven circulating flow is commonly described as convection. In low-permeability conductive regions, a temperature gradient can help estimate deeper temperature over an appropriate interval. In permeable convecting systems, simple downward extrapolation of the shallow gradient may be misleading [@grant2011].
 
-The linear conductive approximation is $T(z)=T_0+G_Tz$, where the depth coordinate and gradient must use matching units. If depth is in kilometres and gradient in °C/km, the product is a temperature difference in °C. This is a local model, not a universal rule that temperature always rises at one fixed rate everywhere.
+The linear conductive approximation is $T(z)=T_0+G_Tz$, where the depth coordinate and gradient must use matching units. If depth is in kilometres and gradient in °C/km, the product is a temperature difference in °C. This is a local model, not a universal rule that temperature always rises at one fixed rate everywhere. [@grant2011], §§2.2–2.3 and §4.4.1 (conductive versus convective profiles).
 
 Fourier's law is
 
 $$\mathbf q=-k_T\nabla T,$$
 
-where thermal conductivity $k_T$ is W/(m K) and heat flux $\mathbf q$ is W/m². Thermal conductivity and intrinsic permeability are different physical properties; separate symbols help avoid confusion. If depth $z$ is positive downward and temperature rises downward, the conductive heat-flux vector points upward. For conductivity 2.5 W/(m K) and gradient 30 K/km, the upward heat-flux magnitude is $2.5(30/1000)=0.075$ W/m². A gradient is not itself a heat flux.
+*Equation basis:* [@grant2011], §§2.2–2.3 and §4.4.1 (conductive versus convective profiles).
+
+where thermal conductivity $k_T$ is W/(m K) and heat flux $\mathbf q$ is W/m². Thermal conductivity and intrinsic permeability are different physical properties; separate symbols help avoid confusion. If depth $z$ is positive downward and temperature rises downward, the conductive heat-flux vector points upward. For conductivity 2.5 W/(m K) and gradient 30 K/km, the upward heat-flux magnitude is $2.5(30/1000)=0.075$ W/m². A gradient is not itself a heat flux. [@grant2011], §§2.2–2.3 and §4.4.1 (conductive versus convective profiles).
 
 ## The surface plant and its energy boundaries
 
-A typical conversion chain is **reservoir → production well → fluid collection/separation or heat exchanger → power cycle → generator → cooling/auxiliaries → reinjection**, with the detailed route depending on fluid state and technology. Pressure losses, pumping work and heat losses occur between reservoir and delivered output.
+A typical conversion chain is **reservoir → production well → fluid collection/separation or heat exchanger → power cycle → generator → cooling/auxiliaries → reinjection**, with the detailed route depending on fluid state and technology. Pressure losses, pumping work and heat losses occur between reservoir and delivered output. [@doeGeothermalElectricity]; reservoir-to-well limits: [@grant2011], Chapter 2.
 
 ### Dry-steam, flash and binary conversion
 
-**Dry-steam plants** use a suitable steam resource to drive a turbine. **Flash plants** reduce the pressure of sufficiently hot liquid so that part of it vaporizes; a separator supplies steam to a turbine while residual liquid follows its own handling or reinjection path. **Binary plants** transfer geothermal heat through an exchanger to a separate working-fluid cycle. The geothermal fluid and the turbine working fluid therefore need not be the same fluid.
+**Dry-steam plants** use a suitable steam resource to drive a turbine. **Flash plants** reduce the pressure of sufficiently hot liquid so that part of it vaporizes; a separator supplies steam to a turbine while residual liquid follows its own handling or reinjection path. **Binary plants** transfer geothermal heat through an exchanger to a separate working-fluid cycle. The geothermal fluid and the turbine working fluid therefore need not be the same fluid. [@doeGeothermalElectricity]; [@grant2011], Chapter 2.
 
 The plant type must match the temperature, pressure, phase state and chemistry of the resource. There is no single efficiency that applies to all geothermal plants. Cooling conditions and auxiliary demand also affect exported electricity. The course's constant-efficiency, single-phase calculation is most useful for learning heat-to-electricity accounting; it is not a detailed flash or binary cycle simulation [@grant2011; @doeGeothermalElectricity].
 
@@ -78,16 +84,20 @@ DiPippo's fourth edition is a supplementary textbook covering power-conversion s
 
 ## Thermal power: mass flow and enthalpy
 
-For a steady stream, a useful thermal accounting relationship is
+For a steady heat exchanger with negligible shaft work and changes in kinetic and potential energy, the heat removed from the geothermal stream is [@grant2011], §§3.2 and 3.6; [@foster2010], §3.8.1, applied to the stated steady-flow boundary.
 
 $$\dot Q_{extracted}=\dot m(h_p-h_r),$$
 
-where $\dot m$ is mass flow in kg/s, and $h_p$ and $h_r$ are specific enthalpies at the chosen production and return states. With $h$ in J/kg, output is W; with $h$ in kJ/kg, output is kW. This is the heat extracted from the stream under the defined boundary, not necessarily all the stored heat in the reservoir.
+*Equation basis:* [@grant2011], §§3.2 and 3.6; [@foster2010], §3.8.1, applied to the stated steady-flow boundary.
 
-For a single-phase liquid with approximately constant specific heat,
+where $\dot m$ is mass flow in kg/s, and $h_p$ and $h_r$ are specific enthalpies at the chosen production and return states. With $h$ in J/kg, output is W; with $h$ in kJ/kg, output is kW. This neglects heat leakage between the specified measurement states and the heat exchanger; it is the heat extracted from the stream under the defined boundary, not necessarily all the stored heat in the reservoir. [@grant2011], §§3.2 and 3.6; [@foster2010], §3.8.1, applied to the stated steady-flow boundary.
+
+For a single-phase liquid with approximately constant specific heat, [@grant2011], §§3.2 and 3.6; [@foster2010], §3.8.1, applied to the stated steady-flow boundary.
 
 $$h_p-h_r\approx c_p(T_p-T_r),\qquad
 P_{th}=\dot m c_p(T_p-T_r).$$
+
+*Equation basis:* [@grant2011], §§3.2 and 3.6; [@foster2010], §3.8.1, applied to the stated steady-flow boundary.
 
 | Symbol | Definition | Unit used in the course |
 |---|---|---|
@@ -98,58 +108,70 @@ P_{th}=\dot m c_p(T_p-T_r).$$
 | $P_{th}$ | Thermal power extracted under the chosen boundary | W or MW thermal |
 | $P_{gross}$, $P_{net}$ | Gross generated and net exported electrical power | W or MW electrical |
 
+*Source for these definitions/calculations:* [@grant2011], §§3.2 and 3.6; [@foster2010], §3.8.1, applied to the stated steady-flow boundary.
+
 A temperature difference of 80°C is also 80 K. Absolute temperature ratios, by contrast, require kelvin. Salinity, temperature and pressure affect fluid properties. In two-phase flow, energy includes latent heat and phase fractions; applying one constant liquid-water heat capacity to a steam/water mixture can substantially misrepresent the heat balance [@grant2011].
 
 ## Heat-engine limits, net output and direct heat use
 
-For an ideal reversible engine operating between fixed hot and cold reservoirs,
+For an ideal reversible engine operating between fixed hot and cold reservoirs, Reversible heat-engine limit: [OpenStax, University Physics 2, §4.5, Eq. 4.5](https://openstax.org/books/university-physics-volume-2/pages/4-5-the-carnot-cycle). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 $$\eta_C=1-\frac{T_c}{T_h},$$
 
-with both absolute temperatures in kelvin. It is an upper bound for that idealized setting, not the efficiency to assign to a plant. A real geothermal stream cools through a temperature range, heat exchangers require finite temperature differences, and real machinery dissipates energy. A full thermodynamic assessment needs the actual cycle and fluid states.
+*Equation basis:* Reversible heat-engine limit: [OpenStax, University Physics 2, §4.5, Eq. 4.5](https://openstax.org/books/university-physics-volume-2/pages/4-5-the-carnot-cycle). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
+
+with both absolute temperatures in kelvin. It is an upper bound for that idealized setting, not the efficiency to assign to a plant. A real geothermal stream cools through a temperature range, heat exchangers require finite temperature differences, and real machinery dissipates energy. A full thermodynamic assessment needs the actual cycle and fluid states. Reversible heat-engine limit: [OpenStax, University Physics 2, §4.5, Eq. 4.5](https://openstax.org/books/university-physics-volume-2/pages/4-5-the-carnot-cycle). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 The introductory model uses
 
 $$P_{gross}=\eta_{conv}P_{th},\qquad
 P_{net}=P_{gross}-P_{pump}-P_{aux}.$$
 
-If parasitic consumption is represented as a fraction $f_{par}$ of **gross electrical power**, then $P_{net}=P_{gross}(1-f_{par})$. State that denominator explicitly. Ten percent of gross electricity is not ten percent of thermal input. Net exported power is the boundary used for project energy and capacity-factor calculations.
+*Equation basis:* Reversible heat-engine limit: [OpenStax, University Physics 2, §4.5, Eq. 4.5](https://openstax.org/books/university-physics-volume-2/pages/4-5-the-carnot-cycle). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
+
+If parasitic consumption is represented as a fraction $f_{par}$ of **gross electrical power**, then $P_{net}=P_{gross}(1-f_{par})$. State that denominator explicitly. Ten percent of gross electricity is not ten percent of thermal input. Net exported power is the boundary used for project energy and capacity-factor calculations. Reversible heat-engine limit: [OpenStax, University Physics 2, §4.5, Eq. 4.5](https://openstax.org/books/university-physics-volume-2/pages/4-5-the-carnot-cycle). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 A simple hydraulic pumping estimate is
 
 $$P_{pump}=\frac{\Delta p\,Q}{\eta_{pump}},$$
 
-where pressure rise is Pa, liquid volume flow is m³/s and pump efficiency is dimensionless; power is W. Use volume flow here, rather than inserting mass flow without dividing by density. Pressure and flow requirements may change during operation, so a fixed parasitic fraction can hide an important source of declining net output.
+*Equation basis:* Reversible heat-engine limit: [OpenStax, University Physics 2, §4.5, Eq. 4.5](https://openstax.org/books/university-physics-volume-2/pages/4-5-the-carnot-cycle). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
-In direct-use heating, useful thermal output can be delivered without converting it to electricity. The delivery-temperature requirement matters: heat available below the required process temperature is not automatically usable without a heat pump or another upgrade. For a heat pump, heating coefficient of performance is $COP_h=\dot Q_{delivered}/P_{electric}$ and can exceed one because delivered heat includes heat moved from the source as well as electrical input. That does not violate energy conservation and is not an electrical-generation efficiency.
+where pressure rise is Pa, liquid volume flow is m³/s and pump efficiency is dimensionless; power is W. Use volume flow here, rather than inserting mass flow without dividing by density. Pressure and flow requirements may change during operation, so a fixed parasitic fraction can hide an important source of declining net output. Reversible heat-engine limit: [OpenStax, University Physics 2, §4.5, Eq. 4.5](https://openstax.org/books/university-physics-volume-2/pages/4-5-the-carnot-cycle). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
+
+In direct-use heating, useful thermal output can be delivered without converting it to electricity. The delivery-temperature requirement matters: heat available below the required process temperature is not automatically usable without a heat pump or another upgrade. For a heat pump, heating coefficient of performance is $COP_h=\dot Q_{delivered}/P_{electric}$ and can exceed one because delivered heat includes heat moved from the source as well as electrical input. That does not violate energy conservation and is not an electrical-generation efficiency. Reversible heat-engine limit: [OpenStax, University Physics 2, §4.5, Eq. 4.5](https://openstax.org/books/university-physics-volume-2/pages/4-5-the-carnot-cycle). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 ## Reservoir storage, replenishment and production decline
 
-An illustrative sensible-heat inventory for a uniform bulk reservoir volume is
+An illustrative sensible-heat inventory for a uniform bulk reservoir volume is [@grant2011], §§3.2 and 3.6 (storage and stored-heat estimates). The compounded/exponential decline equations are stipulated scenarios, not reservoir predictions.
 
 $$E_{heat}\approx V\left[(1-\phi)\rho_r c_r+\phi\rho_f c_f\right](T-T_{ref}).$$
 
+*Equation basis:* [@grant2011], §§3.2 and 3.6 (storage and stored-heat estimates). The compounded/exponential decline equations are stipulated scenarios, not reservoir predictions.
+
 $V$ is bulk volume, $\phi$ porosity, and the subscripts $r$ and $f$ refer to rock and fluid. Use coherent SI units to obtain joules. This lumped expression assumes uniform temperature and properties and omits phase change. It is not a recoverable electrical reserve: only some heat may be technically accessible, extraction occurs over time, and electrical conversion incurs further limitations [@grant2011].
 
-Pressure response, fluid recharge and heat recharge operate on different pathways and time scales. Maintaining pressure by reinjection does not guarantee that production temperature is maintained. Conversely, observing short-term stable output does not prove indefinite sustainability. Reservoir monitoring and calibrated coupled models are needed for long-run operating decisions.
+Pressure response, fluid recharge and heat recharge operate on different pathways and time scales. Maintaining pressure by reinjection does not guarantee that production temperature is maintained. Conversely, observing short-term stable output does not prove indefinite sustainability. Reservoir monitoring and calibrated coupled models are needed for long-run operating decisions. [@grant2011], §§3.2 and 3.6 (storage and stored-heat estimates). The compounded/exponential decline equations are stipulated scenarios, not reservoir predictions.
 
 For teaching, a compounded annual power decline is
 
 $$P_y=P_1(1-d)^{y-1}.$$
 
-The exponent is zero in year 1. If $d=0.02$, each subsequent year retains 98% of the preceding year's assumed power. This is different from subtracting two percent of the original power every year. A continuous exponential model $P(t)=P_0e^{-Dt}$ uses a decline constant $D$ with inverse-time units; for annual steps, $D=-\ln(1-d)$ per year.
+*Equation basis:* [@grant2011], §§3.2 and 3.6 (storage and stored-heat estimates). The compounded/exponential decline equations are stipulated scenarios, not reservoir predictions.
 
-Fitting $\ln P$ against time requires positive observations and changes the assumed error model. Reserve later observations before fitting, compare against a simple baseline, and report the evaluated period. Intervention, changing flow, outages and reservoir connectivity can invalidate extrapolation. A prescribed or fitted decline curve is not, by itself, a reservoir simulator.
+The exponent is zero in year 1. If $d=0.02$, each subsequent year retains 98% of the preceding year's assumed power. This is different from subtracting two percent of the original power every year. A continuous exponential model $P(t)=P_0e^{-Dt}$ uses a decline constant $D$ with inverse-time units; for annual steps, $D=-\ln(1-d)$ per year. [@grant2011], §§3.2 and 3.6 (storage and stored-heat estimates). The compounded/exponential decline equations are stipulated scenarios, not reservoir predictions.
+
+Fitting $\ln P$ against time requires positive observations and changes the assumed error model. Reserve later observations before fitting, compare against a simple baseline, and report the evaluated period. Intervention, changing flow, outages and reservoir connectivity can invalidate extrapolation. A prescribed or fitted decline curve is not, by itself, a reservoir simulator. [@grant2011], §§3.2 and 3.6 (storage and stored-heat estimates). The compounded/exponential decline equations are stipulated scenarios, not reservoir predictions.
 
 ## Energy, availability and operating limits
 
-Integrate net power over the actual duration: $E_{net}=\sum_iP_{net,i}\Delta t_i$. If an annual model specifies net power **when operating** and a separate availability $a$, $E_y=P_y a T_y$ is an appropriate simplified expression. If measured hourly power already includes downtime, multiplying by availability again would double-count it.
+Integrate net power over the actual duration: $E_{net}=\sum_iP_{net,i}\Delta t_i$. If an annual model specifies net power **when operating** and a separate availability $a$, $E_y=P_y a T_y$ is an appropriate simplified expression. If measured hourly power already includes downtime, multiplying by availability again would double-count it. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
-Use a fixed defined net nameplate $P_{r,net}$ for $CF=E_{net}/(P_{r,net}T)$. Do not use observed maximum output as a substitute unless that is explicitly the intended metric. If a plant has a net power limit, apply it after the resource-to-net-power calculation under the stated boundary. Negative net electricity can physically occur when auxiliaries consume more power than is generated; a model restricted to positive exported generation should state how such operating periods are handled rather than silently changing their meaning.
+Use a fixed defined net nameplate $P_{r,net}$ for $CF=E_{net}/(P_{r,net}T)$. Do not use observed maximum output as a substitute unless that is explicitly the intended metric. If a plant has a net power limit, apply it after the resource-to-net-power calculation under the stated boundary. Negative net electricity can physically occur when auxiliaries consume more power than is generated; a model restricted to positive exported generation should state how such operating periods are handled rather than silently changing their meaning. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 ## Worked calculation before coding
 
-Suppose a synthetic liquid-water resource produces 50 kg/s at 150°C and returns at 70°C. Assume $c_p=4180$ J/(kg K), gross conversion efficiency 0.12 and parasitic consumption equal to 10% of gross electricity.
+Suppose a synthetic liquid-water resource produces 50 kg/s at 150°C and returns at 70°C. Assume $c_p=4180$ J/(kg K), gross conversion efficiency 0.12 and parasitic consumption equal to 10% of gross electricity. Original numerical substitution with assumed constant properties and efficiencies; Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 1. Temperature drop is $150-70=80$ K.
 2. Thermal power is $50(4180)(80)=16{,}720{,}000$ W, or **16.72 MW thermal**.
@@ -158,7 +180,9 @@ Suppose a synthetic liquid-water resource produces 50 kg/s at 150°C and returns
 5. Net output is $2.0064-0.20064=1.80576$ MW.
 6. Four hours at that net output deliver **7.22304 MWh** of electricity.
 
-The reservoir-to-fluid heat transfer, pressure losses and detailed power-cycle behavior are not solved by these six steps. Their purpose is to make the assumed conversion boundaries visible before implementing arrays and functions.
+*Source for these definitions/calculations:* Original numerical substitution with assumed constant properties and efficiencies; Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
+
+The reservoir-to-fluid heat transfer, pressure losses and detailed power-cycle behavior are not solved by these six steps. Their purpose is to make the assumed conversion boundaries visible before implementing arrays and functions. Original numerical substitution with assumed constant properties and efficiencies; Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 ## Environmental context and the route to Python
 
@@ -177,23 +201,31 @@ A linear temperature-depth approximation is
 
 $$T(z)=T_0+G_Tz$$
 
-where $G_T$ is the geothermal gradient, for example °C/km. This is a local approximation; gradients vary with geology, groundwater flow, and depth.
+*Equation basis:* [@grant2011], §§2.2–2.3 and §4.4.1 (conductive versus convective profiles).
+
+where $G_T$ is the geothermal gradient, for example °C/km. This is a local approximation; gradients vary with geology, groundwater flow, and depth. [@grant2011], §§2.2–2.3 and §4.4.1 (conductive versus convective profiles).
 
 Conductive heat flux follows Fourier's law:
 
 $$\mathbf{q}=-k\nabla T$$
 
-The negative sign indicates heat flows toward lower temperature. Gradient (K/m) and heat flux (W/m$^2$) are different quantities.
+*Equation basis:* [@grant2011], §§2.2–2.3 and §4.4.1 (conductive versus convective profiles).
+
+The negative sign indicates heat flows toward lower temperature. Gradient (K/m) and heat flux (W/m$^2$) are different quantities. [@grant2011], §§2.2–2.3 and §4.4.1 (conductive versus convective profiles).
 
 ### Thermal power in produced fluid
 
-For mass-flow rate $\dot m$, specific heat $c_p$, production temperature $T_p$, and reinjection temperature $T_r$:
+For mass-flow rate $\dot m$, specific heat $c_p$, production temperature $T_p$, and reinjection temperature $T_r$: Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 $$P_{th}=\dot m c_p(T_p-T_r)$$
 
-If $c_p$ is J/(kg K), the result is W. A constant liquid-water $c_p$ is a simplified sensible-heat model; steam, flashing, brines, and phase change require enthalpy:
+*Equation basis:* Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
+
+If $c_p$ is J/(kg K), the result is W. A constant liquid-water $c_p$ is a simplified sensible-heat model; steam, flashing, brines, and phase change require enthalpy: Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 $$P_{th}=\dot m(h_p-h_r)$$
+
+*Equation basis:* Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 ### Efficiency, parasitic load, and net power
 
@@ -201,13 +233,19 @@ The reversible Carnot bound is
 
 $$\eta_C=1-\frac{T_c}{T_h}$$
 
-where both temperatures must be in Kelvin. A plant cannot simply be assigned Carnot efficiency; real conversion efficiency is lower and technology-specific.
+*Equation basis:* Reversible heat-engine limit: [OpenStax, University Physics 2, §4.5, Eq. 4.5](https://openstax.org/books/university-physics-volume-2/pages/4-5-the-carnot-cycle). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
+
+where both temperatures must be in Kelvin. A plant cannot simply be assigned Carnot efficiency; real conversion efficiency is lower and technology-specific. Reversible heat-engine limit: [OpenStax, University Physics 2, §4.5, Eq. 4.5](https://openstax.org/books/university-physics-volume-2/pages/4-5-the-carnot-cycle). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 $$P_{gross}=\eta_{conv}P_{th}$$
 
+*Equation basis:* Reversible heat-engine limit: [OpenStax, University Physics 2, §4.5, Eq. 4.5](https://openstax.org/books/university-physics-volume-2/pages/4-5-the-carnot-cycle). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
+
 $$P_{net}=P_{gross}-P_{pumps}-P_{aux}$$
 
-Net power, not gross generator power, is the relevant exported power.
+*Equation basis:* Reversible heat-engine limit: [OpenStax, University Physics 2, §4.5, Eq. 4.5](https://openstax.org/books/university-physics-volume-2/pages/4-5-the-carnot-cycle). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
+
+Net power, not gross generator power, is the relevant exported power. Reversible heat-engine limit: [OpenStax, University Physics 2, §4.5, Eq. 4.5](https://openstax.org/books/university-physics-volume-2/pages/4-5-the-carnot-cycle). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 ### Energy and decline
 
@@ -215,11 +253,15 @@ For discrete time steps:
 
 $$E_{net}=\sum_iP_{net,i}\Delta t_i$$
 
+*Equation basis:* Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
+
 A simple annual decline scenario is
 
 $$P_y=P_1(1-d)^{y-1}$$
 
-This is a scenario model, not a reservoir forecast. Sustainable production depends on reservoir response, injection strategy, pressure, thermal breakthrough, and operational constraints.
+*Equation basis:* Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
+
+This is a scenario model, not a reservoir forecast. Sustainable production depends on reservoir response, injection strategy, pressure, thermal breakthrough, and operational constraints. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 ## Tested Python functions
 
@@ -228,8 +270,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def temperature_at_depth_c(depth_km, surface_c=15.0, gradient_c_per_km=30.0):
+    if not all(np.isfinite(np.asarray(x, dtype=float)).all() for x in [depth_km, surface_c, gradient_c_per_km]):
+        raise ValueError("model inputs must be finite")
     depth = np.asarray(depth_km, dtype=float)
-    if np.any(depth < 0) or gradient_c_per_km < 0:
+    if np.any(depth < 0) or np.any(np.asarray(gradient_c_per_km) < 0):
         raise ValueError("depth and gradient must be non-negative")
     return surface_c + gradient_c_per_km * depth
 
@@ -255,6 +299,8 @@ def geothermal_net_power_mw(mass_flow_kgs, production_c, reinjection_c,
     return float(net_mw) if np.ndim(net_mw) == 0 else net_mw
 
 def carnot_efficiency(hot_c, cold_c):
+    if not all(np.isfinite(np.asarray(x, dtype=float)).all() for x in [hot_c, cold_c]):
+        raise ValueError("temperatures must be finite")
     hot_k = np.asarray(hot_c, dtype=float) + 273.15
     cold_k = np.asarray(cold_c, dtype=float) + 273.15
     if np.any(hot_k <= cold_k) or np.any(cold_k <= 0):
@@ -304,7 +350,7 @@ The plot varies only mass flow. In a real reservoir, temperature, pressure, scal
 
 **Difficulty:** Easy
 
-**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+**Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 **Task:** Surface temperature 15 °C and gradient 30 °C/km: calculate temperature at 2 km with a linear model.
 
@@ -336,7 +382,7 @@ print(temperature,'°C'); assert temperature==75
 
 **Difficulty:** Easy
 
-**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+**Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 **Task:** Water flow 50 kg/s cools from 150 to 70 °C. With cp 4180 J/(kg K), calculate thermal MW.
 
@@ -368,7 +414,7 @@ print(thermal,'MW thermal'); assert abs(thermal-16.72)<1e-12
 
 **Difficulty:** Easy
 
-**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+**Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 **Task:** Thermal power 20 MW has gross electrical efficiency 12% and parasitic load 10% of gross electricity. Calculate gross and net MW.
 
@@ -400,7 +446,7 @@ print(gross,net,'MW gross/net'); assert abs(net-2.16)<1e-12
 
 **Difficulty:** Easy
 
-**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+**Reference:** Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 **Task:** A plant produces 3 MW net when available, with 95% availability in a 365-day year. Calculate GWh.
 
@@ -432,7 +478,7 @@ print(energy,'GWh'); assert abs(energy-24.966)<1e-12
 
 **Difficulty:** Easy
 
-**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+**Reference:** Unit definitions/conversions: [NIST SP 811, Appendix B](https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors).
 
 **Task:** Convert 150 and 70 °C to kelvin, then show that the temperature difference is unchanged.
 
@@ -465,7 +511,7 @@ assert abs((hot_k-cold_k)-(hot-cold))<1e-10
 
 **Difficulty:** Medium
 
-**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+**Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 **Task:** At depths[1,2,3] km, compare gradients 25 and 35 °C/km with surface 15 °C. Build a pandas table.
 
@@ -499,7 +545,7 @@ print(table.rename_axis('Depth km')); assert table.iloc[-1,1]==120
 
 **Difficulty:** Medium
 
-**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+**Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 **Task:** For flows[30,50,70] kg/s, temperatures 150/70 °C, cp 4180, efficiency 0.12 and parasitic fraction 0.1, calculate net MW.
 
@@ -532,7 +578,7 @@ print(net,'MW net'); assert np.allclose(net/net[0],flow/flow[0])
 
 **Difficulty:** Medium
 
-**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+**Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 **Task:** At 50 kg/s and production 160 °C, compare reinjection[60,80,100]°C with cp 4180, efficiency 0.12 and parasitic 0.1.
 
@@ -565,7 +611,7 @@ print(net,'MW net'); assert np.all(np.diff(net)<0)
 
 **Difficulty:** Medium
 
-**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+**Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 **Task:** Two wells have flows[40,60] kg/s and production[150,170]°C. Reinjection is 70 °C, cp 4180, conversion 0.12 and parasitic 0.1. Calculate individual and total net MW.
 
@@ -599,7 +645,7 @@ assert np.isclose(net.sum(),4180*(40*80+60*100)*0.12*0.9/1e6)
 
 **Difficulty:** Medium
 
-**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+**Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 **Task:** Gross output is 5 MW. Compare parasitic fractions[0.05,0.10,0.20] and calculate net MW and 24-hour MWh.
 
@@ -632,7 +678,7 @@ print(net,'MW;',energy,'MWh'); assert np.all(np.diff(net)<0)
 
 **Difficulty:** Medium
 
-**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+**Reference:** Reversible heat-engine limit: [OpenStax, University Physics 2, §4.5, Eq. 4.5](https://openstax.org/books/university-physics-volume-2/pages/4-5-the-carnot-cycle).
 
 **Task:** Compute Carnot efficiency for hot 150 °C and cold 25 °C using kelvin. Compare a 12% conversion assumption.
 
@@ -664,7 +710,7 @@ print(carnot,'Carnot fraction; assumed actual:',0.12); assert 0<0.12<carnot<1
 
 **Difficulty:** Medium
 
-**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+**Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 **Task:** Use thermal conductivity 2.5 W/(m K) and gradient 30 K/km. Calculate upward conductive heat-flux magnitude W/m².
 
@@ -696,7 +742,7 @@ print(flux,'W/m²'); assert abs(flux-0.075)<1e-12
 
 **Difficulty:** Medium
 
-**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+**Reference:** Original compounded-decline scenario; Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 **Task:** A 5 MW net plant declines 2% per year. Calculate years 1–10 and annual GWh at 95% availability.
 
@@ -729,7 +775,7 @@ print(energy,'GWh/year'); assert np.isclose(energy[0],41.61) and np.all(np.diff(
 
 **Difficulty:** Medium
 
-**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+**Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions. Array calculations: [@numpyDocs].
 
 **Task:** Flows[40,−2,50] kg/s and production[150,160,60]°C have reinjection 70 °C. Retain only finite positive-flow records hotter than reinjection; report exclusions.
 
@@ -764,7 +810,7 @@ assert valid.sum()==1 and np.isclose(thermal[0],13.376)
 
 **Difficulty:** Medium
 
-**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+**Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions. Plotting: [@matplotlibDocs].
 
 **Task:** Compare initial 5 MW with annual decline 0%,1%,3% over 20 years and 95% availability. Plot annual GWh and print cumulative values.
 
@@ -801,7 +847,7 @@ print(totals,'GWh cumulative'); assert np.all(np.diff(totals)<0)
 
 **Difficulty:** Hard
 
-**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+**Reference:** Original exponential decline fit with a chronological holdout; Array calculations: [@numpyDocs].
 
 **Task:** Create ten annual powers 5×0.98^(year−1) MW. Fit log(power) on years 1–7 only, predict 8–10, and compare MAE against the last training observation.
 
@@ -837,7 +883,7 @@ assert np.isclose(1-np.exp(slope),0.02) and mae<baseline
 
 **Difficulty:** Hard
 
-**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+**Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions. The shared plant limit is assumed.
 
 **Task:** Three wells have flows[40,50,60] kg/s and production[150,160,170]°C. Use reinjection 70 °C, cp 4180, conversion 0.12, parasitic 0.1 and a 4 MW net plant cap. Compare all operating versus outage of each well.
 
@@ -873,7 +919,7 @@ assert all_on==4 and all(0<=p<=all_on for p in outage)
 
 **Difficulty:** Hard
 
-**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+**Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions. Pump-load polynomial is a synthetic penalty, not a measured pump curve.
 
 **Task:** Compare flows 20–100 kg/s in steps 10. Gross MW=m×4180×80×0.12/1e 6 and pump MW=0.00004 m². Find the discrete flow maximising net power.
 
@@ -908,7 +954,7 @@ assert np.allclose(net+pump,gross) and flow[best]==100
 
 **Difficulty:** Hard
 
-**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+**Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions. Intervention timing and restoration are hypothetical.
 
 **Task:** Starting at 5 MW, power declines 3% per year through year 10. At the start of year 11 restore power to 5 MW and then decline 3% again through year 20. Compare cumulative GWh with uninterrupted decline;95% availability.
 
@@ -943,7 +989,7 @@ print(gain,'GWh additional'); assert intervention[10]==5 and gain>0
 
 **Difficulty:** Hard
 
-**Reference:** Fluid heat, exploitation and simplified models: [@grant2011], Chapters 2–3. Decline rates and efficiencies below are teaching assumptions.
+**Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions. Independent uniform distributions are hypothetical; Array calculations: [@numpyDocs].
 
 **Task:** With seed 5 sample 2000 independent flows uniform 40–60 kg/s and production temperatures uniform 140–170 °C. Use reinjection 70 °C, cp 4180, eta 0.12, parasitic 0.1. Report net-power median,5th/95th percentiles and probability above 2 MW.
 

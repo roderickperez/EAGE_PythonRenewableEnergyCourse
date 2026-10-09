@@ -1,6 +1,6 @@
 # CSV
 
-CSV is plain text, not a self-describing scientific format. It does not preserve units, data types, missing-value conventions, time zones, or coordinate systems unless these are documented separately.
+CSV is plain text, not a self-describing scientific format. It does not preserve units, data types, missing-value conventions, time zones, or coordinate systems unless these are documented separately. [pandas read_csv](https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html).
 
 ```python
 import pandas as pd

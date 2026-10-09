@@ -1,5 +1,105 @@
 const $ = id => document.getElementById(id);
 const STORAGE = 'eage.sandbox.v2';
+const LAYOUT_STORAGE = 'eage.sandbox.layout';
+
+// Layout State Management
+let layoutState = {
+  sidebarCollapsed: false,
+  workspaceCollapsed: false,
+  workspaceZoomed: false
+};
+try {
+  const storedLayout = JSON.parse(localStorage.getItem(LAYOUT_STORAGE) || '{}');
+  if (typeof storedLayout.sidebarCollapsed === 'boolean') layoutState.sidebarCollapsed = storedLayout.sidebarCollapsed;
+  if (typeof storedLayout.workspaceCollapsed === 'boolean') layoutState.workspaceCollapsed = storedLayout.workspaceCollapsed;
+  if (typeof storedLayout.workspaceZoomed === 'boolean') layoutState.workspaceZoomed = storedLayout.workspaceZoomed;
+} catch { /* storage fallback */ }
+
+function saveLayout() {
+  try {
+    localStorage.setItem(LAYOUT_STORAGE, JSON.stringify(layoutState));
+  } catch { /* storage fallback */ }
+}
+
+function applyLayout() {
+  const layout = $('layout');
+  if (!layout) return;
+
+  if (layoutState.workspaceZoomed) {
+    layoutState.workspaceCollapsed = false;
+  }
+
+  layout.classList.toggle('sidebar-collapsed', layoutState.sidebarCollapsed);
+  layout.classList.toggle('workspace-collapsed', layoutState.workspaceCollapsed);
+  layout.classList.toggle('workspace-zoomed', layoutState.workspaceZoomed);
+
+  // Update Topbar buttons
+  $('toggle-sidebar')?.classList.toggle('active', !layoutState.sidebarCollapsed);
+  $('toggle-sidebar')?.setAttribute('aria-pressed', String(!layoutState.sidebarCollapsed));
+
+  $('toggle-workspace')?.classList.toggle('active', !layoutState.workspaceCollapsed);
+  $('toggle-workspace')?.setAttribute('aria-pressed', String(!layoutState.workspaceCollapsed));
+
+  $('zoom-workspace')?.classList.toggle('active', layoutState.workspaceZoomed);
+  $('zoom-workspace')?.setAttribute('aria-pressed', String(layoutState.workspaceZoomed));
+  const zoomText = $('zoom-text');
+  if (zoomText) zoomText.textContent = layoutState.workspaceZoomed ? 'Zoom Out' : 'Zoom In';
+
+  // Update Lab action buttons
+  const labZoomBtn = $('lab-zoom-btn');
+  if (labZoomBtn) {
+    labZoomBtn.textContent = layoutState.workspaceZoomed ? '⤡ Restore' : '⤢ Zoom';
+    labZoomBtn.title = layoutState.workspaceZoomed ? 'Zoom out to side-by-side view' : 'Zoom in to full workspace';
+  }
+
+  // Update Reading focus button
+  $('toggle-reading-focus')?.classList.toggle('active', layoutState.workspaceCollapsed);
+
+  // Update edge restore tabs
+  if ($('sidebar-restore-tab')) {
+    $('sidebar-restore-tab').style.display = layoutState.sidebarCollapsed ? 'inline-flex' : 'none';
+  }
+  if ($('workspace-restore-tab')) {
+    $('workspace-restore-tab').style.display = (layoutState.workspaceCollapsed && !layoutState.workspaceZoomed) ? 'inline-flex' : 'none';
+  }
+  if ($('reopen-sidebar-btn')) {
+    $('reopen-sidebar-btn').style.display = layoutState.sidebarCollapsed ? 'inline-flex' : 'none';
+  }
+
+  saveLayout();
+}
+
+function toggleSidebar(force) {
+  layoutState.sidebarCollapsed = (force !== undefined) ? !force : !layoutState.sidebarCollapsed;
+  if (layoutState.workspaceZoomed && !layoutState.sidebarCollapsed) {
+    layoutState.workspaceZoomed = false;
+  }
+  applyLayout();
+}
+
+function toggleWorkspace(force) {
+  layoutState.workspaceCollapsed = (force !== undefined) ? !force : !layoutState.workspaceCollapsed;
+  if (layoutState.workspaceCollapsed) {
+    layoutState.workspaceZoomed = false;
+  }
+  applyLayout();
+}
+
+function toggleWorkspaceZoom(force) {
+  layoutState.workspaceZoomed = (force !== undefined) ? !!force : !layoutState.workspaceZoomed;
+  if (layoutState.workspaceZoomed) {
+    layoutState.workspaceCollapsed = false;
+  }
+  applyLayout();
+}
+
+function ensureWorkspaceVisible() {
+  if (layoutState.workspaceCollapsed) {
+    layoutState.workspaceCollapsed = false;
+    applyLayout();
+  }
+}
+
 let course, lesson, active = 'draft', worker, busy = false, timer, draftTimer;
 let saved = {}, workerReady = false;
 try { saved = JSON.parse(localStorage.getItem(STORAGE) || '{}'); } catch { /* local storage may be disabled */ }
@@ -114,13 +214,14 @@ for(const id of ['code','notes','stdin']) $(id).oninput=()=>{clearTimeout(draftT
 window.addEventListener('beforeunload',persist);
 $('lesson').onclick=e=>{
   const b=e.target.closest('button');if(!b)return;
+  ensureWorkspaceVisible();
   if(b.dataset.workspace)selectWork(b.dataset.workspace);
   if(b.dataset.code)selectWork(b.dataset.code);
   if(b.dataset.setup){const index=lesson.codes.findIndex(c=>c.id===b.dataset.setup);const code=lesson.codes.slice(0,index+1).filter(c=>!c.solution&&c.runnable).map(c=>c.code).join('\n\n');selectWork('setup-'+b.dataset.setup,code);}
   if(window.innerWidth<1050)$('code').scrollIntoView({block:'center'});
 };
 $('workspace-select').onchange=e=>selectWork(e.target.value);
-$('own-work').onclick=()=>selectWork('draft');$('search').oninput=renderNav;
+$('own-work').onclick=()=>{ensureWorkspaceVisible();selectWork('draft');};$('search').oninput=renderNav;
 document.querySelectorAll('[data-jump]').forEach(b=>b.onclick=()=>navigate(b.dataset.jump));
 $('help-button').onclick=()=>$('help').showModal();
 $('clear-output').onclick=()=>$('output').replaceChildren();
@@ -129,5 +230,38 @@ $('export-work').onclick=()=>{persist();download('eage-participant-work.json',JS
 $('import-work').onchange=async e=>{try{const data=JSON.parse(await e.target.files[0].text());if(data.format!==STORAGE||!data.drafts)throw Error('Not a sandbox work export');for(const [k,v] of Object.entries(data.drafts)){if(!k.includes('::')||typeof v.code!=='string'||typeof v.notes!=='string')throw Error('Invalid draft');}if(confirm('Import these drafts? Matching saved drafts will be replaced.')){persist();Object.assign(saved,data.drafts);localStorage.setItem(STORAGE,JSON.stringify(saved));const d=saved[key()];if(d){$('code').value=d.code;$('notes').value=d.notes;$('stdin').value=d.stdin||'';}selectWork(active);}}catch(err){appendText('Import failed: '+err.message,'error');}e.target.value='';};
 $('upload').onchange=async e=>{if(busy){appendText('Stop or finish the run before uploading.','error');return;}if(!worker)createWorker();for(const file of e.target.files){const bytes=await file.arrayBuffer();worker.postMessage({type:'upload',name:file.name,bytes},[bytes]);}e.target.value='';};
 $('download-file').onclick=()=>{if(!worker || busy){appendText('Run Python first and wait for it to finish.','error');return;}worker.postMessage({type:'download',path:$('download-path').value});};
+
+// Layout toggle listeners
+$('toggle-sidebar').onclick=()=>toggleSidebar();
+$('collapse-sidebar').onclick=()=>toggleSidebar(false);
+$('sidebar-restore-tab').onclick=()=>toggleSidebar(true);
+$('reopen-sidebar-btn').onclick=()=>toggleSidebar(true);
+
+$('toggle-workspace').onclick=()=>toggleWorkspace();
+$('lab-collapse-btn').onclick=()=>toggleWorkspace(false);
+$('workspace-restore-tab').onclick=()=>toggleWorkspace(true);
+$('toggle-reading-focus').onclick=()=>toggleWorkspace(layoutState.workspaceCollapsed);
+
+$('zoom-workspace').onclick=()=>toggleWorkspaceZoom();
+$('lab-zoom-btn').onclick=()=>toggleWorkspaceZoom();
+
+// Keyboard Shortcuts: Alt+S (Sidebar), Alt+W (Workspace), Alt+Z (Zoom)
+window.addEventListener('keydown', e => {
+  if (e.altKey && (e.key === 's' || e.key === 'S')) {
+    e.preventDefault();
+    toggleSidebar();
+  } else if (e.altKey && (e.key === 'w' || e.key === 'W')) {
+    e.preventDefault();
+    toggleWorkspace();
+  } else if (e.altKey && (e.key === 'z' || e.key === 'Z')) {
+    e.preventDefault();
+    toggleWorkspaceZoom();
+  } else if (e.key === 'Escape' && layoutState.workspaceZoomed) {
+    toggleWorkspaceZoom(false);
+  }
+});
+
+// Apply initial layout state
+applyLayout();
 window.addEventListener('hashchange',()=>route());
 try{const response=await fetch('generated/course.json');if(!response.ok)throw Error('Course content has not been built. Run ./start_sandbox.sh from the repository.');course=await response.json();$('book-link').href=course.book_url;await route();}catch(e){$('lesson').textContent=e.message;status('Course loading failed');}

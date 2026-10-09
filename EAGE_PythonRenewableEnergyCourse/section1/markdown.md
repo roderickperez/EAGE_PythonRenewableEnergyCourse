@@ -4,7 +4,7 @@
 
 A notebook combines code cells with Markdown cells. Use Markdown for the question,
 assumptions and interpretation; use code for calculations. Run a Markdown cell to
-render it. Double-click it to edit its source.
+render it. Double-click it to edit its source. [Jupyter Markdown cells](https://jupyter-notebook.readthedocs.io/en/stable/notebook.html#markdown-cells).
 
 ## Essential formatting
 
@@ -29,7 +29,7 @@ Use `power_kw` for a variable name within a sentence.
 
 The image path is an example: replace it with your chart location.
 Leave a blank line before lists and between paragraphs. A fenced block labelled
-`python` displays code; a notebook code cell actually executes Python.
+`python` displays code; a notebook code cell actually executes Python. [Jupyter Markdown cells](https://jupyter-notebook.readthedocs.io/en/stable/notebook.html#markdown-cells).
 
 ## Tables with units
 
@@ -45,7 +45,7 @@ Leave a blank line before lists and between paragraphs. A fenced block labelled
 
 Put inline mathematics between single dollar signs: `$y = mx + b$` renders
 $y = mx + b$, the equation of a straight line. Use double dollar signs on separate
-lines for a displayed equation:
+lines for a displayed equation: [Jupyter Markdown cells](https://jupyter-notebook.readthedocs.io/en/stable/notebook.html#markdown-cells).
 
 ```text
 $$
@@ -60,13 +60,13 @@ $$
 For hydropower, density $\rho$ in kg/m³, gravity $g$ in m/s², flow $Q$ in m³/s,
 net head $H$ in m and efficiency $\eta$ as a fraction give power $P$ in watts.
 Mathematical notation explains a model; it does not execute it. In Python write
-`power_w = density * gravity * flow * head * efficiency`.
+`power_w = density * gravity * flow * head * efficiency`. [Jupyter Markdown cells](https://jupyter-notebook.readthedocs.io/en/stable/notebook.html#markdown-cells).
 
 ## A useful exercise write-up
 
 Include the question, inputs and units, assumptions, code, result, a reasonableness
 check, and a reference. Explain whether data are measured or synthetic and whether
-the model is suitable only for teaching.
+the model is suitable only for teaching. [Jupyter Markdown cells](https://jupyter-notebook.readthedocs.io/en/stable/notebook.html#markdown-cells).
 
 **References:** [MyST Markdown guide](https://mystmd.org/guide/quickstart),
 [Python tutorial](https://docs.python.org/3/tutorial/), and the hydropower sources

@@ -187,11 +187,11 @@ assert [type(value) for value in all_data_types] == [str, float, int, bool]
 **Reference:** Python tutorial [@pythonDocs]; NumPy [@numpyDocs]; pandas [@pandasDocs]; Matplotlib [@matplotlibDocs].
 Using the conditional statements and logical operators explained in this section, classify monthly renewable-electricity generation in MWh as:
 * Excellent (greater than or equal to 1,000,000)
-* Good (between 100,000 and 999,999)
-* Poor (less than 100,000)
+* Good (100,000 ≤ production < 1,000,000)
+* Poor (0 < production < 100,000)
 * No generation (zero production)
 
-after the user input the monthly production rates manually.
+after the user enters monthly energy manually. These arbitrary category names and thresholds are programming practice, not industry performance standards.
 
 ```python
 production = float(input("Monthly production: "))

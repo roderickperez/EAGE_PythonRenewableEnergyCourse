@@ -1,0 +1,17 @@
+{
+  "provider": "Eurostat",
+  "dataset": "nrg_cb_pem",
+  "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nrg_cb_pem?lang=en&freq=M&geo=AT&siec=RA300&unit=GWH&sinceTimePeriod=2023-01&untilTimePeriod=2023-12",
+  "title": "Net electricity generation by type of fuel - monthly data",
+  "retrieved_utc": "2026-10-02T07:00:11.824624+00:00",
+  "provider_updated": "2026-10-01T23:00:00+0200",
+  "sha256": "d6ad4c65a4c83e76048d447647be207455b52d9cfec212e1bce38aabefe7a0a9",
+  "rows": 12,
+  "geo": "AT",
+  "source": "RA300",
+  "unit": "GWH",
+  "frequency": "M",
+  "source_label": "Wind",
+  "status_labels": {},
+  "reuse": "https://ec.europa.eu/eurostat/about-us/policies/copyright"
+}

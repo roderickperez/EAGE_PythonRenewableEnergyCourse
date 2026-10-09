@@ -7,19 +7,19 @@ kernelspec:
 
 # Numpy
 
-As we discussed in the previous section, ny default, in Python we can use lists in order to storage data arrays. Arrays are very frequently used in data science, where speed and resources are very important. However, when we have large volumes of data, traditional data structures (in this case lists) are slow and inefficient. Therefore, it is necessary to resort to external libraries, such as Numpy.
+Python lists are useful general-purpose sequences. NumPy arrays add a shared dtype, an explicit shape and vectorized numerical operations. Choose the structure for the task; NumPy is not automatically faster for every small calculation. [NumPy fundamentals](https://numpy.org/doc/stable/user/absolute_beginners.html).
 
 **NumPy** (**Num**erical **Py**thon) was created in 2005 by Travis Oliphant. It is an open source project [open source project](https://github.com/numpy/numpy), used for working with arrays in Python. Numpy is a Python package for large array handling, which provides typed multidimensional arrays and compiled numerical operations. Speed depends on the operation, array size, dtype and memory layout; no fixed speed-up is guaranteed. It is written in Python, but most of the parts that require fast computation are written in C or C++.
 
 ## Array creation
 
-The array object in NumPy is called `ndarray`, it provides a lot of supporting functions that make working with `ndarray` very easy.
+The array object in NumPy is called `ndarray`, it provides a lot of supporting functions that make working with `ndarray` very easy. [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 :::{admonition} Why Numpy is faster?
 NumPy uses typed buffers and compiled operations. Arrays can be contiguous, but sliced or transposed views may be non-contiguous.
 :::
 
-The first step to work with Numpy in Python is to installed the `numpy` library, and then import iy into our code. Due to its popularity in Python code development, Numpy is usually one of the default libraries found in many Python distributions. Therefore, in most of the times, it is not necessary to install it. However, if necessary, this can be done via the `pip install numpy` command.
+The first step to work with Numpy in Python is to installed the `numpy` library, and then import iy into our code. Due to its popularity in Python code development, Numpy is usually one of the default libraries found in many Python distributions. Therefore, in most of the times, it is not necessary to install it. However, if necessary, this can be done via the `pip install numpy` command. [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 
 ```{code-cell} python
@@ -38,9 +38,9 @@ import nameLibrary as nickName
 ```
 
 In this case, everytime we need to call to `nameLibrary`, instead of written the full name of the library we will use the alias (shortname) `nickName`.
-:::
+::: [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
-Based on this, it is very common find that numpy is assigned to the alias `np` in the code. Notice, that the alias is independent to the user.
+Based on this, it is very common find that numpy is assigned to the alias `np` in the code. Notice, that the alias is independent to the user. [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ```{code-cell} python
 import numpy as np
@@ -109,11 +109,11 @@ print("numpyAsArray: " , numpyAsArray)
 ```
 
 Notice that we **only** replaced the item of the numpyAsArray at index 2. However, we expect that the original numpyArray is not changed, but it is.
-:::
+::: [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ### Dimensions in Arrays
 
-A dimension in arrays is one level of array depth (nested arrays). The following image shows the most common and basic arrays that we can build in Numpy:
+A dimension in arrays is one level of array depth (nested arrays). The following image shows the most common and basic arrays that we can build in Numpy: [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ```{image} ../../images/numpyArrays.png
 :alt: numpyArrays
@@ -124,7 +124,7 @@ A dimension in arrays is one level of array depth (nested arrays). The following
 
 #### 0-D Arrays (Scalar)
 
-0-D arrays, or Scalars, are the elements in an array. Each value in an array is a 0-D array.
+A zero-dimensional ndarray, such as `np.array(7)`, has shape `()` and `ndim == 0`. It is distinct from a Python scalar and a NumPy scalar, even though each represents one value. Indexing a numeric array with a full set of integer indices usually returns a NumPy scalar. [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 :::{admonition} Check Number of Dimensions
 :class: tip
@@ -140,7 +140,7 @@ print('The dimension of the arr_0D is:', arr_0D.ndim)
 
 #### 1-D Arrays (Vector)
 
-An array that has 0-D arrays as its elements is called uni-dimensional or 1-D array.
+An array that has 0-D arrays as its elements is called uni-dimensional or 1-D array. [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ```{image} ../../images/numpy1D.png
 :alt: numpyArrays1D
@@ -158,7 +158,7 @@ print('The dimension of the arr_1D is:', arr_1D.ndim)
 
 #### 2-D Arrays (Matrix)
 
-An array that has 1-D arrays as its elements is called a 2-D array. These are often used to represent matrix or 2nd order tensors.
+An array that has 1-D arrays as its elements is called a 2-D array. These are often used to represent matrix or 2nd order tensors. [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ```{image} ../../images/numpy2D.png
 :alt: numpyArrays2D
@@ -176,7 +176,7 @@ print('The dimensions of the arr_2D are:', arr_2D.ndim)
 
 #### 3-D Arrays (Tensor)
 
-An array that has 2-D arrays (matrices) as its elements is called 3-D array. These are often used to represent a 3rd order tensor.
+An array that has 2-D arrays (matrices) as its elements is called 3-D array. These are often used to represent a 3rd order tensor. [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ```{image} ../../images/numpy3D.png
 :alt: numpyArrays3D
@@ -194,7 +194,7 @@ print('The dimensions of the arr_3D are:', arr_3D.ndim)
 
 #### Higher Dimensional Arrays
 
-With Numpy, an array can have any number of dimensions. In this case, when the array is created, we can specify the number of dimensions by using the `ndmin` argument.
+NumPy supports multiple dimensions up to the limit of the installed version (64 in NumPy 2.x). In this case, when the array is created, we can specify the number of dimensions by using the `ndmin` argument. [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ```{code-cell} python
 arr_5D = np.array([1, 2, 3, 4], ndmin=5)
@@ -203,11 +203,11 @@ print('The data type of the arr_5D is: ', type(arr_5D))
 print('The dimensions of the arr_5D are:', arr_5D.ndim)
 ```
 
-In this case, we created array where the innermost dimension (5th dim) has 4 elements, the 4th dim has 1 element that is the vector, the 3rd dim has 1 element that is the matrix with the vector, the 2nd dim has 1 element that is 3D array and 1st dim has 1 element that is a 4D array.
+In this case, we created array where the innermost dimension (5th dim) has 4 elements, the 4th dim has 1 element that is the vector, the 3rd dim has 1 element that is the matrix with the vector, the 2nd dim has 1 element that is 3D array and 1st dim has 1 element that is a 4D array. [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ### Indexing
 
-Array indexing is the same as accessing an array element. You can access an array element by referring to its index number. The indexes in NumPy arrays start with 0, meaning that the first element has index 0, and the second has index 1 etc.
+Array indexing is the same as accessing an array element. You can access an array element by referring to its index number. The indexes in NumPy arrays start with 0, meaning that the first element has index 0, and the second has index 1 etc. [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ```{code-cell} python
 arr_1D = np.array([1, 2, 3, 4])
@@ -215,7 +215,7 @@ arr_1D = np.array([1, 2, 3, 4])
 print('The first element of the array arr_1D is: ', arr_1D[0])
 ```
 
-In case of the 2-D array, we can access the element by referring to the row and column index.
+In case of the 2-D array, we can access the element by referring to the row and column index. [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ```{code-cell} python
 arr_2D = np.array([[1,2,3,4,5], [6,7,8,9,10]])
@@ -235,7 +235,7 @@ print('The last element from 2nd dim in the arr_2D array is: ', arr_2D[1, -1])
 
 ### Slicing
 
-Slicing in python means taking elements from one given index to another given index. We pass slice instead of index like this: `[start:end]`. Also, we can add an additional parameter to define the step: `[start:end:step]`. In case we don't pass start its considered `0`. Additionally, in the case that we don't pass end its considered length of array in that dimension. If we don't pass step its considered 1.
+Slicing in python means taking elements from one given index to another given index. We pass slice instead of index like this: `[start:end]`. Also, we can add an additional parameter to define the step: `[start:end:step]`. In case we don't pass start its considered `0`. Additionally, in the case that we don't pass end its considered length of array in that dimension. If we don't pass step its considered 1. [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ```{code-cell} python
 arr_1D = np.array([1, 2, 3, 4, 5, 6, 7])
@@ -255,7 +255,7 @@ arr_1D = np.array([1, 2, 3, 4, 5, 6, 7])
 print('The slice from the second index to the last index in my arr_1D is: ', arr_1D[2:])
 ```
 
-On the other hand, if we want to take the elements from the first index to the third index, we can also use the `:` operator.
+On the other hand, if we want to take the elements from the first index to the third index, we can also use the `:` operator. [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ```{code-cell} python
 arr_1D = np.array([1, 2, 3, 4, 5, 6, 7])
@@ -274,7 +274,7 @@ print(arr_1D[-3:-1])
 We can control the number of steps of the slicing, adding the `step` parameter. Remember that it is set to 1 by default.
 :::
 
-Finally, if we want to take the elements from the first index to the last index, but we want to skip every other element, we can use `array[::2]`; `array[::]` keeps every element.
+Finally, if we want to take the elements from the first index to the last index, but we want to skip every other element, we can use `array[::2]`; `array[::]` keeps every element. [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ```{code-cell} python
 arr_1D = np.array([1, 2, 3, 4, 5, 6, 7])
@@ -293,7 +293,7 @@ print(arr_2D[0:2, 2])
 
 ### Shape
 
-The shape of an array is the number of elements in each dimension. In order to show the shape of an array, we can use the `shape` attribute.
+The shape of an array is the number of elements in each dimension. In order to show the shape of an array, we can use the `shape` attribute. [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ```{code-cell} python
 arr_2D = np.array([[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]])
@@ -301,7 +301,7 @@ arr_2D = np.array([[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]])
 print('The shape of the arr_2D is: ', arr_2D.shape)
 ```
 
-The example above returns (2, 5), which means that the array has 2 dimensions, where the first dimension has 2 elements (rows) and the second has 5 (columns).
+The example above returns (2, 5), which means that the array has 2 dimensions, where the first dimension has 2 elements (rows) and the second has 5 (columns). [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 :::{admonition} Do you remember the tuples?
 Numpy store the shape of an array in a **tuple** data structure.
@@ -316,7 +316,7 @@ print(type(shape_arr_2D))
 
 ### Reshape
 
-For Numpy, **reshaping** means changing the shape of an array. The shape of an array is the number of elements in each dimension. By reshaping we can add or remove dimensions or change number of elements in each dimension.
+For Numpy, **reshaping** means changing the shape of an array. The shape of an array is the number of elements in each dimension. By reshaping we can add or remove dimensions or change number of elements in each dimension. [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 For example, we can convert a 12 rows 1D array to a 2D array with 6 rows and 2 columns.
 
@@ -390,7 +390,7 @@ In this case we will get an error.
 
 ### Flatenning
 
-Flattening array means converting a multidimensional array into a 1D array. We can use `reshape(-1)` to do this. This function will be very useful during execution of the Machine Learning and Deep Learning algorithms.
+Flattening array means converting a multidimensional array into a 1D array. We can use `reshape(-1)` to do this. This function will be very useful during execution of the Machine Learning and Deep Learning algorithms. [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ```{code-cell} python
 arr_2D = np.array([[1, 2, 3], [4, 5, 6]])
@@ -403,11 +403,11 @@ print('The shape of the arr_2D flattened is: ', arr_2D_flat.shape)
 
 ## Random Number Generation
 
-Another of the popular features of Numpy is the random number generation.
+Another of the popular features of Numpy is the random number generation. [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ### Integers
 
-For example, if we want to generate a random **integer** from 0 to 20, we can use the `np.random.randint` function.
+For example, if we want to generate a random **integer** from 0 through 19 (20 excluded), we can use the `np.random.randint` function.
 
 ```{code-cell} python
 from numpy import random
@@ -437,7 +437,7 @@ print(x)
 
 ```
 
-Also, in Numpy we can combine the array construction feature with the generator function to generate a random array, specifying the size of the array. For example, if we want to generate a 1-D array containing 5 random integers from 0 to 20:
+Also, in Numpy we can combine the array construction feature with the generator function to generate a random array, specifying the size of the array. For example, if we want to generate a 1-D array containing 5 random integers from 0 through 19 (20 excluded): [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ```{code-cell} python
 from numpy import random
@@ -448,7 +448,7 @@ print(x)
 
 ```
 
-In the same way, we can generate a 2-D with 3 rows, each row containing 5 random integers from 0 to 20:
+In the same way, we can generate a 2-D with 3 rows, each row containing 5 random integers from 0 through 19 (20 excluded): [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ```{code-cell} python
 from numpy import random
@@ -463,7 +463,7 @@ print(x)
 
 ### Empty Array
 
-The `numpy.empty()` function creates an array **without** initializing its entries. The syntax for using this function is:
+The `numpy.empty()` function creates an array **without** initializing its entries. The syntax for using this function is: [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ```python
 numpy.empty(shape, dtype=float, order='C', *, like=None)
@@ -476,7 +476,7 @@ where:
 - `order` is an optional parameter that specifies how to store the multidimensional data in memory. You can choose between `C` for C-style row-major form, and `F` for Fortran-style column-major form.
 - `like` is an optional parameter. It is a reference object that makes it possible to create non-NumPy arrays.
 
-Let's create our first empty array. Notice that the only mandatory parameter is `shape`.
+Let's create our first empty array. Notice that the only mandatory parameter is `shape`. [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ```{code-cell} python
 arrEmpty_0D = np.empty(0)
@@ -487,7 +487,7 @@ print(arrEmpty_0D)
 
 :::{admonition} Is it useful a empty array of 0 dimensions?
 :class: note
-In practice this is not useful. Remember that in NumPy array elements are stored in contiguous blocks of memory. To add rows/columns into an existing array, such as to the empty array you just created, the array needs to be copied to a new memory location, which is ineficient.
+`np.empty(0)` is a one-dimensional array of length zero; `np.empty(())` is a zero-dimensional array with one uninitialized value. Neither is a growable list. Repeated concatenation allocates new arrays, so collect values in a list or preallocate the final shape when appropriate.
 :::
 
 Now, let's create a new empty array with 2 rows and 3 columns.
@@ -499,7 +499,7 @@ print(arrEmpty_2D)
 
 ```
 
-The output is a series of random values in the array, even though it is supposed to be empty. Remember that by definition **Emptiness** means that the elements in the array are **not initialized**. But the array is not really empty. Instead, the array values are arbitrary and depend on what happens to be in the chunk of memory allocated for them.
+For numeric dtypes, the output contains unspecified existing memory contents, not random samples from a probability distribution. Remember that by definition **Emptiness** means that the elements in the array are **not initialized**. But the array is not really empty. Instead, the array values are arbitrary and depend on what happens to be in the chunk of memory allocated for them. [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 :::{admonition} Best practice
 :class: tip
@@ -508,7 +508,7 @@ In order to avoid ineficcient memory usage, we should **not** use the `numpy.emp
 
 ### Zeros
 
-An alternative way to create an _empty_ array is by using the `numpy.zeros()` function, whih returns an array where each element is zero. The syntax is the following:
+`numpy.zeros()` allocates an array initialized to zero; it is not a length-zero array unless the shape includes a zero. The syntax is the following: [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ```python
 numpy.zeros(shape, dtype=float, order='C', *, like=None)
@@ -539,7 +539,7 @@ print(arrZeros_2D)
 
 ### Ones
 
-Based on the same structure as before, we can now generate arrays of ones, using the following syntax:
+Based on the same structure as before, we can now generate arrays of ones, using the following syntax: [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ```text
 numpy.ones(shape, dtype = None, order = 'C')
@@ -563,11 +563,11 @@ print(arrOnes_2D)
 
 ### Evenly and not evenly spaced
 
-Along the course, we face the necessity to generate spaced arrays. In some of the cases you want the numbers to be _evenly_ spaced, but there are also times when you may need _non-evenly_ spaced numbers.
+Along the course, we face the necessity to generate spaced arrays. In some of the cases you want the numbers to be _evenly_ spaced, but there are also times when you may need _non-evenly_ spaced numbers. [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 #### Linear
 
-To define an evenly spaced array, use `numpy.linspace()`. It takes the start and end values and, by default, returns 50 samples. Set `num=` explicitly whenever the number of samples matters.
+To define an evenly spaced array, use `numpy.linspace()`. It takes the start and end values and, by default, returns 50 samples. Set `num=` explicitly whenever the number of samples matters. [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ```{code-cell} python
 linSpace_1D = np.linspace(0, 10)
@@ -582,17 +582,17 @@ print('-------------------')
 print(linSpace_1D)
 ```
 
-Notice that this code returns a `ndarray` type object, with equally spaced intervals between the `start` and `stop` values.
+Notice that this code returns a `ndarray` type object, with equally spaced intervals between the `start` and `stop` values. [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 :::{admonition} Is the `stop` value included?
 :class: note
 
-Note that the value `10` is **included** in the output array. The function returns a _closed range_, one that includes the endpoint, by default.
+Note that the value `10` is **included** in the output array. The function returns a _closed range_, one that includes the endpoint, by default. [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 This is contrary to what you might expect from Python, in which the end of a range usually isn’t included.
-:::
+::: [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
-In case we want to specify the number of elements in the array, we can use the `numpy.linspace()` function with the `num` parameter.
+In case we want to specify the number of elements in the array, we can use the `numpy.linspace()` function with the `num` parameter. [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ```{code-cell} python
 linSpace_1D = np.linspace(0, 10, num = 20)
@@ -612,7 +612,7 @@ The output array has 20 equally spaced values between 0 and 10, including both e
 :::{admonition} Positional arguments
 :class: note
 
-In Python, positional arguments are those that are placed in the function call **before** the keyword arguments. In this case, we might skip the keyword `num` and just write desired value, for example:
+In Python, positional arguments are those that are placed in the function call **before** the keyword arguments. In this case, we might skip the keyword `num` and just write desired value, for example: [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ```python
 linSpace_1D = np.linspace(0, 10, 20)
@@ -627,7 +627,7 @@ Python has a built-in function called `range(n)` that generates a sequence of ev
 
 #### `np.arange()`
 
-NumPy has its own version of the Python built-in `range()`, called `np.arange()`. Unlike `range()`, it’s not restricted to just integers. We can use `np.arange()` in a similar way to `range()`, using start, stop, and step as the input parameters:
+NumPy has its own version of the Python built-in `range()`, called `np.arange()`. Unlike `range()`, it’s not restricted to just integers. We can use `np.arange()` in a similar way to `range()`, using start, stop, and step as the input parameters: [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ```{code-cell} python
 list(range(2, 30, 2))
@@ -654,7 +654,7 @@ The output values are the same, although `range()` returns a range object, which
 
 #### Logarithmic
 
-Similar to the previous case, we can use the `numpy.logspace()` function to generate evenly spaced logarithmic values. The syntax of this function is:
+Similar to the previous case, we can use the `numpy.logspace()` function to generate evenly spaced logarithmic values. The syntax of this function is: [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ```text
 numpy.logspace(start, stop, num = 50, endpoint = True, base = 10.0, dtype = None)
@@ -684,7 +684,7 @@ print(logSpace_1D)
 
 ## Operations with Arrays
 
-Similar to the operations we performed earlier with scalar or float type variables, Python (through Numpy) allows us to perform arithmetic operations between arrays, such as `add()`, `subtract()`, `multiply()`, and `divide()` . However, one of the most important observations is that the arrays that are going to be used to perform these operations must be either of the same shape or should conform to array broadcasting rules.
+Similar to the operations we performed earlier with scalar or float type variables, Python (through Numpy) allows us to perform arithmetic operations between arrays, such as `add()`, `subtract()`, `multiply()`, and `divide()` . However, one of the most important observations is that the arrays that are going to be used to perform these operations must be either of the same shape or should conform to array broadcasting rules. [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ### Summation
 
@@ -749,7 +749,7 @@ except ValueError as error:
 
 ### Subtraction
 
-In the same way we can substract one scalar value to each element of an array:
+In the same way we can substract one scalar value to each element of an array: [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ```{image} ../../images/numpySubstractArraysScalar.png
 :alt: googleColabAnatomy
@@ -789,7 +789,7 @@ print('The subtraction of array1 and array2 is: ', arraySubt)
 
 ### Multiplication
 
-We can do the same in case we want to multiply one scalar value to each element of an array:
+We can do the same in case we want to multiply one scalar value to each element of an array: [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ```{image} ../../images/numpyMultArraysScalar.png
 :alt: numpyMultArraysScalar
@@ -862,9 +862,9 @@ assert np.allclose(array_division * array2, array1)
 
 ### Dot Product
 
-In mathematics, the dot product or scalar product is an algebraic operation that takes two equal-length sequences of numbers (usually coordinate vectors), and returns a single number [Reference](https://en.wikipedia.org/wiki/Dot_product).
+For real vectors of equal length, the dot product is $a\cdot b=\sum_i a_i b_i$. NumPy `dot` does not conjugate complex inputs; use `vdot` for a conjugating inner product. [NumPy dot](https://numpy.org/doc/stable/reference/generated/numpy.dot.html).
 
-The function `np.dot(a, b)` returns the inner product for 1-D arrays and matrix multiplication for 2-D arrays. For higher-dimensional arrays its contraction rules are more specialised; prefer the `@` operator or `np.matmul` when matrix multiplication is the intended operation.
+The function `np.dot(a, b)` returns the inner product for 1-D arrays and matrix multiplication for 2-D arrays. For higher-dimensional arrays its contraction rules are more specialised; prefer the `@` operator or `np.matmul` when matrix multiplication is the intended operation. [NumPy fundamentals](https://numpy.org/doc/stable/user/basics.html).
 
 ```{image} ../../images/dotProduct.png
 :alt: dotProduct

@@ -76,7 +76,7 @@ async function run(message){
     send('status',{text:'Loading course data…'});
     // Small public teaching datasets; lazy-load larger spreadsheets only when the
     // relevant lesson needs them. No instructor directory is in this manifest.
-    const needed=assets.filter(a=>/\.(csv|db|nc|geojson|xlsx)$/.test(a.path) && (
+    const needed=assets.filter(a=>/\.(csv|db|nc|geojson|xlsx|json)$/.test(a.path) && (
       a.path.startsWith('section8/data/') || a.path.startsWith('data/examples/') ||
       (message.path.startsWith('section5/') && (a.path.endsWith('.db')||a.path.endsWith('.xlsx'))) ||
       (message.path.startsWith('section4/') && !a.path.endsWith('.db')) ||

@@ -22,7 +22,7 @@ print('The absolute value of the variable is: ' ,abs(variable))
 
 
 ## `enumerate()`
-Return an enumerate object, which must be a sequence, an iterator, or some other object which supports iteration. The `__next__()` method of the iterator returned by `enumerate()` returns a tuple containing a count (from start which defaults to 0) and the values obtained from iterating over iterable ([Reference](https://docs.python.org/3/library/functions.html)).
+`enumerate(iterable, start=0)` yields `(index, value)` pairs. Its argument must be iterable; the returned object is an iterator. The optional `start` changes the counter, not which input items are visited. [Python enumerate](https://docs.python.org/3/library/functions.html#enumerate).
 
 ```{code-cell} python
 listExample = [1, 2, 3, 4, 5]
@@ -42,7 +42,7 @@ def myFunction(parameters):
     This is the documentation of the myFunction, explaining the functionallity of it.
     """
     # code
-    return result
+    return parameters
 
 help(myFunction)
 
@@ -81,7 +81,7 @@ print(max(listExample), " is the largest element in the list")
 ```
 
 ## `min()`
-Return the *smallest* item in an iterable or the smallest gest of two or more arguments ([Reference](https://docs.python.org/3/library/functions.html)).
+Return the *smallest* item in an iterable or the smallest of two or more arguments ([Reference](https://docs.python.org/3/library/functions.html)).
 
 ```{code-cell} python
 listExample = [1, 2, 3, 4, 5]
@@ -182,4 +182,4 @@ print('The type of data stored in the variable name is: ', type(name))
 
 ---
 
-These are only a selection of Python’s built-in functions; they are not the only way to interact with Python. We can visit the official repository of Python ([PyPi](https://pypi.org/)) and download other useful libraries and take advantage of modules and libraries that other members of the Python community had developed. Then, using the `import` statement we can import these modules into our code. Some of these libraries, such as NumPy, SciPy and Matplotlib, provide useful data analysis tools for scientists and engineers. These libraries can be used to analyze, graph and visualize data. They can also be used to create complex mathematical equations and 3D animations.
+These are only a selection of Python’s built-in functions; they are not the only way to interact with Python. We can visit the Python Package Index ([PyPI](https://pypi.org/)) and download other useful libraries and take advantage of modules and libraries that other members of the Python community had developed. Then, using the `import` statement we can import these modules into our code. Some of these libraries, such as NumPy, SciPy and Matplotlib, provide useful data analysis tools for scientists and engineers. These libraries can be used to analyze, graph and visualize data. They can also be used to create complex mathematical equations and 3D animations.

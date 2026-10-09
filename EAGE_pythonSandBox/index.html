@@ -6,30 +6,78 @@
 <title>EAGE · Renewable Energy Python Sandbox</title>
 <meta name="description" content="Study the EAGE renewable-energy course and write Python in your browser. Includes 100 exercises, quizzes, assessment and a hybrid-energy project.">
 <link rel="icon" href="eagelogo.jpg">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=2">
 <script>window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};</script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
-<script type="module" src="app.js"></script>
+<script type="module" src="app.js?v=2"></script>
 </head>
 <body>
 <header class="topbar">
-  <a class="brand" href="#"><img src="eagelogo.jpg" alt="EAGE"><span>PYTHON SANDBOX<small>Renewable energy · learn, practise, build</small></span></a>
-  <div class="top-actions"><a id="book-link" target="_blank" rel="noopener">Open course book ↗</a><button id="help-button">How to use</button><span id="python-status" role="status">Python starts when you run code</span></div>
+  <div class="brand-group">
+    <button id="toggle-sidebar" class="panel-toggle-btn active" title="Toggle lessons sidebar" aria-label="Toggle lessons sidebar" aria-pressed="true">
+      <span class="btn-icon">☰</span>
+      <span class="btn-text">Sidebar</span>
+    </button>
+    <a class="brand" href="#"><img src="eagelogo.jpg" alt="EAGE"><span>PYTHON SANDBOX<small>Renewable energy · learn, practise, build</small></span></a>
+  </div>
+  <div class="top-actions">
+    <div class="view-toggles" role="group" aria-label="Layout view controls">
+      <button id="toggle-workspace" class="panel-toggle-btn active" title="Toggle Python workspace" aria-label="Toggle workspace" aria-pressed="true">
+        <span class="btn-icon">◨</span>
+        <span class="btn-text">Workspace</span>
+      </button>
+      <button id="zoom-workspace" class="panel-toggle-btn" title="Toggle Zoom In / Out workspace" aria-label="Zoom workspace" aria-pressed="false">
+        <span class="btn-icon">⤢</span>
+        <span class="btn-text" id="zoom-text">Zoom In</span>
+      </button>
+    </div>
+    <a id="book-link" target="_blank" rel="noopener">Open course book ↗</a>
+    <button id="help-button">How to use</button>
+    <span id="python-status" role="status">Python starts when you run code</span>
+  </div>
 </header>
-<div class="layout">
-  <aside class="navigation" aria-label="Course navigation">
-    <label for="search">Find a lesson</label><input id="search" type="search" placeholder="Solar, pandas, assessment…">
+<div class="layout" id="layout">
+  <!-- Docked edge restore tabs when panels are collapsed -->
+  <button id="sidebar-restore-tab" class="edge-tab edge-tab-left" title="Expand lessons sidebar" aria-label="Expand sidebar" style="display:none;">
+    <span>☰ Lessons ▶</span>
+  </button>
+  <button id="workspace-restore-tab" class="edge-tab edge-tab-right" title="Expand Python workspace" aria-label="Expand workspace" style="display:none;">
+    <span>◀ Workspace</span>
+  </button>
+
+  <aside class="navigation" id="navigation" aria-label="Course navigation">
+    <div class="nav-header">
+      <label for="search">Find a lesson</label>
+      <button id="collapse-sidebar" class="collapse-icon-btn" title="Collapse sidebar" aria-label="Collapse sidebar">◀</button>
+    </div>
+    <input id="search" type="search" placeholder="Solar, pandas, assessment…">
     <div class="quick-links"><button data-jump="section7/renewableEnergyTest.md">Assessment</button><button data-jump="section8/projectIntro.md">Final project</button></div>
     <nav id="lessons"><p>Loading course…</p></nav>
     <p class="nav-note">100 energy exercises · 5 chapters<br>Questions-only assessment & project</p>
   </aside>
   <main class="reading" id="reading">
-    <div class="lesson-bar"><span id="breadcrumb">Welcome</span><button id="own-work">Open my workspace</button></div>
+    <div class="lesson-bar">
+      <div class="lesson-bar-left">
+        <button id="reopen-sidebar-btn" class="mini-reopen-btn" title="Show lessons sidebar" style="display:none;">☰ Lessons</button>
+        <span id="breadcrumb">Welcome</span>
+      </div>
+      <div class="lesson-bar-right">
+        <button id="toggle-reading-focus" class="mini-view-btn" title="Focus reading: hide workspace">📖 Focus reading</button>
+        <button id="own-work">Open my workspace</button>
+      </div>
+    </div>
     <div id="lesson-outline"></div>
     <article id="lesson"><h1>Learn the physics.<br>Explore it with Python.</h1><p>Loading the course content…</p></article>
   </main>
-  <section class="lab" aria-label="Python workspace">
-    <div class="lab-heading"><div><span class="eyebrow">YOUR WORKSPACE</span><h2 id="workspace-title">Free practice</h2></div><span id="saved" role="status">Saved on this browser</span></div>
+  <section class="lab" id="lab" aria-label="Python workspace">
+    <div class="lab-heading">
+      <div><span class="eyebrow">YOUR WORKSPACE</span><h2 id="workspace-title">Free practice</h2></div>
+      <div class="lab-controls">
+        <span id="saved" role="status">Saved on this browser</span>
+        <button id="lab-zoom-btn" class="lab-action-btn" title="Zoom in to full workspace / Zoom out" aria-label="Zoom workspace">⤢ Zoom</button>
+        <button id="lab-collapse-btn" class="lab-action-btn" title="Collapse workspace" aria-label="Collapse workspace">❯</button>
+      </div>
+    </div>
     <label for="workspace-select">Saved work in this lesson</label><select id="workspace-select"></select>
     <p class="lab-note" id="workspace-note">Edit a lesson example or write your own code. Runs share variables within this lesson.</p>
     <label for="code">Python code</label><textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Python code"></textarea>

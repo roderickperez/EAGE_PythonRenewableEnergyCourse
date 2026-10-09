@@ -23,7 +23,7 @@ def validate():
         levels=re.findall(r'\*\*Difficulty:\*\* (Easy|Medium|Hard)',text)
         assert [levels.count(x) for x in ['Easy','Medium','Hard']]==[5,10,5],relative
         for i,block in enumerate(blocks,1):
-            assert '**Reference:**' in block and '[@' in block,(relative,i,'reference')
+            assert '**Reference:**' in block and ('[@' in block or '](' in block),(relative,i,'reference')
             assert block.count('::::{dropdown} Step-by-step answer')==1 and ':open:' not in block
             cells=re.findall(r'```\{code-cell\} python\n(.*?)```',block,re.S)
             assert len(cells)==2 and 'assert' in cells[-1],(relative,i,'cells')

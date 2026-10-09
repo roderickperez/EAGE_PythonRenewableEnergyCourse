@@ -2,7 +2,7 @@
 
 ## Energy, power and units
 
-Energy measures an amount transferred or stored; power measures its rate. Instantaneous power is $P=dE/dt$. For constant or interval-average power, $E=P\Delta t$; for a time series, $E=\sum_iP_i\Delta t_i$.
+Energy measures an amount transferred or stored; power measures its rate. Instantaneous power is $P=dE/dt$. For constant or interval-average power, $E=P\Delta t$; for a time series, $E=\sum_iP_i\Delta t_i$. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units). Unit definitions/conversions: [NIST SP 811, Appendix B](https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors).
 
 | Quantity | Unit | Conversion |
 |---|---|---|
@@ -11,11 +11,13 @@ Energy measures an amount transferred or stored; power measures its rate. Instan
 | Irradiance | W/m² | Power per unit area |
 | Irradiation | kWh/m² | Solar energy per unit area over a stated interval |
 
+*Source for these definitions/calculations:* Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units). Unit definitions/conversions: [NIST SP 811, Appendix B](https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors).
+
 A closed system can exchange energy with its surroundings; energy is conserved for the combined isolated system. Useful mechanical forms are $E_k=mv^2/2$ and $E_p=mgh$. Mechanical energy is conserved when only conservative forces do work. For DC electricity, $P=VI$; sinusoidal AC real power also depends on power factor. See Wade, Chapter 2 [@wade2003].
 
 ## Renewable technologies
 
-Renewable resources are replenished by natural processes, but sustainable production has local limits. Renewable does not mean impact-free or unlimited extraction.
+Renewable resources are replenished by natural processes, but sustainable production has local limits. Renewable does not mean impact-free or unlimited extraction. [@jica2011], Chapter 3 (hydro); [@manwell2009], §3.2 (wind); [@foster2010], Chapter 5 (PV); [@grant2011], Chapters 2–3 (geothermal).
 
 | Technology | First model | What the simple equation leaves out |
 |---|---|---|
@@ -24,13 +26,15 @@ Renewable resources are replenished by natural processes, but sustainable produc
 | Solar PV | $P_{DC}=GA\eta$ | Cell temperature, orientation, shading and inverter losses |
 | Geothermal | $P_{th}=\dot m c_p(T_p-T_r)$ | Phase change, reservoir response, pumping and electrical conversion |
 
+*Source for these definitions/calculations:* [@jica2011], Chapter 3 (hydro); [@manwell2009], §3.2 (wind); [@foster2010], Chapter 5 (PV); [@grant2011], Chapters 2–3 (geothermal).
+
 Hydropower has no fuel combustion at the turbine, but construction, ecosystems and reservoir greenhouse-gas emissions matter. Geothermal heat extraction can exceed local replenishment. Biomass sustainability depends on feedstock, land use and regrowth. Nuclear is low-emissions electricity but is not classified as renewable in this course [@ifc2015; @grant2011; @manwell2009; @foster2010].
 
 ## Storage and variability
 
 Pumped hydro moves water uphill using electricity and recovers part of that energy later. Batteries store energy electrochemically. Some concentrating solar power systems store heat, for example in molten salt, before generating electricity; PV panels do not themselves store electricity. Storage shifts energy in time and incurs losses. Report both power capacity (MW) and usable energy capacity (MWh), plus efficiency and initial storage state [@jrc2025hydro; @wade2003].
 
-Capacity factor is $CF=E/(P_{rated}T)$ over the same period and output boundary. It differs from conversion efficiency and availability. Use actual calendar hours: 8,760 in a non-leap year and 8,784 in a leap year.
+Capacity factor is $CF=E/(P_{rated}T)$ over the same period and output boundary. It differs from conversion efficiency and availability. Use actual calendar hours: 8,760 in a non-leap year and 8,784 in a leap year. Storage losses: [@wade2003], Chapter 5; [@manwell2009], §10.7. The dispatch policy is an original course assumption. Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2.
 
 ## Energy context: dated evidence
 
@@ -44,7 +48,7 @@ The Eurostat notebooks intentionally use bundled **August 2024 exports** of mont
 
 ## A common framework for understanding renewable-energy systems
 
-An energy system connects a **resource**, a **conversion device**, and a **useful output**. Before writing an equation, specify what crosses the system boundary. A solar module receives radiation and supplies DC electricity; a hydro turbine receives water with hydraulic head and supplies shaft power; a geothermal heat exchanger receives a hot fluid and transfers heat. Comparing the efficiencies of those devices without identifying their different inputs and outputs is misleading.
+An energy system connects a **resource**, a **conversion device**, and a **useful output**. Before writing an equation, specify what crosses the system boundary. A solar module receives radiation and supplies DC electricity; a hydro turbine receives water with hydraulic head and supplies shaft power; a geothermal heat exchanger receives a hot fluid and transfers heat. Comparing the efficiencies of those devices without identifying their different inputs and outputs is misleading. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units). PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3. Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 Renewable resources are replenished through natural processes on relevant human timescales, but usable production is constrained by location, equipment and operating conditions. Solar radiation drives photosynthetic growth and much of the atmospheric and hydrological circulation. Geothermal systems use subsurface heat. The four principal electricity technologies studied here have different physical conversion chains, so they need different resource variables and equations [@foster2010; @jica2011; @manwell2009; @grant2011].
 
@@ -57,63 +61,75 @@ Renewable resources are replenished through natural processes on relevant human 
 | Hydro | Available water flow and net hydraulic head | Water mechanical energy → turbine → generator | Generator-limited electrical power after stated releases |
 | Geothermal | Fluid mass flow, temperature/enthalpy and pressure context | Fluid heat → power cycle → generator | Gross electricity minus parasitic use, with a defined net rating |
 
-No single resource proxy determines output. Solar irradiation does not specify inverter clipping; mean wind speed does not specify mean electrical power; river flow without head does not specify hydropower; temperature without deliverable flow does not specify geothermal output. The following chapters explain those missing links before asking you to implement them.
+*Source for these definitions/calculations:* Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7. Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2. PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3. Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
+
+No single resource proxy determines output. Solar irradiation does not specify inverter clipping; mean wind speed does not specify mean electrical power; river flow without head does not specify hydropower; temperature without deliverable flow does not specify geothermal output. The following chapters explain those missing links before asking you to implement them. Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7. Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2. PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3. Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 ## Conservation, conversion efficiency and the quality of energy
 
-The first law states that energy is conserved. For a defined control volume, a useful accounting statement over a time interval is
+The first law states that energy is conserved. For a defined control volume, a useful accounting statement over a time interval is [@foster2010], §3.8 (thermodynamics); the balance is written for the stated system boundary.
 
 $$\Delta E_{stored}=E_{in}-E_{out},$$
 
-where the totals include the relevant heat, work and energy carried by mass flows, with a consistent sign convention. The equation does not mean every incoming joule can be converted to useful electricity. Friction may convert mechanical energy into heat, while heat-engine conversion is limited by thermodynamics and by actual equipment behavior.
+*Equation basis:* [@foster2010], §3.8 (thermodynamics); the balance is written for the stated system boundary.
+
+where the totals include the relevant heat, work and energy carried by mass flows, with a consistent sign convention. The equation does not mean every incoming joule can be converted to useful electricity. Friction may convert mechanical energy into heat, while heat-engine conversion is limited by thermodynamics and by actual equipment behavior. [@foster2010], §3.8 (thermodynamics); the balance is written for the stated system boundary.
 
 Conversion efficiency is
 
 $$\eta=\frac{\text{useful output energy}}{\text{specified input energy}}.$$
 
-For a steady device the equivalent power ratio can be used. Always name the numerator and denominator. A PV module efficiency, a hydro turbine efficiency and a geothermal thermal-to-electric efficiency refer to different conversion stages. Multiplying stage efficiencies is valid only when the output of one stage is the input to the next and the loss definitions do not overlap.
+*Equation basis:* [@foster2010], §3.8 (thermodynamics); the balance is written for the stated system boundary.
+
+For a steady device the equivalent power ratio can be used. Always name the numerator and denominator. A PV module efficiency, a hydro turbine efficiency and a geothermal thermal-to-electric efficiency refer to different conversion stages. Multiplying stage efficiencies is valid only when the output of one stage is the input to the next and the loss definitions do not overlap. [@foster2010], §3.8 (thermodynamics); the balance is written for the stated system boundary.
 
 **Energy quality** refers to the ability of an energy form to provide a desired service or useful work. Electricity can drive motors or be converted to heat, while low-temperature heat cannot all be converted back to electricity. This helps explain why geothermal thermal MW should not be directly added to wind electrical MW. Convert to a common useful-output boundary before comparing or summing sources [@grant2011; @wade2003].
 
 ### Power and energy through time
 
-Power is the rate of energy transfer: $P=dE/dt$. For interval-average powers,
+Power is the rate of energy transfer: $P=dE/dt$. For interval-average powers, Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units). Unit definitions/conversions: [NIST SP 811, Appendix B](https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors).
 
 $$E=\sum_i\bar P_i\Delta t_i.$$
 
-One watt is one joule per second. One kWh is 3.6 MJ; one MWh is 3.6 GJ. A plant rated at 10 MW does not “generate 10 MW per hour”: when it operates at 10 MW for one hour, it generates 10 MWh. A rate of change of power, such as MW/min, is a different quantity used for ramping.
+*Equation basis:* Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units). Unit definitions/conversions: [NIST SP 811, Appendix B](https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors).
 
-The time-weighted mean power is $\bar P=\sum_iP_i\Delta t_i/\sum_i\Delta t_i$. An ordinary arithmetic mean is equivalent only when durations are equal. Records that describe cumulative meter energy require differencing and checking resets; they must not be treated as instantaneous powers and summed again.
+One watt is one joule per second. One kWh is 3.6 MJ; one MWh is 3.6 GJ. A plant rated at 10 MW does not “generate 10 MW per hour”: when it operates at 10 MW for one hour, it generates 10 MWh. A rate of change of power, such as MW/min, is a different quantity used for ramping. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units). Unit definitions/conversions: [NIST SP 811, Appendix B](https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors).
+
+The time-weighted mean power is $\bar P=\sum_iP_i\Delta t_i/\sum_i\Delta t_i$. An ordinary arithmetic mean is equivalent only when durations are equal. Records that describe cumulative meter energy require differencing and checking resets; they must not be treated as instantaneous powers and summed again. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units). Unit definitions/conversions: [NIST SP 811, Appendix B](https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors).
 
 ## Capacity, availability, variability and controllability
 
-**Installed or rated capacity** is an equipment rating at a defined boundary, usually MW for electricity. **Capacity factor** is $CF=E/(P_rT)$ over a specified interval. **Availability** describes whether equipment can operate under a defined time-based or energy-based convention. A plant can be available but lack sunlight, wind or water; conversely, a good resource does not prevent a mechanical outage. None of these quantities is interchangeable with conversion efficiency.
+**Installed or rated capacity** is an equipment rating at a defined boundary, usually MW for electricity. **Capacity factor** is $CF=E/(P_rT)$ over a specified interval. **Availability** describes whether equipment can operate under a defined time-based or energy-based convention. A plant can be available but lack sunlight, wind or water; conversely, a good resource does not prevent a mechanical outage. None of these quantities is interchangeable with conversion efficiency. [@manwell2009], §§2.5 and 10.3; [@ifc2015], Chapter 7; [@grant2011], §2.5.
 
-**Variability** is change in the resource or output. **Predictability** concerns how well future changes can be forecast. **Dispatchability** concerns the ability to schedule or control output within constraints. Reservoir storage can give some hydropower flexibility; run-of-river output is more closely tied to current flow. A geothermal plant may provide sustained output but still face reservoir and plant limits. Solar and wind can be curtailed, but curtailment capability does not create additional resource when output is low.
+**Variability** is change in the resource or output. **Predictability** concerns how well future changes can be forecast. **Dispatchability** concerns the ability to schedule or control output within constraints. Reservoir storage can give some hydropower flexibility; run-of-river output is more closely tied to current flow. A geothermal plant may provide sustained output but still face reservoir and plant limits. Solar and wind can be curtailed, but curtailment capability does not create additional resource when output is low. [@manwell2009], §§2.5 and 10.3; [@ifc2015], Chapter 7; [@grant2011], §2.5.
 
-**Firm capacity** and reliability require analysis of output coinciding with system needs, not just annual energy totals. Two resources may complement one another, but that claim must be checked against aligned observations or a justified model. A large annual renewable energy total can coexist with hourly shortages.
+**Firm capacity** and reliability require analysis of output coinciding with system needs, not just annual energy totals. Two resources may complement one another, but that claim must be checked against aligned observations or a justified model. A large annual renewable energy total can coexist with hourly shortages. [@manwell2009], §§2.5 and 10.3; [@ifc2015], Chapter 7; [@grant2011], §2.5.
 
 ## Storage and hybrid portfolios
 
-Storage has both a **power limit** and an **energy limit**. A 2 MW, 4 MWh usable battery can nominally discharge at its power limit for about two hours before accounting for the relevant output-efficiency convention and reserve restrictions. Power rating alone cannot specify storage duration. Initial state of charge and final remaining energy also affect a finite-period assessment.
+Storage has both a **power limit** and an **energy limit**. A 2 MW, 4 MWh usable battery can nominally discharge at its power limit for about two hours before accounting for the relevant output-efficiency convention and reserve restrictions. Power rating alone cannot specify storage duration. Initial state of charge and final remaining energy also affect a finite-period assessment. Storage losses: [@wade2003], Chapter 5; [@manwell2009], §10.7. The dispatch policy is an original course assumption.
 
-With $S$ representing internally stored usable energy in MWh and powers measured at the external electrical bus,
+With $S$ representing internally stored usable energy in MWh and powers measured at the external electrical bus, Storage losses: [@wade2003], Chapter 5; [@manwell2009], §10.7. The dispatch policy is an original course assumption.
 
 $$S_{t+1}=S_t+\eta_cP_c\Delta t-\frac{P_d\Delta t}{\eta_d}.$$
 
-Here $P_c$ is power taken from the bus for charging, $P_d$ is power returned to the bus, and $\eta_c$, $\eta_d$ are charging/discharging efficiencies. Use hours for $\Delta t$. Enforce storage and power limits and identify any self-discharge or reserve assumptions. Multiplying both charging and discharging power by efficiency in this convention would understate the storage depleted during discharge.
+*Equation basis:* Storage losses: [@wade2003], Chapter 5; [@manwell2009], §10.7. The dispatch policy is an original course assumption.
 
-For a no-storage portfolio with aligned electrical supply $P_{RE}$ and demand $P_L$,
+Here $P_c$ is power taken from the bus for charging, $P_d$ is power returned to the bus, and $\eta_c$, $\eta_d$ are charging/discharging efficiencies. Use hours for $\Delta t$. Enforce storage and power limits and identify any self-discharge or reserve assumptions. Multiplying both charging and discharging power by efficiency in this convention would understate the storage depleted during discharge. Storage losses: [@wade2003], Chapter 5; [@manwell2009], §10.7. The dispatch policy is an original course assumption.
+
+For a no-storage portfolio with aligned electrical supply $P_{RE}$ and demand $P_L$, Storage losses: [@wade2003], Chapter 5; [@manwell2009], §10.7. The dispatch policy is an original course assumption.
 
 $$P_{served}=\min(P_{RE},P_L),$$
 $$P_{curtailed}=P_{RE}-P_{served},\qquad
 P_{shortfall}=P_L-P_{served}.$$
 
-The two balances are $P_{served}+P_{curtailed}=P_{RE}$ and $P_{served}+P_{shortfall}=P_L$. These are accounting identities under the stated dispatch rule, not predictions about imports, prices or network stability. The final project uses this clear base case before considering design comparisons.
+*Equation basis:* Storage losses: [@wade2003], Chapter 5; [@manwell2009], §10.7. The dispatch policy is an original course assumption.
+
+The two balances are $P_{served}+P_{curtailed}=P_{RE}$ and $P_{served}+P_{shortfall}=P_L$. These are accounting identities under the stated dispatch rule, not predictions about imports, prices or network stability. The final project uses this clear base case before considering design comparisons. Storage losses: [@wade2003], Chapter 5; [@manwell2009], §10.7. The dispatch policy is an original course assumption.
 
 ## Data definitions that determine whether a calculation is meaningful
 
-Before combining datasets, establish their **grain**: one row might be a turbine-hour, a country-month, a well test, or a meter interval. Joining by row number rather than a real key can combine unrelated observations. Align timestamps, time zones and durations, check uniqueness, and investigate missing or duplicate records before calculating totals.
+Before combining datasets, establish their **grain**: one row might be a turbine-hour, a country-month, a well test, or a meter interval. Joining by row number rather than a real key can combine unrelated observations. Align timestamps, time zones and durations, check uniqueness, and investigate missing or duplicate records before calculating totals. Data handling: [pandas user guide](https://pandas.pydata.org/docs/user_guide/index.html). [Eurostat energy metadata](https://ec.europa.eu/eurostat/web/energy/methodology).
 
 | Data question | Why it changes the calculation |
 |---|---|
@@ -125,22 +141,26 @@ Before combining datasets, establish their **grain**: one row might be a turbine
 | Local time or UTC? | Determines alignment and daylight-saving interval lengths |
 | Component or aggregate category? | Determines whether summing would double-count energy |
 
-Keep missing values distinct from measured zero. Report coverage together with a partial sum instead of presenting a partial dataset as a complete-period result. The course's Eurostat examples illustrate this issue: country coverage and the treatment of broad hydro/storage categories affect interpretation even when the SQL and pandas arithmetic agrees.
+*Source for these definitions/calculations:* Data handling: [pandas user guide](https://pandas.pydata.org/docs/user_guide/index.html). [Eurostat energy metadata](https://ec.europa.eu/eurostat/web/energy/methodology).
+
+Keep missing values distinct from measured zero. Report coverage together with a partial sum instead of presenting a partial dataset as a complete-period result. The course's Eurostat examples illustrate this issue: country coverage and the treatment of broad hydro/storage categories affect interpretation even when the SQL and pandas arithmetic agrees. Data handling: [pandas user guide](https://pandas.pydata.org/docs/user_guide/index.html). [Eurostat energy metadata](https://ec.europa.eu/eurostat/web/energy/methodology).
 
 ## Comparing projects without confusing metrics
 
-An energy comparison should hold time period and electrical boundary consistent. A financial comparison also needs currency, price year, discounting convention, lifetime, cost scope and energy-delivery boundary. A simple levelized cost of energy is
+An energy comparison should hold time period and electrical boundary consistent. A financial comparison also needs currency, price year, discounting convention, lifetime, cost scope and energy-delivery boundary. A simple levelized cost of energy is Discounted cost and energy: [@ifc2015], §13.2.5 and Chapter 14; [@irena2026], methodology annex.
 
 $$LCOE=\frac{I_0+\sum_{y=1}^{N}C_y/(1+r)^y}
 {\sum_{y=1}^{N}E_y/(1+r)^y},$$
 
+*Equation basis:* Discounted cost and energy: [@ifc2015], §13.2.5 and Chapter 14; [@irena2026], methodology annex.
+
 where $I_0$ is initial investment, $C_y$ is included year-$y$ cost, $E_y$ is delivered energy, and $r$ is a discount rate consistent with the cost basis. The equation gives currency per energy unit. A real rate should be paired with constant-price cash flows; nominal flows require a consistent nominal framework. State assumptions about replacements, financing, taxes and terminal costs. LCOE is not automatically a tariff, profit, reliability measure or complete electricity-system cost [@ifc2015; @irena2026].
 
-Environmental comparison likewise requires a life-cycle and site-specific perspective. Construction, land and water use, materials, wildlife and end-of-life processes matter alongside operation. Renewable energy is not synonymous with zero impact. The reference catalogue separates technical principles from dated market evidence so historical book examples are not mistaken for current prices or generation shares.
+Environmental comparison likewise requires a life-cycle and site-specific perspective. Construction, land and water use, materials, wildlife and end-of-life processes matter alongside operation. Renewable energy is not synonymous with zero impact. The reference catalogue separates technical principles from dated market evidence so historical book examples are not mistaken for current prices or generation shares. Discounted cost and energy: [@ifc2015], §13.2.5 and Chapter 14; [@irena2026], methodology annex.
 
 ## Worked comparison before coding
 
-Suppose a synthetic four-hour hybrid system has mean renewable outputs of [1, 5, 2, 4] MW and constant demand of 3 MW, with no storage or trading.
+Suppose a synthetic four-hour hybrid system has mean renewable outputs of [1, 5, 2, 4] MW and constant demand of 3 MW, with no storage or trading. Original worked example applying the stated no-storage identities; Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
 
 1. Available renewable energy is $(1+5+2+4)\times1=12$ MWh.
 2. Demand energy is $4\times3=12$ MWh.
@@ -149,7 +169,9 @@ Suppose a synthetic four-hour hybrid system has mean renewable outputs of [1, 5,
 5. Shortfall is [2, 0, 1, 0] MW: also **3 MWh**.
 6. Renewable demand coverage is $9/12=75\%$, even though total renewable energy equals total demand energy.
 
-This example explains why the final project joins the separate source and demand files by timestamp before summing electricity. It also motivates a useful habit: write the balance and expected units first, then use Python to calculate and check it.
+*Source for these definitions/calculations:* Original worked example applying the stated no-storage identities; Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
+
+This example explains why the final project joins the separate source and demand files by timestamp before summing electricity. It also motivates a useful habit: write the balance and expected units first, then use Python to calculate and check it. Original worked example applying the stated no-storage identities; Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
 
 ## How the following chapters build on these definitions
 
@@ -172,7 +194,7 @@ The 20 exercises below progress from unit conversions to portfolio analysis. Stu
 
 **Difficulty:** Easy
 
-**Reference:** Energy accounting: [@jica2011], Chapter 3; Python [@pythonDocs]; arrays and data [@numpyDocs; @pandasDocs].
+**Reference:** Unit definitions/conversions: [NIST SP 811, Appendix B](https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors).
 
 **Task:** Convert 2.5 MWh to kWh and MJ. Use 1 kWh = 3.6 MJ.
 
@@ -206,7 +228,7 @@ assert energy_kwh == 2500 and energy_mj == 9000
 
 **Difficulty:** Easy
 
-**Reference:** Energy accounting: [@jica2011], Chapter 3; Python [@pythonDocs]; arrays and data [@numpyDocs; @pandasDocs].
+**Reference:** Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
 
 **Task:** A generator averages 3 MW for 6 hours. Calculate MWh and mean MW from the energy.
 
@@ -239,7 +261,7 @@ assert energy_mwh == 18
 
 **Difficulty:** Easy
 
-**Reference:** Energy accounting: [@jica2011], Chapter 3; Python [@pythonDocs]; arrays and data [@numpyDocs; @pandasDocs].
+**Reference:** Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2.
 
 **Task:** A 5 MW plant delivers 48 MWh in 24 hours. Calculate its daily capacity factor.
 
@@ -272,7 +294,7 @@ assert abs(capacity_factor - 0.4) < 1e-12
 
 **Difficulty:** Easy
 
-**Reference:** Energy accounting: [@jica2011], Chapter 3; Python [@pythonDocs]; arrays and data [@numpyDocs; @pandasDocs].
+**Reference:** Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
 
 **Task:** A device receives 100 MWh and converts 85% to useful energy. Calculate output and losses.
 
@@ -306,7 +328,7 @@ assert output_mwh + loss_mwh == input_mwh
 
 **Difficulty:** Easy
 
-**Reference:** Energy accounting: [@jica2011], Chapter 3; Python [@pythonDocs]; arrays and data [@numpyDocs; @pandasDocs].
+**Reference:** Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
 
 **Task:** Solar, hydro, wind and geothermal produce 10, 30, 40 and 20 MWh. Print each source share.
 
@@ -341,7 +363,7 @@ assert abs(sum(shares.values()) - 1) < 1e-12
 
 **Difficulty:** Medium
 
-**Reference:** Energy accounting: [@jica2011], Chapter 3; Python [@pythonDocs]; arrays and data [@numpyDocs; @pandasDocs].
+**Reference:** Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
 
 **Task:** Average powers [2,4,1] MW last [0.5,1,2] hours. Calculate total energy and time-weighted average power.
 
@@ -375,7 +397,7 @@ assert energy == 7 and mean_power == 2
 
 **Difficulty:** Medium
 
-**Reference:** Energy accounting: [@jica2011], Chapter 3; Python [@pythonDocs]; arrays and data [@numpyDocs; @pandasDocs].
+**Reference:** Data handling: [pandas user guide](https://pandas.pydata.org/docs/user_guide/index.html).
 
 **Task:** Read this CSV using pandas: source,mwh with rows solar,12; wind,18; hydro,10. Calculate total energy.
 
@@ -412,7 +434,7 @@ assert total == 40
 
 **Difficulty:** Medium
 
-**Reference:** Energy accounting: [@jica2011], Chapter 3; Python [@pythonDocs]; arrays and data [@numpyDocs; @pandasDocs].
+**Reference:** Data handling: [pandas user guide](https://pandas.pydata.org/docs/user_guide/index.html).
 
 **Task:** For [1, missing,3,2] hourly MW readings, report coverage and observed energy, but do not invent a four-hour total.
 
@@ -446,7 +468,7 @@ assert coverage == 0.75 and observed_mwh == 6
 
 **Difficulty:** Medium
 
-**Reference:** Energy accounting: [@jica2011], Chapter 3; Python [@pythonDocs]; arrays and data [@numpyDocs; @pandasDocs].
+**Reference:** Data handling: [pandas user guide](https://pandas.pydata.org/docs/user_guide/index.html).
 
 **Task:** Times [00,01,01,02] have MW [1,2,2,3]. Remove only exact timestamp/value duplicates and check uniqueness.
 
@@ -481,7 +503,7 @@ assert len(clean) == 3 and clean.mw.sum() == 6
 
 **Difficulty:** Medium
 
-**Reference:** Energy accounting: [@jica2011], Chapter 3; Python [@pythonDocs]; arrays and data [@numpyDocs; @pandasDocs].
+**Reference:** Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units). Original no-storage balance.
 
 **Task:** Hourly renewable supply is [1,5,2] MW and demand [3,3,3] MW. Calculate served, curtailed and unmet energy.
 
@@ -517,7 +539,7 @@ print('MWh served, curtailed, unmet:', served.sum(), curtailed.sum(), unmet.sum(
 
 **Difficulty:** Medium
 
-**Reference:** Energy accounting: [@jica2011], Chapter 3; Python [@pythonDocs]; arrays and data [@numpyDocs; @pandasDocs].
+**Reference:** Data handling: [pandas user guide](https://pandas.pydata.org/docs/user_guide/index.html). Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
 
 **Task:** Generate 48 consecutive UTC hourly means of 2 MW and aggregate to daily MWh.
 
@@ -551,7 +573,7 @@ assert (daily == 48).all() and daily.sum() == 96
 
 **Difficulty:** Medium
 
-**Reference:** Energy accounting: [@jica2011], Chapter 3; Python [@pythonDocs]; arrays and data [@numpyDocs; @pandasDocs].
+**Reference:** Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2.
 
 **Task:** Plant A: 2 MW and 24 MWh; plant B: 8 MW and 144 MWh over the same 24 hours. Calculate plant and fleet CF.
 
@@ -587,7 +609,7 @@ assert np.isclose(fleet, np.average(individual, weights=capacity))
 
 **Difficulty:** Medium
 
-**Reference:** Energy accounting: [@jica2011], Chapter 3; Python [@pythonDocs]; arrays and data [@numpyDocs; @pandasDocs].
+**Reference:** Data handling: [pandas user guide](https://pandas.pydata.org/docs/user_guide/index.html). [@sqliteDocs].
 
 **Task:** Group solar energies [10,12] and wind energies [20,18] MWh by source using both SQL and pandas.
 
@@ -625,7 +647,7 @@ print(sql)
 
 **Difficulty:** Medium
 
-**Reference:** Energy accounting: [@jica2011], Chapter 3; Python [@pythonDocs]; arrays and data [@numpyDocs; @pandasDocs].
+**Reference:** Chronological evaluation: [scikit-learn TimeSeriesSplit](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.TimeSeriesSplit.html).
 
 **Task:** Use monthly MWh [10,12,14,16] as training and [15,17] as test. Compare fixed last-value and training-mean forecast MAE.
 
@@ -660,7 +682,7 @@ assert last_mae == 1 and mean_mae == 3
 
 **Difficulty:** Medium
 
-**Reference:** Energy accounting: [@jica2011], Chapter 3; Python [@pythonDocs]; arrays and data [@numpyDocs; @pandasDocs].
+**Reference:** Plotting: [@matplotlibDocs]. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
 
 **Task:** Create a labelled bar chart of solar 20, hydro 35, wind 30 and geothermal 15 MWh, and check the total.
 
@@ -695,7 +717,7 @@ print(sum(energy), 'MWh'); assert sum(energy) == 100
 
 **Difficulty:** Hard
 
-**Reference:** Energy accounting: [@jica2011], Chapter 3; Python [@pythonDocs]; arrays and data [@numpyDocs; @pandasDocs].
+**Reference:** Storage losses: [@wade2003], Chapter 5; [@manwell2009], §10.7. The dispatch policy is an original course assumption.
 
 **Task:** Supply [0,4,4,0] MW meets constant 2 MW demand. Start empty with 3 MWh usable storage, 2 MW charge/discharge limits and 90% efficiency each way. Route four hours and prove energy balance.
 
@@ -738,7 +760,7 @@ assert np.isclose(sum(r[2] for r in rows), 2)
 
 **Difficulty:** Hard
 
-**Reference:** Energy accounting: [@jica2011], Chapter 3; Python [@pythonDocs]; arrays and data [@numpyDocs; @pandasDocs].
+**Reference:** Discounted cost and energy: [@ifc2015], §13.2.5 and Chapter 14; [@goswami2015], §1.4.3, Eq. 1.6; [@irena2026], methodology annex.
 
 **Task:** For €1000 initial cost, €20 annual O&M and 100 MWh/year over 10 years, calculate LCOE at real rates 0%,5%,10%, with year-end flows.
 
@@ -775,7 +797,7 @@ assert np.isclose(results[0], 1.2) and np.all(np.diff(results)>0)
 
 **Difficulty:** Hard
 
-**Reference:** Energy accounting: [@jica2011], Chapter 3; Python [@pythonDocs]; arrays and data [@numpyDocs; @pandasDocs].
+**Reference:** Data handling: [pandas user guide](https://pandas.pydata.org/docs/user_guide/index.html).
 
 **Task:** Join two CSV-like tables with hourly UTC times: solar [0,1,2] and wind [2,1,0]. Reject duplicate times or mismatched coverage before calculating their sum.
 
@@ -815,7 +837,7 @@ print(joined.to_string(index=False))
 
 **Difficulty:** Hard
 
-**Reference:** Energy accounting: [@jica2011], Chapter 3; Python [@pythonDocs]; arrays and data [@numpyDocs; @pandasDocs].
+**Reference:** Original discrete design search under the stated shortfall target; Array calculations: [@numpyDocs].
 
 **Task:** Wind produces [0,1,2,1] MW per unit; firm geothermal supplies 1 MW and demand is 2 MW each hour. Search 0–4 wind units for coverage at least 80%. Report the smallest feasible count, unmet and curtailed MWh.
 
@@ -853,7 +875,7 @@ assert best[0]==1 and best[1]==0.875
 
 **Difficulty:** Hard
 
-**Reference:** Energy accounting: [@jica2011], Chapter 3; Python [@pythonDocs]; arrays and data [@numpyDocs; @pandasDocs].
+**Reference:** Original uncertainty propagation with stated distributions; [NumPy random sampling](https://numpy.org/doc/stable/reference/random/index.html).
 
 **Task:** Assume 1000 independent illustrative annual-energy outcomes uniformly distributed between 80 and 120 GWh. Use seed 7; report mean, 5th and 95th percentiles and probability of less than 90 GWh.
 

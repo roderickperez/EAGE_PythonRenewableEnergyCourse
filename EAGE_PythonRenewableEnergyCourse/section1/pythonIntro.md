@@ -8,25 +8,25 @@
 
 A programming language expresses instructions with defined syntax and meaning. Python lets us turn renewable-energy questions into reproducible calculations, data checks and plots.
 
-Python is an *interpreted* programming language created by Guido van Rossum and first released in 1991. In the standard CPython implementation, source code is compiled to bytecode and executed by the Python virtual machine. Python is also **dynamically typed**: names do not have fixed declared types, and type checking occurs at runtime. An object still has a definite type.
+Python is an *interpreted* programming language created by Guido van Rossum and first released in 1991. In the standard CPython implementation, source code is compiled to bytecode and executed by the Python virtual machine. Python is also **dynamically typed**: names do not have fixed declared types, and type checking occurs at runtime. An object still has a definite type. [Python tutorial](https://docs.python.org/3/tutorial/).
 
-Performance depends on the task and implementation. Python-level loops can be slow for large numerical problems; NumPy performs many array operations in compiled code. First make a calculation correct and readable, then measure performance before optimising it.
+Performance depends on the task and implementation. Python-level loops can be slow for large numerical problems; NumPy performs many array operations in compiled code. First make a calculation correct and readable, then measure performance before optimising it. [Python tutorial](https://docs.python.org/3/tutorial/).
 
 ### What can I do with Python?
 
-The universe of applications and possibilities with Python is practically infinite. With Python can be used on a server to create web applications, can connect to database systems, it can also read and modify files, and it used to handle big data and perform complex mathematics. One of the main advantages of Python is that it is used for **rapid prototyping**, and can be scaled  for production-ready software development.
+The universe of applications and possibilities with Python is practically infinite. With Python can be used on a server to create web applications, can connect to database systems, it can also read and modify files, and it used to handle big data and perform complex mathematics. One of the main advantages of Python is that it is used for **rapid prototyping**, and can be scaled  for production-ready software development. [Python tutorial](https://docs.python.org/3/tutorial/).
 
 ### Why Python?
 
-In addition to its high versatility, another advantage of using Python is that works on different platforms (Windows, Mac, Linux, Raspberry Pi, etc). Since it has a simple syntax (similar to the English language), allows developers to write programs with fewer lines than some other programming languages. Also, Python runs on an interpreter system, meaning that code can be executed as soon as it is written. This means that prototyping can be very quick.
+In addition to its high versatility, another advantage of using Python is that works on different platforms (Windows, Mac, Linux, Raspberry Pi, etc). Since it has a simple syntax (similar to the English language), allows developers to write programs with fewer lines than some other programming languages. Also, Python runs on an interpreter system, meaning that code can be executed as soon as it is written. This means that prototyping can be very quick. [Python tutorial](https://docs.python.org/3/tutorial/).
 
-Python uses indentation to group statements into blocks, including function bodies, loops and conditions. A loop or an `if` block does not create a separate variable scope. Statements usually end at a newline, although an expression inside parentheses can span several lines.
+Python uses indentation to group statements into blocks, including function bodies, loops and conditions. A loop or an `if` block does not create a separate variable scope. Statements usually end at a newline, although an expression inside parentheses can span several lines. [Python tutorial](https://docs.python.org/3/tutorial/).
 
 ### Download & Official Python Packages Repository
 
-From [Python office website](https://www.python.org/) we can download the latest version of Python. Along the course we will see the necessity to extend Python basic capabilities with some extra and external *packages*. These packages are *modules* that are used to extend the functionality of Python. For example, the [numpy](https://www.numpy.org/) package is a package that provides a *numerical* library for Python. The official repository of software for the Python programming language is **Python Package Index** [PyPi](https://pypi.org/).
+From [official Python website](https://www.python.org/) we can download the latest version of Python. Along the course we will see the necessity to extend Python basic capabilities with some extra and external *packages*. These packages are *modules* that are used to extend the functionality of Python. For example, the [numpy](https://www.numpy.org/) package is a package that provides a *numerical* library for Python. The official repository of software for the Python programming language is **Python Package Index** [PyPi](https://pypi.org/).
 
-With a Package Manager we can install, upgrade, remove, etc., Python packages in any Python virtual environment. A virtual environment, it is an environment that can use different versions of package dependencies and Python. It is very useful to develop and test new code in a separate environment, since sometimes some packages may be incompatible with each other.
+With a Package Manager we can install, upgrade, remove, etc., Python packages in any Python virtual environment. A virtual environment isolates installed packages. Its Python interpreter is selected when the environment is created; `venv` does not download an arbitrary Python version. Use a separate environment for each project, and install packages with that interpreter using `python -m pip`. [Python venv](https://docs.python.org/3/library/venv.html).
 
 ## Versions
 

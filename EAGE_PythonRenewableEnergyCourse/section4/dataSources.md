@@ -1,154 +1,53 @@
-# Energy Data Sources
+# Data sources and reproducible downloads
 
-Legacy figures below are historical illustrations. Establish their provenance and observation periods before reusing numerical values. Use official source tables for updated analysis; these figure files are not live feeds.
+A dataset is useful only with its definitions: variable, unit, geographical coverage, time period, frequency, measurement method and revision status. Keep the provider's metadata beside the file. CSV is a storage format, not evidence that two columns measure the same quantity. [Eurostat energy metadata](https://ec.europa.eu/eurostat/web/energy/methodology); [pandas CSV parsing](https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html).
 
-## Our World in Data
+## Choose a source for the question
 
-Our World in Data publishes energy indicators with detailed metadata [@owid_energy_mix]. Always inspect the measure definition: primary energy, electricity generation, final energy, and consumption are not interchangeable.
+| Source | Suitable use | Definitions to check before calculating |
+|---|---|---|
+| [Eurostat energy database](https://ec.europa.eu/eurostat/web/energy/database) | Country energy statistics | Dataset ID, energy product, net/gross boundary, unit, period and flags |
+| [Our World in Data current energy catalogue](https://catalog.ourworldindata.org/energy/owid_energy/) | Annual country and world comparisons | Use the matching codebook, source attribution and new column names; electricity and total energy supply differ |
+| [US EIA Open Data](https://www.eia.gov/opendata/) | US energy statistics and API exercises | Read the chosen API route, frequency and units; API access may require a free key |
+| [NOAA Climate Data Online](https://www.ncei.noaa.gov/cdo-web/) | Station weather observations | Station, variable, units, observation time, quality flags and missing-value codes |
+| [Copernicus Climate Data Store](https://cds.climate.copernicus.eu/) | Gridded climate and reanalysis | Product, grid, time/accumulation conventions and variable metadata; registration/licence steps depend on product |
 
-Link: https://ourworldindata.org/energy-mix
+The links in each row are the provider's own documentation or distribution page. Reanalysis is a model-based reconstruction using observations; it must not be labelled a station measurement. [ECMWF: climate reanalysis](https://www.ecmwf.int/en/research/climate-reanalysis).
 
+## Working download example: Eurostat → Python → SQLite
 
-```{figure} ../images/section4/section4_ourworldindata_1.jpg
----
-name: ourworldindata_1
----
-Our World in Data website (https://ourworldindata.org/energy-production-consumption)
-```
+Start with the [complete seven-step download tutorial](../section5/download-to-database.md). It specifies **monthly net electricity generation**, dataset `nrg_cb_pem`, initially Austria `AT`, wind `RA300`, unit `GWH`, January–December 2023. Change `GEO` to another reporting European country; use the live country selector and check coverage. It contains a live API request, an Austria-only bundled snapshot and a downloadable notebook. For countries worldwide or a world aggregate, use the [global download tutorial](../section5/world-energy-download.md).
 
-```{figure} ../images/section4/section4_ourworldindata_2.jpg
----
-name: ourworldindata_2
----
-Select the icon to download the data.
-```
+1. Open [the dataset in Eurostat's Data Browser](https://ec.europa.eu/eurostat/databrowser/view/nrg_cb_pem/default/table?lang=en).
+2. Set frequency, your chosen country, product, unit and months as listed in the tutorial. Check the unit before downloading.
+3. Use **Download**, choose CSV and export **All selected dimensions**. Keep flags and labels; verify that the export includes the complete intended selection.
+4. Save the original file, its filter choices and retrieval date. Do not rename GWh values as MW.
+5. Run the tutorial's API example to obtain a predictable tidy schema. Browser-export CSV layouts may differ from the API-derived CSV.
+6. Check all twelve months, key uniqueness, missing values and flags before aggregating. Compare pandas and SQLite totals.
+7. Save the CSV, raw JSON, provenance JSON and SQLite database using the environment-specific instructions.
 
-```{figure} ../images/section4/section4_ourworldindata_3.jpg
----
-name: ourworldindata_3
----
-Select the full-data CSV download and save the accompanying metadata.
-```
+Download controls and selection options: [Eurostat download guide](https://ec.europa.eu/eurostat/web/user-guides/data-browser/download-data/download-datasets). API filters and response format: [Eurostat API guide](https://ec.europa.eu/eurostat/web/user-guides/data-browser/api-data-access/api-getting-started).
 
-```{figure} ../images/section4/section4_ourworldindata_4.jpg
----
-height: 150px
-name: ourworldindata_4
----
-The .csv file will be downloaded in the "Downloads" folder at your computer.
-```
+## Working global example: OWID → country CSV → SQLite
 
-```{figure} ../images/section4/section4_ourworldindata_5.jpg
----
-name: ourworldindata_5
----
-Sample of the "global-energy-substitution.csv" file in Excel.
-```
+1. Open the [current energy catalogue](https://catalog.ourworldindata.org/energy/owid_energy/).
+2. Save `owid_energy.csv`, `owid_energy.codebook.csv` and `readme.md` using the download links in the [global tutorial](../section5/world-energy-download.md).
+3. Run its first Python cell to download the files and create a country/region lookup.
+4. Choose a country code, such as `AUT`, `BRA`, `IND` or `USA`, and an electricity-generation variable. Run the selection and save cells.
+5. Download the selected CSV, SQLite database and provenance. Preserve the original files, checksums, retrieval dates and the codebook's original-provider attribution.
+6. Inspect year coverage and units. Use `OWID_WRL` only when you intend to select the world aggregate; do not add it to country rows.
 
-```{figure} ../images/section4/worldDatainPlot_EnergyBySource_plot.png
----
-name: ourworldindata_globalBySource
----
-Global Energy by Source (in TWh) from the "global-energy-substitution.csv" dataset.
-```
+These steps follow the [current dataset documentation](https://catalog.ourworldindata.org/energy/owid_energy/readme.md). The old GitHub files are a legacy release and no longer updated. The new release changes column names and primary-energy methodology; do not mix its values and metadata with the old release. The worked example uses annual electricity generation in TWh, whereas the Eurostat exercise uses monthly net generation in GWh. Check definitions before comparing.
 
-## EIA
+## Bundled data versus new downloads
 
-The [U.S. Energy Information Administration](https://www.eia.gov/opendata/) provides energy data and an API. Record series identifier, units, geography, frequency and retrieval date. API access can require a key; keep credentials out of shared notebooks.
+The older [time-series notebook](timeSeriesEnergyConsumption.ipynb) and [SQL notebook](../section5/SQL_Pandas.ipynb) intentionally retain August 2024 Eurostat exports. Their historical selection and wide-table schema differ from the new API tutorial. The final-project CSVs are **synthetic** hourly inputs. Keep these three provenances separate; do not silently substitute one for another. [Course dataset definitions](../section8/data/README.md); [Eurostat database](https://ec.europa.eu/eurostat/web/energy/database).
 
-## Eurostat
+## Practice
 
-Link: https://ec.europa.eu/eurostat/cache/infographs/energy_portal/enviz.html?language=EN
+- **Easy:** reproduce the Austria wind snapshot and record its unit, twelve months, source URL and retrieval date.
+- **Medium:** download any available European country for the same product and period by changing `GEO` in the Eurostat tutorial. Validate the returned country name, code and coverage.
+- **Medium, worldwide:** use the global tutorial to download Brazil, India or another available country. Select matching years and electricity variables, then export the CSV and source metadata.
+- **Advanced:** remove one observation in a copy, preserve it as missing, and report coverage plus observed energy. Explain why that is no longer an annual total.
 
-```{figure} ../images/section4/section4_euroStat_1.jpg
----
-name: euroStat_dashboard
----
-euroStat Energy Dashboard.
-```
-
-```{figure} ../images/section4/section4_euroStat_2.jpg
----
-name: euroStat_renewable_vs_non-renewable_electricity
----
-euroStat Energy Renewable vs Non-renewable Electricity.
-```
-
-```{figure} ../images/section4/section4_euroStat_3.jpg
----
-name: euroStat_electricity_generation_dashboard
----
-euroStat electricity generation dashboard.
-```
-
-```{figure} ../images/section4/section4_euroStat_4.jpg
----
-name: euroStat_generation_time_series
----
-euroStat generation time series.
-```
-
-
-```{figure} ../images/section4/section4_euroStat_5.jpg
----
-name: euroStat_renewables_share_view
----
-euroStat renewables share view.
-```
-
-
-```{figure} ../images/section4/section4_euroStat_6.jpg
----
-name: euroStat_nonrenewables_share_view
----
-euroStat non-renewables share view.
-```
-
-```{figure} ../images/section4/section4_euroStat_7.jpg
----
-name: euroStat_country_comparison_1
----
-euroStat country comparison view 1.
-```
-
-```{figure} ../images/section4/section4_euroStat_8.jpg
----
-name: euroStat_country_comparison_2
----
-euroStat country comparison view 2.
-```
-
-```{figure} ../images/section4/section4_euroStat_9.jpg
----
-name: euroStat_country_comparison_3
----
-euroStat country comparison view 3.
-```
-
-```{figure} ../images/section4/section4_euroStat_10.jpg
----
-name: euroStat_country_comparison_4
----
-euroStat country comparison view 4.
-```
-
-```{figure} ../images/section4/section4_euroStat_11.jpg
----
-name: euroStat_country_comparison_5
----
-euroStat country comparison view 5.
-```
-
-```{figure} ../images/section4/section4_euroStat_12.jpg
----
-name: euroStat_country_comparison_6
----
-euroStat country comparison view 6.
-```
-
-```{figure} ../images/section4/section4_euroStat_13.jpg
----
-name: euroStat_country_comparison_7
----
-euroStat country comparison view 7.
-```
+These are original course exercises. The download tutorial provides checks and troubleshooting without requiring an API key.
