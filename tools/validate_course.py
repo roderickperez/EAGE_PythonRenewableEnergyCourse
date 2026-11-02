@@ -121,8 +121,12 @@ def check_energy_curriculum() -> None:
 
 def execute_energy_code_cells() -> None:
     """Execute every core Markdown lesson in its own namespace, in cell order."""
+    import asyncio
     import contextlib
+    import inspect
     import io
+    import tempfile
+    from unittest.mock import patch
     import matplotlib
 
     matplotlib.use("Agg")
@@ -133,14 +137,36 @@ def execute_energy_code_cells() -> None:
     for path in pages:
         namespace = {"__name__": "__course_validation__"}
         text = path.read_text(encoding="utf-8")
-        for number, match in enumerate(marker.finditer(text), start=1):
-            try:
-                with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
-                    exec(compile(match.group(1), str(path), "exec"), namespace)
-                count += 1
-            except Exception as exc:
-                fail(f"Runtime error in {path.relative_to(ROOT)} code-cell #{number}: {type(exc).__name__}: {exc}")
-                break
+        # The worldwide download lesson normally fetches live data. Use explicit,
+        # representative responses and an isolated output directory for CI.
+        is_world_download = path.relative_to(ROOT).as_posix() == "section5/world-energy-download.md"
+        fixtures = {
+            "owid_energy.csv": ("country,iso_code,year,wind_electricity_twh\n" +
+                                "\n".join(f"Austria,AUT,{year},{year - 2000}" for year in range(2019, 2024)) + "\n").encode(),
+            "owid_energy.codebook.csv": b"column,unit,title,description,source\nwind_electricity_twh,TWh,Wind electricity,Annual generation,Test fixture\n",
+            "readme.md": b"Synthetic validation fixture; not published data.\n",
+        }
+        def fixture_urlopen(url, timeout=60):
+            name = str(url).rsplit("/", 1)[-1]
+            if name not in fixtures:
+                raise ValueError(f"Unexpected validation URL: {url}")
+            return io.BytesIO(fixtures[name])
+
+        with contextlib.ExitStack() as stack:
+            if is_world_download:
+                stack.enter_context(contextlib.chdir(stack.enter_context(tempfile.TemporaryDirectory())))
+                stack.enter_context(patch("urllib.request.urlopen", side_effect=fixture_urlopen))
+            for number, match in enumerate(marker.finditer(text), start=1):
+                try:
+                    with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                        code = compile(match.group(1), str(path), "exec", flags=ast.PyCF_ALLOW_TOP_LEVEL_AWAIT)
+                        result = eval(code, namespace)
+                        if inspect.iscoroutine(result):
+                            asyncio.run(result)
+                    count += 1
+                except Exception as exc:
+                    fail(f"Runtime error in {path.relative_to(ROOT)} code-cell #{number}: {type(exc).__name__}: {exc}")
+                    break
         try:
             namespace.get("plt").close("all") if namespace.get("plt") is not None else None
         except Exception:
