@@ -45,26 +45,8 @@ function applyLayout() {
   const zoomText = $('zoom-text');
   if (zoomText) zoomText.textContent = layoutState.workspaceZoomed ? 'Zoom Out' : 'Zoom In';
 
-  // Update Lab action buttons
-  const labZoomBtn = $('lab-zoom-btn');
-  if (labZoomBtn) {
-    labZoomBtn.textContent = layoutState.workspaceZoomed ? '⤡ Restore' : '⤢ Zoom';
-    labZoomBtn.title = layoutState.workspaceZoomed ? 'Zoom out to side-by-side view' : 'Zoom in to full workspace';
-  }
-
-  // Update Reading focus button
+  // Update reading focus button
   $('toggle-reading-focus')?.classList.toggle('active', layoutState.workspaceCollapsed);
-
-  // Update edge restore tabs
-  if ($('sidebar-restore-tab')) {
-    $('sidebar-restore-tab').style.display = layoutState.sidebarCollapsed ? 'inline-flex' : 'none';
-  }
-  if ($('workspace-restore-tab')) {
-    $('workspace-restore-tab').style.display = (layoutState.workspaceCollapsed && !layoutState.workspaceZoomed) ? 'inline-flex' : 'none';
-  }
-  if ($('reopen-sidebar-btn')) {
-    $('reopen-sidebar-btn').style.display = layoutState.sidebarCollapsed ? 'inline-flex' : 'none';
-  }
 
   saveLayout();
 }
@@ -103,7 +85,7 @@ function ensureWorkspaceVisible() {
 let course, lesson, active = 'draft', worker, busy = false, timer, draftTimer;
 let saved = {}, workerReady = false;
 try { saved = JSON.parse(localStorage.getItem(STORAGE) || '{}'); } catch { /* local storage may be disabled */ }
-const status = text => { $('python-status').textContent = text; };
+const status = (text, state) => { const indicator = $('python-status'); indicator.dataset.state = state; indicator.title = text; indicator.setAttribute('aria-label', text); indicator.querySelector('.sr-only').textContent = text; };
 function key(id = active) { return `${lesson.id}::${id}`; }
 function persist() {
   if (!lesson) return;
@@ -179,19 +161,19 @@ function download(name, data, type='text/plain') {
 function locked(value){busy=value;$('run').disabled=value;$('stop').disabled=!value;}
 function createWorker(){
   worker?.terminate();workerReady=false;
-  worker=new Worker('python-worker.js',{type:'module'});status('Downloading Python…');
+  worker=new Worker('python-worker.js',{type:'module'});status('Downloading Python…', 'loading');
   worker.onmessage=({data:m})=>{
-    if(m.type==='status')status(m.text);
-    if(m.type==='ready'){workerReady=true;status('Python ready');}
+    if(m.type==='status')status(m.text, /^loading|^downloading/i.test(m.text) ? 'loading' : (workerReady ? 'ready' : 'loading'));
+    if(m.type==='ready'){workerReady=true;status('Python ready', 'ready');}
     if(m.type==='stdout')appendText(m.text);
     if(m.type==='stderr')appendText(m.text,'error');
     if(m.type==='image'){const image=document.createElement('img');image.src=m.data;image.alt='Figure produced by your Python code';$('output').append(image);}
     if(m.type==='html'){const frame=document.createElement('iframe');frame.title='Python HTML output';frame.setAttribute('sandbox','allow-scripts');frame.srcdoc=m.html;$('output').append(frame);}
     if(m.type==='download')download(m.name,m.bytes,'application/octet-stream');
-    if(m.type==='done'){clearTimeout(timer);locked(false);status('Python ready');appendText(m.error || 'Finished.',m.error?'error':'muted');}
-    if(m.type==='fatal'){clearTimeout(timer);locked(false);status('Python could not start');appendText(m.error+' Try Run again to reconnect.','error');worker.terminate();worker=null;workerReady=false;}
+    if(m.type==='done'){clearTimeout(timer);locked(false);status('Python ready', 'ready');appendText(m.error || 'Finished.',m.error?'error':'muted');}
+    if(m.type==='fatal'){clearTimeout(timer);locked(false);status('Python could not start', 'offline');appendText(m.error+' Try Run again to reconnect.','error');worker.terminate();worker=null;workerReady=false;}
   };
-  worker.onerror=e=>{clearTimeout(timer);locked(false);appendText('Python worker error: '+e.message,'error');worker?.terminate();worker=null;workerReady=false;status('Python stopped');};
+  worker.onerror=e=>{clearTimeout(timer);locked(false);appendText('Python worker error: '+e.message,'error');worker?.terminate();worker=null;workerReady=false;status('Python stopped', 'offline');};
   worker.postMessage({type:'init',assets:course.assets,path:lesson.id});
 }
 function run(){
@@ -206,8 +188,8 @@ function run(){
   timer=setTimeout(()=>appendText('This run is taking longer than usual. You can stop it at any time.','muted'),60000);
 }
 $('run').onclick=run;
-$('stop').onclick=()=>{worker?.terminate();worker=null;workerReady=false;clearTimeout(timer);locked(false);status('Stopped — Run starts a fresh Python session');appendText('Stopped. Drafts kept; runtime variables and uploads cleared.','muted');};
-$('reset-runtime').onclick=()=>{if(busy)$('stop').click();else{worker?.terminate();worker=null;workerReady=false;status('Python will restart on the next run');appendText('Runtime cleared. Saved drafts are unchanged.','muted');}};
+$('stop').onclick=()=>{worker?.terminate();worker=null;workerReady=false;clearTimeout(timer);locked(false);status('Stopped — Run starts a fresh Python session', 'offline');appendText('Stopped. Drafts kept; runtime variables and uploads cleared.','muted');};
+$('reset-runtime').onclick=()=>{if(busy)$('stop').click();else{worker?.terminate();worker=null;workerReady=false;status('Python will restart on the next run', 'offline');appendText('Runtime cleared. Saved drafts are unchanged.','muted');}};
 $('reset-code').onclick=()=>{if(confirm('Reset this draft to its starting code? Other drafts are kept.')){$('code').value=entries().find(x=>x.id===active)?.code || '# Write your Python here.\n';$('notes').value='';persist();}};
 $('code').onkeydown=e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();run();}if(e.key==='Tab'){e.preventDefault();const el=e.target;el.setRangeText('    ',el.selectionStart,el.selectionEnd,'end');persist();}};
 for(const id of ['code','notes','stdin']) $(id).oninput=()=>{clearTimeout(draftTimer);draftTimer=setTimeout(persist,250);};
@@ -233,17 +215,11 @@ $('download-file').onclick=()=>{if(!worker || busy){appendText('Run Python first
 
 // Layout toggle listeners
 $('toggle-sidebar').onclick=()=>toggleSidebar();
-$('collapse-sidebar').onclick=()=>toggleSidebar(false);
-$('sidebar-restore-tab').onclick=()=>toggleSidebar(true);
-$('reopen-sidebar-btn').onclick=()=>toggleSidebar(true);
 
 $('toggle-workspace').onclick=()=>toggleWorkspace();
-$('lab-collapse-btn').onclick=()=>toggleWorkspace(false);
-$('workspace-restore-tab').onclick=()=>toggleWorkspace(true);
 $('toggle-reading-focus').onclick=()=>toggleWorkspace(layoutState.workspaceCollapsed);
 
 $('zoom-workspace').onclick=()=>toggleWorkspaceZoom();
-$('lab-zoom-btn').onclick=()=>toggleWorkspaceZoom();
 
 // Keyboard Shortcuts: Alt+S (Sidebar), Alt+W (Workspace), Alt+Z (Zoom)
 window.addEventListener('keydown', e => {
@@ -264,4 +240,4 @@ window.addEventListener('keydown', e => {
 // Apply initial layout state
 applyLayout();
 window.addEventListener('hashchange',()=>route());
-try{const response=await fetch('generated/course.json');if(!response.ok)throw Error('Course content has not been built. Run ./start_sandbox.sh from the repository.');course=await response.json();$('book-link').href=course.book_url;await route();}catch(e){$('lesson').textContent=e.message;status('Course loading failed');}
+try{const response=await fetch('generated/course.json');if(!response.ok)throw Error('Course content has not been built. Run ./start_sandbox.sh from the repository.');course=await response.json();$('book-link').href=course.book_url;await route();}catch(e){$('lesson').textContent=e.message;status('Course loading failed', 'offline');}

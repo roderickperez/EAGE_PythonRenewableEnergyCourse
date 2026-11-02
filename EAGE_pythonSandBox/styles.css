@@ -330,3 +330,110 @@ mjx-container{max-width:100%}
   .reading{border-top:1px solid var(--line)}
   article h1{font-size:28px}
 }
+
+/* EAGE refresh */
+:root{--green:#008f71;--green-hover:#006d56;--green-active:#ddf3ec;--line:#dce9e3;--muted:#61766e;color:#193c35;background:#eef4f0}
+body{background:#eef4f0}
+button,.file-button,input,select,textarea{border-radius:9px}
+button,.file-button{border-color:#d1e2d9;color:#205346;font-weight:600;transition:background .15s ease,border-color .15s ease,box-shadow .15s ease}
+button:hover,.file-button:hover{background:#e5f4ed;border-color:#9acdb9}
+a{color:#00775f}
+.topbar{height:78px;padding:12px 24px;background:#fff;border-bottom:1px solid #dce9e3;box-shadow:0 3px 18px rgba(21,64,48,.04)}
+.brand{font-size:13px;letter-spacing:1.4px;color:#143c32}
+.brand img{width:54px;height:48px}
+.brand small{letter-spacing:0;color:#71847c;font-size:11px}
+.top-actions{gap:12px}
+#book-link{font-weight:650;text-decoration:none}
+#python-status{background:#eaf6f0;color:#41665a;font-size:11px}
+.view-toggles{background:#f1f6f3;border:0;padding:4px;border-radius:10px}
+.view-toggles .panel-toggle-btn.active{border-color:transparent;color:#00775f;box-shadow:0 2px 8px rgba(22,67,48,.1)}
+.panel-toggle-btn{border-radius:8px}
+.layout{grid-template-columns:235px minmax(340px,1fr) minmax(360px,.85fr);gap:12px;padding:12px;background:#eef4f0}
+.navigation,.reading,.lab{border:1px solid #dce9e3;border-radius:14px;box-shadow:0 3px 14px rgba(28,74,53,.04)}
+.navigation{background:#f9fcfa;padding:20px 14px}
+.nav-header label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#587367}
+#search{margin:10px 0 12px;background:#fff;padding:10px;border-color:#d9e8e0}
+.quick-links{margin-bottom:20px}
+.quick-links button{flex:1;background:#eaf6ef;color:#006f57;border:0;font-weight:700}
+nav details{margin:4px 0}
+nav summary{padding:10px 8px;border-radius:8px;color:#36594d}
+nav summary:hover{background:#eff7f2}
+nav button{border-radius:8px;padding:9px 11px}
+nav button.active{background:#dff3e9;color:#006e56;border-left:3px solid #008f71}
+.reading{background:#fff}
+.lesson-bar{position:sticky;top:0;z-index:2;background:rgba(255,255,255,.96);padding:14px 28px;color:#668074;font-weight:650;backdrop-filter:blur(8px)}
+#lesson-outline{padding:16px 28px 0}
+#lesson-outline select{background:#f8fbf9;border-color:#e0ebe5}
+article{padding:12px 38px 80px;line-height:1.8;color:#304b41}
+article h1{font-family:Inter,Segoe UI,system-ui,sans-serif;color:#123e31;font-size:clamp(26px,2.2vw,35px);font-weight:750;letter-spacing:-.035em;line-height:1.18}
+article h2{color:#154a3a;font-size:21px;letter-spacing:-.02em}
+article h3{color:#215341}
+article pre{border-radius:10px;background:#f4f8f5}
+article th{background:#eaf6ef}
+.lab{background:#f8fcf9;padding:22px;border-left:1px solid #dce9e3}
+.eyebrow{color:#008f71;letter-spacing:.14em}
+.lab h2{font-size:19px;letter-spacing:-.025em;color:#173e32}
+.lab-note,.privacy-note,.tools p{color:#61766e}
+#workspace-select{background:#fff;border-color:#d6e7dd}
+#code{margin-top:8px;background:#008f71;color:#fff;border:1px solid #00765e;border-radius:11px;padding:18px;box-shadow:inset 0 1px 4px rgba(0,54,42,.12);caret-color:#fff;font-size:14px;font-weight:600}
+#code::selection{background:#c5eee1;color:#082e25}
+.primary{background:#00785f;color:#fff;border-color:#00785f}
+.primary:hover{background:#005d49;color:#fff}
+.runbar{gap:8px;margin:12px 0 15px}
+.runbar button{padding:9px 11px}
+.tools,.notes,.output-heading{border-color:#dfebe4}
+#output{border-radius:10px;border-color:#dce9e3;box-shadow:0 2px 8px rgba(28,74,53,.03)}
+.edge-tab{background:#00785f;border-color:#00654f}
+.layout.sidebar-collapsed{grid-template-columns:0 minmax(340px,1fr) minmax(360px,.85fr)}
+.layout.workspace-collapsed{grid-template-columns:235px 1fr 0}
+.layout.sidebar-collapsed.workspace-collapsed{grid-template-columns:0 1fr 0}
+.layout.workspace-zoomed{grid-template-columns:0 0 1fr}
+@media(min-width:1700px){
+ .layout{grid-template-columns:260px minmax(550px,1fr) minmax(480px,.85fr)}
+ .layout.workspace-collapsed{grid-template-columns:260px 1fr 0}
+ .layout.sidebar-collapsed{grid-template-columns:0 minmax(550px,1fr) minmax(480px,.85fr)}
+ .layout.sidebar-collapsed.workspace-collapsed{grid-template-columns:0 1fr 0}
+ .layout.workspace-zoomed{grid-template-columns:0 0 1fr}
+}
+@media(max-width:1050px){
+ .layout{grid-template-columns:190px minmax(0,1fr);grid-template-areas:'nav reading' 'nav lab';height:auto}
+ .layout.sidebar-collapsed{grid-template-columns:0 minmax(0,1fr);grid-template-areas:'nav reading' 'nav lab'}
+ .layout.workspace-collapsed{grid-template-columns:190px minmax(0,1fr)}
+ .layout.sidebar-collapsed.workspace-collapsed{grid-template-columns:0 minmax(0,1fr)}
+ .layout.workspace-zoomed{grid-template-columns:0 minmax(0,1fr)}
+ .navigation{height:calc(100vh - 102px);top:12px}
+ .lab{grid-column:2}
+}
+@media(max-width:650px){
+ .topbar{height:auto;padding:12px 14px}
+ .brand-group{width:100%}
+ .top-actions{gap:8px}
+ .layout{display:block;padding:8px}
+ .navigation,.reading,.lab{margin-bottom:8px;border-radius:12px}
+ .navigation{height:auto;position:static}
+ .lesson-bar{position:static;padding:12px 16px;flex-wrap:wrap}
+ #lesson-outline{padding:12px 16px 0}
+ article{padding:8px 20px 36px}
+ article h1{font-size:27px}
+ .lab{padding:18px}
+ .layout.workspace-zoomed .lab{padding:18px}
+}
+
+
+/* Minimal sidebar toggle */
+#toggle-sidebar,#toggle-sidebar.active{border:0;background:transparent;box-shadow:none;padding:8px;color:#145441}
+#toggle-sidebar:hover{background:#eaf6ef}
+#toggle-sidebar .btn-icon{font-size:20px}
+
+/* Compact header links and Python runtime indicator */
+.header-icon{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;color:#12624e;border-radius:9px;text-decoration:none}
+.header-icon:hover{background:#e8f5ee;color:#006d56}
+.header-icon svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.colab-link svg{width:27px;fill:currentColor;stroke:none}
+
+#python-status.python-indicator{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;padding:6px;background:#f3f7f4;border-radius:10px;color:#c33a3a}
+#python-status.python-indicator[data-state="loading"]{color:#d57800}
+#python-status.python-indicator[data-state="ready"]{color:#008f71}
+.python-indicator svg{width:26px;height:26px;fill:currentColor}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:1050px){.top-actions #python-status.python-indicator{display:inline-flex}}

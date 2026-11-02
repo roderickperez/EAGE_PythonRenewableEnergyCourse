@@ -6,17 +6,16 @@
 <title>EAGE · Renewable Energy Python Sandbox</title>
 <meta name="description" content="Study the EAGE renewable-energy course and write Python in your browser. Includes 100 exercises, quizzes, assessment and a hybrid-energy project.">
 <link rel="icon" href="eagelogo.jpg">
-<link rel="stylesheet" href="styles.css?v=2">
+<link rel="stylesheet" href="styles.css?v=7">
 <script>window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};</script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
-<script type="module" src="app.js?v=2"></script>
+<script type="module" src="app.js?v=6"></script>
 </head>
 <body>
 <header class="topbar">
   <div class="brand-group">
     <button id="toggle-sidebar" class="panel-toggle-btn active" title="Toggle lessons sidebar" aria-label="Toggle lessons sidebar" aria-pressed="true">
       <span class="btn-icon">☰</span>
-      <span class="btn-text">Sidebar</span>
     </button>
     <a class="brand" href="#"><img src="eagelogo.jpg" alt="EAGE"><span>PYTHON SANDBOX<small>Renewable energy · learn, practise, build</small></span></a>
   </div>
@@ -31,24 +30,18 @@
         <span class="btn-text" id="zoom-text">Zoom In</span>
       </button>
     </div>
-    <a id="book-link" target="_blank" rel="noopener">Open course book ↗</a>
+    <a id="book-link" class="header-icon" target="_blank" rel="noopener" aria-label="Open course book" title="Open course book"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5c-2.5-2-5.5-2.3-9-1.2v13c3.5-1.1 6.5-.8 9 1.2m0-13c2.5-2 5.5-2.3 9-1.2v13c-3.5-1.1-6.5-.8-9 1.2m0-13v13"/></svg></a>
+    <a class="header-icon colab-link" href="https://colab.research.google.com/" target="_blank" rel="noopener" aria-label="Open Google Colab" title="Open Google Colab"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.9414 4.9757a7.033 7.033 0 0 0-4.9308 2.0646 7.033 7.033 0 0 0-.1232 9.8068l2.395-2.395a3.6455 3.6455 0 0 1 5.1497-5.1478l2.397-2.3989a7.033 7.033 0 0 0-4.8877-1.9297zM7.07 4.9855a7.033 7.033 0 0 0-4.8878 1.9316l2.3911 2.3911a3.6434 3.6434 0 0 1 5.0227.1271l1.7341-2.9737-.0997-.0802A7.033 7.033 0 0 0 7.07 4.9855zm15.0093 2.1721l-2.3892 2.3911a3.6455 3.6455 0 0 1-5.1497 5.1497l-2.4067 2.4068a7.0362 7.0362 0 0 0 9.9456-9.9476zM1.932 7.1674a7.033 7.033 0 0 0-.002 9.6816l2.397-2.397a3.6434 3.6434 0 0 1-.004-4.8916zm7.664 7.4235c-1.38 1.3816-3.5863 1.411-5.0168.1134l-2.397 2.395c2.4693 2.3328 6.263 2.5753 9.0072.5455l.1368-.1115z"/></svg></a>
     <button id="help-button">How to use</button>
-    <span id="python-status" role="status">Python starts when you run code</span>
+    <span id="python-status" class="python-indicator" role="status" aria-label="Python not loaded" title="Python not loaded" data-state="offline"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5c-4.4 0-4.2 1.9-4.2 1.9v2h4.3v.6H6.2S3 5.7 3 10.1s2.8 4.2 2.8 4.2h1.7v-2.4s-.1-2.8 2.8-2.8h4.8s2.7 0 2.7-2.7V4.1S18.2 1.5 12 1.5zM9.7 3.3a.8.8 0 1 1 0 1.6.8.8 0 0 1 0-1.6z"/><path d="M12 22.5c4.4 0 4.2-1.9 4.2-1.9v-2h-4.3V18h5.9s3.2.3 3.2-4.1-2.8-4.2-2.8-4.2h-1.7v2.4s.1 2.8-2.8 2.8H8.9s-2.7 0-2.7 2.7v2.3s-.4 2.6 5.8 2.6zm2.3-1.8a.8.8 0 1 1 0-1.6.8.8 0 0 1 0 1.6z"/></svg><span class="sr-only">Python not loaded</span></span>
   </div>
 </header>
 <div class="layout" id="layout">
   <!-- Docked edge restore tabs when panels are collapsed -->
-  <button id="sidebar-restore-tab" class="edge-tab edge-tab-left" title="Expand lessons sidebar" aria-label="Expand sidebar" style="display:none;">
-    <span>☰ Lessons ▶</span>
-  </button>
-  <button id="workspace-restore-tab" class="edge-tab edge-tab-right" title="Expand Python workspace" aria-label="Expand workspace" style="display:none;">
-    <span>◀ Workspace</span>
-  </button>
 
   <aside class="navigation" id="navigation" aria-label="Course navigation">
     <div class="nav-header">
       <label for="search">Find a lesson</label>
-      <button id="collapse-sidebar" class="collapse-icon-btn" title="Collapse sidebar" aria-label="Collapse sidebar">◀</button>
     </div>
     <input id="search" type="search" placeholder="Solar, pandas, assessment…">
     <div class="quick-links"><button data-jump="section7/renewableEnergyTest.md">Assessment</button><button data-jump="section8/projectIntro.md">Final project</button></div>
@@ -58,7 +51,6 @@
   <main class="reading" id="reading">
     <div class="lesson-bar">
       <div class="lesson-bar-left">
-        <button id="reopen-sidebar-btn" class="mini-reopen-btn" title="Show lessons sidebar" style="display:none;">☰ Lessons</button>
         <span id="breadcrumb">Welcome</span>
       </div>
       <div class="lesson-bar-right">
@@ -74,8 +66,6 @@
       <div><span class="eyebrow">YOUR WORKSPACE</span><h2 id="workspace-title">Free practice</h2></div>
       <div class="lab-controls">
         <span id="saved" role="status">Saved on this browser</span>
-        <button id="lab-zoom-btn" class="lab-action-btn" title="Zoom in to full workspace / Zoom out" aria-label="Zoom workspace">⤢ Zoom</button>
-        <button id="lab-collapse-btn" class="lab-action-btn" title="Collapse workspace" aria-label="Collapse workspace">❯</button>
       </div>
     </div>
     <label for="workspace-select">Saved work in this lesson</label><select id="workspace-select"></select>
