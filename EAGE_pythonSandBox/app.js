@@ -90,8 +90,8 @@ function key(id = active) { return `${lesson.id}::${id}`; }
 function persist() {
   if (!lesson) return;
   saved[key()] = {code: $('code').value, notes: $('notes').value, stdin: $('stdin').value, title: $('workspace-title').textContent};
-  try { localStorage.setItem(STORAGE, JSON.stringify(saved)); $('saved').textContent = 'Saved on this browser'; }
-  catch { $('saved').textContent = 'Storage full or unavailable — export your work'; }
+  try { localStorage.setItem(STORAGE, JSON.stringify(saved)); $('saved').textContent = 'Saved on this browser'; $('saved').classList.remove('save-error'); }
+  catch { $('saved').textContent = 'Storage full or unavailable — export your work'; $('saved').classList.add('save-error'); }
 }
 function entries() {
   return [{id:'draft', title:'My lesson workspace'}, ...lesson.workspaces,

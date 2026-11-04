@@ -442,3 +442,6 @@ article th{background:#eaf6ef}
 #help-button.help-icon{border:0;background:transparent;box-shadow:none;padding:0;font-size:23px;font-weight:600;line-height:1}
 #help-button.help-icon:hover{background:#e8f5ee}
 #help-button.help-icon:focus-visible{outline:2px solid #006d56;outline-offset:2px}
+
+/* Keep the save status accessible; show it visually when saving fails. */
+#saved:not(.save-error){position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
