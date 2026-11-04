@@ -203,7 +203,7 @@ $('lesson').onclick=e=>{
   if(window.innerWidth<1050)$('code').scrollIntoView({block:'center'});
 };
 $('workspace-select').onchange=e=>selectWork(e.target.value);
-$('own-work').onclick=()=>{ensureWorkspaceVisible();selectWork('draft');};$('search').oninput=renderNav;
+$('own-work').onclick=()=>{ensureWorkspaceVisible();selectWork('draft');if(window.innerWidth<=1050)$('lab').scrollIntoView({block:'start',behavior:'smooth'});};$('search').oninput=renderNav;
 document.querySelectorAll('[data-jump]').forEach(b=>b.onclick=()=>navigate(b.dataset.jump));
 $('help-button').onclick=()=>$('help').showModal();
 $('clear-output').onclick=()=>$('output').replaceChildren();
@@ -216,10 +216,10 @@ $('download-file').onclick=()=>{if(!worker || busy){appendText('Run Python first
 // Layout toggle listeners
 $('toggle-sidebar').onclick=()=>toggleSidebar();
 
-$('toggle-workspace').onclick=()=>toggleWorkspace();
+$('toggle-workspace').onclick=()=>{toggleWorkspace();if(window.innerWidth<=1050&&!layoutState.workspaceCollapsed)$('lab').scrollIntoView({block:'start',behavior:'smooth'});};
 $('toggle-reading-focus').onclick=()=>toggleWorkspace(layoutState.workspaceCollapsed);
 
-$('zoom-workspace').onclick=()=>toggleWorkspaceZoom();
+$('zoom-workspace').onclick=()=>{toggleWorkspaceZoom();if(window.innerWidth<=1050&&layoutState.workspaceZoomed)$('lab').scrollIntoView({block:'start',behavior:'smooth'});};
 
 // Keyboard Shortcuts: Alt+S (Sidebar), Alt+W (Workspace), Alt+Z (Zoom)
 window.addEventListener('keydown', e => {
