@@ -1,0 +1,49 @@
+name: Publish course to personal hub
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: publish-course-python-renewable
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository_owner == 'roderickperez'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out course source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - name: Install course build dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Build and validate student course
+        run: |
+          python tools/build_sandbox.py
+          python tools/validate_sandbox.py
+          python tools/validate_course.py
+      - name: Check publishing setup
+        id: publishing
+        env:
+          COURSE_PUBLISHER_EMAIL: ${{ secrets.COURSE_PUBLISHER_EMAIL }}
+          COURSE_PUBLISHER_PASSWORD: ${{ secrets.COURSE_PUBLISHER_PASSWORD }}
+        run: |
+          if [ -n "$COURSE_PUBLISHER_EMAIL" ] && [ -n "$COURSE_PUBLISHER_PASSWORD" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Course publishing is not configured yet."
+          fi
+      - name: Publish course
+        if: steps.publishing.outputs.ready == 'true'
+        env:
+          COURSE_PUBLISHER_EMAIL: ${{ secrets.COURSE_PUBLISHER_EMAIL }}
+          COURSE_PUBLISHER_PASSWORD: ${{ secrets.COURSE_PUBLISHER_PASSWORD }}
+        run: python tools/publish_rpa_site.py --course python-renewable --root EAGE_pythonSandBox
