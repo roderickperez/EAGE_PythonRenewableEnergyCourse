@@ -138,6 +138,21 @@ async function route() {
     stopMedia();persist();lesson=next;active='draft';
     $('output').replaceChildren();
     $('breadcrumb').textContent=lesson.group;
+    const notebookPaths = {
+      "section0/introRenewableEnergy.md": "EAGE_PythonRenewableEnergyCourse/section0/introRenewableEnergy.ipynb",
+      "section5/download-to-database.md": "EAGE_PythonRenewableEnergyCourse/section5/download-to-database.ipynb",
+      "section5/world-energy-download.md": "EAGE_PythonRenewableEnergyCourse/section5/world-energy-download.ipynb",
+      "section5/SQL_Pandas.ipynb": "EAGE_PythonRenewableEnergyCourse/section5/SQL_Pandas.ipynb",
+      "section6/hydroelectricEnergy.md": "EAGE_PythonRenewableEnergyCourse/section6/hydroelectricEnergy.ipynb",
+      "section6/solarEnergy.md": "EAGE_PythonRenewableEnergyCourse/section6/solarEnergy.ipynb",
+      "section6/windEnergy.md": "EAGE_PythonRenewableEnergyCourse/section6/windEnergy.ipynb",
+      "section6/geothermalEnergy.md": "EAGE_PythonRenewableEnergyCourse/section6/geothermalEnergy.ipynb"
+    };
+    const notebookPath = notebookPaths[lesson.id];
+    const colabButton = $('lesson-colab');
+    colabButton.disabled = !notebookPath;
+    colabButton.title = notebookPath ? 'Open this lesson in Google Colab' : 'No Google Colab notebook available for this lesson';
+    colabButton.onclick = notebookPath ? () => window.open('https://colab.research.google.com/github/roderickperez/EAGE_PythonRenewableEnergyCourse/blob/main/' + notebookPath, '_blank', 'noopener,noreferrer') : null;
     $('lesson').innerHTML=lesson.html;
     setupMedia();
     if(lesson.assessment || lesson.project){const banner=document.createElement('p');banner.className='assessment-banner';banner.textContent='Questions and requirements only. Use the dedicated workspace buttons to write and save your own answers. No reference solution is included.';$('lesson').prepend(banner);}
