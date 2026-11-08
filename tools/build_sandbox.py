@@ -6,6 +6,7 @@ static: practice disclosures use native details, and every Python cell is editab
 from __future__ import annotations
 
 import argparse
+from course_media import attach_media
 import ast
 import hashlib
 import html
@@ -254,43 +255,11 @@ class Builder:
                 'assessment': relative == ASSESSMENT, 'project': relative == PROJECT,
                 'source_sha256': hashlib.sha256((BOOK / relative).read_bytes()).hexdigest()}
 
-    def add_media(self, pages):
-        """Copy explicitly mapped, participant-safe narration and video into the build."""
-        manifest = SANDBOX / 'media.json'
-        if not manifest.exists():
-            return
-        mapping = json.loads(manifest.read_text(encoding='utf-8'))
-        by_id = {page['id']: page for page in pages}
-        for page_id, entry in mapping.items():
-            if page_id not in by_id or not isinstance(entry, dict) or set(entry) - {'audio', 'video'}:
-                raise ValueError(f'Invalid media entry: {page_id}')
-            page = by_id[page_id]
-            heading_ids = {h.get('id') for h in BeautifulSoup(page['html'], 'html.parser').select('h2[id]')}
-            def copy_media(value, extensions):
-                if not isinstance(value, str):
-                    raise ValueError(f'Invalid media path for {page_id}')
-                root = (SANDBOX / 'media').resolve()
-                source = (root / value).resolve()
-                if not source.is_relative_to(root) or not source.is_file() or source.suffix.lower() not in extensions:
-                    raise ValueError(f'Missing or invalid media file: {value}')
-                rel = source.relative_to(root)
-                target = OUT / 'media' / rel
-                target.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copyfile(source, target)
-                return 'generated/media/' + quote(rel.as_posix())
-            audio = entry.get('audio', {})
-            if not isinstance(audio, dict) or set(audio) - (heading_ids | {'intro'}):
-                raise ValueError(f'Invalid audio section for {page_id}')
-            media = {'audio': {key: copy_media(value, {'.mp3', '.wav', '.ogg', '.m4a'}) for key, value in audio.items()}}
-            if entry.get('video'):
-                media['video'] = copy_media(entry['video'], {'.mp4', '.webm', '.ogv'})
-            page['media'] = media
-
     def build(self):
         OUT.mkdir(exist_ok=True)
         self.asset(BOOK / 'myst.yml')
         pages = [self.page(path, group) for path, group in self.pages]
-        self.add_media(pages)
+        attach_media(pages, SANDBOX)
         # Data are fetched on demand into the worker, retaining book-relative paths.
         for path in BOOK.rglob('*'):
             if path.suffix in {'.csv', '.xlsx', '.db', '.nc', '.geojson', '.json'} and '_build' not in path.parts:

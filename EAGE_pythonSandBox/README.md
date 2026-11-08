@@ -112,25 +112,4 @@ Runtime documentation: [Pyodide workers](https://pyodide.org/en/stable/usage/web
 [package loading](https://pyodide.org/en/stable/usage/loading-packages.html), and
 [GitHub Pages workflows](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
 
-## Lesson media
-
-Place participant-safe recordings under `EAGE_pythonSandBox/media/` and map them
-in `EAGE_pythonSandBox/media.json`. Keys are the lesson's book-relative ID and
-the rendered `h2` heading IDs. An optional `intro` audio file plays before the
-sections; `video` is optional. For example:
-
-```json
-{
-  "welcome.md": {
-    "audio": {"intro": "welcome/intro.mp3", "course-description": "welcome/description.mp3"},
-    "video": "welcome/overview.mp4"
-  }
-}
-```
-
-Use actual lesson and heading IDs from `generated/course.json`. The build rejects
-missing files and unknown headings. A section microphone plays its recording;
-the top audio button plays the intro (if supplied) and each section in page order,
-and is enabled only when every section has a recording. Video remains disabled
-unless mapped. Media is included in the participant build, so do not add private
-or instructor-only recordings.
+See [MEDIA.md](MEDIA.md) for adding lesson audio and video.

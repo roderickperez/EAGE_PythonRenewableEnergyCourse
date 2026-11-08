@@ -174,7 +174,9 @@ function playNextAudio(){
 $('audio-player').addEventListener('ended',()=>{audioIndex++;playNextAudio();});
 $('audio-player').addEventListener('error',()=>{if(audioQueue.length) $('media-status').textContent='Audio could not be loaded.';});
 function setupMedia(){
-  const audio=lesson.media?.audio || {}; const headings=[...$('lesson').querySelectorAll('h2[id]')];
+  const lang=document.documentElement.lang === 'es' ? 'es' : 'en';
+  const configured=lesson.media?.audio || {};
+  const audio=configured.en || configured.es ? (configured[lang] || {}) : (lang === 'en' ? configured : {}); const headings=[...$('lesson').querySelectorAll('h2[id]')];
   const items=[];
   if(audio.intro) items.push({url:audio.intro,title:lesson.title});
   for(const heading of headings){
@@ -186,8 +188,8 @@ function setupMedia(){
   }
   const all=$('lesson-audio'); all.disabled=!headings.length || headings.some(h=>!audio[h.id]);
   all.onclick=()=>playAudio(items);
-  const video=$('lesson-video');video.disabled=!lesson.media?.video;
-  video.onclick=()=>{if(!lesson.media?.video)return;stopMedia();$('media-player').hidden=false;$('audio-player').hidden=true;const player=$('video-player');player.hidden=false;player.src=lesson.media.video;player.play().catch(()=>{$('media-status').textContent='Press play to watch the video.';});};
+  const video=$('lesson-video');const videoUrl=typeof lesson.media?.video === 'string' ? (lang === 'en' ? lesson.media.video : null) : lesson.media?.video?.[lang];video.disabled=!videoUrl;
+  video.onclick=()=>{if(!videoUrl)return;stopMedia();$('media-player').hidden=false;$('audio-player').hidden=true;const player=$('video-player');player.hidden=false;player.src=videoUrl;player.play().catch(()=>{$('media-status').textContent='Press play to watch the video.';});};
 }
 function appendText(text, className='') {const p=document.createElement('pre');p.textContent=text;p.className=className;$('output').append(p);}
 function download(name, data, type='text/plain') {
