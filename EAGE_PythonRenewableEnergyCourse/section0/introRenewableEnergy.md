@@ -1,5 +1,9 @@
 # Introduction to Renewable Energy
 
+## Python preparation
+
+Review programming fundamentals, notebooks and scientific libraries in the [Python Course](https://roderickperezaltamar.com/private-course/eage-python-course/index.html). Separate course access may be required.
+
 ## Energy, power and units
 
 Energy measures an amount transferred or stored; power measures its rate. Instantaneous power is $P=dE/dt$. For constant or interval-average power, $E=P\Delta t$; for a time series, $E=\sum_iP_i\Delta t_i$. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units). Unit definitions/conversions: [NIST SP 811, Appendix B](https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors).

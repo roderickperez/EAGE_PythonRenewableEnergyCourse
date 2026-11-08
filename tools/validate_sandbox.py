@@ -10,13 +10,16 @@ from pathlib import Path
 from urllib.parse import unquote, urlsplit, parse_qs
 
 from bs4 import BeautifulSoup
-from build_sandbox import BOOK, OUT, ROOT, ASSESSMENT, PROJECT, toc_pages
+from build_sandbox import BOOK, OUT, ROOT, ASSESSMENT, PROJECT, toc_pages, Builder
 
 
 def validate():
     payload = json.loads((OUT / 'course.json').read_text())
     pages = {p['id']: p for p in payload['pages']}
-    assert set(pages) == {p for p, _ in toc_pages()}, 'Missing book pages'
+    assert set(pages) == {p for p, _ in Builder().pages}, 'Missing book pages'
+    removed = {'Introduction to Python Programming', 'IDE & Notebooks', 'Python Basics', 'Python Libraries', 'Data Processing and Exploration Data Analysis'}
+    assert not any(page['group'] in removed for page in pages.values())
+    assert 'private-course/eage-python-course/index.html' in pages['courseIntro.md']['html']
     for path, page in pages.items():
         assert page['source_sha256'] == hashlib.sha256((BOOK/path).read_bytes()).hexdigest(), f'Stale content: {path}'
         soup = BeautifulSoup(page['html'], 'html.parser')

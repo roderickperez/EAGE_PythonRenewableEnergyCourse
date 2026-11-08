@@ -16,9 +16,15 @@ Start with the [learning guide](learningGuide.md), use the [100-exercise chapter
 This course develops practical Python skills for analysing renewable-energy data. It connects programming fundamentals with energy datasets, exploratory analysis, SQL, time-series methods, and engineering calculations for hydroelectric, solar, wind, and geothermal systems.
 Starting with Python programming, participants learn to load, validate, analyse, visualise, and store real energy data. The course introduces reproducible time-series analysis and predictive modelling, while keeping the distinction between measured data, engineering estimates, and model forecasts explicit.
 
-Participants do not need prior Python experience. Exercises can run in Google Colab or in the reproducible local environment documented with the repository.
+Participants can review programming fundamentals, notebooks and scientific libraries in the [Python Course](https://roderickperezaltamar.com/private-course/eage-python-course/index.html). Separate course access may be required. Exercises can run in Google Colab or in the reproducible local environment documented with the repository.
 
-## How the browser sandbox was made
+## Python preparation
+
+The [Python Course](https://roderickperezaltamar.com/private-course/eage-python-course/index.html) provides the shared programming foundation for this course.
+
+(how-the-browser-sandbox-was-made)=
+
+## How the Python Sandbox works
 
 The [Python sandbox](https://roderickperez.github.io/EAGE_PythonRenewableEnergyCourse/sandbox/) combines the course's Markdown and Jupyter notebook lessons with an HTML, CSS and JavaScript interface. A build script turns the public course content into the lessons, examples and exercises you see here. The code editor sends your Python to [Pyodide](https://pyodide.org/), the technology that makes it run directly in your browser without installing Python on your computer.
 
@@ -380,3 +386,10 @@ roderickperezaltamar@gmail.com
 [**Maria Paula Bohorquez**](mailto:mtz@eage.org)
 
 Community Manager
+
+
+### Course contacts
+
+- Alexandra La Rocca: [aca@eage.org](mailto:aca@eage.org)
+- Ilaria Meggetto: [imo@eage.org](mailto:imo@eage.org)
+- Isabela Osorio: [ioo@eage.org](mailto:ioo@eage.org)

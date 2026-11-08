@@ -62,7 +62,10 @@ def toc_pages():
 
 class Builder:
     def __init__(self):
-        self.pages = toc_pages()
+        excluded = {'Introduction to Python Programming', 'IDE & Notebooks', 'Python Basics',
+                    'Python Libraries', 'Data Processing and Exploration Data Analysis'}
+        self.pages = [(path, group) for path, group in toc_pages() if group not in excluded]
+        self.python_pages = {path for path, group in toc_pages() if group in excluded and not path.startswith('section4/') and not path.startswith('data/examples/')}
         self.page_ids = {p for p, _ in self.pages}
         self.assets = {}
         parser = bibtexparser.bparser.BibTexParser(common_strings=True)
@@ -241,7 +244,9 @@ class Builder:
                 continue
             target = ((BOOK / relative).parent / unquote(parts.path)).resolve()
             rel = target.relative_to(BOOK).as_posix() if target.is_relative_to(BOOK) else ''
-            if rel in self.page_ids:
+            if rel in self.python_pages:
+                tag[attr] = 'https://roderickperezaltamar.com/private-course/eage-python-course/index.html#lesson=' + quote(rel, safe='') + ('&anchor=' + parts.fragment if parts.fragment else '')
+            elif rel in self.page_ids:
                 tag[attr] = '#lesson=' + quote(rel, safe='') + ('&anchor=' + parts.fragment if parts.fragment else '')
             elif link := self.asset(target):
                 tag[attr] = link
