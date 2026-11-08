@@ -6,10 +6,10 @@
 <title>EAGE · Renewable Energy Python Sandbox</title>
 <meta name="description" content="Study the EAGE renewable-energy course and write Python in your browser. Includes 100 exercises, quizzes, assessment and a hybrid-energy project.">
 <link rel="icon" href="eagelogo.jpg">
-<link rel="stylesheet" href="styles.css?v=unified-20261104">
+<link rel="stylesheet" href="styles.css?v=media-20261108">
 <script>window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};</script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
-<script type="module" src="app.js?v=mobile-20261104"></script>
+<script type="module" src="app.js?v=media-20261108"></script>
 </head>
 <body>
 <header class="topbar">
@@ -56,11 +56,11 @@
         <span id="breadcrumb">Welcome</span>
       </div>
       <div class="lesson-bar-right">
-        <button type="button" disabled aria-describedby="media-coming-soon">Audio</button>
-        <button type="button" disabled aria-describedby="media-coming-soon">Video</button>
-        <span id="media-coming-soon">Coming soon</span>
+        <button type="button" id="lesson-audio" class="media-button" disabled aria-label="Play all section audio" title="Play all section audio"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4zm12-1a5 5 0 0 1 0 8m2-11a9 9 0 0 1 0 14"/></svg></button>
+        <button type="button" id="lesson-video" class="media-button" disabled aria-label="Play lesson video" title="Play lesson video"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h13v12H3zM16 10l5-3v10l-5-3z"/></svg></button>
       </div>
     </div>
+    <div id="media-player" hidden><audio id="audio-player" controls></audio><video id="video-player" controls playsinline hidden></video><span id="media-status" role="status"></span></div>
     <div id="lesson-outline"></div>
     <article id="lesson"><h1>Learn the physics.<br>Explore it with Python.</h1><p>Loading the course content…</p></article>
   </main>

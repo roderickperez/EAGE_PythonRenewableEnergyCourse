@@ -135,10 +135,11 @@ async function route() {
   const next=course.pages.find(p=>p.id===params.get('lesson')) || course.pages[0];
   if(lesson?.id!==next.id){
     if(busy){location.hash='lesson='+encodeURIComponent(lesson.id);appendText('Stop the current program before changing lessons.','error');return;}
-    persist();lesson=next;active='draft';
+    stopMedia();persist();lesson=next;active='draft';
     $('output').replaceChildren();
     $('breadcrumb').textContent=lesson.group;
     $('lesson').innerHTML=lesson.html;
+    setupMedia();
     if(lesson.assessment || lesson.project){const banner=document.createElement('p');banner.className='assessment-banner';banner.textContent='Questions and requirements only. Use the dedicated workspace buttons to write and save your own answers. No reference solution is included.';$('lesson').prepend(banner);}
     if(lesson.project){const note=document.createElement('p');note.className='callout';note.textContent='Sandbox dataset location: data/solar.csv, data/wind.csv, data/hydro.csv, data/geothermal.csv and data/demand.csv. These five separate files are loaded automatically into Python when you run code. Each project section has its own saved draft; the main workspace can hold your complete program.';$('lesson').prepend(note);}
     // Avoid persisting the preceding lesson's editor into this new lesson.
@@ -153,6 +154,40 @@ async function route() {
     if(window.MathJax?.typesetPromise) await window.MathJax.typesetPromise([$('lesson')]).catch(()=>{});
   }
   if(params.get('anchor')) document.getElementById(params.get('anchor'))?.scrollIntoView({block:'start'});
+}
+// Media URLs come only from the validated build manifest. One player owns each queue.
+let audioQueue = [], audioIndex = 0;
+const microphone = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4m-3 0h6"/></svg>';
+function stopMedia(){
+  for(const id of ['audio-player','video-player']) { const player=$(id); player.pause(); player.removeAttribute('src'); player.load(); }
+  audioQueue=[]; $('media-player').hidden=true; $('media-status').textContent='';
+}
+function playAudio(items){
+  if(!items.length)return; stopMedia(); audioQueue=items; audioIndex=0;
+  $('media-player').hidden=false; $('audio-player').hidden=false; $('video-player').hidden=true; playNextAudio();
+}
+function playNextAudio(){
+  const item=audioQueue[audioIndex]; if(!item){$('media-status').textContent='Audio finished.'; return;}
+  const player=$('audio-player'); player.src=item.url; $('media-status').textContent=item.title;
+  player.play().catch(()=>{$('media-status').textContent='Press play to listen: '+item.title;});
+}
+$('audio-player').addEventListener('ended',()=>{audioIndex++;playNextAudio();});
+$('audio-player').addEventListener('error',()=>{if(audioQueue.length) $('media-status').textContent='Audio could not be loaded.';});
+function setupMedia(){
+  const audio=lesson.media?.audio || {}; const headings=[...$('lesson').querySelectorAll('h2[id]')];
+  const items=[];
+  if(audio.intro) items.push({url:audio.intro,title:lesson.title});
+  for(const heading of headings){
+    const title=heading.textContent.trim(), url=audio[heading.id];
+    const button=document.createElement('button'); button.type='button';button.className='section-audio';button.innerHTML=microphone;
+    button.disabled=!url;button.title=url?'Play audio: '+title:'Audio unavailable: '+title;button.setAttribute('aria-label',button.title);
+    if(url){const item={url,title};items.push(item);button.onclick=()=>playAudio([item]);}
+    heading.append(button);
+  }
+  const all=$('lesson-audio'); all.disabled=!headings.length || headings.some(h=>!audio[h.id]);
+  all.onclick=()=>playAudio(items);
+  const video=$('lesson-video');video.disabled=!lesson.media?.video;
+  video.onclick=()=>{if(!lesson.media?.video)return;stopMedia();$('media-player').hidden=false;$('audio-player').hidden=true;const player=$('video-player');player.hidden=false;player.src=lesson.media.video;player.play().catch(()=>{$('media-status').textContent='Press play to watch the video.';});};
 }
 function appendText(text, className='') {const p=document.createElement('pre');p.textContent=text;p.className=className;$('output').append(p);}
 function download(name, data, type='text/plain') {
@@ -195,7 +230,7 @@ $('code').onkeydown=e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDef
 for(const id of ['code','notes','stdin']) $(id).oninput=()=>{clearTimeout(draftTimer);draftTimer=setTimeout(persist,250);};
 window.addEventListener('beforeunload',persist);
 $('lesson').onclick=e=>{
-  const b=e.target.closest('button');if(!b)return;
+  const b=e.target.closest('button');if(!b || !(b.dataset.workspace || b.dataset.code || b.dataset.setup))return;
   ensureWorkspaceVisible();
   if(b.dataset.workspace)selectWork(b.dataset.workspace);
   if(b.dataset.code)selectWork(b.dataset.code);
