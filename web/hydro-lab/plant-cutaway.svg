@@ -1,0 +1,99 @@
+<svg class="plant-cutaway" viewBox="0 0 1000 610" role="img" aria-label="Hydroelectric dam cutaway. Water enters from the reservoir on the left, passes through the penstock and turbine, and returns to the river through the draft tube on the right. The turbine drives a generator above it, which sends electricity through a transformer to the transmission towers. A separate spillway bypasses the turbine.">
+  <defs>
+    <linearGradient id="sky" x2="0" y2="1" gradientUnits="objectBoundingBox"><stop stop-color="#eaf5f9"/><stop offset="1" stop-color="#fff"/></linearGradient>
+    <linearGradient id="woodland" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#174b38"/><stop offset=".55" stop-color="#368059"/><stop offset="1" stop-color="#80a877"/></linearGradient>
+    <linearGradient id="concrete" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#faf8ef"/><stop offset=".55" stop-color="#dcded8"/><stop offset="1" stop-color="#999f9c"/></linearGradient>
+    <linearGradient id="concrete-side" x2="1" y2="1"><stop stop-color="#b9c0bd"/><stop offset="1" stop-color="#717e7e"/></linearGradient>
+    <linearGradient id="section-fill" x2="0" y2="1"><stop stop-color="#f2efe5"/><stop offset="1" stop-color="#c3c7bf"/></linearGradient>
+    <linearGradient id="lake" x2="0" y2="1"><stop stop-color="#65bad6"/><stop offset=".67" stop-color="#278aaf"/><stop offset="1" stop-color="#155775"/></linearGradient>
+    <linearGradient id="surface" x2="0" y2="1"><stop stop-color="#ddf6fa"/><stop offset="1" stop-color="#6fc4db"/></linearGradient>
+    <linearGradient id="pipe-water" x2="0" y2="1"><stop stop-color="#bbedf4"/><stop offset=".5" stop-color="#5bbad4"/><stop offset="1" stop-color="#287b9b"/></linearGradient>
+    <linearGradient id="steel" x2="1" y2="0"><stop stop-color="#53646a"/><stop offset=".4" stop-color="#d9e1de"/><stop offset=".65" stop-color="#99a7a6"/><stop offset="1" stop-color="#55666b"/></linearGradient>
+    <linearGradient id="copper" x2="1" y2="1"><stop stop-color="#f4c080"/><stop offset=".5" stop-color="#b96b3e"/><stop offset="1" stop-color="#754434"/></linearGradient>
+    <linearGradient id="runner-case" x2="0" y2="1"><stop stop-color="#79ab89"/><stop offset="1" stop-color="#245e50"/></linearGradient>
+    <pattern id="aggregate" width="21" height="14" patternUnits="userSpaceOnUse"><path d="M2 4h2m10 7h3M7 13h1" stroke="#566d64" opacity=".18"/></pattern>
+    <clipPath id="upstream-bank"><path d="M0 46H295L222 307 0 427Z"/></clipPath>
+    <g id="tower" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M-23 122-7 47-26 18H26L7 47 23 122M-45 18 0 3 45 18H-45M-44 18v11m88-11v11M-21 106h42m-37-19h32m-29-18h26M-20 103 16 87-12 69 7 47M20 103-16 87 12 69-7 47M-25 18 7 47m18-29L-7 47"/>
+    </g>
+  </defs>
+  <path fill="url(#sky)" d="M0 0h1000v610H0z"/>
+  <path fill="#a1bdab" d="M330 112 444 58 514 67 596 31 661 52 760 29 860 74 1000 50v325L500 273Z"/>
+  <path fill="url(#woodland)" d="M411 124Q500 25 571 21T686 76q56 51 113 57t201 45v233L618 325Z"/>
+  <path fill="none" stroke="#dee7c4" stroke-opacity=".32" stroke-width="2" d="M576 104q103 14 156 85t268 66M537 131q110 20 171 79t292 75M665 129q175 33 335 73"/>
+  <path fill="url(#lake)" d="M585 312q204-13 415 45v253H675Z"/>
+  <path fill="none" stroke="#bee9ec" stroke-width="3" opacity=".5" d="M807 425q61-13 176 16m-136 17q57-2 145 13m-171 57q67-13 163 7m-186 38q99-13 188-2"/>
+  <g clip-path="url(#upstream-bank)">
+    <g id="cutaway-lake">
+      <path fill="url(#lake)" d="M0 0 242 39v420H0Z"/>
+      <path fill="url(#surface)" d="M0 0 171-30 273 8 242 39Z"/>
+      <path fill="none" stroke="#e4f9f9" stroke-width="3" opacity=".66" d="M0 0 242 39M20 18l48 7m26 4 52 9M30 45l56 8m8 22 34 4"/>
+    </g>
+  </g>
+  <!-- The spillway runs behind the powerhouse on the far side of the dam. -->
+  <path fill="#748988" d="M404 87 475 72 776 340 897 386 856 407 731 364Z"/>
+  <path fill="url(#concrete)" stroke="#e1e5dd" stroke-width="6" d="M414 89 468 81 766 346 880 386 856 398 743 360Z"/>
+  <path id="cutaway-spill" fill="#68c6e3" d="M422 91 458 85 754 346 869 387 854 393 746 357Z"/>
+  <path id="cutaway-spill-motion" class="water-motion" d="M439 92 751 353 864 389" stroke="#f0fcff" stroke-width="5"/>
+  <!-- Projecting concrete faces and the exposed section through the foundation. -->
+  <path fill="url(#concrete)" stroke="#a8b0aa" d="M170 120 273 42 349 22 439 61 361 104 242 153Z"/>
+  <path fill="url(#concrete-side)" d="M361 104 439 61v61l-79 32Z"/>
+  <path fill="url(#concrete)" stroke="#aeb5af" d="M226 167 360 153 444 119 498 143 408 183 277 212Z"/>
+  <path fill="#a4adab" d="M407 181 498 142v34l-80 41Z"/>
+  <path fill="url(#concrete)" stroke="#a5adaa" d="m415 216 83-42 117 163-103 43Z"/>
+  <path fill="url(#section-fill)" stroke="#8b9994" stroke-width="2" d="M0 345 66 294 119 311 169 120 361 104 360 153 407 181 417 216 512 378 636 403 764 437v173H0Z"/>
+  <path fill="url(#aggregate)" opacity=".62" d="M0 346 66 294 119 312 169 120 361 104 360 153 407 181 417 216 512 378 636 403 764 437v173H0Z"/>
+  <path fill="none" stroke="#f9f8f1" stroke-width="4" d="m171 122 188-16m3 49 45 28 10 35 92 160"/>
+  <!-- Intake and open penstock section. -->
+  <path fill="none" stroke="#58696e" stroke-width="50" stroke-linejoin="round" d="M139 238h88l144 190 140 32"/>
+  <path fill="none" stroke="url(#pipe-water)" stroke-width="38" stroke-linejoin="round" d="M135 238h92l144 190 140 32"/>
+  <path fill="none" stroke="#d9f8fa" stroke-width="2" opacity=".75" d="M152 221h80l148 191 131 31"/>
+  <path fill="#47636b" d="m126 204 11-5-9 67-14 11Zm19-8 7-3-8 66-7 6Z"/>
+  <path stroke="#263d46" stroke-width="4" d="m123 211 23-9m-25 24 23-9m-25 24 23-9m-25 24 23-9m-25 24 22-10"/>
+  <path fill="url(#steel)" stroke="#758285" d="M153 162h15v99l-15 5Z"/>
+  <path fill="url(#steel)" d="M157 135h6v38h-6z"/>
+  <path fill="#334d58" d="M150 137h19v8h-19z"/>
+  <!-- Below the generator floor, the runner empties into a widened draft tube. -->
+  <path fill="#526c73" d="M547 480h78v30q0 27 35 27h103l47-8v60l-46 10H645q-98 0-98-76Z"/>
+  <path fill="url(#pipe-water)" d="M555 483h59v30q0 34 43 34h106l53-8v44l-52 10H646q-91 0-91-69Z"/>
+  <path fill="none" stroke="#d9f8fa" opacity=".7" stroke-width="2" d="M618 521q7 27 40 25h107l50-9"/>
+  <!-- Powerhouse shell, open front, generator floor and transformer terrace. -->
+  <path fill="#798b8d" stroke="#a5b0ae" d="m497 344 99-86 229 77 1 88-127 63-211-74Z"/>
+  <path fill="url(#concrete-side)" d="m708 403 119-68 41 26-117 70Z"/>
+  <path fill="url(#concrete)" stroke="#a3afaa" d="m649 366 61-61 151 55-113 65-101-29Z"/>
+  <path fill="#b1b9b5" d="m748 425 113-65v64l-113 52Z"/>
+  <path fill="#e8e9e2" d="m646 396 102 29v52l-102-29Z"/>
+  <path fill="url(#concrete)" stroke="#a2aaa3" d="m469 342 75-51 100 32-84 55Z"/>
+  <path fill="#aeb8b4" d="m469 342 91 36v24l-91-34Z"/>
+  <path fill="url(#concrete)" d="m478 404 75-45 138 42-44 28-167-10Z"/>
+  <path fill="#aab4b0" d="m480 419 167 10v17l-164-13Z"/>
+  <g fill="url(#steel)" stroke="#687c7e">
+    <rect x="490" y="302" width="39" height="35" rx="4"/>
+    <path d="M496 305v30m6-31v32m6-32v32m6-32v32m6-32v31"/>
+    <path d="M499 302v-19m17 19v-19" stroke-width="3"/>
+    <path d="M494 288h10m-10-5h10m7 5h10m-10-5h10" stroke-width="2"/>
+  </g>
+  <!-- Electrical route between transformer and transmission. -->
+  <g class="grid-lines" color="#385c50" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M500 283Q621 261 742 150L786 120Q859 162 896 135t104-15M516 283q143-49 247-109l112-33q66 20 125-29"/>
+    <use href="#tower" transform="translate(832 99)"/>
+    <use href="#tower" transform="translate(928 114) scale(.74)"/>
+  </g>
+  <!-- Vertical shaft, copper generator and Francis-style runner. -->
+  <path fill="url(#steel)" stroke="#657679" d="M576 381h20v94h-20z"/>
+  <ellipse cx="586" cy="472" rx="72" ry="29" fill="url(#runner-case)" stroke="#244d43" stroke-width="2"/>
+  <path fill="url(#runner-case)" stroke="#326655" d="m459 429 82 18 13 28-100-24Z"/>
+  <ellipse cx="586" cy="476" rx="52" ry="20" fill="#77c9d5" stroke="#c5ddcf" stroke-width="3"/>
+  <g id="cutaway-runner" fill="url(#steel)" stroke="#4e6564" stroke-width="1.8">
+    <ellipse cx="586" cy="474" rx="38" ry="15"/>
+    <path d="m551 478 68-11m-53-6 35 26m-49-16 68 6m-36-18 2 29" fill="none"/>
+    <ellipse cx="586" cy="472" rx="10" ry="6"/>
+  </g>
+  <path fill="url(#copper)" stroke="#805541" stroke-width="2" d="M529 385v-24c0-25 29-37 57-37s57 12 57 37v24c-9-21-34-29-57-29s-48 8-57 29Z"/>
+  <ellipse cx="586" cy="384" rx="57" ry="23" fill="url(#copper)" stroke="#754b37" stroke-width="2"/>
+  <ellipse cx="586" cy="380" rx="40" ry="15" fill="url(#steel)" stroke="#53676b" stroke-width="2"/>
+  <ellipse cx="586" cy="377" rx="11" ry="6" fill="#e9eeeb"/>
+  <path class="grid-lines" d="M534 371q-25-11-25-36" fill="none" stroke="currentColor" stroke-width="3"/>
+  <path id="cutaway-generation-motion" class="water-motion" stroke="#e8fbff" stroke-width="5" d="M170 238h57l144 190 91 21m123 56q5 65 76 65h145"/>
+  <path id="cutaway-direction" fill="#176b88" d="M183 235h12v-5l10 8-10 8v-5h-12Zm76 42 8 10 4-3v13l-12-4 4-3-8-10Zm52 67 8 10 4-3v13l-12-4 4-3-8-10Zm82 86 12 3 1-5 9 10-12 5 1-5-12-3Zm219 117 9 7 3-4 3 12-13 1 3-4-9-7Zm59 20h12v-5l10 8-10 8v-5h-12Zm72 0h12v-5l10 8-10 8v-5h-12Z"/>
+</svg>

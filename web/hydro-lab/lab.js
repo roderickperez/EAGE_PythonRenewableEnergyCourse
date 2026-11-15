@@ -1,6 +1,7 @@
 import styles from './styles.css';
 import { computeHydro, DEFAULT_INPUTS, HYDRO_CONSTANTS, normalizeHydroInputs } from './model.js';
 import { HydroScene } from './scene.js';
+import { cutawayMarkup, mountCutaway } from './cutaway.js';
 import { renderConversionChart, renderPowerChart } from './charts.js';
 
 const sliderDefinitions = [
@@ -32,11 +33,11 @@ function template(inputs, assetBase, standaloneUrl) {
       ${sliderDefinitions.map((definition) => sliderMarkup(definition, inputs[definition[0]])).join('')}
     </section>
     <section class="stage-grid">
-      <div class="scene-card" aria-label="Interactive three-dimensional hydroelectric plant">
-        <div class="scene" id="hydro-scene"><img class="fallback" id="scene-fallback" src="${assetBase}fallback.svg" alt="Hydroelectric plant schematic" hidden><div class="scene-labels" id="scene-labels"></div></div>
+      <figure class="cutaway-card">
+        ${cutawayMarkup()}
+        <figcaption>Follow the blue water path through the turbine and the gold electrical route to the transmission lines. The far-side chute carries spill or bypass flow.</figcaption>
         <div class="head-ruler" id="head-ruler"><div class="head-track"></div><strong>Head balance</strong><span id="gross-readout"></span><span id="loss-readout"></span><span id="net-readout"></span></div>
-        <p class="scene-help">Guided cutaway · drag slightly to inspect · pinch to zoom</p>
-      </div>
+      </figure>
       <aside class="metrics-card" aria-label="Calculated plant performance" aria-live="polite">
         <div class="power-card"><span class="eyebrow">Plant electrical power P_plant</span><strong id="plant-power"></strong><span class="status" id="clip-status"></span></div>
         <div class="metric-list">
@@ -59,6 +60,13 @@ function template(inputs, assetBase, standaloneUrl) {
       <div class="chart-card"><h3>Power versus usable flow</h3><p>Current net head; the dashed line is the generator rating.</p><svg id="power-chart" role="img" aria-label="Power versus usable flow chart"></svg></div>
       <div class="chart-card"><h3>Conversion chain and energy</h3><p>Hydraulic resource, efficiency loss, rating cap, and six-hour production.</p><svg id="conversion-chart" role="img" aria-label="Power conversion and energy chart"></svg></div>
     </section>
+    <details class="orbit-view" id="orbit-view">
+      <summary>Explore the 3D model</summary>
+      <div class="scene-card" aria-label="Interactive three-dimensional hydroelectric plant">
+        <div class="scene" id="hydro-scene"><img class="fallback" id="scene-fallback" src="${assetBase}fallback.svg" alt="Hydroelectric plant schematic" hidden><div class="scene-labels" id="scene-labels"></div></div>
+        <p class="scene-help">Drag to inspect · pinch to zoom</p>
+      </div>
+    </details>
     <footer class="lab-foot">Educational steady-state model—not a reservoir-routing, dam-safety, or design tool.${standaloneUrl ? ` <a href="${standaloneUrl}" target="_blank" rel="noopener">Open the lab full page</a>.` : ''}</footer>
   </article>`;
 }
@@ -77,7 +85,20 @@ export function mountHydroLab(container, initialInputs = DEFAULT_INPUTS, options
   root.replaceChildren(style, body);
 
   const get = (id) => root.getElementById(id);
-  const scene = new HydroScene(get('hydro-scene'), get('scene-labels'), get('scene-fallback'));
+  const updateCutaway = mountCutaway(root);
+  let scene;
+  let currentResult;
+  const orbit = get('orbit-view');
+  orbit.addEventListener('toggle', () => {
+    if (orbit.open && !scene) {
+      scene = new HydroScene(get('hydro-scene'), get('scene-labels'), get('scene-fallback'));
+      scene.update(currentResult);
+    } else if (!orbit.open && scene) {
+      scene.destroy();
+      get('scene-labels').replaceChildren();
+      scene = undefined;
+    }
+  });
   const sliderUnits = Object.fromEntries(sliderDefinitions.map(([key, , , , step, unit]) => [key, { unit, digits: step < 1 ? 1 : 0 }]));
 
   function render(nextInputs = inputs) {
@@ -108,7 +129,9 @@ export function mountHydroLab(container, initialInputs = DEFAULT_INPUTS, options
     get('head-ruler').style.setProperty('--loss-pct', `${Math.min(90, inputs.headLossM / inputs.grossHeadM * 100)}%`);
     renderPowerChart(get('power-chart'), result);
     renderConversionChart(get('conversion-chart'), result);
-    scene.update(result);
+    currentResult = result;
+    updateCutaway(result);
+    scene?.update(result);
     return result;
   }
 
@@ -119,7 +142,7 @@ export function mountHydroLab(container, initialInputs = DEFAULT_INPUTS, options
   return {
     result,
     update(values) { return render({ ...inputs, ...values }); },
-    destroy() { scene.destroy(); root.replaceChildren(); },
+    destroy() { scene?.destroy(); root.replaceChildren(); },
   };
 }
 

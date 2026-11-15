@@ -18,7 +18,7 @@ await build({
   target: ['es2022'],
   minify: true,
   sourcemap: false,
-  loader: { '.css': 'text' },
+  loader: { '.css': 'text', '.svg': 'text' },
   legalComments: 'inline',
 });
 const html = await readFile(resolve(source, 'index.html'), 'utf8');
