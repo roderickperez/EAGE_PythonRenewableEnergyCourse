@@ -6,30 +6,15 @@ This summary follows the actual course structure and distinguishes core outcomes
 
 Energy, power, units, capacity factor, resource variability, and the role of auditable data analysis.
 
-## Section 1 — Python environments and notebooks
-
-Python 3, development environments, Jupyter/Colab, Markdown, and reproducible computational documents.
-
-## Section 2 — Python basics
-
-Variables, numeric operations, functions, lists, tuples, dictionaries, sets, conditions, `for` loops, and selected built-in functions. Function naming is a convention rather than a syntax restriction, and functions without `return` yield `None`. [Python functions](https://docs.python.org/3/tutorial/controlflow.html#defining-functions).
-
-## Section 3 — Scientific Python libraries
-
-- NumPy arrays, vectorised arithmetic, shape, indexing, and sampling.
-- pandas DataFrames, selection, missing values, summaries, and transformations.
-- Matplotlib and Seaborn for labelled scientific plots.
-- Optional overviews of interactive and geospatial libraries.
-
-## Section 4 — Data quality and time series
+## Data quality and time series
 
 Source definitions, units, tidy data, missingness, duplicate keys, coverage, exploratory analysis, monthly decomposition with period 12, stationarity testing, and chronological forecast evaluation. The Eurostat case study is monthly net electricity generation in GWh, not consumption in TJ.
 
-## Section 5 — Databases and SQL
+## Databases and SQL
 
 Relational design, primary and foreign keys, SQLite, SQL filtering and aggregation, a live Eurostat download with raw-data provenance, a country–month–source generation table, and reconciliation of SQL totals against pandas.
 
-## Section 6 — Renewable-energy calculations
+## Renewable-energy calculations
 
 | Technology | Principal relationship | Important interpretation |
 |---|---|---|
@@ -40,11 +25,11 @@ Relational design, primary and foreign keys, SQLite, SQL filtering and aggregati
 
 These are simplified engineering models. Site assessment requires technology-specific loss models, uncertainty, environmental constraints, and current project data.
 
-## Section 7 — Quizzes and exercises
+## Renewable-energy quizzes and exercises
 
-Exercises reinforce Python, NumPy, pandas, plotting, and renewable-energy calculations. Learners should run every solution and inspect units and edge cases rather than accepting output solely because code executes.
+Exercises apply prerequisite Python, NumPy, pandas, and plotting knowledge to renewable-energy calculations. Learners should run every solution and inspect units and edge cases rather than accepting output solely because code executes. General Python and library quizzes remain in the separate Python Course.
 
-## Section 8 — Final project
+## Final project
 
 The final project models one synthetic week of a hybrid solar, wind, hydro and geothermal portfolio, reconciles supply and demand, and compares design scenarios. Monthly forecasting and SQLite are separate case studies in Sections 4 and 5.
 
@@ -52,8 +37,8 @@ The final project models one synthetic week of a hybrid solar, wind, hydro and g
 
 - [ ] Explain the difference between power and energy.
 - [ ] Validate units, grain, date coverage, and missing values before analysis.
-- [ ] Manipulate arrays and DataFrames without hidden shape assumptions.
-- [ ] Produce charts with accurate titles, axes, units, and scope.
+- [ ] Apply prerequisite array and DataFrame skills without hidden shape assumptions.
+- [ ] Produce renewable-energy charts with accurate titles, axes, units, and scope.
 - [ ] Avoid double-counting aggregate and component energy categories.
 - [ ] Use a chronological holdout and a simple forecast baseline.
 - [ ] Create and query a relational SQLite database.

@@ -13,6 +13,9 @@ __pycache__/
 venv/
 env/
 
+# JavaScript dependencies (the pinned hydro-lab bundle itself is committed)
+node_modules/
+
 # Jupyter / notebooks
 .ipynb_checkpoints/
 

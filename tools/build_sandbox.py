@@ -62,8 +62,7 @@ def toc_pages():
 
 class Builder:
     def __init__(self):
-        excluded = {'Introduction to Python Programming', 'IDE & Notebooks', 'Python Basics',
-                    'Python Libraries', 'Data Processing and Exploration Data Analysis'}
+        excluded = {'Data Processing and Exploration Data Analysis'}
         self.pages = [(path, group) for path, group in toc_pages() if group not in excluded]
         self.python_pages = {path for path, group in toc_pages() if group in excluded and not path.startswith('section4/') and not path.startswith('data/examples/')}
         self.page_ids = {p for p, _ in self.pages}
@@ -261,7 +260,14 @@ class Builder:
                 'source_sha256': hashlib.sha256((BOOK / relative).read_bytes()).hexdigest()}
 
     def build(self):
+        # A clean generated tree prevents deleted lessons or old interactive
+        # assets from surviving into a later deployment.
+        shutil.rmtree(OUT, ignore_errors=True)
         OUT.mkdir(exist_ok=True)
+        hydro_lab = BOOK / 'static' / 'hydro-lab'
+        if not (hydro_lab / 'hydro-lab.js').is_file():
+            raise FileNotFoundError('Build the interactive lab first: npm run build:hydro-lab')
+        shutil.copytree(hydro_lab, OUT / 'hydro-lab')
         self.asset(BOOK / 'myst.yml')
         pages = [self.page(path, group) for path, group in self.pages]
         attach_media(pages, SANDBOX)

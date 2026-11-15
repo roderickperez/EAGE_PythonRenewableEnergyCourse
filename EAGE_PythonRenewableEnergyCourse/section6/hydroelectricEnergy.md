@@ -19,6 +19,13 @@ By the end of this lesson you should be able to:
 
 Hydropower converts the gravitational potential energy of water into shaft power and then electricity. Conventional storage plants, run-of-river plants, and pumped-storage plants use the same energy balance but have different operating constraints. Head and flow determine the resource; turbine-generator efficiency and equipment limits determine the electrical output. See the U.S. Department of Energy overview and turbine guidance [@doeHydropowerWorks; @doeHydroTurbines].
 
+:::{iframe} ../../hydro-lab/index.html
+:width: 100%
+:title: Interactive three-dimensional hydroelectric plant and engineering dashboard
+:::
+
+[Open the interactive hydroelectric lab in a full page](../../hydro-lab/index.html).
+
 <!-- expanded-theory:hydro:start -->
 
 ## Physical description: water, elevation and electricity

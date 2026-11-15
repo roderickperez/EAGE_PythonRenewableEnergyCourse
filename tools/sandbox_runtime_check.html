@@ -33,10 +33,10 @@ assert conn.execute('PRAGMA integrity_check').fetchone()[0]=='ok'
 print(conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall())
 conn.close()`]];
  for(const [name,path,code] of checks){const r=await run(path,code);if(r.error){failed++;write('FAIL '+name+' '+r.error);}else{passed++;write('PASS '+name);}}
- for(const id of ['section3/advancedLibraries/seaborn.md','section3/advancedLibraries/plotly.md','section3/advancedLibraries/folium.md','section3/advancedLibraries/geopandas.md','section3/extra/cartopy.md','section4/dataTypes/netcfd.md','section4/dataTypes/xArray.md','section3/extra/quiver.md','section3/extra/streamplots.md','section4/EDA.md','section4/timeSeriesEnergyConsumption.ipynb','section5/SQL_Pandas.ipynb']){
+ for(const id of ['section4/dataTypes/netcfd.md','section4/dataTypes/xArray.md','section4/EDA.md','section4/timeSeriesEnergyConsumption.ipynb','section5/SQL_Pandas.ipynb']){
    const page=course.pages.find(p=>p.id===id);const r=await run(id,page.codes.map(c=>c.code).join('\n\n'));if(r.error){failed++;write('FAIL '+id+' '+r.error);}else{passed++;write('PASS '+id);}
  }
- for(const page of course.pages.filter(p=>p.group==='Quizzes'||p.group==='Python Basics'||(p.group==='Python Libraries'&&p.id.includes('/basicLibraries/')))){
+ for(const page of course.pages.filter(p=>p.group==='Quizzes')){
    const code=page.codes.filter(c=>c.runnable).map(c=>c.code).join('\n\n');
    const r=await run(page.id,code);if(r.error){failed++;write('FAIL '+page.id+' '+r.error);}else{passed++;write('PASS '+page.id);}
  }

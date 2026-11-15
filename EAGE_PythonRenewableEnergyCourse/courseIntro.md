@@ -13,14 +13,14 @@ Start with the [learning guide](learningGuide.md), use the [100-exercise chapter
 
 ## Course Description
 
-This course develops practical Python skills for analysing renewable-energy data. It connects programming fundamentals with energy datasets, exploratory analysis, SQL, time-series methods, and engineering calculations for hydroelectric, solar, wind, and geothermal systems.
-Starting with Python programming, participants learn to load, validate, analyse, visualise, and store real energy data. The course introduces reproducible time-series analysis and predictive modelling, while keeping the distinction between measured data, engineering estimates, and model forecasts explicit.
+This course applies Python to renewable-energy data and engineering. It connects energy datasets, exploratory analysis, SQL, time-series methods, and engineering calculations for hydroelectric, solar, wind, and geothermal systems.
+Participants use their existing Python foundation to load, validate, analyse, visualise, and store real energy data. The course introduces reproducible time-series analysis and predictive modelling, while keeping the distinction between measured data, engineering estimates, and model forecasts explicit.
 
-Participants can review programming fundamentals, notebooks and scientific libraries in the [Python Course](https://roderickperezaltamar.com/private-course/eage-python-course/index.html). Separate course access may be required. Exercises can run in Google Colab or in the reproducible local environment documented with the repository.
+Programming fundamentals, notebooks, NumPy, pandas, and plotting are taught in the separate [Python Course](https://roderickperezaltamar.com/private-course/eage-python-course/index.html). Complete that preparation first if these tools are unfamiliar. Separate course access may be required. Renewable-energy exercises can run in Google Colab or in the reproducible local environment documented with the repository.
 
 ## Python preparation
 
-The [Python Course](https://roderickperezaltamar.com/private-course/eage-python-course/index.html) provides the shared programming foundation for this course.
+The [Python Course](https://roderickperezaltamar.com/private-course/eage-python-course/index.html) is the prerequisite programming foundation. This renewable-energy course does not repeat its general Python, IDE, notebook, or library lessons.
 
 (how-the-browser-sandbox-was-made)=
 
@@ -336,8 +336,7 @@ For further reading, see the [Pyodide website](https://pyodide.org/), [package-l
 
 ## Objectives
 
-- Learn to use the main features of Python 3, as well as the packages selected most important of this language (Numpy / SciPy / Pandas / Matplotlib), through a project in Jupyter Notebook and Google
-  Colab.
+- Apply existing Python, NumPy, pandas, and plotting knowledge to renewable-energy datasets and engineering calculations.
 - Explain the limits of descriptive analysis, engineering models, and predictive models, and avoid common problems such as data leakage and invalid train/test splits.
 - Apply techniques of analysis and visualization of geoscientific data using the libraries from Python.
 - Interpret the output obtained by the prediction models.
@@ -347,18 +346,18 @@ For further reading, see the [Pyodide website](https://pyodide.org/), [package-l
 
 By the end of the course, participants should be able to:
 
-1. Write and explain small Python programs using functions, collections, conditions, and loops.
-2. Manipulate numeric and tabular data with NumPy and pandas.
-3. Produce correctly labelled and interpretable plots with Matplotlib and Seaborn.
-4. Validate data units, grain, missing values, and category definitions before aggregation.
-5. Query and create SQLite databases using reproducible SQL and pandas workflows.
-6. Analyse time series with appropriate sampling frequencies, rolling windows, decomposition, and chronological validation.
-7. Apply and check the principal equations used in hydroelectric, solar, wind, and geothermal resource calculations.
+1. Validate renewable-energy data units, grain, missing values, and category definitions before aggregation.
+2. Query and create SQLite databases using reproducible SQL and pandas workflows.
+3. Analyse energy time series with appropriate sampling frequencies, rolling windows, decomposition, and chronological validation.
+4. Apply and check the principal equations used in hydroelectric, solar, wind, and geothermal resource calculations.
+5. Build clear, correctly labelled plots and interpret their engineering meaning.
+6. Compare measured data, engineering estimates, and model forecasts without conflating them.
+7. Build and evaluate an introductory renewable-energy prediction model using chronological validation.
 8. Communicate assumptions, uncertainty, data freshness, and model limitations.
 
 ## Scope and prerequisites
 
-The course is designed for learners with no prior Python experience. Basic algebra and familiarity with energy units are helpful. It is an applied introductory course; it does not replace a full power-systems, resource-assessment, statistics, or deep-learning course.
+Working knowledge of Python functions, NumPy arrays, pandas DataFrames, Jupyter or Colab, and Matplotlib is required; use the linked Python Course for preparation. Basic algebra and familiarity with energy units are helpful. This is an applied introductory renewable-energy course; it does not replace a full power-systems, resource-assessment, statistics, or deep-learning course.
 
 ## Calendar
 

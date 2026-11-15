@@ -8,16 +8,31 @@ This repository contains the EAGE short course and its source data.
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
+npm ci
+npm test
+npm run build
 python tools/rebuild_course_notebooks.py
 python tools/execute_course_notebooks.py
 python tools/validate_course.py
 cd EAGE_PythonRenewableEnergyCourse
 jupyter book build --html
+cd ..
+python tools/stage_course_web_assets.py
+python tools/check_student_build.py
 ```
 
 The Eurostat notebooks use the bundled August 2024 exports for reproducibility. Refresh the exports and record the retrieval date before using their figures as current statistics.
 
 Optional geospatial and deep-learning packages are declared separately in `pyproject.toml`; they are not required to compile the core course.
+
+The course assumes working Python, NumPy, pandas and plotting knowledge. General
+Python, IDE, notebook and library instruction lives in the separate prerequisite
+Python course rather than being repeated here.
+
+The hydroelectric lesson includes a locally bundled Three.js teaching lab. Edit
+its source under `web/hydro-lab/`, run `npm test` and `npm run build`, and commit
+the generated files under `EAGE_PythonRenewableEnergyCourse/static/hydro-lab/`.
+The lab has no runtime CDN or downloaded-model dependency.
 
 ## Teaching material
 

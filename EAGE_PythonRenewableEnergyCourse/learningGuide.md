@@ -14,14 +14,14 @@ and 20 graded exercises. Read the theory and work through the numerical example
 before revealing exercise answers. The downloadable notebook contains the complete
 chapter text as well as the code.
 
-1. Start with energy units in Section 0 and its easy exercises 1–5.
-2. Learn variables, conditions, loops and functions in Sections 1–2.
-3. Practice NumPy, pandas and plotting in Section 3, then attempt exercises 6–15 in each energy chapter.
-4. Check data definitions, missingness and SQL totals in Sections 4–5.
-5. Study each energy model in Section 6 and its hard exercises 16–20.
-6. Take the question-only test, then complete the Section 8 portfolio project from its separate CSV datasets. The test answer key and project solution are instructor-only.
+1. Complete the separate [Python Course](https://roderickperezaltamar.com/private-course/eage-python-course/index.html) first if Python functions, NumPy, pandas, notebooks, or plotting are unfamiliar.
+2. Start here with renewable-energy context, units, and easy exercises 1–5.
+3. Check data definitions, missingness, time-series handling, and SQL totals in the data and database chapters.
+4. Study each renewable-energy model and use the interactive diagrams before attempting exercises 6–15.
+5. Complete the hard modelling and conservation exercises 16–20.
+6. Take the question-only renewable-energy test, then complete the hybrid-portfolio project from its separate CSV datasets. The test answer key and project solution are instructor-only.
 
-The five chapters each contain 20 exercises: 5 easy, 10 medium and 5 hard. These 100 chapter exercises supplement the existing quizzes. Allow roughly 10–15 minutes per easy exercise, 20–35 per medium exercise and 45–75 per hard exercise. Hard exercises can be follow-up assignments.
+The five energy chapters each contain 20 exercises: 5 easy, 10 medium and 5 hard. These 100 chapter exercises supplement the renewable-energy quizzes. Allow roughly 10–15 minutes per easy exercise, 20–35 per medium exercise and 45–75 per hard exercise. Hard exercises can be follow-up assignments.
 
 ## Running the examples
 
@@ -46,6 +46,6 @@ Submit code, a result with units, one or more checks, interpretation, reference 
 - Split forecast data chronologically; fit transformations on training data only and compare with a baseline.
 - Explain omitted losses and uncertainty. Teaching models are not bankable resource assessments.
 
-Core exercises need Python, NumPy, pandas and Matplotlib; SQLite comes with Python. Geospatial tools, Earth Engine, external map services and deep learning are optional. Browser kernels may not support every package or local file. Use the local environment for full validation.
+Core exercises apply prerequisite knowledge of Python, NumPy, pandas and Matplotlib; SQLite comes with Python. General programming and library instruction remains in the separate Python Course. Geospatial tools, Earth Engine, external map services and deep learning are optional. Browser kernels may not support every package or local file. Use the local environment for full validation.
 
 See the [reference catalogue](references.md) and [100-exercise chapter guide](section7/renewableExercises.md).

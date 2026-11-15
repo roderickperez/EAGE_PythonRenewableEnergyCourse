@@ -19,6 +19,8 @@ def validate():
     assert set(pages) == {p for p, _ in Builder().pages}, 'Missing book pages'
     removed = {'Introduction to Python Programming', 'IDE & Notebooks', 'Python Basics', 'Python Libraries', 'Data Processing and Exploration Data Analysis'}
     assert not any(page['group'] in removed for page in pages.values())
+    assert (OUT / 'hydro-lab' / 'hydro-lab.js').is_file()
+    assert (OUT / 'hydro-lab' / 'fallback.svg').is_file()
     assert 'private-course/eage-python-course/index.html' in pages['courseIntro.md']['html']
     for path, page in pages.items():
         assert page['source_sha256'] == hashlib.sha256((BOOK/path).read_bytes()).hexdigest(), f'Stale content: {path}'
@@ -67,7 +69,7 @@ def validate():
     executed=0
     with patch('builtins.input', return_value='7'):
         for page in pages.values():
-            if not (page['group'] in {'Quizzes','Python Basics'} or '/basicLibraries/' in page['id']):
+            if page['group'] != 'Quizzes':
                 continue
             namespace={'__name__':'__main__'}
             for cell in page['codes']:
@@ -76,7 +78,7 @@ def validate():
                     exec(compile(cell['code'],page['id']+':'+cell['id'],'exec'),namespace)
                 executed+=1
                 plt.close('all')
-    print(f'Executed {executed} basic-lesson and quiz Python cells with explicit input fixtures.')
+    print(f'Executed {executed} quiz Python cells with explicit input fixtures.')
     print(f'Sandbox validated: {len(pages)} pages, 100 collapsed answers, 25 question-only assessment workspaces, project workspaces and five matching datasets.')
 
 if __name__=='__main__':validate()
