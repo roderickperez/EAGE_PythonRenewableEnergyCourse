@@ -1,14 +1,14 @@
-# Chapter exercise guide — 100 Python exercises
+# Workbook introduction
 
-The exercises are embedded directly inside each teaching chapter, with a step-by-step answer below every question. Every chapter has **5 easy, 10 medium and 5 hard** exercises, each with references and executable checks.
+The 100 exercises are embedded directly inside their teaching chapters. Every chapter has **5 easy, 10 medium and 5 hard** exercises, with references, step-by-step explanations and executable checks.
 
-| Chapter | Exercises | Open the chapter |
-|---|---:|---|
-| General | 20 | [Study and practice](../section0/introRenewableEnergy.md#chapter-practice-20-python-exercises) |
-| Solar | 20 | [Study and practice](../section6/solarEnergy.md#chapter-practice-20-python-exercises) |
-| Hydro | 20 | [Study and practice](../section6/hydroelectricEnergy.md#chapter-practice-20-python-exercises) |
-| Wind | 20 | [Study and practice](../section6/windEnergy.md#chapter-practice-20-python-exercises) |
-| Geothermal | 20 | [Study and practice](../section6/geothermalEnergy.md#chapter-practice-20-python-exercises) |
+| Chapter practice | Exercises |
+|---|---:|
+| [Hydroelectric](../section6/hydroelectricEnergy.md#chapter-practice-20-python-exercises) | 20 |
+| [General](../section0/introRenewableEnergy.md#chapter-practice-20-python-exercises) | 20 |
+| [Solar](../section6/solarEnergy.md#chapter-practice-20-python-exercises) | 20 |
+| [Wind](../section6/windEnergy.md#chapter-practice-20-python-exercises) | 20 |
+| [Geothermal](../section6/geothermalEnergy.md#chapter-practice-20-python-exercises) | 20 |
 
 Each chapter also offers a complete downloadable `.ipynb` notebook. In the book, practice answers start collapsed; in ordinary notebook viewers the step-by-step answers appear below their prompts.
 

@@ -201,8 +201,11 @@ for supply in [0,4,4,0]:
     discharge = min(2-direct, 2, soc*0.9)
     soc += charge*0.9 - discharge/0.9
     curtailed = supply-direct-charge; unmet = 2-direct-discharge
-    assert np.isclose(supply+discharge, direct+discharge+charge+curtailed)
-    assert np.isclose(soc-before, charge*0.9-discharge/0.9)
+    served = direct + discharge
+    losses = charge * 0.10 + discharge * (1/0.9 - 1)
+    # Powers in MW equal interval energies in MWh numerically for a one-hour step.
+    assert np.isclose(supply + before, served + curtailed + losses + soc)
+    assert np.isclose(served + unmet, 2)
     rows.append((soc, curtailed, unmet))
 # Step 3: Check limits and report energy outcomes.
 assert all(0 <= row[0] <= 3+1e-12 for row in rows)
@@ -228,14 +231,21 @@ import numpy as np
 # Step 1: Create separate source tables with their own timestamp columns.
 time = pd.date_range('2025-01-01', periods=3, freq='h', tz='UTC')
 solar = pd.DataFrame({'time':time, 'solar_mw':[0,1,2]})
-wind = pd.DataFrame({'time':time, 'wind_mw':[2,1,0]})
+wind = pd.DataFrame({'time':time[::-1], 'wind_mw':[0,1,2]})
 # Step 2: Validate matching coverage and perform a one-to-one join.
-assert solar.time.is_unique and wind.time.is_unique
-assert solar.time.equals(wind.time)
-joined = solar.merge(wind, on='time', validate='one_to_one')
+def align(solar, wind):
+    for table in (solar, wind):
+        if table.time.isna().any() or not table.time.is_unique:
+            raise ValueError('Each source must have valid, unique timestamps.')
+    if set(solar.time) != set(wind.time):
+        raise ValueError('Sources must cover the same timestamps.')
+    return solar.merge(wind, on='time', validate='one_to_one', sort=True)
+
+joined = align(solar, wind)
 joined['total_mw'] = joined.solar_mw + joined.wind_mw
 # Step 3: Test both completeness and the known sum.
 assert len(joined)==3 and np.allclose(joined.total_mw, 2)
+assert joined.time.is_monotonic_increasing
 print(joined.to_string(index=False))
 ''', 'An inner join alone can silently discard unmatched times; coverage must be checked first.')
 add('general', 'Capacity search under a reliability target', 'Wind produces [0,1,2,1] MW per unit; firm geothermal supplies 1 MW and demand is 2 MW each hour. Search 0–4 wind units for coverage at least 80%. Report the smallest feasible count, unmet and curtailed MWh.', '''
@@ -280,7 +290,7 @@ array_kw = count*module_w/1000
 # Step 3: Print and check the nameplate.
 print(array_kw,'kW DC'); assert array_kw == 9.6
 ''','Nameplate describes STC; actual operating output varies.')
-add('solar','Daily irradiation','Four hourly mean irradiances are 0,200,600,400 W/m². Calculate four-hour irradiation in kWh/m².', '''
+add('solar','Four-hour irradiation','Four hourly mean irradiances are [0, 200, 600, 400] W/m². Calculate four-hour irradiation in kWh/m².', '''
 # Step 1: Store hourly means and duration.
 irradiance = [0,200,600,400]; hours = 1
 # Step 2: Integrate and convert Wh to kWh.
@@ -300,9 +310,11 @@ add('solar','Capacity factor from AC energy','A 10 kW AC plant exports 48 kWh in
 # Step 1: Set exported energy, AC capacity and duration.
 energy_kwh, capacity_kw, hours = 48, 10, 24
 # Step 2: Calculate the AC-based capacity factor.
-cf = energy_kwh/(capacity_kw*hours)
+denominator_kwh = capacity_kw * hours
+cf = energy_kwh / denominator_kwh
 # Step 3: Print a labelled percentage.
-print(f'AC-based CF: {cf:.0%}'); assert cf == 0.2
+print(f'AC-rated energy: {denominator_kwh} kWh; AC-based CF: {cf:.0%}')
+assert denominator_kwh == 240 and cf == 0.2
 ''','20% uses AC nameplate. A DC-based capacity factor would have a different denominator.')
 add('solar','Cell-temperature estimate','At ambient 25°C and irradiance [0,400,800] W/m², use NOCT 45°C and Tc=Ta+G(NOCT−20)/800. Calculate temperatures.', '''
 import numpy as np
@@ -332,7 +344,7 @@ ac = np.minimum(available_ac,7); clipping = available_ac-ac
 print(ac.sum(),'kWh AC;',clipping.sum(),'kWh clipping')
 assert np.allclose(ac+clipping,available_ac) and np.isclose(ac.sum(),17.88)
 ''','Clipping is measured after modeled inverter conversion; it is distinct from inverter losses.')
-add('solar','Sequential losses','Start with 1000 kWh DC; apply 3% soiling, 2% wiring and 4% inverter losses sequentially. Compare with simply subtracting 9%.', '''
+add('solar','Sequential losses','Start with 1000 kWh of estimated DC energy before soiling and wiring losses. Apply 3% soiling, 2% wiring and 4% inverter losses sequentially. Compare with simply subtracting 9%.', '''
 import numpy as np
 # Step 1: Express loss fractions as retained fractions.
 retained = 1-np.array([0.03,0.02,0.04])
@@ -357,7 +369,9 @@ energy = np.array([4000,9000]); capacity = np.array([5,10])
 # Step 2: Normalise production by installed capacity.
 specific_yield = energy/capacity
 # Step 3: Compare the normalised values.
-print(specific_yield,'kWh/kWp'); assert np.argmax(specific_yield)==1
+winner = int(np.argmax(specific_yield)) + 1
+print(specific_yield,'kWh/kWp; higher yield: system',winner)
+assert np.allclose(specific_yield,[800,900]) and winner==2
 ''','The periods must match before comparing yields; higher yield does not alone establish lower cost.')
 add('solar','Unequal daylight intervals','Average AC powers [1,4,2] kW persist for [0.5,2,1.5] hours. Integrate their energy.', '''
 import numpy as np
@@ -411,7 +425,7 @@ best = next(t for t in trials if t[1]<=0.05)
 print('Rating kW and clipping fraction:',best)
 assert best[0]==10 and all(f>0.05 for r,f in trials if r<best[0])
 ''','An energy constraint is not a financial optimum; inverter prices and lifetime behavior are omitted.')
-add('solar','Temperature and irradiance sensitivity grid','For G=[200,600,1000] W/m² and ambient=[10,25,40]°C, calculate a 3×3 grid of AC power for 10 kW DC, 8 kW AC, NOCT45, gamma−0.004 and eta0.97.', '''
+add('solar','Temperature and irradiance sensitivity grid','For irradiance [200, 600, 1000] W/m² and air temperature [10, 25, 40] °C, calculate a 3×3 grid of AC power in kW. Use 10 kW DC nameplate, an 8 kW AC cap, NOCT 45 °C, a power coefficient of −0.004/°C and inverter efficiency 0.97.', '''
 import numpy as np
 import pandas as pd
 # Step 1: Broadcast irradiance columns against ambient-temperature rows.
@@ -433,7 +447,10 @@ for pv in [0,4,6,0]:
     charge=min(pv-direct,2,(3-soc)/0.9); discharge=min(2-direct,2,soc*0.9)
     soc+=charge*0.9-discharge/0.9
     unmet=2-direct-discharge; curtailed=pv-direct-charge
-    assert np.isclose(before+charge*0.9,soc+discharge/0.9)
+    served=direct+discharge
+    losses=charge*0.10+discharge*(1/0.9-1)
+    assert np.isclose(pv+before,served+curtailed+losses+soc)
+    assert np.isclose(served+unmet,2)
     unmet_total+=unmet; curtailed_total+=curtailed; rows.append(soc)
 # Step 3: Verify storage limits and show final energy accounting.
 print(unmet_total,curtailed_total,soc,'kWh unmet, curtailed, final SOC')
@@ -607,7 +624,7 @@ fig,ax=plt.subplots(figsize=(6,3)); ax.plot(np.arange(1,6)/6*100,ranked,'o-')
 ax.set(xlabel='Exceedance plotting position (%)',ylabel='Power (MW)',title='Synthetic hydro duration curve'); fig.tight_layout(); plt.show()
 print(energy,'MWh'); assert np.isclose(ranked.sum()*24,energy)
 ''','Sorting preserves total energy for equal intervals but removes the order needed for storage simulation.')
-add('hydro','Reservoir routing','Route hourly inflows[2,0,8,16,0,0] m³/s; initial storage20000 m³ and maximum50000. Prioritise1 m³/s environment, then up to3 turbine; spill excess. Use head20 m and eta0.9. Check every water balance.', '''
+add('hydro','Reservoir routing','Route hourly inflows [2, 0, 8, 16, 0, 0] m³/s from 20,000 m³ initial storage and a 50,000 m³ capacity. Prioritise an environmental release of up to 1 m³/s, then turbine flow of up to 3 m³/s. Spill the overflow. With net head 20 m and efficiency 0.9, report storage, spill and generation. Check the water balance in every interval.', '''
 import numpy as np
 # Step 1: Set storage state and output records.
 storage=20000.; rows=[]
@@ -621,10 +638,14 @@ for q in [2,0,8,16,0,0]:
     energy=1000*9.81*turbine*20*0.9/3.6e9
     rows.append((storage,spill,energy,3600-environmental))
 # Step 3: Check total spill and final storage and report generated energy.
-print('Final storage:',storage,'m³; total generation:',sum(r[2] for r in rows),'MWh')
-assert storage==21200 and sum(r[1] for r in rows)==7600
+total_spill=sum(r[1] for r in rows)
+for hour, (stored, spilled, generated, shortage) in enumerate(rows, 1):
+    print(f'Hour {hour}: storage {stored:.0f} m³, spill {spilled:.0f} m³, '
+          f'energy {generated:.3f} MWh, environmental shortfall {shortage:.0f} m³')
+print('Final storage:',storage,'m³; total spill:',total_spill,'m³; total generation:',sum(r[2] for r in rows),'MWh')
+assert storage==21200 and total_spill==7600
 ''','Within-hour inflow is immediately available; head is constant and evaporation is omitted.')
-add('hydro','Storage-dependent head','Route inflows[2,0,3] m³/s for three hours from20000 m³. Withdraw up to2 m³/s, no spill limit. Use beginning-of-step head H=10+S/10000 m and eta0.9; compare with constant12 m.', '''
+add('hydro','Storage-dependent head','Route hourly inflows [2, 0, 3] m³/s from 20,000 m³ of storage. Withdraw up to 2 m³/s for generation and assume no overflow over these three hours. Use beginning-of-step head H = 10 + S/10,000 in metres with S in m³, and efficiency 0.9. Compare generation with a constant 12 m head.', '''
 import numpy as np
 # Step 1: Initialise storage and energy counters.
 storage=20000.; variable_energy=0.; fixed_energy=0.
@@ -669,7 +690,7 @@ import numpy as np
 # Step 1: Set state and energy totals at constant head.
 storage=0.; used=0.; recovered=0.; joules_per_m3=1000*9.81*100
 # Step 2: Limit pumping by space and generation by available water.
-for action in ['pump','pump','generate','generate']:
+for hour, action in enumerate(['pump','pump','generate','generate'], 1):
     before=storage
     if action=='pump':
         volume=min(1e6*3600*0.85/joules_per_m3,10000-storage)
@@ -677,7 +698,9 @@ for action in ['pump','pump','generate','generate']:
     else:
         volume=min(0.7e6*3600/(joules_per_m3*0.9),storage)
         storage-=volume; recovered+=volume*joules_per_m3*0.9/3.6e9
-    assert 0<=storage<=10000 and abs(storage-before)<=10000
+    change = volume if action=='pump' else -volume
+    assert 0<=storage<=10000 and np.isclose(before+change,storage)
+    print(f'Hour {hour} ({action}): moved {volume:.1f} m³, stored {storage:.1f} m³')
 # Step 3: Account for remaining stored energy as well as conversion losses.
 stored_equivalent=storage*joules_per_m3*0.9/3.6e9
 print(used,recovered,stored_equivalent,'MWh pumping, exported, recoverable remaining')
@@ -715,7 +738,8 @@ available,cp,efficiency=500,0.4,0.95
 # Step 2: Apply aerodynamic extraction and drivetrain losses.
 electrical=available*cp*efficiency
 # Step 3: Check the ideal Betz bound and the result.
-print(electrical,'kW'); assert cp<16/27 and electrical==190
+print(electrical,'kW electrical; C_p:',cp,'ideal Betz limit:',16/27)
+assert cp<16/27 and electrical==190
 ''','Betz is an ideal aerodynamic limit; it is not a turbine capacity factor.')
 add('wind','Daily turbine capacity factor','A3 MW turbine delivers21.6 MWh in24 h. Calculate daily CF.', '''
 # Step 1: Calculate the rated energy for the same interval.
@@ -762,7 +786,8 @@ v=np.array([4,8])
 # Step 2: Compare averaging before and after the nonlinear transformation.
 mean_cube=np.mean(v**3); cube_mean=np.mean(v)**3
 # Step 3: Print the discrepancy and check its direction.
-print(mean_cube,cube_mean,'m³/s³'); assert mean_cube==288 and cube_mean==216
+print(mean_cube,cube_mean,'m³/s³; difference:',mean_cube-cube_mean,'m³/s³')
+assert mean_cube==288 and cube_mean==216
 ''','Using mean speed in a nonlinear power model can bias energy estimates; clipping adds further effects.')
 add('wind','Turbulence intensity','For[6,8,10] m/s, calculate population standard deviation divided by mean speed. State ddof=0.', '''
 import numpy as np
@@ -809,7 +834,7 @@ p=np.array([0.5,2,3]); dt=np.array([2,1,0.5])
 energy=np.sum(p*dt); cf=energy/(3*dt.sum())
 # Step 3: Check the hand sum and report results.
 print(energy,'MWh;',cf,'CF'); assert energy==4.5 and 0<=cf<=1
-''','The energy-weighted time calculation is essential when intervals differ.')
+''','Weight each interval-average power by its duration. Use the same total duration in the capacity-factor denominator.')
 add('wind','Histogram of wind speeds','Plot a histogram of[0,2,4,6,8,10,12,14] m/s with bins[0,5,10,15]. Check counts.', '''
 import numpy as np
 import matplotlib.pyplot as plt
@@ -991,14 +1016,16 @@ flux=2.5*gradient
 # Step 3: Check units and numerical value.
 print(flux,'W/m²'); assert abs(flux-0.075)<1e-12
 ''','The magnitude is75 mW/m². Heat flux requires conductivity; a temperature gradient alone is not flux.')
-add('geothermal','Compounded net-power decline','A5 MW net plant declines2% per year. Calculate years1–10 and annual GWh at95% availability.', '''
+add('geothermal','Compounded net-power decline','A plant starts at 5 MW net and declines 2% per year. Report net operating power and annual energy in years 1–10 at 95% availability.', '''
 import numpy as np
 # Step 1: Start the decline exponent at zero for year1.
 years=np.arange(1,11)
 # Step 2: Calculate annual net power and availability-adjusted energy.
 power=5*0.98**(years-1); energy=power*8760*0.95/1000
 # Step 3: Check first-year energy and decreasing power.
-print(energy,'GWh/year'); assert np.isclose(energy[0],41.61) and np.all(np.diff(power)<0)
+for year, net_mw, annual_gwh in zip(years,power,energy):
+    print(f'Year {year}: {net_mw:.3f} MW net, {annual_gwh:.3f} GWh')
+assert np.isclose(energy[0],41.61) and np.all(np.diff(power)<0)
 ''','A prescribed decline curve is a scenario, not a calibrated reservoir forecast.')
 add('geothermal','Invalid well records','Flows[40,−2,50] kg/s and production[150,160,60]°C have reinjection70°C. Retain only finite positive-flow records hotter than reinjection; report exclusions.', '''
 import numpy as np
@@ -1066,9 +1093,12 @@ year=np.arange(1,21); baseline=5*0.97**(year-1)
 # Step 2: Reset the age exponent at the intervention year.
 age=np.where(year<=10,year-1,year-11)
 intervention=5*0.97**age
-# Step 3: Integrate the incremental generation and verify the reset.
-gain=np.sum(intervention-baseline)*8760*0.95/1000
-print(gain,'GWh additional'); assert intervention[10]==5 and gain>0
+# Step 3: Integrate both trajectories, compare totals and verify the reset.
+baseline_gwh=baseline.sum()*8760*0.95/1000
+intervention_gwh=intervention.sum()*8760*0.95/1000
+gain=intervention_gwh-baseline_gwh
+print(baseline_gwh,'GWh uninterrupted;',intervention_gwh,'GWh with intervention;',gain,'GWh gain')
+assert intervention[10]==5 and gain>0
 ''','Intervention cost, downtime and reservoir feasibility are omitted; additional energy is not automatically economic benefit.')
 add('geothermal','Joint uncertainty in flow and temperature','With seed5 sample2000 independent flows uniform40–60 kg/s and production temperatures uniform140–170°C. Use reinjection70°C, cp4180, eta0.12, parasitic0.1. Report net-power median,5th/95th percentiles and probability above2 MW.', '''
 import numpy as np
@@ -1117,10 +1147,18 @@ def notebook_citations(text):
         return '; '.join(f'[{labels.get(key,key)}](#reference-{key})' for key in keys)
     return re.sub(r'\[@([^\]]+)\]',replace,text)
 
+def workbook_intro():
+    text = '# Workbook introduction\n\nThe 100 exercises are embedded directly inside their teaching chapters. Every chapter has **5 easy, 10 medium and 5 hard** exercises, with references, step-by-step explanations and executable checks.\n\n| Chapter practice | Exercises |\n|---|---:|\n'
+    for title, topic in [('Hydroelectric', 'hydro'), ('General', 'general'), ('Solar', 'solar'),
+                         ('Wind', 'wind'), ('Geothermal', 'geothermal')]:
+        text += f'| [{title}](../{PATHS[topic]}#chapter-practice-20-python-exercises) | 20 |\n'
+    return text + '\nEach chapter also offers a complete downloadable `.ipynb` notebook. In the book, practice answers start collapsed; in ordinary notebook viewers the step-by-step answers appear below their prompts.\n\n## After practice\n\nTake the [25-question test](renewableEnergyTest.md), then complete the [four-source final project](../section8/projectIntro.md) using the five separate input datasets. Test answers and the final-project solution are instructor-only and are not included in the student book.\n'
+
 def export_notebook(path):
     """Create a companion .ipynb from the complete MyST chapter, not just exercises."""
     text=path.read_text(encoding='utf-8')
     text=re.sub(r'\A---\n.*?\n---\n','',text,flags=re.S)
+    text=re.sub(r'^:::\{iframe\}[^\n]*\n.*?^:::[ \t]*\n\n?', '', text, flags=re.M|re.S)
     cells=[]; last=0
     for match in re.finditer(r'```\{code-cell\} python\n(.*?)```',text,re.S):
         if text[last:match.start()].strip(): cells.append(nbformat.v4.new_markdown_cell(text[last:match.start()].strip()))
@@ -1136,13 +1174,14 @@ def export_notebook(path):
             cell.source=notebook_citations(cell.source)
     # Preserve checked code outputs when only surrounding teaching text changes.
     destination=path.with_suffix('.ipynb')
+    previous=None
     if destination.exists():
         previous=nbformat.read(destination,as_version=4)
         old_code={c.source:c for c in previous.cells if c.cell_type=='code'}
         for cell in cells:
             if cell.cell_type=='code' and cell.source in old_code:
                 old=old_code[cell.source]
-                cell.outputs=old.outputs;cell.execution_count=old.execution_count
+                cell.outputs=old.outputs;cell.execution_count=old.execution_count;cell.metadata=old.metadata
     # Supply readable bibliographic details in standard notebook viewers too.
     cited=set()
     for group in re.findall(r'\[@([^\]]+)\]',text):
@@ -1156,7 +1195,12 @@ def export_notebook(path):
             return match.group(1).replace('{','').replace('}','') if match else ''
         details.append(f'<a id="reference-{key}"></a>\n\n- **{key}:** {field("author") or field("editor")}. {field("title")} ({field("year")}). '+field('url'))
     cells.append(nbformat.v4.new_markdown_cell('\n'.join(details)))
-    nb=nbformat.v4.new_notebook(cells=cells,metadata={'kernelspec':{'name':'python3','display_name':'Python 3','language':'python'},'language_info':{'name':'python'}})
+    if previous and len(previous.cells) == len(cells):
+        for cell, old in zip(cells, previous.cells):
+            if cell.cell_type == old.cell_type:
+                cell.id = old.id
+    metadata = previous.metadata if previous else {'kernelspec':{'name':'python3','display_name':'Python 3','language':'python'},'language_info':{'name':'python'}}
+    nb=nbformat.v4.new_notebook(cells=cells,metadata=metadata)
     nbformat.write(nb,destination)
 
 def main():
@@ -1175,10 +1219,6 @@ def main():
             text=text.replace('## Chapter practice — 20 Python exercises',download+'## Chapter practice — 20 Python exercises',1)
         path.write_text(text,encoding='utf-8'); export_notebook(path)
         print(topic,len(BANK[topic]),'exercises')
-    index='# Chapter exercise guide — 100 Python exercises\n\nThe exercises are embedded directly inside each teaching chapter, with a step-by-step answer below every question. Every chapter has **5 easy, 10 medium and 5 hard** exercises, each with references and executable checks.\n\n| Chapter | Exercises | Open the chapter |\n|---|---:|---|\n'
-    for topic,relative in PATHS.items():
-        index+=f'| {topic.title()} | 20 | [Study and practice](../{relative}#chapter-practice-20-python-exercises) |\n'
-    index+='\nEach chapter also offers a complete downloadable `.ipynb` notebook. In the book, practice answers start collapsed; in ordinary notebook viewers the step-by-step answers appear below their prompts.\n\n## After practice\n\nTake the [25-question test](renewableEnergyTest.md), then complete the [four-source final project](../section8/projectIntro.md) using the five separate input datasets. Test answers and the final-project solution are instructor-only and are not included in the student book.\n'
-    (ROOT/'section7/renewableExercises.md').write_text(index,encoding='utf-8')
+    (ROOT/'section7/renewableExercises.md').write_text(workbook_intro(),encoding='utf-8')
 
 if __name__=='__main__':main()

@@ -1,4 +1,5 @@
 """Check practice coverage, independent solutions and instructor-file separation."""
+from collections import Counter
 from pathlib import Path
 import contextlib
 import io
@@ -22,16 +23,23 @@ def validate():
         assert len(blocks)==20,relative
         levels=re.findall(r'\*\*Difficulty:\*\* (Easy|Medium|Hard)',text)
         assert [levels.count(x) for x in ['Easy','Medium','Hard']]==[5,10,5],relative
+        solutions=Counter()
         for i,block in enumerate(blocks,1):
             assert '**Reference:**' in block and ('[@' in block or '](' in block),(relative,i,'reference')
             assert block.count('::::{dropdown} Step-by-step answer')==1 and ':open:' not in block
             cells=re.findall(r'```\{code-cell\} python\n(.*?)```',block,re.S)
             assert len(cells)==2 and 'assert' in cells[-1],(relative,i,'cells')
+            numbered_steps=re.findall(r'^\d+\. (.+)$',block.split('::::{dropdown}',1)[1].split('```',1)[0],re.M)
+            assert numbered_steps == re.findall(r'^# Step \d+: (.+)$',cells[-1],re.M) and len(numbered_steps)>=3,(relative,i,'steps')
+            assert '**Task:**' in block and '**Interpretation:**' in block,(relative,i,'prose')
+            solutions[cells[-1].strip()]+=1
             with contextlib.redirect_stdout(io.StringIO()):
                 exec(compile(cells[-1],f'{relative}:exercise-{i}','exec'),{})
             plt.close('all');count+=1
         nb=nbformat.read(path.with_suffix('.ipynb'),as_version=4);nbformat.validate(nb)
         assert sum('### Exercise ' in c.source for c in nb.cells if c.cell_type=='markdown')==20
+        notebook_code=Counter(c.source.strip() for c in nb.cells if c.cell_type=='code')
+        assert not solutions-notebook_code,(relative,'practice solutions differ in the notebook')
     config=(ROOT/'myst.yml').read_text()
     assert 'projectSolution' not in config and 'instructor_private' not in config
     assert not (ROOT/'section8/projectSolution.md').exists()

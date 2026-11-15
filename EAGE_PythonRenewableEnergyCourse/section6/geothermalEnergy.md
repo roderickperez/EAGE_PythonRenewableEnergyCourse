@@ -750,7 +750,7 @@ print(flux,'W/m²'); assert abs(flux-0.075)<1e-12
 
 **Reference:** Original compounded-decline scenario; Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
-**Task:** A 5 MW net plant declines 2% per year. Calculate years 1–10 and annual GWh at 95% availability.
+**Task:** A plant starts at 5 MW net and declines 2% per year. Report net operating power and annual energy in years 1–10 at 95% availability.
 
 ```{code-cell} python
 # Your solution for geothermal exercise 13.
@@ -769,7 +769,9 @@ years=np.arange(1,11)
 # Step 2: Calculate annual net power and availability-adjusted energy.
 power=5*0.98**(years-1); energy=power*8760*0.95/1000
 # Step 3: Check first-year energy and decreasing power.
-print(energy,'GWh/year'); assert np.isclose(energy[0],41.61) and np.all(np.diff(power)<0)
+for year, net_mw, annual_gwh in zip(years,power,energy):
+    print(f'Year {year}: {net_mw:.3f} MW net, {annual_gwh:.3f} GWh')
+assert np.isclose(energy[0],41.61) and np.all(np.diff(power)<0)
 ```
 
 **Interpretation:** A prescribed decline curve is a scenario, not a calibrated reservoir forecast.
@@ -972,7 +974,7 @@ assert np.allclose(net+pump,gross) and flow[best]==100
 
 1. Calculate the uninterrupted reference trajectory.
 2. Reset the age exponent at the intervention year.
-3. Integrate the incremental generation and verify the reset.
+3. Integrate both trajectories, compare totals and verify the reset.
 
 ```{code-cell} python
 import numpy as np
@@ -981,9 +983,12 @@ year=np.arange(1,21); baseline=5*0.97**(year-1)
 # Step 2: Reset the age exponent at the intervention year.
 age=np.where(year<=10,year-1,year-11)
 intervention=5*0.97**age
-# Step 3: Integrate the incremental generation and verify the reset.
-gain=np.sum(intervention-baseline)*8760*0.95/1000
-print(gain,'GWh additional'); assert intervention[10]==5 and gain>0
+# Step 3: Integrate both trajectories, compare totals and verify the reset.
+baseline_gwh=baseline.sum()*8760*0.95/1000
+intervention_gwh=intervention.sum()*8760*0.95/1000
+gain=intervention_gwh-baseline_gwh
+print(baseline_gwh,'GWh uninterrupted;',intervention_gwh,'GWh with intervention;',gain,'GWh gain')
+assert intervention[10]==5 and gain>0
 ```
 
 **Interpretation:** Intervention cost, downtime and reservoir feasibility are omitted; additional energy is not automatically economic benefit.

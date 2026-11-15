@@ -120,13 +120,21 @@ function selectWork(id, initial) {
 }
 function renderNav() {
   const term=$('search').value.toLowerCase(); const groups = new Map();
-  for(const p of course.pages) if ((p.title+' '+p.group).toLowerCase().includes(term)) {
+  const locationParams = new URLSearchParams(location.hash.slice(1));
+  const entries = course.pages.flatMap(page => {
+    if (page.id !== 'section7/renewableExercises.md') return [page];
+    return [page, ...(course.workbook_links ?? []).map(link => ({ ...link, group: page.group }))];
+  });
+  const isActive = entry => entry.href
+    ? entry.href === location.hash
+    : entry.id === lesson?.id && locationParams.get('anchor') !== 'chapter-practice-20-python-exercises';
+  for(const p of entries) if ((p.title+' '+p.group).toLowerCase().includes(term)) {
     if(!groups.has(p.group)) groups.set(p.group,[]);groups.get(p.group).push(p);
   }
   $('lessons').replaceChildren(...[...groups].map(([name,pages]) => {
-    const d=document.createElement('details');d.open=!!term || pages.some(p=>p.id===lesson?.id);
+    const d=document.createElement('details');d.open=!!term || pages.some(isActive);
     const s=document.createElement('summary');s.textContent=name;d.append(s);
-    for(const p of pages){const b=document.createElement('button');b.textContent=p.title;b.classList.toggle('active',p.id===lesson?.id);b.onclick=()=>navigate(p.id);d.append(b);}return d;
+    for(const p of pages){const b=document.createElement('button');b.textContent=p.title;b.classList.toggle('active',isActive(p));b.onclick=()=>{if(p.href)location.hash=p.href;else navigate(p.id);};d.append(b);}return d;
   }));
 }
 function navigate(id) { location.hash = 'lesson='+encodeURIComponent(id); }
@@ -198,7 +206,7 @@ async function route() {
     // Avoid persisting the preceding lesson's editor into this new lesson.
     $('code').value=saved[key()]?.code ?? '# Write your Python here.\n';
     $('notes').value=saved[key()]?.notes || ''; $('stdin').value=saved[key()]?.stdin || '';
-    selectWork('draft');renderNav();$('reading').scrollTop=0;
+    selectWork('draft');$('reading').scrollTop=0;
     const outline=document.createElement('select');outline.setAttribute('aria-label','Jump to a section');
     const first=document.createElement('option');first.value='';first.textContent='On this page · jump to a section';outline.append(first);
     for(const h of $('lesson').querySelectorAll('h2,h3')) if(h.id){const o=document.createElement('option');o.value=h.id;o.textContent=h.textContent;outline.append(o);}
@@ -206,6 +214,7 @@ async function route() {
     if(workerReady) worker.postMessage({type:'context',path:lesson.id});
     if(window.MathJax?.typesetPromise) await window.MathJax.typesetPromise([$('lesson')]).catch(()=>{});
   }
+  renderNav();
   if(params.get('anchor')) document.getElementById(params.get('anchor'))?.scrollIntoView({block:'start'});
 }
 // Media URLs come only from the validated build manifest. One player owns each queue.

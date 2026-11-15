@@ -275,12 +275,19 @@ class Builder:
             shutil.copytree(source, OUT / lab)
         self.asset(BOOK / 'myst.yml')
         pages = [self.page(path, group) for path, group in self.pages]
+        workbook = next(page for page in pages if page['id'] == 'section7/renewableExercises.md')
+        workbook_html = BeautifulSoup(workbook['html'], 'html.parser')
+        workbook_links = [
+            {'title': link.get_text(), 'href': link['href']}
+            for link in workbook_html.select('table a[href^="#lesson="]')
+        ]
         attach_media(pages, SANDBOX)
         # Data are fetched on demand into the worker, retaining book-relative paths.
         for path in BOOK.rglob('*'):
             if path.suffix in {'.csv', '.xlsx', '.db', '.nc', '.geojson', '.json'} and '_build' not in path.parts:
                 self.asset(path)
-        payload = {'version': 2, 'pages': pages, 'assets': sorted(self.assets.values(), key=lambda x: x['path']),
+        payload = {'version': 2, 'pages': pages, 'workbook_links': workbook_links,
+                   'assets': sorted(self.assets.values(), key=lambda x: x['path']),
                    'book_url': 'https://roderickperez.github.io/EAGE_PythonRenewableEnergyCourse/',
                    'source_digest': hashlib.sha256(''.join(p['source_sha256'] for p in pages).encode()).hexdigest()}
         (OUT / 'course.json').write_text(json.dumps(payload, ensure_ascii=False, indent=2) + '\n')

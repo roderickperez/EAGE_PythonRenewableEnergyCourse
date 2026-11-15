@@ -62,6 +62,21 @@ project:
     - title: Applied Python Workbook
       children:
         - file: section7/renewableExercises.md
+        - title: Hydroelectric
+          url: https://roderickperez.github.io/EAGE_PythonRenewableEnergyCourse/section6/hydroelectricenergy/#chapter-practice-20-python-exercises
+          open_in_same_tab: true
+        - title: General
+          url: https://roderickperez.github.io/EAGE_PythonRenewableEnergyCourse/section0/introrenewableenergy/#chapter-practice-20-python-exercises
+          open_in_same_tab: true
+        - title: Solar
+          url: https://roderickperez.github.io/EAGE_PythonRenewableEnergyCourse/section6/solarenergy/#chapter-practice-20-python-exercises
+          open_in_same_tab: true
+        - title: Wind
+          url: https://roderickperez.github.io/EAGE_PythonRenewableEnergyCourse/section6/windenergy/#chapter-practice-20-python-exercises
+          open_in_same_tab: true
+        - title: Geothermal
+          url: https://roderickperez.github.io/EAGE_PythonRenewableEnergyCourse/section6/geothermalenergy/#chapter-practice-20-python-exercises
+          open_in_same_tab: true
 
     - title: Quizzes
       children:

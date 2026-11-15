@@ -469,13 +469,13 @@ print(array_kw,'kW DC'); assert array_kw == 9.6
 ::::
 
 (solar-exercise-03)=
-### Exercise 03 — Daily irradiation
+### Exercise 03 — Four-hour irradiation
 
 **Difficulty:** Easy
 
 **Reference:** Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units). PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2.
 
-**Task:** Four hourly mean irradiances are 0,200,600,400 W/m². Calculate four-hour irradiation in kWh/m².
+**Task:** Four hourly mean irradiances are [0, 200, 600, 400] W/m². Calculate four-hour irradiation in kWh/m².
 
 ```{code-cell} python
 # Your solution for solar exercise 03.
@@ -555,9 +555,11 @@ print(ac_kw,'kW AC'); assert ac_kw == 4.8 and ac_kw <= dc_kw
 # Step 1: Set exported energy, AC capacity and duration.
 energy_kwh, capacity_kw, hours = 48, 10, 24
 # Step 2: Calculate the AC-based capacity factor.
-cf = energy_kwh/(capacity_kw*hours)
+denominator_kwh = capacity_kw * hours
+cf = energy_kwh / denominator_kwh
 # Step 3: Print a labelled percentage.
-print(f'AC-based CF: {cf:.0%}'); assert cf == 0.2
+print(f'AC-rated energy: {denominator_kwh} kWh; AC-based CF: {cf:.0%}')
+assert denominator_kwh == 240 and cf == 0.2
 ```
 
 **Interpretation:** 20% uses AC nameplate. A DC-based capacity factor would have a different denominator.
@@ -671,7 +673,7 @@ assert np.allclose(ac+clipping,available_ac) and np.isclose(ac.sum(),17.88)
 
 **Reference:** PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2.
 
-**Task:** Start with 1000 kWh DC; apply 3% soiling, 2% wiring and 4% inverter losses sequentially. Compare with simply subtracting 9%.
+**Task:** Start with 1000 kWh of estimated DC energy before soiling and wiring losses. Apply 3% soiling, 2% wiring and 4% inverter losses sequentially. Compare with simply subtracting 9%.
 
 ```{code-cell} python
 # Your solution for solar exercise 09.
@@ -756,7 +758,9 @@ energy = np.array([4000,9000]); capacity = np.array([5,10])
 # Step 2: Normalise production by installed capacity.
 specific_yield = energy/capacity
 # Step 3: Compare the normalised values.
-print(specific_yield,'kWh/kWp'); assert np.argmax(specific_yield)==1
+winner = int(np.argmax(specific_yield)) + 1
+print(specific_yield,'kWh/kWp; higher yield: system',winner)
+assert np.allclose(specific_yield,[800,900]) and winner==2
 ```
 
 **Interpretation:** The periods must match before comparing yields; higher yield does not alone establish lower cost.
@@ -942,7 +946,7 @@ assert best[0]==10 and all(f>0.05 for r,f in trials if r<best[0])
 
 **Reference:** Specified simplified NOCT approximation; compare the fuller [Sandia/SAM thermal model](https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/cell-temperature/noct-cell-temperature/). [@pvlibDocs].
 
-**Task:** For G=[200,600,1000] W/m² and ambient=[10,25,40]°C, calculate a 3×3 grid of AC power for 10 kW DC, 8 kW AC, NOCT 45, gamma−0.004 and eta 0.97.
+**Task:** For irradiance [200, 600, 1000] W/m² and air temperature [10, 25, 40] °C, calculate a 3×3 grid of AC power in kW. Use 10 kW DC nameplate, an 8 kW AC cap, NOCT 45 °C, a power coefficient of −0.004/°C and inverter efficiency 0.97.
 
 ```{code-cell} python
 # Your solution for solar exercise 17.
@@ -1000,7 +1004,10 @@ for pv in [0,4,6,0]:
     charge=min(pv-direct,2,(3-soc)/0.9); discharge=min(2-direct,2,soc*0.9)
     soc+=charge*0.9-discharge/0.9
     unmet=2-direct-discharge; curtailed=pv-direct-charge
-    assert np.isclose(before+charge*0.9,soc+discharge/0.9)
+    served=direct+discharge
+    losses=charge*0.10+discharge*(1/0.9-1)
+    assert np.isclose(pv+before,served+curtailed+losses+soc)
+    assert np.isclose(served+unmet,2)
     unmet_total+=unmet; curtailed_total+=curtailed; rows.append(soc)
 # Step 3: Verify storage limits and show final energy accounting.
 print(unmet_total,curtailed_total,soc,'kWh unmet, curtailed, final SOC')

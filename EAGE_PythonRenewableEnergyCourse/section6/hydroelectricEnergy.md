@@ -838,7 +838,7 @@ print(energy,'MWh'); assert np.isclose(ranked.sum()*24,energy)
 
 **Reference:** Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7. Original chronological water-balance policy.
 
-**Task:** Route hourly inflows[2,0,8,16,0,0] m³/s; initial storage 20000 m³ and maximum 50000. Prioritise 1 m³/s environment, then up to 3 turbine; spill excess. Use head 20 m and eta 0.9. Check every water balance.
+**Task:** Route hourly inflows [2, 0, 8, 16, 0, 0] m³/s from 20,000 m³ initial storage and a 50,000 m³ capacity. Prioritise an environmental release of up to 1 m³/s, then turbine flow of up to 3 m³/s. Spill the overflow. With net head 20 m and efficiency 0.9, report storage, spill and generation. Check the water balance in every interval.
 
 ```{code-cell} python
 # Your solution for hydro exercise 16.
@@ -864,8 +864,12 @@ for q in [2,0,8,16,0,0]:
     energy=1000*9.81*turbine*20*0.9/3.6e9
     rows.append((storage,spill,energy,3600-environmental))
 # Step 3: Check total spill and final storage and report generated energy.
-print('Final storage:',storage,'m³; total generation:',sum(r[2] for r in rows),'MWh')
-assert storage==21200 and sum(r[1] for r in rows)==7600
+total_spill=sum(r[1] for r in rows)
+for hour, (stored, spilled, generated, shortage) in enumerate(rows, 1):
+    print(f'Hour {hour}: storage {stored:.0f} m³, spill {spilled:.0f} m³, '
+          f'energy {generated:.3f} MWh, environmental shortfall {shortage:.0f} m³')
+print('Final storage:',storage,'m³; total spill:',total_spill,'m³; total generation:',sum(r[2] for r in rows),'MWh')
+assert storage==21200 and total_spill==7600
 ```
 
 **Interpretation:** Within-hour inflow is immediately available; head is constant and evaporation is omitted.
@@ -879,7 +883,7 @@ assert storage==21200 and sum(r[1] for r in rows)==7600
 
 **Reference:** Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7. Storage–head relationship is synthetic.
 
-**Task:** Route inflows[2,0,3] m³/s for three hours from 20000 m³. Withdraw up to 2 m³/s, no spill limit. Use beginning-of-step head H=10+S/10000 m and eta 0.9; compare with constant 12 m.
+**Task:** Route hourly inflows [2, 0, 3] m³/s from 20,000 m³ of storage. Withdraw up to 2 m³/s for generation and assume no overflow over these three hours. Use beginning-of-step head H = 10 + S/10,000 in metres with S in m³, and efficiency 0.9. Compare generation with a constant 12 m head.
 
 ```{code-cell} python
 # Your solution for hydro exercise 17.
@@ -1008,7 +1012,7 @@ import numpy as np
 # Step 1: Set state and energy totals at constant head.
 storage=0.; used=0.; recovered=0.; joules_per_m3=1000*9.81*100
 # Step 2: Limit pumping by space and generation by available water.
-for action in ['pump','pump','generate','generate']:
+for hour, action in enumerate(['pump','pump','generate','generate'], 1):
     before=storage
     if action=='pump':
         volume=min(1e6*3600*0.85/joules_per_m3,10000-storage)
@@ -1016,7 +1020,9 @@ for action in ['pump','pump','generate','generate']:
     else:
         volume=min(0.7e6*3600/(joules_per_m3*0.9),storage)
         storage-=volume; recovered+=volume*joules_per_m3*0.9/3.6e9
-    assert 0<=storage<=10000 and abs(storage-before)<=10000
+    change = volume if action=='pump' else -volume
+    assert 0<=storage<=10000 and np.isclose(before+change,storage)
+    print(f'Hour {hour} ({action}): moved {volume:.1f} m³, stored {storage:.1f} m³')
 # Step 3: Account for remaining stored energy as well as conversion losses.
 stored_equivalent=storage*joules_per_m3*0.9/3.6e9
 print(used,recovered,stored_equivalent,'MWh pumping, exported, recoverable remaining')

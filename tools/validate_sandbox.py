@@ -37,6 +37,13 @@ def validate():
     assert (OUT / 'project-map' / 'project-map.js').is_file()
     assert 'project-map/index.html' not in pages[PROJECT]['html']
     assert 'id="load-the-separate-input-datasets"' in pages[PROJECT]['html']
+    workbook_links = payload['workbook_links']
+    assert [link['title'] for link in workbook_links] == ['Hydroelectric', 'General', 'Solar', 'Wind', 'Geothermal']
+    assert pages['section7/renewableExercises.md']['title'] == 'Workbook introduction'
+    for link in workbook_links:
+        args = parse_qs(link['href'][1:])
+        assert args['anchor'] == ['chapter-practice-20-python-exercises']
+        assert BeautifulSoup(pages[args['lesson'][0]]['html'], 'html.parser').find(id=args['anchor'][0])
     assert 'private-course/eage-python-course/index.html' in pages['courseIntro.md']['html']
     for path, page in pages.items():
         assert page['source_sha256'] == hashlib.sha256((BOOK/path).read_bytes()).hexdigest(), f'Stale content: {path}'

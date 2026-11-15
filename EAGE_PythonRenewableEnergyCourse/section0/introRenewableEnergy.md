@@ -746,8 +746,11 @@ for supply in [0,4,4,0]:
     discharge = min(2-direct, 2, soc*0.9)
     soc += charge*0.9 - discharge/0.9
     curtailed = supply-direct-charge; unmet = 2-direct-discharge
-    assert np.isclose(supply+discharge, direct+discharge+charge+curtailed)
-    assert np.isclose(soc-before, charge*0.9-discharge/0.9)
+    served = direct + discharge
+    losses = charge * 0.10 + discharge * (1/0.9 - 1)
+    # Powers in MW equal interval energies in MWh numerically for a one-hour step.
+    assert np.isclose(supply + before, served + curtailed + losses + soc)
+    assert np.isclose(served + unmet, 2)
     rows.append((soc, curtailed, unmet))
 # Step 3: Check limits and report energy outcomes.
 assert all(0 <= row[0] <= 3+1e-12 for row in rows)
@@ -821,14 +824,21 @@ import numpy as np
 # Step 1: Create separate source tables with their own timestamp columns.
 time = pd.date_range('2025-01-01', periods=3, freq='h', tz='UTC')
 solar = pd.DataFrame({'time':time, 'solar_mw':[0,1,2]})
-wind = pd.DataFrame({'time':time, 'wind_mw':[2,1,0]})
+wind = pd.DataFrame({'time':time[::-1], 'wind_mw':[0,1,2]})
 # Step 2: Validate matching coverage and perform a one-to-one join.
-assert solar.time.is_unique and wind.time.is_unique
-assert solar.time.equals(wind.time)
-joined = solar.merge(wind, on='time', validate='one_to_one')
+def align(solar, wind):
+    for table in (solar, wind):
+        if table.time.isna().any() or not table.time.is_unique:
+            raise ValueError('Each source must have valid, unique timestamps.')
+    if set(solar.time) != set(wind.time):
+        raise ValueError('Sources must cover the same timestamps.')
+    return solar.merge(wind, on='time', validate='one_to_one', sort=True)
+
+joined = align(solar, wind)
 joined['total_mw'] = joined.solar_mw + joined.wind_mw
 # Step 3: Test both completeness and the known sum.
 assert len(joined)==3 and np.allclose(joined.total_mw, 2)
+assert joined.time.is_monotonic_increasing
 print(joined.to_string(index=False))
 ```
 

@@ -551,7 +551,8 @@ available,cp,efficiency=500,0.4,0.95
 # Step 2: Apply aerodynamic extraction and drivetrain losses.
 electrical=available*cp*efficiency
 # Step 3: Check the ideal Betz bound and the result.
-print(electrical,'kW'); assert cp<16/27 and electrical==190
+print(electrical,'kW electrical; C_p:',cp,'ideal Betz limit:',16/27)
+assert cp<16/27 and electrical==190
 ```
 
 **Interpretation:** Betz is an ideal aerodynamic limit; it is not a turbine capacity factor.
@@ -718,7 +719,8 @@ v=np.array([4,8])
 # Step 2: Compare averaging before and after the nonlinear transformation.
 mean_cube=np.mean(v**3); cube_mean=np.mean(v)**3
 # Step 3: Print the discrepancy and check its direction.
-print(mean_cube,cube_mean,'m³/s³'); assert mean_cube==288 and cube_mean==216
+print(mean_cube,cube_mean,'m³/s³; difference:',mean_cube-cube_mean,'m³/s³')
+assert mean_cube==288 and cube_mean==216
 ```
 
 **Interpretation:** Using mean speed in a nonlinear power model can bias energy estimates; clipping adds further effects.
@@ -887,7 +889,7 @@ energy=np.sum(p*dt); cf=energy/(3*dt.sum())
 print(energy,'MWh;',cf,'CF'); assert energy==4.5 and 0<=cf<=1
 ```
 
-**Interpretation:** The energy-weighted time calculation is essential when intervals differ.
+**Interpretation:** Weight each interval-average power by its duration. Use the same total duration in the capacity-factor denominator.
 
 ::::
 
