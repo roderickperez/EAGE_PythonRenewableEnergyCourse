@@ -102,18 +102,20 @@ export class HydroScene {
     const grass=this.mat('#708b75',.95), rock=this.mat('#85918a',1), bark=this.mat('#66584a',1), needles=this.mat('#3e6654',1);
     this.box([21,.35,4],[0,-.8,-5.7],grass,'River valley');
     const terrain=new T.PlaneGeometry(22,7,44,18); terrain.rotateX(-Math.PI/2);
+    const terrainHeight=(x,z)=>{
+      const ridge=5.8*Math.exp(-(((x+3)/3.3)**2))+3.9*Math.exp(-(((x-3)/2.8)**2))+3.4*Math.exp(-(((x+8)/2.8)**2));
+      return -.65+ridge*Math.max(0,1-(z/3.5)**2)*(1+.07*Math.sin(x*2+z)*Math.cos(z*3));
+    };
     const vertices=terrain.attributes.position;
     for(let i=0;i<vertices.count;i++){
       const x=vertices.getX(i),z=vertices.getZ(i);
-      const ridge=5.8*Math.exp(-(((x+3)/3.3)**2))+3.9*Math.exp(-(((x-3)/2.8)**2))+3.4*Math.exp(-(((x+8)/2.8)**2));
-      const envelope=Math.max(0,1-(z/3.5)**2);
-      vertices.setY(i,-.65+ridge*envelope*(1+.07*Math.sin(x*2+z)*Math.cos(z*3)));
+      vertices.setY(i,terrainHeight(x,z));
     }
     terrain.computeVertexNormals(); this.mesh(terrain,rock,[0,0,-7],'Mountain catchment');
-    this.box([5.7,.35,1.2],[-6.7,-.55,2.7],grass,'Reservoir bank');
-    for(const [x,z,s] of [[-9,2.7,.8],[-7.5,2.7,1],[-5.7,2.7,.75],[-1,-5,.9],[1,-4.9,.8],[3,-5,.65],[5.6,-4.9,.75],[8.9,-4.6,.65]]) {
-      this.cyl(.07*s,.7*s,[x,-.55+.35*s,z],bark,'Tree');
-      for(let j=0;j<3;j++)this.mesh(new T.ConeGeometry((.48-j*.1)*s,.8*s,9),needles,[x,-.1+(.4+j*.32)*s,z],'Tree');
+    for(const [x,z,s] of [[-9,-6.7,.9],[-7.8,-7,1.1],[-6.5,-6.4,1],[-5,-6.5,.9],[-3.6,-6,.9],[-2.1,-5.7,.8],[-.5,-5.3,.85],[1.2,-5.1,.8]]) {
+      const ground=terrainHeight(x,z+7);
+      this.cyl(.07*s,.7*s,[x,ground+.35*s,z],bark,'Tree');
+      for(let j=0;j<3;j++)this.mesh(new T.ConeGeometry((.48-j*.1)*s,.8*s,9),needles,[x,ground+(.85+j*.32)*s,z],'Tree');
     }
   }
   energyPath(points,label){

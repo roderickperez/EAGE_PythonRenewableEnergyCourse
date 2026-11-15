@@ -14,10 +14,16 @@ function format(value, digits = 1) {
   return Number(value).toFixed(digits);
 }
 
+// Escape text before adding only the subscript markup used by our notation.
+function mathematicalLabel(text) {
+  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/([A-Za-z])_([A-Za-z0-9]+)/g, '$1<sub>$2</sub>');
+}
+
 function sliderMarkup([key, label, min, max, step, unit], value) {
   return `<div class="control">
-    <div class="control-line"><label for="${key}">${label}</label><output id="${key}-value" for="${key}">${format(value, step < 1 ? 1 : 0)} ${unit}</output></div>
-    <input id="${key}" name="${key}" type="range" min="${min}" max="${max}" step="${step}" value="${value}" aria-label="${label}, ${unit}">
+    <div class="control-line"><label for="${key}">${mathematicalLabel(label)}</label><output id="${key}-value" for="${key}">${format(value, step < 1 ? 1 : 0)} ${unit}</output></div>
+    <input id="${key}" name="${key}" type="range" min="${min}" max="${max}" step="${step}" value="${value}" aria-label="${label.replace(/_/g, ' subscript ')}, ${unit}">
   </div>`;
 }
 
@@ -40,10 +46,10 @@ function template(inputs, assetBase, standaloneUrl) {
       </figure>
       </div>
       <aside class="metrics-card" aria-label="Calculated plant performance" aria-live="polite">
-        <div class="power-card"><span class="eyebrow">Plant electrical power P_plant</span><strong id="plant-power"></strong><span class="status" id="clip-status"></span></div>
+        <div class="power-card"><span class="eyebrow">Plant electrical power P<sub>plant</sub></span><strong id="plant-power"></strong><span class="status" id="clip-status"></span></div>
         <div class="metric-list">
           <div class="metric"><span>Uncapped electrical power</span><strong id="uncapped-power"></strong></div>
-          <div class="metric"><span>Net head H_net</span><strong id="net-head"></strong></div>
+          <div class="metric"><span>Net head H<sub>net</sub></span><strong id="net-head"></strong></div>
           <div class="metric"><span>Turbine Q / spill-bypass</span><strong id="flow-split"></strong></div>
           <div class="metric"><span>Six-hour energy</span><strong id="six-hour-energy"></strong></div>
         </div>
@@ -106,6 +112,9 @@ export function mountHydroLab(container, initialInputs = DEFAULT_INPUTS, options
     get('eq-power').textContent = `P_e = ηρgQH_net = 0.85 × 1000 × 9.81 × ${format(inputs.usableFlowM3s, 1)} × ${format(result.netHeadM, 1)} = ${format(result.uncappedMW, 2)} MW`;
     get('eq-cap').textContent = `P_plant = min(P_e, P_r) = min(${format(result.uncappedMW, 2)}, ${format(inputs.ratingMW, 2)}) = ${format(result.plantMW, 2)} MW`;
     get('eq-energy').textContent = `E_6h = P_plant × Δt = ${format(result.plantMW, 2)} × 6 = ${format(result.energy6hMWh, 2)} MWh`;
+    for (const id of ['clip-status', 'eq-head', 'eq-power', 'eq-cap', 'eq-energy']) {
+      get(id).innerHTML = mathematicalLabel(get(id).textContent);
+    }
     get('gross-readout').textContent = `Gross ${format(inputs.grossHeadM, 0)} m`;
     get('loss-readout').textContent = `Loss ${format(inputs.headLossM, 1)} m`;
     get('net-readout').textContent = `Net ${format(result.netHeadM, 1)} m`;
