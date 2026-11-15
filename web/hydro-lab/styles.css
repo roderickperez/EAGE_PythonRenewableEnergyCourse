@@ -177,8 +177,11 @@ input[type="range"]:focus-visible { outline: 3px solid #65aee0; outline-offset: 
 }
 #cutaway-spill-motion { animation-duration: var(--spill-speed, 2s); }
 @keyframes water-travel { to { stroke-dashoffset: -46; } }
-.orbit-view { margin: 0 18px; }
-.orbit-view summary { cursor: pointer; color: var(--blue); font-weight: 700; }
+.orbit-view { margin: 0 0 8px; }
+.orbit-view summary { cursor: pointer; color: #20556c; font-size: 13px; font-weight: 700; padding: 6px 10px; }
+.orbit-view summary:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.orbit-view .show-diagram, .orbit-view[open] .show-3d, .orbit-view[open] + .cutaway-card { display: none; }
+.orbit-view[open] .show-diagram { display: inline; }
 .orbit-view .scene-card { margin-top: 10px; }
 @container (max-width: 610px) {
   .cutaway-label { display: none; }

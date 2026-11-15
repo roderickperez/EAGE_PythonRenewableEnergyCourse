@@ -1,16 +1,19 @@
 <svg class="plant-cutaway" viewBox="0 0 1000 610" role="img" aria-label="Hydroelectric dam cutaway. Water enters from the reservoir on the left, passes through the penstock and turbine, and returns to the river through the draft tube on the right. The turbine drives a generator above it, which sends electricity through a transformer to the transmission towers. A separate spillway bypasses the turbine.">
   <defs>
-    <linearGradient id="sky" x2="0" y2="1" gradientUnits="objectBoundingBox"><stop stop-color="#eaf5f9"/><stop offset="1" stop-color="#fff"/></linearGradient>
-    <linearGradient id="woodland" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#174b38"/><stop offset=".55" stop-color="#368059"/><stop offset="1" stop-color="#80a877"/></linearGradient>
-    <linearGradient id="concrete" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#faf8ef"/><stop offset=".55" stop-color="#dcded8"/><stop offset="1" stop-color="#999f9c"/></linearGradient>
-    <linearGradient id="concrete-side" x2="1" y2="1"><stop stop-color="#b9c0bd"/><stop offset="1" stop-color="#717e7e"/></linearGradient>
-    <linearGradient id="section-fill" x2="0" y2="1"><stop stop-color="#f2efe5"/><stop offset="1" stop-color="#c3c7bf"/></linearGradient>
-    <linearGradient id="lake" x2="0" y2="1"><stop stop-color="#65bad6"/><stop offset=".67" stop-color="#278aaf"/><stop offset="1" stop-color="#155775"/></linearGradient>
-    <linearGradient id="surface" x2="0" y2="1"><stop stop-color="#ddf6fa"/><stop offset="1" stop-color="#6fc4db"/></linearGradient>
-    <linearGradient id="pipe-water" x2="0" y2="1"><stop stop-color="#bbedf4"/><stop offset=".5" stop-color="#5bbad4"/><stop offset="1" stop-color="#287b9b"/></linearGradient>
+    <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#f2f4f5"/><stop offset="1" stop-color="#fafbfa"/></linearGradient>
+    <linearGradient id="woodland" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#546e65"/><stop offset="1" stop-color="#a1b3a6"/></linearGradient>
+    <linearGradient id="concrete" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#f3f3eb"/><stop offset=".55" stop-color="#d4d8d5"/><stop offset="1" stop-color="#a6aeaf"/></linearGradient>
+    <linearGradient id="concrete-side" x2="1" y2="1"><stop stop-color="#9ca6a8"/><stop offset="1" stop-color="#5e6c73"/></linearGradient>
+    <linearGradient id="section-fill" x2="0" y2="1"><stop stop-color="#eae9e0"/><stop offset="1" stop-color="#c6c8c1"/></linearGradient>
+    <linearGradient id="lake" x2="0" y2="1"><stop stop-color="#76aabc"/><stop offset=".67" stop-color="#497e97"/><stop offset="1" stop-color="#345b72"/></linearGradient>
+    <linearGradient id="surface" x2="0" y2="1"><stop stop-color="#d9e9ec"/><stop offset="1" stop-color="#8bb8c7"/></linearGradient>
+    <linearGradient id="pipe-water" x2="0" y2="1"><stop stop-color="#b9dce5"/><stop offset=".48" stop-color="#78b6ce"/><stop offset="1" stop-color="#416f8a"/></linearGradient>
     <linearGradient id="steel" x2="1" y2="0"><stop stop-color="#53646a"/><stop offset=".4" stop-color="#d9e1de"/><stop offset=".65" stop-color="#99a7a6"/><stop offset="1" stop-color="#55666b"/></linearGradient>
-    <linearGradient id="copper" x2="1" y2="1"><stop stop-color="#f4c080"/><stop offset=".5" stop-color="#b96b3e"/><stop offset="1" stop-color="#754434"/></linearGradient>
-    <linearGradient id="runner-case" x2="0" y2="1"><stop stop-color="#79ab89"/><stop offset="1" stop-color="#245e50"/></linearGradient>
+    <linearGradient id="copper" x2="1" y2="1"><stop stop-color="#d4a87e"/><stop offset=".5" stop-color="#aa7758"/><stop offset="1" stop-color="#654a40"/></linearGradient>
+    <linearGradient id="runner-case" x2="0" y2="1"><stop stop-color="#8ba69e"/><stop offset="1" stop-color="#3a6060"/></linearGradient>
+    <linearGradient id="pipe-wall" x2="0" y2="1"><stop stop-color="#8c9c9e"/><stop offset=".48" stop-color="#5b6e76"/><stop offset="1" stop-color="#344b57"/></linearGradient>
+    <linearGradient id="gallery" x2="0" y2="1"><stop stop-color="#68777d"/><stop offset=".55" stop-color="#9ca8aa"/><stop offset="1" stop-color="#c6cfca"/></linearGradient>
+    <radialGradient id="contact-shadow"><stop stop-color="#213b49" stop-opacity=".58"/><stop offset="1" stop-color="#213b49" stop-opacity="0"/></radialGradient>
     <pattern id="aggregate" width="21" height="14" patternUnits="userSpaceOnUse"><path d="M2 4h2m10 7h3M7 13h1" stroke="#566d64" opacity=".18"/></pattern>
     <clipPath id="upstream-bank"><path d="M0 46H295L222 307 0 427Z"/></clipPath>
     <g id="tower" fill="none" stroke="currentColor" stroke-width="2">
@@ -18,9 +21,9 @@
     </g>
   </defs>
   <path fill="url(#sky)" d="M0 0h1000v610H0z"/>
-  <path fill="#a1bdab" d="M330 112 444 58 514 67 596 31 661 52 760 29 860 74 1000 50v325L500 273Z"/>
+  <path fill="#c2ceca" d="M330 112 444 58 514 67 596 31 661 52 760 29 860 74 1000 50v325L500 273Z"/>
   <path fill="url(#woodland)" d="M411 124Q500 25 571 21T686 76q56 51 113 57t201 45v233L618 325Z"/>
-  <path fill="none" stroke="#dee7c4" stroke-opacity=".32" stroke-width="2" d="M576 104q103 14 156 85t268 66M537 131q110 20 171 79t292 75M665 129q175 33 335 73"/>
+  <path fill="none" stroke="#dce7e1" stroke-opacity=".28" stroke-width="1.4" d="M576 104q103 14 156 85t268 66M537 131q110 20 171 79t292 75"/>
   <path fill="url(#lake)" d="M585 312q204-13 415 45v253H675Z"/>
   <path fill="none" stroke="#bee9ec" stroke-width="3" opacity=".5" d="M807 425q61-13 176 16m-136 17q57-2 145 13m-171 57q67-13 163 7m-186 38q99-13 188-2"/>
   <g clip-path="url(#upstream-bank)">
@@ -33,7 +36,8 @@
   <!-- The spillway runs behind the powerhouse on the far side of the dam. -->
   <path fill="#748988" d="M404 87 475 72 776 340 897 386 856 407 731 364Z"/>
   <path fill="url(#concrete)" stroke="#e1e5dd" stroke-width="6" d="M414 89 468 81 766 346 880 386 856 398 743 360Z"/>
-  <path id="cutaway-spill" fill="#68c6e3" d="M422 91 458 85 754 346 869 387 854 393 746 357Z"/>
+  <path id="cutaway-spill" fill="#82b4c9" d="M422 91 458 85 754 346 869 387 854 393 746 357Z"/>
+  <path fill="none" stroke="#637a84" stroke-width="3" d="m460 86 298 261 111 42"/>
   <path id="cutaway-spill-motion" class="water-motion" d="M439 92 751 353 864 389" stroke="#f0fcff" stroke-width="5"/>
   <!-- Projecting concrete faces and the exposed section through the foundation. -->
   <path fill="url(#concrete)" stroke="#a8b0aa" d="M170 120 273 42 349 22 439 61 361 104 242 153Z"/>
@@ -44,8 +48,14 @@
   <path fill="url(#section-fill)" stroke="#8b9994" stroke-width="2" d="M0 345 66 294 119 311 169 120 361 104 360 153 407 181 417 216 512 378 636 403 764 437v173H0Z"/>
   <path fill="url(#aggregate)" opacity=".62" d="M0 346 66 294 119 312 169 120 361 104 360 153 407 181 417 216 512 378 636 403 764 437v173H0Z"/>
   <path fill="none" stroke="#f9f8f1" stroke-width="4" d="m171 122 188-16m3 49 45 28 10 35 92 160"/>
+  <g fill="none" stroke="#83908e" stroke-width="1.5" opacity=".64">
+    <path d="m212 86 89-21 91-26m-139 91 89-39 64-34m-136 112 96-22 69-26m-75 68 108-48"/>
+    <path d="m453 197 113 160m-90-173 114 160m-153-99 84-46m-55 92 83-48m-54 95 84-46"/>
+    <path d="M17 376h131m-118 86h284M0 541h531"/>
+  </g>
   <!-- Intake and open penstock section. -->
-  <path fill="none" stroke="#58696e" stroke-width="50" stroke-linejoin="round" d="M139 238h88l144 190 140 32"/>
+  <path fill="none" stroke="#5c6766" stroke-opacity=".26" stroke-width="58" stroke-linejoin="round" d="M139 244h88l144 190 140 32"/>
+  <path fill="none" stroke="url(#pipe-wall)" stroke-width="50" stroke-linejoin="round" d="M139 238h88l144 190 140 32"/>
   <path fill="none" stroke="url(#pipe-water)" stroke-width="38" stroke-linejoin="round" d="M135 238h92l144 190 140 32"/>
   <path fill="none" stroke="#d9f8fa" stroke-width="2" opacity=".75" d="M152 221h80l148 191 131 31"/>
   <path fill="#47636b" d="m126 204 11-5-9 67-14 11Zm19-8 7-3-8 66-7 6Z"/>
@@ -58,15 +68,20 @@
   <path fill="url(#pipe-water)" d="M555 483h59v30q0 34 43 34h106l53-8v44l-52 10H646q-91 0-91-69Z"/>
   <path fill="none" stroke="#d9f8fa" opacity=".7" stroke-width="2" d="M618 521q7 27 40 25h107l50-9"/>
   <!-- Powerhouse shell, open front, generator floor and transformer terrace. -->
-  <path fill="#798b8d" stroke="#a5b0ae" d="m497 344 99-86 229 77 1 88-127 63-211-74Z"/>
+  <path fill="url(#gallery)" stroke="#819093" d="m497 344 99-86 229 77 1 88-127 63-211-74Z"/>
+  <path fill="#52646e" opacity=".47" d="m596 258 229 77-17 10-212-71-85 74-14-4Z"/>
+  <path fill="none" stroke="#56666d" opacity=".5" d="m549 300 210 74m-185-95 215 73m-152-81v49m48-33v47m48-31v46"/>
   <path fill="url(#concrete-side)" d="m708 403 119-68 41 26-117 70Z"/>
   <path fill="url(#concrete)" stroke="#a3afaa" d="m649 366 61-61 151 55-113 65-101-29Z"/>
   <path fill="#b1b9b5" d="m748 425 113-65v64l-113 52Z"/>
   <path fill="#e8e9e2" d="m646 396 102 29v52l-102-29Z"/>
+  <path fill="url(#concrete-side)" opacity=".6" d="m646 396 102 29v11l-102-29Z"/>
+  <path fill="none" stroke="#879495" stroke-width="1.5" d="m749 448 112-61m-79 18v52m40-76v58m-175-15 101 28"/>
   <path fill="url(#concrete)" stroke="#a2aaa3" d="m469 342 75-51 100 32-84 55Z"/>
   <path fill="#aeb8b4" d="m469 342 91 36v24l-91-34Z"/>
   <path fill="url(#concrete)" d="m478 404 75-45 138 42-44 28-167-10Z"/>
   <path fill="#aab4b0" d="m480 419 167 10v17l-164-13Z"/>
+  <ellipse cx="585" cy="417" rx="68" ry="16" fill="url(#contact-shadow)"/>
   <g fill="url(#steel)" stroke="#687c7e">
     <rect x="490" y="302" width="39" height="35" rx="4"/>
     <path d="M496 305v30m6-31v32m6-32v32m6-32v32m6-32v31"/>
@@ -81,15 +96,25 @@
   </g>
   <!-- Vertical shaft, copper generator and Francis-style runner. -->
   <path fill="url(#steel)" stroke="#657679" d="M576 381h20v94h-20z"/>
+  <path fill="url(#steel)" stroke="#596a70" d="M571 417h30v8q-15 10-30 0Z"/>
+  <ellipse cx="586" cy="417" rx="15" ry="5" fill="#aebcba" stroke="#657679"/>
+  <path fill="#3e5459" opacity=".33" d="M577 399h20v10h-20Z"/>
+  <path fill="url(#runner-case)" stroke="#334e52" d="M514 472v8c0 16 32 29 72 29s72-13 72-29v-8Z"/>
   <ellipse cx="586" cy="472" rx="72" ry="29" fill="url(#runner-case)" stroke="#244d43" stroke-width="2"/>
   <path fill="url(#runner-case)" stroke="#326655" d="m459 429 82 18 13 28-100-24Z"/>
-  <ellipse cx="586" cy="476" rx="52" ry="20" fill="#77c9d5" stroke="#c5ddcf" stroke-width="3"/>
+  <ellipse cx="586" cy="476" rx="52" ry="20" fill="#79a9b2" stroke="#c6d7d2" stroke-width="3"/>
+  <g fill="#d1dbd6" stroke="#3e585c" stroke-width="1">
+    <circle cx="524" cy="472" r="2.8"/><circle cx="540" cy="455" r="2.8"/>
+    <circle cx="632" cy="455" r="2.8"/><circle cx="648" cy="472" r="2.8"/>
+    <circle cx="629" cy="492" r="2.8"/><circle cx="543" cy="492" r="2.8"/>
+  </g>
   <g id="cutaway-runner" fill="url(#steel)" stroke="#4e6564" stroke-width="1.8">
     <ellipse cx="586" cy="474" rx="38" ry="15"/>
     <path d="m551 478 68-11m-53-6 35 26m-49-16 68 6m-36-18 2 29" fill="none"/>
     <ellipse cx="586" cy="472" rx="10" ry="6"/>
   </g>
   <path fill="url(#copper)" stroke="#805541" stroke-width="2" d="M529 385v-24c0-25 29-37 57-37s57 12 57 37v24c-9-21-34-29-57-29s-48 8-57 29Z"/>
+  <path fill="none" stroke="#e7c29e" stroke-opacity=".64" stroke-width="1.6" d="M534 355c18-38 82-38 104 0m-104 8c18-38 82-38 104 0m-104 8c18-38 82-38 104 0"/>
   <ellipse cx="586" cy="384" rx="57" ry="23" fill="url(#copper)" stroke="#754b37" stroke-width="2"/>
   <ellipse cx="586" cy="380" rx="40" ry="15" fill="url(#steel)" stroke="#53676b" stroke-width="2"/>
   <ellipse cx="586" cy="377" rx="11" ry="6" fill="#e9eeeb"/>

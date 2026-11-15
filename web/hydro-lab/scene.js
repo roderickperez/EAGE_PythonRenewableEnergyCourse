@@ -5,22 +5,22 @@ const COLORS = {
   concrete: 0xe3e6e4,
   concreteShade: 0xaeb8b4,
   concreteEdge: 0x758580,
-  water: 0x28a9dc,
-  waterDeep: 0x167ba8,
-  waterLight: 0x9ceaf4,
-  grass: 0x55a95c,
-  grassDark: 0x28743f,
-  earth: 0xa77b4c,
+  water: 0x6499ac,
+  waterDeep: 0x427991,
+  waterLight: 0xa9d4df,
+  grass: 0x899b82,
+  grassDark: 0x546f63,
+  earth: 0x958675,
   pipe: 0x4a6269,
-  turbine: 0x2ba66f,
-  generator: 0xe39135,
-  copper: 0xc76a32,
+  turbine: 0x477971,
+  generator: 0xb28363,
+  copper: 0x926448,
   gridOff: 0x6c7b80,
-  gridOn: 0xf5c744,
+  gridOn: 0xd8ba76,
 };
 
-function toon(color, options = {}) {
-  return new THREE.MeshToonMaterial({ color, ...options });
+function shaded(color, options = {}) {
+  return new THREE.MeshStandardMaterial({ color, roughness: 0.72, ...options });
 }
 
 function makeMesh(geometry, material, position, parent, name = '') {
@@ -73,7 +73,7 @@ function transmissionTower(parent, x, z, scale = 1) {
   const group = new THREE.Group();
   group.position.set(x, 0, z);
   group.scale.setScalar(scale);
-  const material = toon(COLORS.gridOff);
+  const material = shaded(COLORS.gridOff);
   cylinderBetween([-0.62, 0, 0], [0, 4.9, 0], 0.07, material, group, 8);
   cylinderBetween([0.62, 0, 0], [0, 4.9, 0], 0.07, material, group, 8);
   for (const y of [1.3, 2.4, 3.45]) {
@@ -126,8 +126,8 @@ export class HydroScene {
     this.controls.minAzimuthAngle = -0.36;
     this.controls.maxAzimuthAngle = 0.18;
 
-    this.scene.add(new THREE.HemisphereLight(0xf5fcff, 0x4e754a, 2.8));
-    const sun = new THREE.DirectionalLight(0xffffff, 3.4);
+    this.scene.add(new THREE.HemisphereLight(0xf3f7fc, 0x6b7774, 1.45));
+    const sun = new THREE.DirectionalLight(0xfff5e7, 2.35);
     sun.position.set(-9, 17, 13);
     sun.castShadow = true;
     sun.shadow.mapSize.set(1024, 1024);
@@ -153,23 +153,23 @@ export class HydroScene {
     this.scene.add(world);
     this.world = world;
 
-    makeMesh(new THREE.BoxGeometry(25, 0.55, 9.8), toon(COLORS.grass), [0, -0.5, 0], world);
-    makeMesh(new THREE.BoxGeometry(25, 0.32, 2.5), toon(COLORS.earth), [0, -0.85, 2.7], world);
-    const hillA = makeMesh(new THREE.ConeGeometry(5.4, 7.2, 7), toon(COLORS.grassDark), [2.5, 2.7, -4.1], world);
+    makeMesh(new THREE.BoxGeometry(25, 0.55, 9.8), shaded(COLORS.grass), [0, -0.5, 0], world);
+    makeMesh(new THREE.BoxGeometry(25, 0.32, 2.5), shaded(COLORS.earth), [0, -0.85, 2.7], world);
+    const hillA = makeMesh(new THREE.ConeGeometry(5.4, 7.2, 7), shaded(COLORS.grassDark), [2.5, 2.7, -4.1], world);
     hillA.rotation.z = -0.22;
-    const hillB = makeMesh(new THREE.ConeGeometry(4.6, 6, 7), toon(0x3d8d4b), [8.4, 2.1, -3.8], world);
+    const hillB = makeMesh(new THREE.ConeGeometry(4.6, 6, 9), shaded(0x7b9080), [8.4, 2.1, -3.8], world);
     hillB.rotation.z = 0.24;
 
     this.reservoir = makeMesh(
       new THREE.BoxGeometry(8.6, 4.6, 6.2),
-      toon(COLORS.water, { transparent: true, opacity: 0.76 }),
+      shaded(COLORS.water, { transparent: true, opacity: 0.76 }),
       [-7.3, 2.0, -0.15],
       world,
       'Reservoir water',
     );
     this.waterTop = makeMesh(
       new THREE.BoxGeometry(8.7, 0.14, 6.3),
-      toon(COLORS.waterLight, { transparent: true, opacity: 0.9 }),
+      shaded(COLORS.waterLight, { transparent: true, opacity: 0.9 }),
       [-7.3, 4.35, -0.15],
       world,
     );
@@ -177,24 +177,24 @@ export class HydroScene {
     this.dam = extrudedSection(
       [[-4.0, -0.2], [1.3, -0.2], [0.55, 2.25], [-0.15, 4.35], [-0.75, 6.55], [-2.75, 6.55]],
       4.2,
-      toon(COLORS.concrete),
+      shaded(COLORS.concrete),
       world,
       -2.35,
     );
-    makeMesh(new THREE.BoxGeometry(2.8, 0.55, 4.45), toon(0xf2f3f2), [-1.72, 6.48, -0.18], world);
-    makeMesh(new THREE.BoxGeometry(2.25, 0.5, 4.45), toon(COLORS.concreteShade), [-0.65, 5.58, -0.18], world).rotation.z = -0.08;
-    makeMesh(new THREE.BoxGeometry(1.8, 0.42, 4.4), toon(0xc9cfcc), [0.1, 4.65, -0.18], world).rotation.z = -0.13;
+    makeMesh(new THREE.BoxGeometry(2.8, 0.55, 4.45), shaded(0xf2f3f2), [-1.72, 6.48, -0.18], world);
+    makeMesh(new THREE.BoxGeometry(2.25, 0.5, 4.45), shaded(COLORS.concreteShade), [-0.65, 5.58, -0.18], world).rotation.z = -0.08;
+    makeMesh(new THREE.BoxGeometry(1.8, 0.42, 4.4), shaded(0xc9cfcc), [0.1, 4.65, -0.18], world).rotation.z = -0.13;
 
-    this.intake = makeMesh(new THREE.BoxGeometry(0.55, 2.25, 2.0), toon(COLORS.pipe), [-3.78, 4.45, 1.0], world);
-    const rackMaterial = toon(0x243f49);
+    this.intake = makeMesh(new THREE.BoxGeometry(0.55, 2.25, 2.0), shaded(COLORS.pipe), [-3.78, 4.45, 1.0], world);
+    const rackMaterial = shaded(0x243f49);
     for (let z = 0.3; z <= 1.75; z += 0.28) {
       makeMesh(new THREE.BoxGeometry(0.12, 1.85, 0.055), rackMaterial, [-4.1, 4.35, z], world);
     }
     for (let y = 3.62; y <= 5.2; y += 0.4) {
       makeMesh(new THREE.BoxGeometry(0.12, 0.07, 1.62), rackMaterial, [-4.1, y, 1.02], world);
     }
-    this.gate = makeMesh(new THREE.BoxGeometry(0.24, 1.6, 1.55), toon(0xe6b74d), [-3.45, 4.55, 1.02], world);
-    cylinderBetween([-3.45, 5.25, 1.02], [-3.45, 6.2, 1.02], 0.08, toon(0x6e7778), world, 10);
+    this.gate = makeMesh(new THREE.BoxGeometry(0.24, 1.6, 1.55), shaded(0xe6b74d), [-3.45, 4.55, 1.02], world);
+    cylinderBetween([-3.45, 5.25, 1.02], [-3.45, 6.2, 1.02], 0.08, shaded(0x6e7778), world, 10);
 
     const penstockPoints = [
       [-3.65, 4.35, 2.3],
@@ -204,31 +204,31 @@ export class HydroScene {
       [0.55, 0.72, 2.3],
       [1.65, 0.62, 2.3],
     ];
-    tube(penstockPoints, 0.48, toon(COLORS.pipe, { transparent: true, opacity: 0.38, depthWrite: false }), world);
-    tube(penstockPoints, 0.34, toon(COLORS.waterDeep), world);
+    tube(penstockPoints, 0.48, shaded(COLORS.pipe, { transparent: true, opacity: 0.38, depthWrite: false }), world);
+    tube(penstockPoints, 0.34, shaded(COLORS.waterDeep), world);
 
     this.powerhouse = new THREE.Group();
     world.add(this.powerhouse);
-    makeMesh(new THREE.BoxGeometry(5.8, 0.35, 4.1), toon(0xd2d7d5), [3.25, 0.02, 0.45], this.powerhouse);
+    makeMesh(new THREE.BoxGeometry(5.8, 0.35, 4.1), shaded(0xd2d7d5), [3.25, 0.02, 0.45], this.powerhouse);
     // Leave the roof and front wall open so the electro-mechanical chain stays visible.
-    makeMesh(new THREE.BoxGeometry(0.28, 3.6, 4.1), toon(COLORS.concreteShade), [0.5, 1.85, 0.45], this.powerhouse);
-    makeMesh(new THREE.BoxGeometry(5.8, 3.6, 0.22), toon(COLORS.concreteShade), [3.25, 1.85, -1.52], this.powerhouse);
-    makeMesh(new THREE.BoxGeometry(0.28, 3.6, 4.1), toon(COLORS.concrete), [6.0, 1.85, 0.45], this.powerhouse);
+    makeMesh(new THREE.BoxGeometry(0.28, 3.6, 4.1), shaded(COLORS.concreteShade), [0.5, 1.85, 0.45], this.powerhouse);
+    makeMesh(new THREE.BoxGeometry(5.8, 3.6, 0.22), shaded(COLORS.concreteShade), [3.25, 1.85, -1.52], this.powerhouse);
+    makeMesh(new THREE.BoxGeometry(0.28, 3.6, 4.1), shaded(COLORS.concrete), [6.0, 1.85, 0.45], this.powerhouse);
 
     this.turbine = new THREE.Group();
     this.turbine.position.set(1.7, 0.62, 2.3);
     world.add(this.turbine);
-    const turbineRing = makeMesh(new THREE.TorusGeometry(0.62, 0.18, 10, 28), toon(COLORS.turbine), [0, 0, 0], this.turbine);
+    const turbineRing = makeMesh(new THREE.TorusGeometry(0.62, 0.18, 10, 28), shaded(COLORS.turbine), [0, 0, 0], this.turbine);
     turbineRing.rotation.x = Math.PI / 2;
     for (let index = 0; index < 8; index += 1) {
       const angle = index * Math.PI / 4;
-      const blade = makeMesh(new THREE.BoxGeometry(0.52, 0.09, 0.18), toon(0x75d6ae), [Math.cos(angle) * 0.28, 0, Math.sin(angle) * 0.28], this.turbine);
+      const blade = makeMesh(new THREE.BoxGeometry(0.52, 0.09, 0.18), shaded(0xa7b9b8, { metalness: 0.25 }), [Math.cos(angle) * 0.28, 0, Math.sin(angle) * 0.28], this.turbine);
       blade.rotation.y = angle;
     }
-    cylinderBetween([1.7, 0.62, 2.3], [1.7, 2.02, 2.3], 0.12, toon(0x525e60), world, 12);
-    this.generator = makeMesh(new THREE.CylinderGeometry(0.82, 0.82, 1.2, 18), toon(COLORS.generator), [1.7, 2.3, 2.3], world);
-    this.generator.rotation.z = Math.PI / 2;
-    makeMesh(new THREE.TorusGeometry(0.62, 0.1, 8, 22), toon(COLORS.copper), [1.7, 2.3, 2.3], world).rotation.y = Math.PI / 2;
+    cylinderBetween([1.7, 0.62, 2.3], [1.7, 2.02, 2.3], 0.12, shaded(0x525e60), world, 12);
+    this.generator = makeMesh(new THREE.CylinderGeometry(0.82, 0.82, 0.65, 32), shaded(COLORS.generator), [1.7, 2.29, 2.3], world);
+    makeMesh(new THREE.CylinderGeometry(0.85, 0.85, 0.10, 32), shaded(COLORS.copper), [1.7, 2.62, 2.3], world);
+    makeMesh(new THREE.CylinderGeometry(0.34, 0.40, 0.15, 24), shaded(0xa7b9b8, { metalness: 0.25 }), [1.7, 2.72, 2.3], world);
 
     const draftPoints = [
       [1.7, 0.45, 2.3],
@@ -237,35 +237,35 @@ export class HydroScene {
       [4.65, 0.05, 2.3],
       [5.8, 0.12, 2.3],
     ];
-    tube(draftPoints, 0.55, toon(COLORS.pipe, { transparent: true, opacity: 0.38, depthWrite: false }), world);
-    tube(draftPoints, 0.4, toon(COLORS.water), world);
+    tube(draftPoints, 0.55, shaded(COLORS.pipe, { transparent: true, opacity: 0.38, depthWrite: false }), world);
+    tube(draftPoints, 0.4, shaded(COLORS.water), world);
 
     this.tailrace = makeMesh(
       new THREE.BoxGeometry(7.2, 0.68, 5.3),
-      toon(COLORS.water, { transparent: true, opacity: 0.86 }),
+      shaded(COLORS.water, { transparent: true, opacity: 0.86 }),
       [8.0, -0.03, 0.45],
       world,
     );
-    makeMesh(new THREE.BoxGeometry(7.2, 0.1, 5.35), toon(COLORS.waterLight, { transparent: true, opacity: 0.85 }), [8.0, 0.34, 0.45], world);
+    makeMesh(new THREE.BoxGeometry(7.2, 0.1, 5.35), shaded(COLORS.waterLight, { transparent: true, opacity: 0.85 }), [8.0, 0.34, 0.45], world);
 
     this.transformer = new THREE.Group();
     this.transformer.position.set(5.15, 1.05, -0.35);
     world.add(this.transformer);
     for (const x of [-0.42, 0, 0.42]) {
-      makeMesh(new THREE.CylinderGeometry(0.22, 0.22, 1.3, 12), toon(0x77888b), [x, 0, 0], this.transformer);
+      makeMesh(new THREE.CylinderGeometry(0.22, 0.22, 1.3, 12), shaded(0x77888b), [x, 0, 0], this.transformer);
       for (const y of [-0.35, -0.1, 0.15, 0.4]) {
-        makeMesh(new THREE.TorusGeometry(0.28, 0.035, 7, 14), toon(0xaeb9b8), [x, y, 0], this.transformer).rotation.x = Math.PI / 2;
+        makeMesh(new THREE.TorusGeometry(0.28, 0.035, 7, 14), shaded(0xaeb9b8), [x, y, 0], this.transformer).rotation.x = Math.PI / 2;
       }
     }
     this.towers = [transmissionTower(world, 8.0, -2.75, 0.86), transmissionTower(world, 11.0, -3.25, 0.68)];
-    const cableMaterial = toon(COLORS.gridOff);
+    const cableMaterial = shaded(COLORS.gridOff);
     for (const z of [-0.22, 0.22]) {
       cable(world, [[5.4, 2.0, -0.35 + z], [6.5, 3.1, -1.4 + z], [8.0, 3.05, -2.75 + z], [9.5, 2.8, -3.05 + z], [11.0, 2.45, -3.25 + z]], cableMaterial);
     }
 
     this.spillways = [];
     for (const offset of [-0.34, 0, 0.34]) {
-      const strip = beamBetween([0.05 + offset, 6.12, 1.94], [3.25 + offset, 0.42, 1.94], 0.28, 0.24, toon(COLORS.waterLight, { transparent: true, opacity: 0.78 }), world);
+      const strip = beamBetween([0.05 + offset, 6.12, 1.94], [3.25 + offset, 0.42, 1.94], 0.28, 0.24, shaded(COLORS.waterLight, { transparent: true, opacity: 0.78 }), world);
       strip.visible = false;
       this.spillways.push(strip);
     }
@@ -277,7 +277,7 @@ export class HydroScene {
       new THREE.Vector3(4.65, 0.2, 1.9),
     ]);
     this.spillParticles = Array.from({ length: 14 }, (_, index) => {
-      const particle = makeMesh(new THREE.SphereGeometry(0.11, 7, 7), toon(0xffffff), [0, 0, 0], world);
+      const particle = makeMesh(new THREE.SphereGeometry(0.11, 7, 7), shaded(0xffffff), [0, 0, 0], world);
       particle.userData.offset = index / 14;
       particle.visible = false;
       return particle;
@@ -289,7 +289,7 @@ export class HydroScene {
       ...draftPoints.slice(1).map((point) => new THREE.Vector3(...point)),
     ]);
     this.flowParticles = Array.from({ length: 22 }, (_, index) => {
-      const arrow = makeMesh(new THREE.ConeGeometry(0.14, 0.42, 7), toon(0xe9fbff), [0, 0, 0], world);
+      const arrow = makeMesh(new THREE.ConeGeometry(0.14, 0.42, 7), shaded(0xe9fbff), [0, 0, 0], world);
       arrow.userData.offset = index / 22;
       return arrow;
     });
@@ -341,10 +341,10 @@ export class HydroScene {
 
   resize() {
     if (!this.renderer) return;
-    const width = Math.max(320, this.host.clientWidth);
-    const height = Math.max(380, this.host.clientHeight);
+    const width = Math.max(1, this.host.clientWidth);
+    const height = Math.max(1, this.host.clientHeight);
     const aspect = width / height;
-    const vertical = width < 560 ? 11.5 : 7.6;
+    const vertical = Math.max(7.6, 11.8 / aspect);
     this.camera.left = -vertical * aspect;
     this.camera.right = vertical * aspect;
     this.camera.top = vertical;
