@@ -68,9 +68,12 @@ export function mountProjectScene(host) {
     scene.add(marker);
     labelCanvases.push(texture);
   }
-  box([23,.85,13],rock,[0,-.74,0]);
-  box([23,.34,13],grass,[0,-.15,0]);
-  box([22.9,.22,12.92],shale,[0,-1.22,0]);
+  const terrainWidth=23, terrainDepth=13;
+  // Keep one continuous cutaway beneath all the sites.
+  box([terrainWidth,.34,terrainDepth],grass,[0,-.15,0]);
+  box([terrainWidth,1.18,terrainDepth],rock,[0,-.91,0]);
+  box([terrainWidth,.49,terrainDepth],mat('#638896'),[0,-1.745,0]);
+  box([terrainWidth,.25,terrainDepth],shale,[0,-2.115,0]);
   // Valley terrain rises behind the wind and hydro sites.
   const ridgeGeometry=new T.PlaneGeometry(22,4.4,56,14);
   ridgeGeometry.rotateX(-Math.PI/2);
@@ -159,14 +162,12 @@ export function mountProjectScene(host) {
   curve([[6.56,.21,-1.29],[7.05,.17,-.91],[8.22,.12,-.28],[9.04,.09,.02]],.14,cool);
   label('Run-of-river hydro','#3898aa',[7.65,2,-3.62]);
 
-  // Geothermal cutaway along the front edge of the diorama.
-  box([5.1,1.16,2.12],rock,[1.15,-1.06,5.52]);
-  box([5.06,.49,2.08],mat('#638896'),[1.15,-1.75,5.52]);
-  box([5.06,.25,2.08],shale,[1.15,-2.11,5.52]);
+  // Expose the two well paths on the front face of the shared cutaway.
   box([4.25,.14,2.18],concrete,[1.14,.09,5.15]);
+  const wellFace=terrainDepth/2+.06;
   for(const [x,color] of [[-.72,warm],[2.93,cool]]){
     cylinder(.27,.32,.21,steel,[x,.18,6.26]);
-    curve([[x,-1.79,6.61],[x,-1.45,6.62],[x,.19,6.62],[x,.42,6.35],[x,.42,5.96]],.095,color);
+    curve([[x,-1.79,wellFace],[x,-1.45,wellFace],[x,.19,wellFace],[x,.42,6.35],[x,.42,5.96]],.095,color);
   }
   curve([[-.72,.42,5.96],[-.72,.5,5.54],[-.08,.5,5.3]],.095,warm);
   curve([[-.08,.27,5.38],[.15,.28,5.89],[2.38,.29,5.91],[2.93,.42,5.96]],.085,cool);
