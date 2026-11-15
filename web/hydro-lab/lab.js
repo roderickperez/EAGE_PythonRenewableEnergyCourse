@@ -35,7 +35,7 @@ function template(inputs, assetBase, standaloneUrl) {
       <div class="scene-card" aria-label="Interactive three-dimensional hydroelectric plant">
         <div class="scene" id="hydro-scene"><img class="fallback" id="scene-fallback" src="${assetBase}fallback.svg" alt="Hydroelectric plant schematic" hidden><div class="scene-labels" id="scene-labels"></div></div>
         <div class="head-ruler" id="head-ruler"><div class="head-track"></div><strong>Head balance</strong><span id="gross-readout"></span><span id="loss-readout"></span><span id="net-readout"></span></div>
-        <p class="scene-help">Drag to orbit · scroll or pinch to zoom</p>
+        <p class="scene-help">Guided cutaway · drag slightly to inspect · pinch to zoom</p>
       </div>
       <aside class="metrics-card" aria-label="Calculated plant performance" aria-live="polite">
         <div class="power-card"><span class="eyebrow">Plant electrical power P_plant</span><strong id="plant-power"></strong><span class="status" id="clip-status"></span></div>

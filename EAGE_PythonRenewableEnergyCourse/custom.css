@@ -8,7 +8,7 @@
 }
 iframe[src*="hydro-lab"] {
   width: 100%;
-  min-height: 1120px;
+  min-height: 1280px;
   border: 0;
   border-radius: 18px;
   background: #f4f8f6;
@@ -16,16 +16,16 @@ iframe[src*="hydro-lab"] {
 
 div:has(> iframe[src*="hydro-lab"]) {
   width: 100% !important;
-  height: 1120px !important;
+  height: 1280px !important;
   padding-bottom: 0 !important;
 }
 
 @media (max-width: 900px) {
-  iframe[src*="hydro-lab"] { min-height: 1740px; }
-  div:has(> iframe[src*="hydro-lab"]) { height: 1740px !important; }
+  iframe[src*="hydro-lab"] { min-height: 2000px; }
+  div:has(> iframe[src*="hydro-lab"]) { height: 2000px !important; }
 }
 
 @media (max-width: 560px) {
-  iframe[src*="hydro-lab"] { min-height: 2050px; }
-  div:has(> iframe[src*="hydro-lab"]) { height: 2050px !important; }
+  iframe[src*="hydro-lab"] { min-height: 2200px; }
+  div:has(> iframe[src*="hydro-lab"]) { height: 2200px !important; }
 }
