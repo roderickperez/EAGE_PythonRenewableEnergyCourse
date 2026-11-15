@@ -24,8 +24,6 @@ Hydropower converts the gravitational potential energy of water into shaft power
 :title: Interactive three-dimensional hydroelectric plant and engineering dashboard
 :::
 
-[Open the interactive hydroelectric lab in a full page](../../hydro-lab/index.html).
-
 <!-- expanded-theory:hydro:start -->
 
 ## Physical description: water, elevation and electricity

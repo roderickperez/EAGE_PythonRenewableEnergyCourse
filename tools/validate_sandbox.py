@@ -21,6 +21,7 @@ def validate():
     assert not any(page['group'] in removed for page in pages.values())
     assert (OUT / 'hydro-lab' / 'hydro-lab.js').is_file()
     assert (OUT / 'hydro-lab' / 'fallback.svg').is_file()
+    assert 'hydro-lab/index.html' not in pages['section6/hydroelectricEnergy.md']['html']
     assert 'private-course/eage-python-course/index.html' in pages['courseIntro.md']['html']
     for path, page in pages.items():
         assert page['source_sha256'] == hashlib.sha256((BOOK/path).read_bytes()).hexdigest(), f'Stale content: {path}'

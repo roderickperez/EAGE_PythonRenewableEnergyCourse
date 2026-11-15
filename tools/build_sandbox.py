@@ -153,6 +153,10 @@ class Builder:
                 j = i + 1
                 while j < len(lines) and lines[j].strip() != mark:
                     j += 1
+                if kind == 'iframe':
+                    # Embedded labs are mounted by the sandbox controller.
+                    i = j + 1
+                    continue
                 body = lines[i+1:j]
                 options = []
                 while body and (not body[0].strip() or body[0].startswith(':')):
