@@ -6,7 +6,7 @@
     "build": "npm run build:hydro-lab",
     "build:hydro-lab": "node tools/build-hydro-lab.mjs",
     "test": "npm run test:hydro-lab",
-    "test:hydro-lab": "node --test web/hydro-lab/model.test.js"
+    "test:hydro-lab": "node --test web/hydro-lab/model.test.js web/hydro-lab/visual-state.test.js"
   },
   "dependencies": {
     "three": "0.187.0"

@@ -35,7 +35,7 @@ function template(inputs, assetBase, standaloneUrl) {
       <div class="plant-views">
       <figure class="engineering-card">
         <div id="plant-scene" aria-label="Interactive three-dimensional hydroelectric plant cutaway"></div>
-        <figcaption>Drag to inspect · scroll or pinch to zoom · hover or tap to identify parts. Turbine and generator rotate together; speed is illustrative.</figcaption>
+        <figcaption>Drag to inspect · scroll or pinch to zoom · hover or tap to identify parts. Blue: water. Gold: electrical energy from generator through transformer to grid. The turbine drives the generator mechanically; there is no separate motor in generating mode. Motion and vertical scale are illustrative. The fixed intake stays submerged over the operating range; excess flow uses a low-level bypass, not the crest spillway.</figcaption>
         <div class="head-ruler" id="head-ruler"><div class="head-track"></div><strong>Head balance</strong><span id="gross-readout"></span><span id="loss-readout"></span><span id="net-readout"></span></div>
       </figure>
       </div>
