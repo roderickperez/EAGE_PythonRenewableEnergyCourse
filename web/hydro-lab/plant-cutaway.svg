@@ -22,7 +22,7 @@
   </defs>
   <path fill="url(#sky)" d="M0 0h1000v610H0z"/>
   <path fill="#c2ceca" d="M330 112 444 58 514 67 596 31 661 52 760 29 860 74 1000 50v325L500 273Z"/>
-  <path fill="url(#woodland)" d="M411 124Q500 25 571 21T686 76q56 51 113 57t201 45v233L618 325Z"/>
+  <path fill="url(#woodland)" opacity=".45" d="M411 124Q500 25 571 21T686 76q56 51 113 57t201 45v233L618 325Z"/>
   <path fill="none" stroke="#dce7e1" stroke-opacity=".28" stroke-width="1.4" d="M576 104q103 14 156 85t268 66M537 131q110 20 171 79t292 75"/>
   <path fill="url(#lake)" d="M585 312q204-13 415 45v253H675Z"/>
   <path fill="none" stroke="#bee9ec" stroke-width="3" opacity=".5" d="M807 425q61-13 176 16m-136 17q57-2 145 13m-171 57q67-13 163 7m-186 38q99-13 188-2"/>
@@ -64,6 +64,8 @@
   <path fill="url(#steel)" d="M157 135h6v38h-6z"/>
   <path fill="#334d58" d="M150 137h19v8h-19z"/>
   <!-- Below the generator floor, the runner empties into a widened draft tube. -->
+  <path fill="url(#concrete-side)" stroke="#839295" d="M508 402 647 429 764 437v173H538l-30-31Z"/>
+  <path fill="url(#section-fill)" stroke="#adb4b0" d="M508 402 545 413v112q0 73 102 74h117v11H538l-30-31Z"/>
   <path fill="#526c73" d="M547 480h78v30q0 27 35 27h103l47-8v60l-46 10H645q-98 0-98-76Z"/>
   <path fill="url(#pipe-water)" d="M555 483h59v30q0 34 43 34h106l53-8v44l-52 10H646q-91 0-91-69Z"/>
   <path fill="none" stroke="#d9f8fa" opacity=".7" stroke-width="2" d="M618 521q7 27 40 25h107l50-9"/>
@@ -95,6 +97,7 @@
     <use href="#tower" transform="translate(928 114) scale(.74)"/>
   </g>
   <!-- Vertical shaft, copper generator and Francis-style runner. -->
+  <ellipse cx="586" cy="503" rx="83" ry="20" fill="url(#contact-shadow)"/>
   <path fill="url(#steel)" stroke="#657679" d="M576 381h20v94h-20z"/>
   <path fill="url(#steel)" stroke="#596a70" d="M571 417h30v8q-15 10-30 0Z"/>
   <ellipse cx="586" cy="417" rx="15" ry="5" fill="#aebcba" stroke="#657679"/>
@@ -116,8 +119,14 @@
   <path fill="url(#copper)" stroke="#805541" stroke-width="2" d="M529 385v-24c0-25 29-37 57-37s57 12 57 37v24c-9-21-34-29-57-29s-48 8-57 29Z"/>
   <path fill="none" stroke="#e7c29e" stroke-opacity=".64" stroke-width="1.6" d="M534 355c18-38 82-38 104 0m-104 8c18-38 82-38 104 0m-104 8c18-38 82-38 104 0"/>
   <ellipse cx="586" cy="384" rx="57" ry="23" fill="url(#copper)" stroke="#754b37" stroke-width="2"/>
+  <path fill="url(#steel)" stroke="#4f626b" d="M529 360v24c0 13 25 24 57 24s57-11 57-24v-24c0 13-25 24-57 24s-57-11-57-24Z"/>
+  <g fill="none" stroke="#3e555f" stroke-width="2" opacity=".8">
+    <path d="M535 372v18m8-12v17m9-13v18m10-15v18m11-16v18m12-17v18m12-18v17m12-19v17m11-20v17m10-22v17m8-24v17"/>
+  </g>
   <ellipse cx="586" cy="380" rx="40" ry="15" fill="url(#steel)" stroke="#53676b" stroke-width="2"/>
   <ellipse cx="586" cy="377" rx="11" ry="6" fill="#e9eeeb"/>
+  <path fill="url(#steel)" stroke="#657679" d="M579 351h14v25q-7 5-14 0Z"/>
+  <ellipse cx="586" cy="351" rx="7" ry="3" fill="#e8eae5"/>
   <path class="grid-lines" d="M534 371q-25-11-25-36" fill="none" stroke="currentColor" stroke-width="3"/>
   <path id="cutaway-generation-motion" class="water-motion" stroke="#e8fbff" stroke-width="5" d="M170 238h57l144 190 91 21m123 56q5 65 76 65h145"/>
   <path id="cutaway-direction" fill="#176b88" d="M183 235h12v-5l10 8-10 8v-5h-12Zm76 42 8 10 4-3v13l-12-4 4-3-8-10Zm52 67 8 10 4-3v13l-12-4 4-3-8-10Zm82 86 12 3 1-5 9 10-12 5 1-5-12-3Zm219 117 9 7 3-4 3 12-13 1 3-4-9-7Zm59 20h12v-5l10 8-10 8v-5h-12Zm72 0h12v-5l10 8-10 8v-5h-12Z"/>

@@ -123,6 +123,16 @@ input[type="range"]:focus-visible { outline: 3px solid #65aee0; outline-offset: 
   overflow: hidden;
 }
 .plant-cutaway { display: block; width: 100%; height: auto; }
+.component-target { outline: none; cursor: help; }
+.component-hit { fill: transparent; stroke: transparent; stroke-width: 2; pointer-events: all; }
+.component-tooltip { opacity: 0; pointer-events: none; transition: opacity .12s; }
+.component-tooltip rect { fill: #173745; stroke: #e1edf1; stroke-width: 1; }
+.component-tooltip text { fill: white; font: 500 18px Inter, sans-serif; }
+.component-target:hover .component-tooltip,
+.component-target:focus-visible .component-tooltip,
+.component-target[aria-pressed="true"] .component-tooltip { opacity: 1; }
+.component-target:hover .component-hit,
+.component-target:focus-visible .component-hit { fill: #bce6f4; fill-opacity: .12; stroke: #63a8bb; }
 .cutaway-card figcaption { padding: 12px 16px 0; color: var(--muted); font-size: 13px; }
 .cutaway-card .head-ruler {
   position: static;

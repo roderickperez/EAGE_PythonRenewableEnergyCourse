@@ -1,6 +1,5 @@
 import styles from './styles.css';
 import { computeHydro, DEFAULT_INPUTS, HYDRO_CONSTANTS, normalizeHydroInputs } from './model.js';
-import { HydroScene } from './scene.js';
 import { cutawayMarkup, mountCutaway } from './cutaway.js';
 import { renderConversionChart, renderPowerChart } from './charts.js';
 
@@ -34,16 +33,9 @@ function template(inputs, assetBase, standaloneUrl) {
     </section>
     <section class="stage-grid">
       <div class="plant-views">
-      <details class="orbit-view" id="orbit-view">
-        <summary><span class="show-3d">Open orbitable 3D view</span><span class="show-diagram">Return to the labelled cutaway</span></summary>
-        <div class="scene-card" aria-label="Interactive three-dimensional hydroelectric plant">
-          <div class="scene" id="hydro-scene"><img class="fallback" id="scene-fallback" src="${assetBase}fallback.svg" alt="Hydroelectric plant schematic" hidden><div class="scene-labels" id="scene-labels"></div></div>
-          <p class="scene-help">Drag to orbit · pinch to zoom</p>
-        </div>
-      </details>
       <figure class="cutaway-card">
         ${cutawayMarkup()}
-        <figcaption>Follow the blue water path through the turbine and the gold electrical route to the transmission lines. The far-side chute carries spill or bypass flow.</figcaption>
+        <figcaption>Hover, focus, or tap a component to identify it. Follow the animated water from reservoir to tailrace.</figcaption>
         <div class="head-ruler" id="head-ruler"><div class="head-track"></div><strong>Head balance</strong><span id="gross-readout"></span><span id="loss-readout"></span><span id="net-readout"></span></div>
       </figure>
       </div>
@@ -88,19 +80,6 @@ export function mountHydroLab(container, initialInputs = DEFAULT_INPUTS, options
 
   const get = (id) => root.getElementById(id);
   const updateCutaway = mountCutaway(root);
-  let scene;
-  let currentResult;
-  const orbit = get('orbit-view');
-  orbit.addEventListener('toggle', () => {
-    if (orbit.open && !scene) {
-      scene = new HydroScene(get('hydro-scene'), get('scene-labels'), get('scene-fallback'));
-      scene.update(currentResult);
-    } else if (!orbit.open && scene) {
-      scene.destroy();
-      get('scene-labels').replaceChildren();
-      scene = undefined;
-    }
-  });
   const sliderUnits = Object.fromEntries(sliderDefinitions.map(([key, , , , step, unit]) => [key, { unit, digits: step < 1 ? 1 : 0 }]));
 
   function render(nextInputs = inputs) {
@@ -131,9 +110,7 @@ export function mountHydroLab(container, initialInputs = DEFAULT_INPUTS, options
     get('head-ruler').style.setProperty('--loss-pct', `${Math.min(90, inputs.headLossM / inputs.grossHeadM * 100)}%`);
     renderPowerChart(get('power-chart'), result);
     renderConversionChart(get('conversion-chart'), result);
-    currentResult = result;
     updateCutaway(result);
-    scene?.update(result);
     return result;
   }
 
@@ -144,7 +121,7 @@ export function mountHydroLab(container, initialInputs = DEFAULT_INPUTS, options
   return {
     result,
     update(values) { return render({ ...inputs, ...values }); },
-    destroy() { scene?.destroy(); root.replaceChildren(); },
+    destroy() { root.replaceChildren(); },
   };
 }
 
