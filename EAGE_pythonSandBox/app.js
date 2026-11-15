@@ -172,6 +172,10 @@ async function route() {
         anchor: '#physical-description-useful-heat-from-the-subsurface', id: 'geothermal-3d-lab',
         mount: async host => (await import('./generated/geothermal-lab/geothermal-lab.js')).mountGeothermalLab(host),
       },
+      'section8/projectIntro.md': {
+        anchor: '#load-the-separate-input-datasets', id: 'project-3d-map',
+        mount: async host => (await import('./generated/project-map/project-map.js')).mountProjectMap(host),
+      },
     }[lesson.id];
     if(lab){
       const content = $('lesson');

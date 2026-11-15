@@ -4,7 +4,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab']) {
+for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'project-map']) {
   const source = resolve(root, 'web', lab);
   const output = resolve(root, 'EAGE_PythonRenewableEnergyCourse/static', lab);
 
@@ -19,7 +19,7 @@ for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab']) {
     target: ['es2022'],
     minify: true,
     sourcemap: false,
-    loader: { '.css': 'text', '.svg': 'text' },
+    loader: { '.css': 'text', '.svg': 'text', '.csv': 'text' },
     legalComments: 'inline',
   });
   const html = await readFile(resolve(source, 'index.html'), 'utf8');

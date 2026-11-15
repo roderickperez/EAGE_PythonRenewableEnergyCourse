@@ -34,6 +34,9 @@ def validate():
     geothermal_page = pages['section6/geothermalEnergy.md']['html']
     assert 'geothermal-lab/index.html' not in geothermal_page
     assert 'id="physical-description-useful-heat-from-the-subsurface"' in geothermal_page
+    assert (OUT / 'project-map' / 'project-map.js').is_file()
+    assert 'project-map/index.html' not in pages[PROJECT]['html']
+    assert 'id="load-the-separate-input-datasets"' in pages[PROJECT]['html']
     assert 'private-course/eage-python-course/index.html' in pages['courseIntro.md']['html']
     for path, page in pages.items():
         assert page['source_sha256'] == hashlib.sha256((BOOK/path).read_bytes()).hexdigest(), f'Stale content: {path}'

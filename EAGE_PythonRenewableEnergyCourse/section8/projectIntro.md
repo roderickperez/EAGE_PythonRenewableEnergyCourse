@@ -15,6 +15,12 @@ A small isolated grid is considering four renewable resources:
 
 Analyse one synthetic week at hourly resolution. The synthetic weather and demand make every submission reproducible and avoid implying that the results describe a real site.
 
+:::{iframe} ../../project-map/index.html
+:width: 100%
+:title: Isometric renewable portfolio and community demand map
+:height: 1030px
+:::
+
 ## Load the separate input datasets
 
 Download and read each CSV separately before joining on `timestamp`:
