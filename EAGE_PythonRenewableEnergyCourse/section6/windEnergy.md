@@ -20,6 +20,12 @@ After this lesson you should be able to:
 
 Wind turbines convert part of the kinetic-energy flux through the rotor area into electricity. Real production depends on air density, wind speed at hub height, the turbine power curve, availability, wakes, electrical losses, curtailment, icing, and environmental limits. DOE describes the standard cut-in/rated/cut-out behavior, while Betz's ideal actuator-disk result bounds aerodynamic extraction [@doeWindWeather; @doeSmallWind].
 
+:::{iframe} ../../wind-lab/index.html
+:width: 100%
+:title: Interactive three-dimensional wind turbine lab
+:height: 1350px
+:::
+
 <!-- expanded-theory:wind:start -->
 
 ## Physical description: extracting energy from moving air

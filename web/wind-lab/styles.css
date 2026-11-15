@@ -1,0 +1,11 @@
+#wind-scene { position: relative; height: clamp(350px, 46vw, 530px); }
+#wind-scene canvas { display: block; width: 100%; height: 100%; }
+.wind-lab { container-type: inline-size; }
+@container (max-width: 740px) {
+  .wind-lab .solar-stage { grid-template-columns: minmax(0, 1fr); }
+  #wind-scene { height: clamp(285px, 77cqw, 450px); }
+}
+.wind-selects { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,260px),1fr)); gap: 10px; }
+.wind-selects label, .wind-selects select { display: block; min-width: 0; font: inherit; }
+.wind-selects label { font-weight: 700; }
+.wind-selects select { width: 100%; margin-top: 4px; border: 1px solid var(--line); border-radius: 7px; padding: 7px; color: var(--ink); background: white; }

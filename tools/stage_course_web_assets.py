@@ -7,7 +7,7 @@ BOOK = ROOT / "EAGE_PythonRenewableEnergyCourse"
 
 
 def main() -> None:
-    for lab in ("hydro-lab", "solar-lab"):
+    for lab in ("hydro-lab", "solar-lab", "wind-lab"):
         source = BOOK / "static" / lab
         target = BOOK / "_build" / "html" / lab
         required = {"index.html", f"{lab}.js"}

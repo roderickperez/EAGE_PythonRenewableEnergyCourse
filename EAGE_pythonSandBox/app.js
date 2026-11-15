@@ -164,6 +164,10 @@ async function route() {
         anchor: '#physical-description-what-solar-energy-systems-do', id: 'solar-3d-lab',
         mount: async host => (await import('./generated/solar-lab/solar-lab.js')).mountSolarLab(host),
       },
+      'section6/windEnergy.md': {
+        anchor: '#physical-description-extracting-energy-from-moving-air', id: 'wind-3d-lab',
+        mount: async host => (await import('./generated/wind-lab/wind-lab.js')).mountWindLab(host),
+      },
     }[lesson.id];
     if(lab){
       const content = $('lesson');

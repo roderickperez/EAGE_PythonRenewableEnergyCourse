@@ -4,7 +4,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-for (const lab of ['hydro-lab', 'solar-lab']) {
+for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab']) {
   const source = resolve(root, 'web', lab);
   const output = resolve(root, 'EAGE_PythonRenewableEnergyCourse/static', lab);
 
