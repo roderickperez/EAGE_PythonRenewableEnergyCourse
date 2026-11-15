@@ -19,6 +19,12 @@ After this lesson you should be able to:
 
 A photovoltaic (PV) cell converts part of incident solar radiation directly into DC electricity. An inverter converts DC to grid-compatible AC. Irradiance and cell temperature affect instantaneous output; shading, soiling, wiring, mismatch, inverter behavior, availability, and degradation affect delivered energy. Standard Test Conditions (STC) use 1000 W/m$^2$ irradiance, 25 °C cell temperature and the AM1.5 reference spectrum [@doePVPerformance; @doePVLongevity].
 
+:::{iframe} ../../solar-lab/index.html
+:width: 100%
+:title: Interactive three-dimensional solar photovoltaic lab
+:height: 1350px
+:::
+
 <!-- expanded-theory:solar:start -->
 
 ## Physical description: what solar energy systems do
@@ -293,7 +299,7 @@ $$P_{DC}=P_{STC}\frac{G}{G_{STC}}
 
 where $\gamma_P$ is normally negative and $T_c$ is cell temperature in °C. A simple NOCT approximation is PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3. [@pvlibDocs]. Specified simplified NOCT approximation; compare the fuller [Sandia/SAM thermal model](https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/cell-temperature/noct-cell-temperature/).
 
-$$T_c=T_a+\frac{G}{800}(NOCT-20)$$
+$$T_c=T_a+\frac{G_{POA}}{800\ \mathrm{W/m^2}}(T_{NOCT}-20\ ^\circ\mathrm{C})$$
 
 *Equation basis:* PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3. [@pvlibDocs]. Specified simplified NOCT approximation; compare the fuller [Sandia/SAM thermal model](https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/cell-temperature/noct-cell-temperature/).
 
@@ -315,11 +321,11 @@ $$E_{AC}=\sum_i P_{AC,i}\Delta t_i$$
 
 Performance ratio (PR) is a normalized energy-quality indicator. One common definition is Yield and performance-ratio definitions: [Sandia PV performance metrics](https://pvpmc.sandia.gov/modeling-guide/5-ac-system-output/pv-performance-metrics/). PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
 
-$$PR=\frac{E_{AC}/P_{rated}}{H_{POA}/G_{STC}}$$
+$$PR=\frac{E_{AC}/P_{STC,DC}}{H_{POA}/G_{STC}}$$
 
 *Equation basis:* Yield and performance-ratio definitions: [Sandia PV performance metrics](https://pvpmc.sandia.gov/modeling-guide/5-ac-system-output/pv-performance-metrics/). PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
 
-where $H_{POA}$ is plane-of-array irradiation and $P_{rated}$ is the DC nameplate rating at STC. Use consistent kW/kWh or MW/MWh units; $G_{STC}=1$ kW/m². State the exact convention because PR boundaries can differ. Yield and performance-ratio definitions: [Sandia PV performance metrics](https://pvpmc.sandia.gov/modeling-guide/5-ac-system-output/pv-performance-metrics/). PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
+where $H_{POA}$ is plane-of-array irradiation and $P_{STC,DC}$ is the DC nameplate rating at STC. Use consistent kW/kWh or MW/MWh units and express $G_{STC}$ in matching units (1 kW/m² or 0.001 MW/m²). State the exact convention because PR boundaries can differ. Yield and performance-ratio definitions: [Sandia PV performance metrics](https://pvpmc.sandia.gov/modeling-guide/5-ac-system-output/pv-performance-metrics/). PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
 
 ## Tested Python functions
 

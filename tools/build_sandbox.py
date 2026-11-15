@@ -268,10 +268,11 @@ class Builder:
         # assets from surviving into a later deployment.
         shutil.rmtree(OUT, ignore_errors=True)
         OUT.mkdir(exist_ok=True)
-        hydro_lab = BOOK / 'static' / 'hydro-lab'
-        if not (hydro_lab / 'hydro-lab.js').is_file():
-            raise FileNotFoundError('Build the interactive lab first: npm run build:hydro-lab')
-        shutil.copytree(hydro_lab, OUT / 'hydro-lab')
+        for lab in ('hydro-lab', 'solar-lab'):
+            source = BOOK / 'static' / lab
+            if not (source / f'{lab}.js').is_file():
+                raise FileNotFoundError(f'Build {lab} first: npm run build')
+            shutil.copytree(source, OUT / lab)
         self.asset(BOOK / 'myst.yml')
         pages = [self.page(path, group) for path, group in self.pages]
         attach_media(pages, SANDBOX)

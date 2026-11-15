@@ -22,6 +22,10 @@ def validate():
     assert (OUT / 'hydro-lab' / 'hydro-lab.js').is_file()
     assert (OUT / 'hydro-lab' / 'fallback.svg').is_file()
     assert 'hydro-lab/index.html' not in pages['section6/hydroelectricEnergy.md']['html']
+    assert (OUT / 'solar-lab' / 'solar-lab.js').is_file()
+    solar_page = pages['section6/solarEnergy.md']['html']
+    assert 'solar-lab/index.html' not in solar_page
+    assert 'id="physical-description-what-solar-energy-systems-do"' in solar_page
     assert 'private-course/eage-python-course/index.html' in pages['courseIntro.md']['html']
     for path, page in pages.items():
         assert page['source_sha256'] == hashlib.sha256((BOOK/path).read_bytes()).hexdigest(), f'Stale content: {path}'

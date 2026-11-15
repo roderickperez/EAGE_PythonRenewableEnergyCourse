@@ -45,7 +45,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           npm ci
-          npm run test:hydro-lab
+          npm test
           npm run build:hydro-lab
 
       - name: Validate student course

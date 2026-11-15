@@ -1,0 +1,21 @@
+.solar-control-panel, .solar-analysis { padding: 14px 18px; display: grid; gap: 10px; }
+.solar-lab fieldset, .solar-lab details { min-width: 0; margin: 0; padding: 10px 13px; background: #fff; border: 1px solid var(--line); border-radius: 10px; }
+.solar-lab legend, .solar-lab summary { font-weight: 750; }
+.solar-lab summary { cursor: pointer; }
+.solar-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: 10px 16px; }
+.solar-lab details .solar-controls { margin-top: 12px; }
+.solar-lab .control-line { flex-wrap: wrap; gap: 3px 8px; }
+.solar-lab .control label { font-size: 13px; }
+.solar-lab input[type="range"] { display: block; margin: 4px 0 2px; }
+.solar-stage { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(270px, 1fr); align-items: start; gap: 12px; padding: 0 18px; }
+#solar-scene { height: clamp(300px, 44vw, 495px); }
+#solar-scene canvas { display: block; width: 100%; height: 100%; touch-action: pan-y; }
+.solar-lab .chart-card svg { min-height: 0; max-height: 260px; }
+.solar-lab svg text { font-size: 11px; fill: #405950; }
+.solar-lab .equation { font: 13px/1.55 system-ui, sans-serif; }
+@media (max-width: 760px) {
+  .solar-stage { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 420px) {
+  .solar-control-panel, .solar-analysis, .solar-stage { padding-inline: 10px; }
+}

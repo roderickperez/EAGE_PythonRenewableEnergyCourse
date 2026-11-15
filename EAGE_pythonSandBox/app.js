@@ -82,7 +82,7 @@ function ensureWorkspaceVisible() {
   }
 }
 
-let course, lesson, active = 'draft', worker, busy = false, timer, draftTimer, hydroLabInstance;
+let course, lesson, active = 'draft', worker, busy = false, timer, draftTimer, lessonLab;
 let saved = {}, workerReady = false;
 try { saved = JSON.parse(localStorage.getItem(STORAGE) || '{}'); } catch { /* local storage may be disabled */ }
 const status = (text, state) => { const indicator = $('python-status'); indicator.dataset.state = state; indicator.title = text; indicator.setAttribute('aria-label', text); indicator.querySelector('.sr-only').textContent = text; };
@@ -135,7 +135,7 @@ async function route() {
   const next=course.pages.find(p=>p.id===params.get('lesson')) || course.pages[0];
   if(lesson?.id!==next.id){
     if(busy){location.hash='lesson='+encodeURIComponent(lesson.id);appendText('Stop the current program before changing lessons.','error');return;}
-    stopMedia();persist();hydroLabInstance?.destroy();hydroLabInstance=null;lesson=next;active='draft';
+    stopMedia();persist();lessonLab?.destroy();lessonLab=null;lesson=next;active='draft';
     $('output').replaceChildren();
     $('breadcrumb').textContent=lesson.group;
     const notebookPaths = {
@@ -154,17 +154,31 @@ async function route() {
     colabButton.title = notebookPath ? 'Open this lesson in Google Colab' : 'No Google Colab notebook available for this lesson';
     colabButton.onclick = notebookPath ? () => window.open('https://colab.research.google.com/github/roderickperez/EAGE_PythonRenewableEnergyCourse/blob/main/' + notebookPath, '_blank', 'noopener,noreferrer') : null;
     $('lesson').innerHTML=lesson.html;
-    if(lesson.id==='section6/hydroelectricEnergy.md'){
-      const physical=$('lesson').querySelector('#physical-description-water-elevation-and-electricity');
-      const host=document.createElement('div');host.id='hydro-3d-lab';host.className='hydro-3d-lab';
-      (physical || $('lesson').firstElementChild)?.before(host);
-      try{
-        const module=await import('./generated/hydro-lab/hydro-lab.js');
-        hydroLabInstance=module.mountHydroLab(host,undefined,{assetBase:'generated/hydro-lab/',standaloneUrl:''});
-      }catch(error){
-        host.className='callout';host.textContent='The interactive hydroelectric lab could not load. The lesson equations and examples remain available below.';
-        console.error('Hydroelectric lab failed to load',error);
-      }
+    const lab = {
+      'section6/hydroelectricEnergy.md': {
+        anchor: '#physical-description-water-elevation-and-electricity', id: 'hydro-3d-lab',
+        mount: async host => (await import('./generated/hydro-lab/hydro-lab.js'))
+          .mountHydroLab(host, undefined, { assetBase: 'generated/hydro-lab/', standaloneUrl: '' }),
+      },
+      'section6/solarEnergy.md': {
+        anchor: '#physical-description-what-solar-energy-systems-do', id: 'solar-3d-lab',
+        mount: async host => (await import('./generated/solar-lab/solar-lab.js')).mountSolarLab(host),
+      },
+    }[lesson.id];
+    if(lab){
+      const content = $('lesson');
+      const host = document.createElement('div');
+      host.id = lab.id;
+      host.className = 'hydro-3d-lab';
+      (content.querySelector(lab.anchor) || content.firstElementChild)?.before(host);
+      lab.mount(host).then(instance => {
+        if (host.isConnected) lessonLab = instance;
+        else instance.destroy();
+      }).catch(error => {
+        host.className = 'callout';
+        host.textContent = 'The interactive lab could not load. The lesson equations and examples remain available below.';
+        console.error('Course lab failed to load', error);
+      });
     }
     setupMedia();
     if(lesson.assessment || lesson.project){const banner=document.createElement('p');banner.className='assessment-banner';banner.textContent='Questions and requirements only. Use the dedicated workspace buttons to write and save your own answers. No reference solution is included.';$('lesson').prepend(banner);}
