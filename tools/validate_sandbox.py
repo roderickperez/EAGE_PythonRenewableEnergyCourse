@@ -30,6 +30,10 @@ def validate():
     wind_page = pages['section6/windEnergy.md']['html']
     assert 'wind-lab/index.html' not in wind_page
     assert 'id="physical-description-extracting-energy-from-moving-air"' in wind_page
+    assert (OUT / 'geothermal-lab' / 'geothermal-lab.js').is_file()
+    geothermal_page = pages['section6/geothermalEnergy.md']['html']
+    assert 'geothermal-lab/index.html' not in geothermal_page
+    assert 'id="physical-description-useful-heat-from-the-subsurface"' in geothermal_page
     assert 'private-course/eage-python-course/index.html' in pages['courseIntro.md']['html']
     for path, page in pages.items():
         assert page['source_sha256'] == hashlib.sha256((BOOK/path).read_bytes()).hexdigest(), f'Stale content: {path}'

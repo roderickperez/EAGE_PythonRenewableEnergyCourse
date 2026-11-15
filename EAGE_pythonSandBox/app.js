@@ -168,6 +168,10 @@ async function route() {
         anchor: '#physical-description-extracting-energy-from-moving-air', id: 'wind-3d-lab',
         mount: async host => (await import('./generated/wind-lab/wind-lab.js')).mountWindLab(host),
       },
+      'section6/geothermalEnergy.md': {
+        anchor: '#physical-description-useful-heat-from-the-subsurface', id: 'geothermal-3d-lab',
+        mount: async host => (await import('./generated/geothermal-lab/geothermal-lab.js')).mountGeothermalLab(host),
+      },
     }[lesson.id];
     if(lab){
       const content = $('lesson');

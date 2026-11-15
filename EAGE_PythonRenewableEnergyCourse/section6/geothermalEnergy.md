@@ -19,6 +19,12 @@ After this lesson you should be able to:
 
 Electricity generation requires useful heat plus a way to transport it to the surface. Conventional hydrothermal systems rely on heat, fluid, and permeability. Enhanced geothermal systems create or improve fluid pathways, while closed-loop systems circulate fluid in sealed wells [@doeGeothermalElectricity; @doeEGS]. Dry steam, flash steam, and binary-cycle plants use different surface processes and operating ranges.
 
+:::{iframe} ../../geothermal-lab/index.html
+:width: 100%
+:title: Interactive three-dimensional geothermal binary-cycle plant
+:height: 1350px
+:::
+
 <!-- expanded-theory:geothermal:start -->
 
 ## Physical description: useful heat from the subsurface
