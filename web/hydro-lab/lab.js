@@ -1,6 +1,6 @@
 import styles from './styles.css';
 import { computeHydro, DEFAULT_INPUTS, HYDRO_CONSTANTS, normalizeHydroInputs } from './model.js';
-import { cutawayMarkup, mountCutaway } from './cutaway.js';
+import { HydroScene } from './scene.js';
 import { renderConversionChart, renderPowerChart } from './charts.js';
 
 const sliderDefinitions = [
@@ -33,9 +33,9 @@ function template(inputs, assetBase, standaloneUrl) {
     </section>
     <section class="stage-grid">
       <div class="plant-views">
-      <figure class="cutaway-card">
-        ${cutawayMarkup()}
-        <figcaption>Hover, focus, or tap a component to identify it. Follow the animated water from reservoir to tailrace.</figcaption>
+      <figure class="engineering-card">
+        <div id="plant-scene" aria-label="Interactive three-dimensional hydroelectric plant cutaway"></div>
+        <figcaption>Drag to inspect · scroll or pinch to zoom · hover or tap to identify parts. Turbine and generator rotate together; speed is illustrative.</figcaption>
         <div class="head-ruler" id="head-ruler"><div class="head-track"></div><strong>Head balance</strong><span id="gross-readout"></span><span id="loss-readout"></span><span id="net-readout"></span></div>
       </figure>
       </div>
@@ -79,7 +79,9 @@ export function mountHydroLab(container, initialInputs = DEFAULT_INPUTS, options
   root.replaceChildren(style, body);
 
   const get = (id) => root.getElementById(id);
-  const updateCutaway = mountCutaway(root);
+  let scene;
+  try { scene = new HydroScene(get('plant-scene')); }
+  catch (error) { get('plant-scene').textContent = 'WebGL is unavailable. Calculations and charts remain available.'; console.warn('Hydro scene unavailable', error); }
   const sliderUnits = Object.fromEntries(sliderDefinitions.map(([key, , , , step, unit]) => [key, { unit, digits: step < 1 ? 1 : 0 }]));
 
   function render(nextInputs = inputs) {
@@ -110,7 +112,7 @@ export function mountHydroLab(container, initialInputs = DEFAULT_INPUTS, options
     get('head-ruler').style.setProperty('--loss-pct', `${Math.min(90, inputs.headLossM / inputs.grossHeadM * 100)}%`);
     renderPowerChart(get('power-chart'), result);
     renderConversionChart(get('conversion-chart'), result);
-    updateCutaway(result);
+    scene?.update(result);
     return result;
   }
 
@@ -121,7 +123,7 @@ export function mountHydroLab(container, initialInputs = DEFAULT_INPUTS, options
   return {
     result,
     update(values) { return render({ ...inputs, ...values }); },
-    destroy() { root.replaceChildren(); },
+    destroy() { scene?.destroy(); root.replaceChildren(); },
   };
 }
 
