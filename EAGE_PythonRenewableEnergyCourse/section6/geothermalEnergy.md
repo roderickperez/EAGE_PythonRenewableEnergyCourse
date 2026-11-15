@@ -194,7 +194,7 @@ The reservoir-to-fluid heat transfer, pressure losses and detailed power-cycle b
 
 Geothermal projects need attention to fluid chemistry, scaling, corrosion, water use, noncondensable gases, injection management, possible subsidence and induced seismicity. The relevance and magnitude of each issue depend on the resource and operating method. Reinjection is not simply waste disposal; it interacts with the hydraulic and thermal behavior of the field [@grant2011].
 
-Exercises 1–5 establish temperature, heat and electrical-energy accounting. Exercises 6–15 introduce well comparisons, efficiency assumptions, conductivity, data validation and decline scenarios. Exercises 16–20 develop fitting, shared plant limits, pumping penalties, interventions and uncertainty. Read Grant and Bixley Chapters 2–3 for the reservoir basis; use the additional DiPippo text to extend from the simplified heat balance toward actual surface conversion cycles [@grant2011; @diPippo2016geothermal].
+Exercises 1–4 cover the Basic skills, Exercises 5–12 apply the models in Medium tasks, and Exercises 13–20 combine models, data, and validation in Hard tasks. Read Grant and Bixley Chapters 2–3 for the reservoir basis; use the additional DiPippo text to extend from the simplified heat balance toward actual surface conversion cycles [@grant2011; @diPippo2016geothermal].
 
 
 <!-- expanded-theory:geothermal:end -->

@@ -190,7 +190,7 @@ If the model also routes water, calculate the flow needed for the capped output 
 
 Hydropower does not burn fuel in the turbine, but the project can affect river continuity, sediment transport, fish movement, inundated land, water quality and downstream flow timing. Reservoir greenhouse-gas behavior is site-specific; “renewable” does not mean zero life-cycle impact. The IFC guide is useful for connecting engineering calculations to project development and environmental assessment [@ifc2015].
 
-Exercises 1–5 establish head, power, energy and water-volume units. Exercises 6–15 introduce equipment limits, variable flows, losses and duration curves. Exercises 16–20 require chronological storage and conservation checks. Read JICA Chapters 3 and 8 before these calculations; consult the supplied IFC guide for hydrology and project context, and Paish's technical review for further small-hydro background [@jica2011; @ifc2015; @paish2002hydro].
+Exercises 1–4 cover the Basic skills, Exercises 5–12 apply the models in Medium tasks, and Exercises 13–20 combine models, data, and validation in Hard tasks. Read JICA Chapters 3 and 8 before these calculations; consult the supplied IFC guide for hydrology and project context, and Paish's technical review for further small-hydro background [@jica2011; @ifc2015; @paish2002hydro].
 
 
 <!-- expanded-theory:hydro:end -->

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The course goal is to combine **basic Python** with **renewable-energy reasoning**. In this project you will turn hourly solar, wind, river-flow, geothermal, and demand inputs into an auditable portfolio analysis. You are not expected to perform a bankable resource assessment. You are expected to use correct equations, units, functions, data checks, aggregation, and plots.
+Use **one Python notebook** to turn hourly solar, wind, river-flow, geothermal and demand inputs into an analysis of an isolated electricity grid. Start with the five supplied CSVs and carry the same validated hourly data through the technology models, grid balance, plots and scenario comparison. [Download the project starter notebook](projectStarter.ipynb).
 
 ## Scenario
 
@@ -69,7 +69,7 @@ Basis: [@pvlibDocs] for the linear DC approximation; [Sandia NOCT](https://pvpmc
 
 $$T_c=T_a+\frac{G}{800}(NOCT-20)$$
 
-$$P_{DC}=P_{DC,r}\frac{G}{1000}[1+\gamma_P(T_c-25)]$$
+$$P_{DC}=P_{DC,r}\frac{G}{1000}\max\left(0,1+\gamma_P(T_c-25)\right)$$
 
 $$P_{AC}=\min(P_{DC}\eta_{inv},P_{AC,r})$$
 
@@ -87,59 +87,37 @@ Basis: [@jica2011], §3.1.2 and §8.3; [@ifc2015], Chapters 7 and 12. Flows are 
 
 $$Q_{usable}=\max(Q_{river}-Q_{environmental},0)$$
 
-$$P_h=\min(\eta\rho gQ_{usable}H_{net},P_{rated})$$
+$$P_h=\min\left(\frac{\eta\rho gQ_{usable}H_{net}}{10^6},P_{rated}\right)\quad\text{(MW)}$$
 
 ### Geothermal
 
 $$P_{th}=\dot m c_p(T_p-T_r)$$
 
-$$P_{net}=\min\left(P_{th}\eta_{conv}(1-f_{parasitic}),P_{r,net}\right)$$
+$$P_{net}=\min\left(\frac{P_{th}\eta_{conv}(1-f_{parasitic})}{10^6},P_{r,net}\right)\quad\text{(MW)}$$
 
 Use a consistent unit before applying the cap: the sensible-heat formula returns W with the stated SI inputs, while $P_{r,net}=3.5$ MW. Divide W by $10^6$ before comparing with 3.5. [@grant2011], Chapters 2–3; the net rating is a specified project assumption.
 
 The geothermal formula is a simplified single-phase sensible-heat model. State that an enthalpy model is needed for flashing or two-phase fluid.
 
-## Python requirements
+## Basic — load and check the inputs
 
-Your executed notebook must demonstrate:
+### Step 1 — Configure the notebook and read the CSVs
 
-1. Variables with meaningful names and units.
-2. Lists or dictionaries for technology parameters.
-3. At least four reusable functions—one for each source.
-4. Conditionals for physical boundaries and equipment limits.
-5. NumPy arrays and vectorized calculations.
-6. A pandas DataFrame with a unique hourly index.
-7. Loops or comprehensions for at least one scenario comparison.
-8. At least three well-labelled Matplotlib plots.
-9. Assertions or explicit validation checks.
-10. A concise interpretation of results and limitations.
+Set one dataset directory with `pathlib.Path`. Import pandas, NumPy and Matplotlib. Put the required ratings and assumptions into a parameter dictionary. Use `pd.read_csv` five times (or once in a loop), with a separate DataFrame for each supplied file. Print the file names, column names and units. The five DataFrames are the inputs to Step 2.
 
-## Required outputs
+### Step 2 — Validate each table and join by UTC timestamp
 
-### A. Data-quality summary
+Parse dates as UTC and sort chronologically. Use a reusable validation function and report row count, required columns, duplicate timestamps, missing and non-finite values, and physical ranges for each table. Check that production temperature is at least reinjection temperature and that resource rates and demand are non-negative. Verify the exact 168-hour coverage and one-hour spacing in every table. Join by timestamp with one-to-one validation only after checking that all five timelines match. The output is a single hourly DataFrame with measured inputs and a unique UTC index.
 
-Report row count, timestamp uniqueness, missing values, non-negative resource checks, direction range if direction is added, and the exact time step. Never replace missing data with zero without a stated rule.
+## Medium — model each source and build the grid balance
 
-### B. Technology functions
+### Step 3 — Write and test the unit and technology functions
 
-Each function must:
+Write reusable helpers for W to MW and for integrating MW over hours to get MWh. Implement four vectorized technology functions returning MW using the equations above. Document units, reject invalid inputs and enforce equipment limits. Test each function with a hand-calculated input, and include zero-resource, clipped and wind cut-out cases where relevant.
 
-- document inputs and output units;
-- accept array input where useful;
-- reject impossible values;
-- return power in MW;
-- respect its physical and equipment limits.
+### Step 4 — Calculate hourly power and reconcile supply with demand
 
-### C. Portfolio metrics
-
-Calculate:
-
-- energy by source in MWh;
-- source capacity factors using the correct rated-power denominator;
-- total renewable energy available;
-- demand energy;
-- renewable energy served, curtailment, and shortfall;
-- renewable coverage $E_{served}/E_{demand}$.
+Call the four functions on the joined DataFrame from Step 2. Add one power column per source, total renewable power and the supplied demand. Derive the hourly served, curtailed and shortfall columns using the no-storage identities below. Verify the source sum and both balances for every hour. Return this hourly table from a reusable function so the scenario stage can rerun the same calculation with different parameters.
 
 At every hour, use the following original no-storage accounting identities. Each $E$ is energy over that same interval; the basis is conservation of energy [@foster2010], §3.8.1.
 
@@ -151,9 +129,13 @@ $$E_{shortfall}=\max(E_{demand}-E_{renewable},0)$$
 
 For one-hour intervals, the numerical sum of MW samples is MWh. If you change the resolution, multiply by the time-step duration.
 
-### D. Visuals
+## Hard — evaluate the portfolio and compare designs
 
-Produce at least:
+### Step 5 — Summarise the baseline and make the figures
+
+Use the hourly balance from Step 4 to calculate weekly energy by source, available renewable energy, demand, served energy, curtailment and shortfall in MWh. Report renewable coverage as total served energy divided by total demand. Calculate each capacity factor against its fixed electrical rating and 168 hours: use the AC rating for solar and the net nameplate for geothermal.
+
+Produce four Matplotlib figures:
 
 1. resource inputs over time;
 2. source power and total renewable power over time;
@@ -162,9 +144,9 @@ Produce at least:
 
 Axes, legends, time period, and units are mandatory. Avoid dual axes unless the quantities cannot be compared otherwise and both scales are explicit.
 
-### E. Scenario analysis
+### Step 6 — Run a scenario loop and defend a recommendation
 
-Change at least two design parameters—for example PV DC/AC ratio, wind capacity, environmental flow, or geothermal parasitic fraction. Use a loop or comprehension, create a comparison plot, and explain the trade-off. A better scenario should not be defined only as “more installed capacity.”
+Keep the baseline inputs and parameter dictionary. Choose two parameters to vary, such as PV DC/AC ratio and environmental flow. In a loop or comprehension, construct at least three configurations: baseline, change A only, and change B only. You can also run both changes together. For each configuration, reuse the same joined input data and the functions from Steps 3–5. Compare source energy, coverage, shortfall and curtailment in a table and a scenario plot. Explain which change you would choose under a stated criterion and one limitation of drawing conclusions from a synthetic week.
 
 ## Required validation
 
@@ -175,18 +157,9 @@ Change at least two design parameters—for example PV DC/AC ratio, wind capacit
 - Confirm $0\le CF\le1$ and $0\le$ renewable coverage $\le1$.
 - Check at least one hand-calculated hour against the function result.
 
-## Suggested notebook structure
+## Submission checklist
 
-1. Goal, scope, and model limitations
-2. Imports and parameters
-3. Load the five separate supplied CSV datasets
-4. Data-quality checks
-5. Technology functions and unit tests
-6. Hourly generation model
-7. Portfolio metrics
-8. Visualizations
-9. Scenario comparison
-10. Conclusions and limitations
+Submit one executed Python notebook with the six steps in order, plus the source-energy and grid-balance table, scenario table, four baseline figures, scenario comparison plot and short interpretation. The notebook should recreate the tables and figures from the supplied CSVs when run from top to bottom in a fresh kernel.
 
 ## Assessment rubric
 
@@ -198,8 +171,6 @@ Change at least two design parameters—for example PV DC/AC ratio, wind capacit
 | Data quality, assertions, and reconciliation | 15% |
 | Plots and interpretation | 15% |
 | Scenario reasoning and limitations | 10% |
-
-The project is complete only when the notebook runs from the first cell to the last in a fresh kernel. Submit the executed notebook, a source-energy and balance table, a scenario table, four labelled figures, and a short interpretation. The instructor's reference solution is separate and is not included in this student book.
 
 ## References
 

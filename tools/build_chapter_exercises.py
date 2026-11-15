@@ -154,42 +154,64 @@ print(individual, 'individual CF;', fleet, 'fleet CF')
 assert np.isclose(fleet, 0.7)
 assert np.isclose(fleet, np.average(individual, weights=capacity))
 ''', 'Fleet CF is capacity-weighted when the time window is the same.')
-add('general', 'SQL and pandas agreement', 'Group solar energies [10,12] and wind energies [20,18] MWh by source using both SQL and pandas.', '''
+add('general', 'SQL and pandas agreement', 'Solar delivers 10 MWh and 12,000 kWh; wind delivers 20 MWh and 18,000 kWh. Normalise mixed units, reject unsupported units and reconcile separate SQL and pandas totals by source.', '''
 import sqlite3
 import pandas as pd
 # Step 1: Create a small table of source observations.
-df = pd.DataFrame({'source': ['solar','solar','wind','wind'], 'mwh': [10,12,20,18]})
-# Step 2: Aggregate independently using SQL and pandas.
+df = pd.DataFrame({'source': ['solar','solar','wind','wind'],
+                   'energy': [10,12000,20,18000], 'unit': ['MWh','kWh','MWh','kWh']})
+# Step 2: Convert each reading to MWh and reject unknown units.
+def to_mwh(values, units):
+    scale = units.map({'MWh': 1, 'kWh': .001})
+    if scale.isna().any() or values.isna().any() or values.lt(0).any():
+        raise ValueError('Need non-negative readings with known units')
+    return values * scale
+
+df['mwh'] = to_mwh(df.energy, df.unit)
+# Step 3: Aggregate independently using SQL and pandas.
 with sqlite3.connect(':memory:') as con:
     df.to_sql('energy', con, index=False)
     sql = pd.read_sql_query('SELECT source, SUM(mwh) AS mwh FROM energy GROUP BY source ORDER BY source', con).set_index('source').mwh
 expected = df.groupby('source').mwh.sum().sort_index()
-# Step 3: Reconcile totals and display the result.
+# Step 4: Reconcile totals and display the result.
 pd.testing.assert_series_equal(sql, expected)
+assert sql.to_dict() == {'solar': 22.0, 'wind': 38.0}
 print(sql)
 ''', 'Solar totals 22 MWh and wind 38 MWh; matching code outputs still requires valid source definitions.')
-add('general', 'Forecast benchmark', 'Use monthly MWh [10,12,14,16] as training and [15,17] as test. Compare fixed last-value and training-mean forecast MAE.', '''
+add('general', 'Forecast benchmark', 'Use monthly MWh [10,12,14,16] as training and [15,17] as test. Compare fixed last-value, training-mean and walk-forward last-value forecast MAE. In walk-forward prediction, reveal each test observation only after predicting it.', '''
 import numpy as np
 # Step 1: Separate earlier training observations from later test observations.
 train = np.array([10,12,14,16]); test = np.array([15,17])
 # Step 2: Construct forecasts without reading test values.
 last_forecast = np.repeat(train[-1], len(test)); mean_forecast = np.repeat(train.mean(), len(test))
 # Step 3: Evaluate both forecasts on the same test window.
-last_mae = np.abs(test-last_forecast).mean(); mean_mae = np.abs(test-mean_forecast).mean()
-print(last_mae, mean_mae, 'MWh MAE')
-assert last_mae == 1 and mean_mae == 3
+walk_forecast = np.r_[train[-1],test[:-1]]
+mae = {name: np.abs(test-predictions).mean() for name,predictions in
+       [('fixed last',last_forecast),('training mean',mean_forecast),('walk-forward',walk_forecast)]}
+print(mae,'MWh MAE')
+assert mae == {'fixed last':1, 'training mean':3, 'walk-forward':1.5}
 ''', 'Two test months illustrate evaluation; they do not establish long-term forecast skill.')
-add('general', 'Plot a source mix', 'Create a labelled bar chart of solar 20, hydro 35, wind 30 and geothermal 15 MWh, and check the total.', '''
+add('general', 'Plot a source mix', 'For two one-hour intervals, use solar [0,20], hydro [15,20], wind [20,10], geothermal [7,8] and demand [50,45], all in MW. Plot stacked source output and demand. Reconcile interval and total energy, and explain how surplus and shortfall coexist.', '''
+import numpy as np
 import matplotlib.pyplot as plt
-# Step 1: Store source labels and comparable energies.
-sources = ['Solar','Hydro','Wind','Geothermal']; energy = [20,35,30,15]
-# Step 2: Plot values with an explicit energy unit.
-fig, ax = plt.subplots(figsize=(6,3)); ax.bar(sources, energy)
-ax.set(ylabel='Energy (MWh)', title='Synthetic one-day generation')
+# Step 1: Align per-source power and demand at each hour.
+sources = {'Solar':[0,20], 'Hydro':[15,20], 'Wind':[20,10], 'Geothermal':[7,8]}
+demand = np.array([50,45])
+# Step 2: Stack source power and overlay the demand line.
+fig, ax = plt.subplots(figsize=(6,3)); bottom = np.zeros(2)
+for name, power in sources.items():
+    ax.bar([1,2],power,bottom=bottom,label=name)
+    bottom += power
+ax.plot([1,2],demand,'ko-',label='Demand')
+ax.set(xlabel='Hour',ylabel='Power (MW)',title='Synthetic grid'); ax.legend()
 fig.tight_layout(); plt.show()
-# Step 3: Verify the plotted total.
-print(sum(energy), 'MWh'); assert sum(energy) == 100
-''', 'A common energy unit permits comparison; this synthetic mix is not a regional statistic.')
+# Step 3: Calculate served energy, surplus and shortfall separately for each hour.
+served = np.minimum(bottom,demand)
+surplus = bottom-served; shortfall = demand-served
+assert np.allclose(served+surplus,bottom) and np.allclose(served+shortfall,demand)
+assert (bottom.sum(),served.sum(),surplus.sum(),shortfall.sum()) == (100,87,13,8)
+print('MWh available, served, surplus, shortfall:',100,87,13,8)
+''', 'The second-hour surplus cannot cover the earlier shortfall without storage or another balancing source.')
 add('general', 'Battery dispatch with losses', 'Supply [0,4,4,0] MW meets constant 2 MW demand. Start empty with 3 MWh usable storage, 2 MW charge/discharge limits and 90% efficiency each way. Route four hours and prove energy balance.', '''
 import numpy as np
 # Step 1: Set storage state, limits and accounting totals.
@@ -382,37 +404,57 @@ energy = (power*duration).sum()
 # Step 3: Verify the hand calculation.
 print(energy,'kWh'); assert energy == 11.5
 ''','A sum of kW samples without duration is not energy for unequal intervals.')
-add('solar','Nighttime and invalid data','For readings [0,200,missing,−10] W/m², preserve night zero, mark negative values missing, and report valid fraction.', '''
-import pandas as pd
-# Step 1: Load readings without replacing missing values.
-g = pd.Series([0,200,None,-10],dtype=float)
-# Step 2: Flag negatives and mask them.
-invalid = g.lt(0); clean = g.mask(invalid)
-# Step 3: Check the valid night zero and report coverage.
-print(clean, 'Valid fraction:', clean.notna().mean())
-assert clean.iloc[0]==0 and clean.notna().mean()==0.5
+add('solar','Nighttime and invalid data','Four intervals have irradiances [0,200,missing,−10] W/m² and durations [2,0.5,1,0.5] h. The first interval is night. Write a function for valid-time coverage, daylight coverage and observed irradiation. Preserve night zero and exclude non-finite or negative readings.', '''
+import numpy as np
+# Step 1: Preserve measured zero and the two distinct invalid states.
+g=np.array([0,200,np.nan,-10]); dt=np.array([2,.5,1,.5])
+daylight=np.array([False,True,True,True])
+# Step 2: Integrate valid intervals and weight coverage by duration.
+def audit_irradiance(g, dt, daylight):
+    valid=np.isfinite(g)&(g>=0)
+    return (dt[valid].sum()/dt.sum(), dt[valid&daylight].sum()/dt[daylight].sum(),
+            np.dot(g[valid],dt[valid])/1000)
+
+# Step 3: Reconcile coverage and observed irradiation against hand calculations.
+result=audit_irradiance(g,dt,daylight)
+print(result,'total coverage, daylight coverage, observed kWh/m²')
+assert np.allclose(result,[.625,.25,.1])
 ''','Zero at night is a valid observation; a missing daylight observation cannot be treated as zero.')
-add('solar','Compounded degradation','First-year output is 100 MWh. With 0.5% annual degradation, calculate output in years 1–5 and cumulative MWh.', '''
+add('solar','Compounded degradation','First-year output is 100 MWh. Write a reusable forecast for annual and cumulative output over 25 years. Compare 0.5% and 1% annual degradation and find the first year below 90 MWh in each case.', '''
 import numpy as np
 # Step 1: Index years with no degradation in the first year.
-years = np.arange(1,6)
+years = np.arange(1,26)
 # Step 2: Apply annual retained output multiplicatively.
-energy = 100*0.995**(years-1)
+def forecast(rate):
+    return 100*(1-rate)**(years-1)
 # Step 3: Check the first and last years and print the sum.
-print(energy,'MWh/year;',energy.sum(),'MWh total')
-assert energy[0]==100 and np.isclose(energy[-1],98.0149500625)
+totals=[]; first=[]
+for rate in [.005,.01]:
+    energy=forecast(rate)
+    first.append(next((int(year) for year,e in zip(years,energy) if e<90),None))
+    totals.append(energy.sum())
+    assert energy[0]==100 and np.isclose(energy[4],100*(1-rate)**4)
+print(totals,'MWh cumulative; first year under 90 MWh:',first)
+assert first==[23,12] and totals[0]>totals[1]
 ''','The rate is an assumption; weather and availability are held constant.')
-add('solar','Daily profile plot','Model 24 hourly mean irradiances as max(0,800 sin(pi(h−6)/12)). Use 20 m² and 20% efficiency. Plot DC kW and integrate MWh.', '''
+add('solar','Daily profile plot','Model 24 hourly mean irradiances as max(0,800 sin(pi(h−6)/12)). Use 20 m², 20% module efficiency and 96% inverter efficiency. Plot DC and delivered AC for inverter caps of 2 and 3 kW. Integrate DC, delivered AC and clipping in MWh and reconcile the energy budget.', '''
 import numpy as np
 import matplotlib.pyplot as plt
 # Step 1: Generate a labelled synthetic hourly irradiance profile.
 h = np.arange(24); g = np.maximum(0,800*np.sin(np.pi*(h-6)/12))
 # Step 2: Convert incident radiation to DC power and energy.
-dc_kw = g*20*0.2/1000; energy_mwh = dc_kw.sum()/1000
-# Step 3: Plot with units and verify the maximum.
-fig,ax=plt.subplots(figsize=(6,3)); ax.plot(h,dc_kw)
-ax.set(xlabel='UTC hour',ylabel='DC power (kW)',title='Synthetic PV day'); fig.tight_layout(); plt.show()
-print(energy_mwh,'MWh'); assert np.isclose(dc_kw.max(),3.2)
+dc_kw = g*20*0.2/1000; potential=.96*dc_kw
+# Step 3: Plot scenarios and reconcile energy through both conversion boundaries.
+fig,ax=plt.subplots(figsize=(6,3)); ax.plot(h,dc_kw,label='DC')
+for cap in [2,3]:
+    ac=np.minimum(potential,cap)
+    clipping=(potential-ac).sum()/1000
+    delivered=ac.sum()/1000
+    assert np.isclose(dc_kw.sum()/1000, delivered+clipping+(dc_kw-potential).sum()/1000)
+    print(cap,'kW inverter:',delivered,'MWh delivered;',clipping,'MWh clipped')
+    ax.plot(h,ac,label=f'AC, {cap} kW cap')
+ax.set(xlabel='UTC hour',ylabel='Power (kW)',title='Synthetic PV day')
+ax.legend(); fig.tight_layout(); plt.show()
 ''','The irradiance values are treated as interval means; no real location or date is represented.')
 add('solar','Size an inverter by clipping target','For hourly DC [0,2,5,9,12,8,3,0] kW and 97% efficiency, search integer AC ratings 5–12 kW for at most 5% clipped potential AC energy.', '''
 import numpy as np
@@ -592,37 +634,53 @@ input_energy=stored/0.85; output=stored*0.9
 print(stored,input_energy,output,'MWh stored, input, output')
 assert np.isclose(output/input_energy,0.85*0.9)
 ''','Storage shifts electricity and consumes net energy; it is not a new primary-energy source.')
-add('hydro','Validate resource readings','For river flows [3,−1,missing,5] m³/s, flag invalid readings and report valid fraction without filling gaps.', '''
-import pandas as pd
+add('hydro','Validate resource readings','For flows [3,−1,missing,5] m³/s and interval durations [1,2,1,0.5] h, flag invalid readings without filling gaps. Write a function to compare sample coverage with time coverage and estimate observed volume plus a plausible upper bound if missing flow is at most 6 m³/s.', '''
+import numpy as np
 # Step 1: Preserve the measured values and missing marker.
-flow=pd.Series([3,-1,None,5],dtype=float)
-# Step 2: Replace only physically invalid negatives with missing.
-clean=flow.mask(flow.lt(0))
+flow=np.array([3,-1,np.nan,5]); duration=np.array([1,2,1,.5])
+# Step 2: Integrate valid readings and bound the remaining volume separately.
+def audit(flow, duration, limit):
+    valid=np.isfinite(flow)&(flow>=0)
+    observed=np.dot(flow[valid],duration[valid])*3600
+    return valid.mean(),duration[valid].sum()/duration.sum(),observed,observed+limit*duration[~valid].sum()*3600
 # Step 3: Report coverage rather than a complete-period generation claim.
-print(clean,'coverage:',clean.notna().mean()); assert clean.notna().sum()==2
+result=audit(flow,duration,6)
+print(result,'sample coverage, time coverage, observed m³, upper m³')
+assert np.allclose(result,[.5,1/3,19800,84600])
 ''','Do not infer zero flow from an absent measurement.')
-add('hydro','Environmental shortage','Daily flows[1,4,7] m³/s must first provide up to3 m³/s environmental release. Calculate release, shortage and remaining turbine flow.', '''
+add('hydro','Environmental shortage','Flows [1,4,7] m³/s last [1,2,3] hours. Compare environmental release targets of 2 and 3 m³/s for a turbine limited to 3 m³/s, head 20 m and efficiency 0.9. Integrate environmental shortfall volume and electricity; reconcile water including bypass.', '''
 import numpy as np
 # Step 1: Store daily mean flows and the reservation target.
-river=np.array([1,4,7]); target=3
+river=np.array([1,4,7]); duration=np.array([1,2,3])
 # Step 2: Allocate available water before calculating shortages.
-release=np.minimum(river,target); shortage=target-release; turbine=river-release
+def evaluate(target):
+    release=np.minimum(river,target); shortage=target-release
+    turbine=np.minimum(river-release,3); bypass=river-release-turbine
+    assert np.array_equal(release+turbine+bypass,river)
+    return np.dot(shortage,duration)*3600,np.dot(turbine,duration)*1000*9.81*20*.9/1e6
 # Step 3: Reconcile water and print all three quantities.
-assert np.array_equal(release+turbine,river)
-print('Release, shortage, turbine m³/s:',release,shortage,turbine)
-assert np.array_equal(shortage,[2,0,0])
+low,high=evaluate(2),evaluate(3)
+print(low,high,'m³ shortfall, MWh')
+assert low[0]==3600 and high[0]==7200 and low[1]>high[1]
 ''','A shortage means the river cannot meet the target; no negative turbine flow is allowed.')
-add('hydro','Plot a power-duration curve','Daily flows[2,4,8,12,16] m³/s drive head20 m, eta0.9 and cap2 MW with no reservation in this example. Plot ranked MW and calculate five-day MWh.', '''
+add('hydro','Plot a power-duration curve','Flows [2,4,8,12,16] m³/s last [12,24,36,12,36] h at head 20 m, efficiency 0.9 and a 2 MW cap. Compare environmental reservations of 0 and 3 m³/s. Plot ranked power against cumulative time share and recompute total MWh from the sorted intervals.', '''
 import numpy as np
 import matplotlib.pyplot as plt
 # Step 1: Calculate daily average electrical powers.
-power=np.minimum(1000*9.81*np.array([2,4,8,12,16])*20*0.9/1e6,2)
-# Step 2: Sort only for the duration plot; integrate all equal-duration samples.
-ranked=np.sort(power)[::-1]; energy=power.sum()*24
-# Step 3: Plot the stated exceedance convention and check conservation of the sum.
-fig,ax=plt.subplots(figsize=(6,3)); ax.plot(np.arange(1,6)/6*100,ranked,'o-')
-ax.set(xlabel='Exceedance plotting position (%)',ylabel='Power (MW)',title='Synthetic hydro duration curve'); fig.tight_layout(); plt.show()
-print(energy,'MWh'); assert np.isclose(ranked.sum()*24,energy)
+flow=np.array([2,4,8,12,16]); dt=np.array([12,24,36,12,36])
+fig,ax=plt.subplots(figsize=(6,3)); totals=[]
+# Step 2: Sort power together with its interval length and calculate time share.
+for reserve in [0,3]:
+    power=np.minimum(1000*9.81*np.maximum(flow-reserve,0)*20*.9/1e6,2)
+    order=np.argsort(-power)
+    time=np.r_[0,np.cumsum(dt[order])]/dt.sum()*100
+    ax.stairs(power[order],time,baseline=None,label=f'Reserve {reserve} m³/s')
+    totals.append(power@dt)
+    assert np.isclose(power[order]@dt[order],totals[-1])
+# Step 3: Label the duration curve and compare scenario energy.
+ax.set(xlabel='Cumulative time share (%)',ylabel='Power (MW)',title='Synthetic hydro duration curves')
+ax.legend(); fig.tight_layout(); plt.show()
+print(totals,'MWh'); assert totals[0]>totals[1]
 ''','Sorting preserves total energy for equal intervals but removes the order needed for storage simulation.')
 add('hydro','Reservoir routing','Route hourly inflows [2, 0, 8, 16, 0, 0] m³/s from 20,000 m³ initial storage and a 50,000 m³ capacity. Prioritise an environmental release of up to 1 m³/s, then turbine flow of up to 3 m³/s. Spill the overflow. With net head 20 m and efficiency 0.9, report storage, spill and generation. Check the water balance in every interval.', '''
 import numpy as np
@@ -818,34 +876,52 @@ counts=np.bincount(sector,minlength=8)
 print(dict(zip(['N','NE','E','SE','S','SW','W','NW'],counts)))
 assert counts.sum()==7 and counts[0]==3
 ''','These are frequency counts, not energy-weighted wind-rose sectors.')
-add('wind','Combined availability and losses','Gross annual energy is10 GWh. Apply availability0.97 and retained wake energy0.92 sequentially.', '''
+add('wind','Combined availability and losses','Two equally long seasons offer 7 and 3 GWh gross. Their availability is 90% and 100%, and retained wake energy is 0.85 and 0.99. Reconcile a sequential loss budget by season and compare against applying mean factors to annual gross energy.', '''
+import numpy as np
 # Step 1: Store independent retained-energy assumptions.
-gross=10; availability=0.97; wake_retained=0.92
+gross=np.array([7,3]); availability=np.array([.9,1]); wake_retained=np.array([.85,.99])
 # Step 2: Apply each factor once.
-net=gross*availability*wake_retained
+online=gross*availability
+offline=gross-online
+net=online*wake_retained
+wake=online-net
 # Step 3: Check net energy and show the total loss fraction.
-print(net,'GWh; loss fraction:',1-net/gross); assert abs(net-8.924)<1e-12
+aggregate=gross.sum()*availability.mean()*wake_retained.mean()
+print(net.sum(),aggregate,'GWh, by season and mean-factor estimate')
+assert np.allclose(net+offline+wake,gross) and net.sum()<aggregate
 ''','Avoid applying a loss twice when an input power curve or energy estimate is already net of it.')
-add('wind','Unequal operating intervals','Mean powers[0.5,2,3] MW last[2,1,0.5] hours. Calculate energy and CF for a3 MW turbine.', '''
+add('wind','Unequal operating intervals','Mean powers [0.5,2,3] MW last [2,1,0.5] h. Write a function for energy and realised capacity factor at 3 MW. Compare with the biased result obtained if you assume each interval lasts the mean duration. Reject mismatched inputs and out-of-rating power.', '''
 import numpy as np
 # Step 1: Store aligned power and duration values.
 p=np.array([0.5,2,3]); dt=np.array([2,1,0.5])
 # Step 2: Integrate and use the same duration in the capacity-factor denominator.
-energy=np.sum(p*dt); cf=energy/(3*dt.sum())
+def metrics(p,dt,rating):
+    if p.shape!=dt.shape or np.any(dt<=0) or np.any((p<0)|(p>rating)):
+        raise ValueError('Invalid aligned power and duration')
+    energy=np.sum(p*dt)
+    return energy,energy/(rating*dt.sum())
 # Step 3: Check the hand sum and report results.
-print(energy,'MWh;',cf,'CF'); assert energy==4.5 and 0<=cf<=1
+energy,cf=metrics(p,dt,3)
+wrong,wrong_cf=metrics(p,np.full(p.shape,dt.mean()),3)
+print(energy,cf,wrong,wrong_cf,'actual MWh and CF, then equal-interval estimates')
+assert energy==4.5 and 0<=cf<wrong_cf<=1
 ''','Weight each interval-average power by its duration. Use the same total duration in the capacity-factor denominator.')
-add('wind','Histogram of wind speeds','Plot a histogram of[0,2,4,6,8,10,12,14] m/s with bins[0,5,10,15]. Check counts.', '''
+add('wind','Histogram of wind speeds','Eight one-hour winds [0,2,4,6,8,10,12,14] m/s use bins [0,5,10,15]. Compare observation count and energy by bin using a 3 MW turbine with 3/12/25 m/s thresholds and the chapter cubic ramp. Plot both distributions and reconcile total MWh.', '''
 import numpy as np
 import matplotlib.pyplot as plt
 # Step 1: Specify speeds and bin edges.
 speed=np.array([0,2,4,6,8,10,12,14]); edges=[0,5,10,15]
 # Step 2: Count observations and plot frequency.
+power=np.where((speed>=3)&(speed<12),3*(speed**3-27)/(1728-27),np.where((speed>=12)&(speed<25),3,0))
 counts,_=np.histogram(speed,bins=edges)
-fig,ax=plt.subplots(figsize=(6,3)); ax.hist(speed,bins=edges,edgecolor='black')
-ax.set(xlabel='Wind speed (m/s)',ylabel='Observations',title='Synthetic wind sample'); fig.tight_layout(); plt.show()
+energy,_=np.histogram(speed,bins=edges,weights=power*1.0)
+fig,axes=plt.subplots(1,2,figsize=(8,3))
+for ax, values, units in zip(axes,[counts,energy],['Observations','Energy (MWh)']):
+    ax.stairs(values,edges); ax.set(xlabel='Wind speed (m/s)',ylabel=units)
+fig.tight_layout(); plt.show()
 # Step 3: Check bin counts and completeness.
-print(counts); assert np.array_equal(counts,[3,2,3])
+print(counts,energy,'observations and MWh')
+assert np.array_equal(counts,[3,2,3]) and np.isclose(energy.sum(),power.sum()) and energy.argmax()==2
 ''','A frequency histogram uses counts; probability density would have a different vertical-axis unit.')
 add('wind','Weibull annual energy and convergence','Use Weibull shape2, scale8 m/s and the3/12/25 m/s,3 MW curve. Integrate using midpoint powers and CDF bin probabilities over0–30 m/s. Compare bin widths0.1 and0.05; apply8760 h and net factor0.9.', '''
 import numpy as np
@@ -1016,40 +1092,50 @@ flux=2.5*gradient
 # Step 3: Check units and numerical value.
 print(flux,'W/m²'); assert abs(flux-0.075)<1e-12
 ''','The magnitude is75 mW/m². Heat flux requires conductivity; a temperature gradient alone is not flux.')
-add('geothermal','Compounded net-power decline','A plant starts at 5 MW net and declines 2% per year. Report net operating power and annual energy in years 1–10 at 95% availability.', '''
+add('geothermal','Compounded net-power decline','A plant starts at 5 MW net and declines 2% per year. Report net operating power and annual energy for years 1–10 using 95% availability except 80% in year 4. Compare cumulative energy against constant 95% availability and verify the outage effect.', '''
 import numpy as np
 # Step 1: Start the decline exponent at zero for year1.
 years=np.arange(1,11)
 # Step 2: Calculate annual net power and availability-adjusted energy.
-power=5*0.98**(years-1); energy=power*8760*0.95/1000
+power=5*0.98**(years-1)
+availability=np.where(years==4,.8,.95)
+energy=power*8760*availability/1000
 # Step 3: Check first-year energy and decreasing power.
 for year, net_mw, annual_gwh in zip(years,power,energy):
     print(f'Year {year}: {net_mw:.3f} MW net, {annual_gwh:.3f} GWh')
+constant=power*8760*.95/1000
+print(constant.sum()-energy.sum(),'GWh lost to the additional outage')
 assert np.isclose(energy[0],41.61) and np.all(np.diff(power)<0)
+assert np.isclose(constant.sum()-energy.sum(),power[3]*8760*(.95-.8)/1000)
 ''','A prescribed decline curve is a scenario, not a calibrated reservoir forecast.')
-add('geothermal','Invalid well records','Flows[40,−2,50] kg/s and production[150,160,60]°C have reinjection70°C. Retain only finite positive-flow records hotter than reinjection; report exclusions.', '''
+add('geothermal','Invalid well records','Four one-hour observations have flows [40,−2,50,missing] kg/s and production [150,160,60,170] °C with reinjection at 70 °C. Build mutually exclusive quality flags, report coverage and integrate thermal MWh for valid intervals only. Show why it is not a complete-period estimate.', '''
 import numpy as np
 # Step 1: Preserve aligned well observations.
-flow=np.array([40,-2,50]); production=np.array([150,160,60])
+flow=np.array([40,-2,50,np.nan]); production=np.array([150,160,60,170])
 # Step 2: Construct a physical-validity mask before calculating heat.
-valid=np.isfinite(flow)&np.isfinite(production)&(flow>0)&(production>70)
+flags=np.select([~np.isfinite(flow)|~np.isfinite(production),flow<=0,production<=70],
+                ['missing','nonpositive flow','no useful drop'],default='valid')
+valid=flags=='valid'
 thermal=flow[valid]*4180*(production[valid]-70)/1e6
 # Step 3: Report excluded records and verify the retained count.
-print('Excluded indices:',np.where(~valid)[0],'; thermal MW:',thermal)
-assert valid.sum()==1 and np.isclose(thermal[0],13.376)
+print(flags,'coverage:',valid.mean(),'observed MWh thermal:',thermal.sum())
+assert flags.tolist()==['valid','nonpositive flow','no useful drop','missing']
+assert valid.mean()==.25 and np.isclose(thermal.sum(),13.376)
 ''','Excluded values need investigation; silently converting negative heat to positive power would hide errors.')
-add('geothermal','Plot decline scenarios','Compare initial5 MW with annual decline0%,1%,3% over20 years and95% availability. Plot annual GWh and print cumulative values.', '''
+add('geothermal','Plot decline scenarios','Compare initial 5 MW with annual decline 0%, 1%, 3% over 20 years and 95% availability. Plot annual GWh, print cumulative values, and find the first year below 35 GWh, reporting when the threshold is never crossed.', '''
 import numpy as np
 import matplotlib.pyplot as plt
 # Step 1: Create the year axis and initialise a labelled plot.
-years=np.arange(1,21); totals=[]; fig,ax=plt.subplots(figsize=(6,3))
+years=np.arange(1,21); totals=[]; crossings=[]; fig,ax=plt.subplots(figsize=(6,3))
 # Step 2: Model each prescribed decline path and retain total energy.
 for rate in [0,0.01,0.03]:
     energy=5*(1-rate)**(years-1)*8760*0.95/1000
     totals.append(energy.sum()); ax.plot(years,energy,label=f'{rate:.0%} decline')
+    crossings.append(next((int(year) for year,gwh in zip(years,energy) if gwh<35),None))
 # Step 3: Check cumulative ordering and show units and legend.
 ax.set(xlabel='Operating year',ylabel='Annual energy (GWh)',title='Synthetic geothermal scenarios'); ax.legend(); fig.tight_layout(); plt.show()
-print(totals,'GWh cumulative'); assert np.all(np.diff(totals)<0)
+print(totals,'GWh cumulative; first years below 35 GWh:',crossings)
+assert np.all(np.diff(totals)<0) and crossings==[None,19,7]
 ''','Long-run scenarios are sensitive to decline assumptions and intervention choices.')
 add('geothermal','Fit decline without future leakage','Create ten annual powers5×0.98^(year−1) MW. Fit log(power) on years1–7 only, predict8–10, and compare MAE against the last training observation.', '''
 import numpy as np
@@ -1122,15 +1208,19 @@ WORKBOOK_CHAPTERS = [
     ('geothermal', 'Geothermal', 'section7/workbook/geothermal.md'),
 ]
 
+DIFFICULTIES = ['Basic'] * 4 + ['Medium'] * 8 + ['Hard'] * 8
+
 def render(topic):
     exercises=BANK[topic]
     assert len(exercises)==20, (topic,len(exercises))
-    text='## Chapter practice — 20 Python exercises\n\n**5 easy · 10 medium · 5 hard.** All inputs are synthetic teaching data. Each solution starts collapsed in the book. Open it after trying your own code. Each solution runs independently.\n\n'
+    text='## Chapter practice — 20 Python exercises\n\n**4 Basic · 8 Medium · 8 Hard.** Basic exercises connect concepts, units and short calculations. Medium exercises apply functions and arrays. Hard exercises combine modelling, validation and interpretation. Each solution runs independently.\n\n'
     for i,e in enumerate(exercises,1):
         e=e.copy()
         e['prompt']=re.sub(r'(?<=[A-Za-z])(?=\d)', ' ', e['prompt'])
         e['prompt']=re.sub(r'(?<=\d)(?=(?:MW|GW|kW|W/|m³|m²|m/s|kg|°C|km|h\b))',' ',e['prompt'])
-        level='Easy' if i<=5 else 'Medium' if i<=15 else 'Hard'
+        level=DIFFICULTIES[i-1]
+        if i in (1,5,13):
+            text+=f'## {level}\n\n'
         text+=f'({topic}-exercise-{i:02})=\n### Exercise {i:02} — {e["title"]}\n\n**Difficulty:** {level}\n\n**Reference:** {EXERCISE_REFERENCES[topic][i-1]}\n\n**Task:** {e["prompt"]}\n\n```{{code-cell}} python\n# Your solution for {topic} exercise {i:02}.\n```\n\n::::{{dropdown}} Step-by-step answer — {topic.title()} {i:02}\n\n'
         text+='\n'.join(f'{j}. {s}' for j,s in enumerate(e['steps'],1))
         text+=f'\n\n```{{code-cell}} python\n{e["code"]}\n```\n\n**Interpretation:** {e["interpretation"]}\n\n::::\n\n'
@@ -1155,7 +1245,7 @@ def notebook_citations(text):
     return re.sub(r'\[@([^\]]+)\]',replace,text)
 
 def workbook_intro():
-    text = '# Workbook introduction\n\nThe Applied Python Workbook contains 100 independent exercises across five topics. Each topic has **5 easy, 10 medium and 5 hard** exercises, with references, step-by-step explanations and executable checks. Use **Renewable Energy Sources** for the fundamentals, equations and worked teaching examples.\n\n| Workbook topic | Exercises |\n|---|---:|\n'
+    text = '# Workbook introduction\n\nThe Applied Python Workbook contains 100 independent exercises across five topics. Each topic has **4 Basic, 8 Medium and 8 Hard** exercises, with references, step-by-step explanations and executable checks. Use **Renewable Energy Sources** for the fundamentals, equations and worked teaching examples.\n\n| Workbook topic | Exercises |\n|---|---:|\n'
     for _, title, path in WORKBOOK_CHAPTERS:
         text += f'| [{title}]({Path(path).relative_to("section7").as_posix()}) | 20 |\n'
     return text + '\nEach workbook page has a downloadable `.ipynb` notebook. Answers start collapsed in the course; ordinary notebook viewers show the answers below the prompts.\n\n## After practice\n\nUse the **Quizzes** section for chapter quizzes. Take the [25-question test](renewableEnergyTest.md), then complete the [four-source final project](../section8/projectIntro.md) using the five separate input datasets. Test answers and the final-project solution are instructor-only.\n'

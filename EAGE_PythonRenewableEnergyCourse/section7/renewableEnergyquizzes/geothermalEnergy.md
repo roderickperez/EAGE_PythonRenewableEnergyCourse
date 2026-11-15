@@ -8,8 +8,14 @@ kernelspec:
 
 These eight questions connect thermodynamics and subsurface concepts to basic and intermediate Python.
 
+**4 Basic · 8 Medium · 8 Hard.** Try each question before opening its solution. Where a prompt refers to an earlier answer, run that code first.
+
+## Basic
+
 :::{admonition} Quiz 1 — Gradient, heat flux, or power?
 :class: note
+
+**Difficulty:** Basic
 
 **Reference:** Grant and Bixley, Chapters 2–3 [@grant2011].
 
@@ -31,6 +37,8 @@ Units: W, W/m², °C/km, MWh.
 :::{admonition} Quiz 2 — Minimum depth
 :class: note
 
+**Difficulty:** Basic
+
 **Reference:** Grant and Bixley, Chapters 2–3 [@grant2011].
 
 With surface temperature 12 °C and a 34 °C/km linear gradient, calculate temperature at 3.5 km and the depth at which the linear model reaches 160 °C. State one limitation.
@@ -51,8 +59,61 @@ print(f"Depth for 160 °C = {target_depth_km:.2f} km")
 The constant gradient is a simplified extrapolation and does not establish flow or permeability.
 :::
 
-:::{admonition} Quiz 3 — Write a well-power function
+:::{admonition} Quiz 3 — Convert heat-flow units
 :class: note
+
+**Difficulty:** Basic
+
+**Reference:** [@grant2011].
+
+Write a function converting kW thermal to MW thermal. Test 12,500 kW thermal.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+Keep the thermal label to distinguish extracted heat from electricity.
+
+```{code-cell} python
+def kw_to_mw(power_kw):
+    return power_kw/1000
+
+assert kw_to_mw(12500)==12.5
+```
+:::
+
+:::{admonition} Quiz 4 — Convert a temperature to Kelvin
+:class: note
+
+**Difficulty:** Basic
+
+**Reference:** [@grant2011].
+
+Write a Celsius-to-Kelvin function. Test 85 °C and show that a 10 °C temperature difference has the same size in kelvin.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+Absolute temperatures change origin; temperature differences do not.
+
+```{code-cell} python
+from math import isclose
+def to_kelvin(celsius):
+    return celsius+273.15
+
+assert isclose(to_kelvin(85),358.15) and isclose(to_kelvin(95)-to_kelvin(85),10)
+```
+:::
+
+## Medium
+
+:::{admonition} Quiz 5 — Write a well-power function
+:class: note
+
+**Difficulty:** Medium
 
 **Reference:** Grant and Bixley, Chapters 2–3 [@grant2011].
 
@@ -89,8 +150,10 @@ print(f"Thermal={thermal:.2f} MW, gross={gross:.2f} MW, net={net:.2f} MW")
 ```
 :::
 
-:::{admonition} Quiz 4 — Carnot bound in Kelvin
+:::{admonition} Quiz 6 — Carnot bound in Kelvin
 :class: note
+
+**Difficulty:** Medium
 
 **Reference:** Grant and Bixley, Chapters 2–3 [@grant2011].
 
@@ -122,8 +185,10 @@ assert np.all((carnot > 0) & (carnot < 1))
 ```
 :::
 
-:::{admonition} Quiz 5 — Analyze a well field
+:::{admonition} Quiz 7 — Analyze a well field
 :class: note
+
+**Difficulty:** Medium
 
 **Reference:** Grant and Bixley, Chapters 2–3 [@grant2011].
 
@@ -154,8 +219,144 @@ assert wells["net_mw"].ge(0).all()
 ```
 :::
 
-:::{admonition} Quiz 6 — Sensitivity surface
+:::{admonition} Quiz 8 — Convert Darcy quantities
 :class: note
+
+**Difficulty:** Medium
+
+**Reference:** [@grant2011].
+
+Write functions to turn 50 mD into m² and 1.4 mPa·s into Pa·s. Use a gradient magnitude of 2 kPa/m to estimate Darcy flux magnitude.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+Darcy flux is volumetric discharge per bulk cross-sectional area.
+
+```{code-cell} python
+from math import isclose
+def md_to_m2(md):
+    return md*9.869233e-16
+
+def mpa_s_to_pa_s(value):
+    return value/1000
+
+flux=md_to_m2(50)*2000/mpa_s_to_pa_s(1.4)
+assert isclose(flux,7.049452142857e-8,rel_tol=1e-9)
+```
+:::
+
+:::{admonition} Quiz 9 — Estimate single-phase enthalpy drop
+:class: note
+
+**Difficulty:** Medium
+
+**Reference:** [@grant2011].
+
+For brine cooling 155 to 85 °C, use 4.1 kJ/(kg·K) and 45 kg/s. Write a function returning kJ/kg and MW thermal.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+kg/s times kJ/kg gives kW thermal.
+
+```{code-cell} python
+def recovered_heat(cp,hot,cold,flow):
+    dh=cp*(hot-cold)
+    return dh,flow*dh/1000
+
+assert recovered_heat(4.1,155,85,45)==(287.,12.915)
+```
+:::
+
+:::{admonition} Quiz 10 — Estimate hydraulic pumping demand
+:class: note
+
+**Difficulty:** Medium
+
+**Reference:** [@grant2011].
+
+Given 70 kg/s, fluid density 950 kg/m³, 1.8 MPa rise and 75% pump efficiency, return m³/s and MW consumed from a function.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+MPa × m³/s has units of MW; the pump consumes more than its hydraulic output.
+
+```{code-cell} python
+def pump_mw(flow,rho,pressure_mpa,efficiency):
+    q=flow/rho
+    return q,pressure_mpa*q/efficiency
+
+q,power=pump_mw(70,950,1.8,.75)
+assert abs(q-.07368421)<1e-8 and .176<power<.178
+```
+:::
+
+:::{admonition} Quiz 11 — Distinguish heat pump COP from efficiency
+:class: note
+
+**Difficulty:** Medium
+
+**Reference:** [@grant2011].
+
+For heating targets [3,6,9] MW thermal at COP 3, use a function to return electrical demand and heat moved from the source. Verify the first-law balance.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+A COP above one includes heat moved from the source.
+
+```{code-cell} python
+def heat_pump(heat,cop):
+    electrical=heat/cop
+    return electrical,heat-electrical
+
+assert [heat_pump(heat,3) for heat in [3,6,9]]==[(1,2),(2,4),(3,6)]
+```
+:::
+
+:::{admonition} Quiz 12 — Calculate availability-adjusted annual energy
+:class: note
+
+**Difficulty:** Medium
+
+**Reference:** [@grant2011].
+
+Calculate operating hours and annual MWh for a steady 4 MW net plant at 88%, 95%, and 100% availability in a non-leap year. Use one function and verify the denominator for capacity factor if net rating is 5 MW.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+Operating power and rated power differ; capacity factor includes time and utilisation.
+
+```{code-cell} python
+def annual(power,availability):
+    hours=8760*availability
+    energy=power*hours
+    return energy,energy/(5*8760)
+
+assert abs(annual(4,.95)[0]-33288)<1e-9
+assert abs(annual(4,1)[1]-.8)<1e-9
+```
+:::
+
+## Hard
+
+:::{admonition} Quiz 13 — Sensitivity surface
+:class: note
+
+**Difficulty:** Hard
 
 **Reference:** Grant and Bixley, Chapters 2–3 [@grant2011].
 
@@ -183,8 +384,10 @@ plt.tight_layout()
 ```
 :::
 
-:::{admonition} Quiz 7 — Decline, availability, and energy
+:::{admonition} Quiz 14 — Decline, availability, and energy
 :class: note
+
+**Difficulty:** Hard
 
 **Reference:** Grant and Bixley, Chapters 2–3 [@grant2011].
 
@@ -213,8 +416,10 @@ assert np.all(np.diff(annual_gwh) < 0) and np.all(np.diff(cumulative_gwh) > 0)
 ```
 :::
 
-:::{admonition} Quiz 8 — Detect invalid observations
+:::{admonition} Quiz 15 — Detect invalid observations
 :class: note
+
+**Difficulty:** Hard
 
 **Reference:** Grant and Bixley, Chapters 2–3 [@grant2011].
 
@@ -238,5 +443,145 @@ def invalid_wells(frame, reinjection_c):
 problems = invalid_wells(audit, 70)
 print(problems.to_string(index=False))
 assert set(problems["well"]) == {"E", "F"}
+```
+:::
+
+:::{admonition} Quiz 16 — Optimise export under pumping and rating constraints
+:class: note
+
+**Difficulty:** Hard
+
+**Reference:** [@grant2011].
+
+Compare 40, 60, 80 and 100 kg/s with 85 K drop, cp 4180 J/(kg·K), 12% gross conversion and pumping penalty 0.0004ṁ² MW. Cap net export at 2 MW. Select the best candidate and report whether any candidate consumes more than it generates.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+A rising pumping penalty can outweigh additional recovered heat.
+
+```{code-cell} python
+def case(flow):
+    gross=flow*4180*85*.12/1e6
+    net=gross-.0004*flow**2
+    return min(2,max(0,net)),net
+
+cases={q:case(q) for q in [40,60,80,100]}
+best=max(cases,key=lambda q:cases[q][0])
+assert best==60 and all(net>0 for _,net in cases.values())
+```
+:::
+
+:::{admonition} Quiz 17 — Share plant capacity across wells
+:class: note
+
+**Difficulty:** Hard
+
+**Reference:** [@grant2011].
+
+For two wells with flows [65,75] kg/s and temperature drops [80,100] K, cp 4180, conversion 12%, parasitic 10%, and a shared 4 MW net cap, compare all-on and each outage. Reconcile potential, exported and clipped MW.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+Apply the cap at the shared plant boundary after summing available well power.
+
+```{code-cell} python
+import numpy as np
+potential=np.array([65,75])*np.array([80,100])*4180*.12*.9/1e6
+def field(online):
+    net=potential[online].sum()
+    return min(4,net),max(0,net-4)
+
+full,clipped=field([0,1])
+assert full==4 and np.isclose(full+clipped,potential.sum())
+assert all(field([i])[0]<full and field([i])[1]==0 for i in range(2))
+```
+:::
+
+:::{admonition} Quiz 18 — Search reinjection scenarios with an export floor
+:class: note
+
+**Difficulty:** Hard
+
+**Reference:** [@grant2011].
+
+A 55 kg/s well produces at 145 °C. For reinjection candidates [60,70,80,90] °C, use cp 4180 J/(kg·K), gross conversion 11%, fixed pump load 0.25 MW and 1.5 MW export requirement. Find the warmest feasible reinjection temperature.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+Choosing the warmest scenario satisfying the constraint can reduce heat extraction.
+
+```{code-cell} python
+def net(cold):
+    return 55*4180*(145-cold)*.11/1e6-.25
+
+options=[60,70,80,90]
+choice=max(t for t in options if net(t)>=1.5)
+assert choice==70 and net(80)<1.5
+```
+:::
+
+:::{admonition} Quiz 19 — Quantify a two-fluid-model discrepancy
+:class: note
+
+**Difficulty:** Hard
+
+**Reference:** [@grant2011].
+
+For flow 55 kg/s, compare a recorded enthalpy drop of 480 kJ/kg with a liquid approximation from ΔT = 70 K and cp = 4.18 kJ/(kg·K). Calculate thermal MW, net MW at .12 conversion and .10 gross parasitics, and the percent underestimation relative to the enthalpy case.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+If field states include phase change, measured or calculated enthalpy is the appropriate energy basis.
+
+```{code-cell} python
+from math import isclose
+def boundary(dh_kj_kg):
+    thermal=55*dh_kj_kg/1000
+    return thermal,thermal*.12*.9
+
+reference=boundary(480); liquid=boundary(70*4.18)
+bias=1-liquid[1]/reference[1]
+assert isclose(reference[0],26.4) and .39<bias<.40
+```
+:::
+
+:::{admonition} Quiz 20 — Evaluate a reinjection intervention with downtime
+:class: note
+
+**Difficulty:** Hard
+
+**Reference:** [@grant2011].
+
+A plant begins at 5 MW net and declines 3% each year. Compare 12-year GWh at 95% availability with and without a reset to 5 MW at the start of year 7. Intervention costs 500 otherwise operating hours in year 7. Verify the first six years match.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+The reset boosts operating output; intervention downtime reduces the year-seven energy benefit.
+
+```{code-cell} python
+import numpy as np
+year=np.arange(1,13)
+hours=np.full(12,8760*.95)
+base=5*.97**(year-1)*hours/1000
+restored_age=np.where(year<7,year-1,year-7)
+hours[6]-=500
+reset=5*.97**restored_age*hours/1000
+assert np.allclose(base[:6],reset[:6]) and reset.sum()>base.sum()
+print(base.sum(),reset.sum(),'GWh')
 ```
 :::

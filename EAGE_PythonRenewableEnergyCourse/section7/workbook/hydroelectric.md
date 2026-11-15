@@ -10,12 +10,14 @@ kernelspec:
 
 ## Chapter practice — 20 Python exercises
 
-**5 easy · 10 medium · 5 hard.** All inputs are synthetic teaching data. Each solution starts collapsed in the book. Open it after trying your own code. Each solution runs independently.
+**4 Basic · 8 Medium · 8 Hard.** Basic exercises connect concepts, units and short calculations. Medium exercises apply functions and arrays. Hard exercises combine modelling, validation and interpretation. Each solution runs independently.
+
+## Basic
 
 (hydro-exercise-01)=
 ### Exercise 01 — Net head
 
-**Difficulty:** Easy
+**Difficulty:** Basic
 
 **Reference:** Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7.
 
@@ -47,7 +49,7 @@ print(net,'m'); assert net == 37
 (hydro-exercise-02)=
 ### Exercise 02 — Electrical power
 
-**Difficulty:** Easy
+**Difficulty:** Basic
 
 **Reference:** Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7.
 
@@ -79,7 +81,7 @@ print(power,'MW'); assert abs(power-2.6487)<1e-12
 (hydro-exercise-03)=
 ### Exercise 03 — Daily hydro energy
 
-**Difficulty:** Easy
+**Difficulty:** Basic
 
 **Reference:** Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
 
@@ -111,7 +113,7 @@ print(mwh,'MWh;',kwh,'kWh'); assert mwh==48 and kwh==48000
 (hydro-exercise-04)=
 ### Exercise 04 — Environmental reservation
 
-**Difficulty:** Easy
+**Difficulty:** Basic
 
 **Reference:** Environmental/ecological releases: [@ifc2015], Chapters 7 and 12; the reservation is a teaching assumption.
 
@@ -140,10 +142,12 @@ print(usable,'m³/s'); assert usable==5
 
 ::::
 
+## Medium
+
 (hydro-exercise-05)=
 ### Exercise 05 — Water volume
 
-**Difficulty:** Easy
+**Difficulty:** Medium
 
 **Reference:** Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7.
 
@@ -408,14 +412,16 @@ assert np.isclose(output/input_energy,0.85*0.9)
 
 ::::
 
+## Hard
+
 (hydro-exercise-13)=
 ### Exercise 13 — Validate resource readings
 
-**Difficulty:** Medium
+**Difficulty:** Hard
 
 **Reference:** Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7.
 
-**Task:** For river flows [3,−1,missing,5] m³/s, flag invalid readings and report valid fraction without filling gaps.
+**Task:** For flows [3,−1,missing,5] m³/s and interval durations [1,2,1,0.5] h, flag invalid readings without filling gaps. Write a function to compare sample coverage with time coverage and estimate observed volume plus a plausible upper bound if missing flow is at most 6 m³/s.
 
 ```{code-cell} python
 # Your solution for hydro exercise 13.
@@ -424,17 +430,22 @@ assert np.isclose(output/input_energy,0.85*0.9)
 ::::{dropdown} Step-by-step answer — Hydro 13
 
 1. Preserve the measured values and missing marker.
-2. Replace only physically invalid negatives with missing.
+2. Integrate valid readings and bound the remaining volume separately.
 3. Report coverage rather than a complete-period generation claim.
 
 ```{code-cell} python
-import pandas as pd
+import numpy as np
 # Step 1: Preserve the measured values and missing marker.
-flow=pd.Series([3,-1,None,5],dtype=float)
-# Step 2: Replace only physically invalid negatives with missing.
-clean=flow.mask(flow.lt(0))
+flow=np.array([3,-1,np.nan,5]); duration=np.array([1,2,1,.5])
+# Step 2: Integrate valid readings and bound the remaining volume separately.
+def audit(flow, duration, limit):
+    valid=np.isfinite(flow)&(flow>=0)
+    observed=np.dot(flow[valid],duration[valid])*3600
+    return valid.mean(),duration[valid].sum()/duration.sum(),observed,observed+limit*duration[~valid].sum()*3600
 # Step 3: Report coverage rather than a complete-period generation claim.
-print(clean,'coverage:',clean.notna().mean()); assert clean.notna().sum()==2
+result=audit(flow,duration,6)
+print(result,'sample coverage, time coverage, observed m³, upper m³')
+assert np.allclose(result,[.5,1/3,19800,84600])
 ```
 
 **Interpretation:** Do not infer zero flow from an absent measurement.
@@ -444,11 +455,11 @@ print(clean,'coverage:',clean.notna().mean()); assert clean.notna().sum()==2
 (hydro-exercise-14)=
 ### Exercise 14 — Environmental shortage
 
-**Difficulty:** Medium
+**Difficulty:** Hard
 
 **Reference:** [@ifc2015], Chapters 7 and 12; separate environmental demand from water physically available.
 
-**Task:** Daily flows[1,4,7] m³/s must first provide up to 3 m³/s environmental release. Calculate release, shortage and remaining turbine flow.
+**Task:** Flows [1,4,7] m³/s last [1,2,3] hours. Compare environmental release targets of 2 and 3 m³/s for a turbine limited to 3 m³/s, head 20 m and efficiency 0.9. Integrate environmental shortfall volume and electricity; reconcile water including bypass.
 
 ```{code-cell} python
 # Your solution for hydro exercise 14.
@@ -463,13 +474,17 @@ print(clean,'coverage:',clean.notna().mean()); assert clean.notna().sum()==2
 ```{code-cell} python
 import numpy as np
 # Step 1: Store daily mean flows and the reservation target.
-river=np.array([1,4,7]); target=3
+river=np.array([1,4,7]); duration=np.array([1,2,3])
 # Step 2: Allocate available water before calculating shortages.
-release=np.minimum(river,target); shortage=target-release; turbine=river-release
+def evaluate(target):
+    release=np.minimum(river,target); shortage=target-release
+    turbine=np.minimum(river-release,3); bypass=river-release-turbine
+    assert np.array_equal(release+turbine+bypass,river)
+    return np.dot(shortage,duration)*3600,np.dot(turbine,duration)*1000*9.81*20*.9/1e6
 # Step 3: Reconcile water and print all three quantities.
-assert np.array_equal(release+turbine,river)
-print('Release, shortage, turbine m³/s:',release,shortage,turbine)
-assert np.array_equal(shortage,[2,0,0])
+low,high=evaluate(2),evaluate(3)
+print(low,high,'m³ shortfall, MWh')
+assert low[0]==3600 and high[0]==7200 and low[1]>high[1]
 ```
 
 **Interpretation:** A shortage means the river cannot meet the target; no negative turbine flow is allowed.
@@ -479,11 +494,11 @@ assert np.array_equal(shortage,[2,0,0])
 (hydro-exercise-15)=
 ### Exercise 15 — Plot a power-duration curve
 
-**Difficulty:** Medium
+**Difficulty:** Hard
 
 **Reference:** Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7. Plotting: [@matplotlibDocs].
 
-**Task:** Daily flows[2,4,8,12,16] m³/s drive head 20 m, eta 0.9 and cap 2 MW with no reservation in this example. Plot ranked MW and calculate five-day MWh.
+**Task:** Flows [2,4,8,12,16] m³/s last [12,24,36,12,36] h at head 20 m, efficiency 0.9 and a 2 MW cap. Compare environmental reservations of 0 and 3 m³/s. Plot ranked power against cumulative time share and recompute total MWh from the sorted intervals.
 
 ```{code-cell} python
 # Your solution for hydro exercise 15.
@@ -492,20 +507,27 @@ assert np.array_equal(shortage,[2,0,0])
 ::::{dropdown} Step-by-step answer — Hydro 15
 
 1. Calculate daily average electrical powers.
-2. Sort only for the duration plot; integrate all equal-duration samples.
-3. Plot the stated exceedance convention and check conservation of the sum.
+2. Sort power together with its interval length and calculate time share.
+3. Label the duration curve and compare scenario energy.
 
 ```{code-cell} python
 import numpy as np
 import matplotlib.pyplot as plt
 # Step 1: Calculate daily average electrical powers.
-power=np.minimum(1000*9.81*np.array([2,4,8,12,16])*20*0.9/1e6,2)
-# Step 2: Sort only for the duration plot; integrate all equal-duration samples.
-ranked=np.sort(power)[::-1]; energy=power.sum()*24
-# Step 3: Plot the stated exceedance convention and check conservation of the sum.
-fig,ax=plt.subplots(figsize=(6,3)); ax.plot(np.arange(1,6)/6*100,ranked,'o-')
-ax.set(xlabel='Exceedance plotting position (%)',ylabel='Power (MW)',title='Synthetic hydro duration curve'); fig.tight_layout(); plt.show()
-print(energy,'MWh'); assert np.isclose(ranked.sum()*24,energy)
+flow=np.array([2,4,8,12,16]); dt=np.array([12,24,36,12,36])
+fig,ax=plt.subplots(figsize=(6,3)); totals=[]
+# Step 2: Sort power together with its interval length and calculate time share.
+for reserve in [0,3]:
+    power=np.minimum(1000*9.81*np.maximum(flow-reserve,0)*20*.9/1e6,2)
+    order=np.argsort(-power)
+    time=np.r_[0,np.cumsum(dt[order])]/dt.sum()*100
+    ax.stairs(power[order],time,baseline=None,label=f'Reserve {reserve} m³/s')
+    totals.append(power@dt)
+    assert np.isclose(power[order]@dt[order],totals[-1])
+# Step 3: Label the duration curve and compare scenario energy.
+ax.set(xlabel='Cumulative time share (%)',ylabel='Power (MW)',title='Synthetic hydro duration curves')
+ax.legend(); fig.tight_layout(); plt.show()
+print(totals,'MWh'); assert totals[0]>totals[1]
 ```
 
 **Interpretation:** Sorting preserves total energy for equal intervals but removes the order needed for storage simulation.

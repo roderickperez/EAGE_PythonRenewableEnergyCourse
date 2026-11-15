@@ -10,12 +10,14 @@ kernelspec:
 
 ## Chapter practice — 20 Python exercises
 
-**5 easy · 10 medium · 5 hard.** All inputs are synthetic teaching data. Each solution starts collapsed in the book. Open it after trying your own code. Each solution runs independently.
+**4 Basic · 8 Medium · 8 Hard.** Basic exercises connect concepts, units and short calculations. Medium exercises apply functions and arrays. Hard exercises combine modelling, validation and interpretation. Each solution runs independently.
+
+## Basic
 
 (solar-exercise-01)=
 ### Exercise 01 — Panel DC power
 
-**Difficulty:** Easy
+**Difficulty:** Basic
 
 **Reference:** PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2.
 
@@ -47,7 +49,7 @@ print(power_w, 'W DC'); assert power_w == 320
 (solar-exercise-02)=
 ### Exercise 02 — Array nameplate
 
-**Difficulty:** Easy
+**Difficulty:** Basic
 
 **Reference:** PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2.
 
@@ -79,7 +81,7 @@ print(array_kw,'kW DC'); assert array_kw == 9.6
 (solar-exercise-03)=
 ### Exercise 03 — Four-hour irradiation
 
-**Difficulty:** Easy
+**Difficulty:** Basic
 
 **Reference:** Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units). PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2.
 
@@ -111,7 +113,7 @@ print(irradiation,'kWh/m²'); assert irradiation == 1.2
 (solar-exercise-04)=
 ### Exercise 04 — Inverter conversion
 
-**Difficulty:** Easy
+**Difficulty:** Basic
 
 **Reference:** PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2.
 
@@ -140,10 +142,12 @@ print(ac_kw,'kW AC'); assert ac_kw == 4.8 and ac_kw <= dc_kw
 
 ::::
 
+## Medium
+
 (solar-exercise-05)=
 ### Exercise 05 — Capacity factor from AC energy
 
-**Difficulty:** Easy
+**Difficulty:** Medium
 
 **Reference:** Capacity-factor energy accounting: [@manwell2009], §2.5; this exercise explicitly uses the AC plant rating.
 
@@ -408,14 +412,16 @@ print(energy,'kWh'); assert energy == 11.5
 
 ::::
 
+## Hard
+
 (solar-exercise-13)=
 ### Exercise 13 — Nighttime and invalid data
 
-**Difficulty:** Medium
+**Difficulty:** Hard
 
 **Reference:** PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2. Array calculations: [@numpyDocs].
 
-**Task:** For readings [0,200,missing,−10] W/m², preserve night zero, mark negative values missing, and report valid fraction.
+**Task:** Four intervals have irradiances [0,200,missing,−10] W/m² and durations [2,0.5,1,0.5] h. The first interval is night. Write a function for valid-time coverage, daylight coverage and observed irradiation. Preserve night zero and exclude non-finite or negative readings.
 
 ```{code-cell} python
 # Your solution for solar exercise 13.
@@ -423,19 +429,25 @@ print(energy,'kWh'); assert energy == 11.5
 
 ::::{dropdown} Step-by-step answer — Solar 13
 
-1. Load readings without replacing missing values.
-2. Flag negatives and mask them.
-3. Check the valid night zero and report coverage.
+1. Preserve measured zero and the two distinct invalid states.
+2. Integrate valid intervals and weight coverage by duration.
+3. Reconcile coverage and observed irradiation against hand calculations.
 
 ```{code-cell} python
-import pandas as pd
-# Step 1: Load readings without replacing missing values.
-g = pd.Series([0,200,None,-10],dtype=float)
-# Step 2: Flag negatives and mask them.
-invalid = g.lt(0); clean = g.mask(invalid)
-# Step 3: Check the valid night zero and report coverage.
-print(clean, 'Valid fraction:', clean.notna().mean())
-assert clean.iloc[0]==0 and clean.notna().mean()==0.5
+import numpy as np
+# Step 1: Preserve measured zero and the two distinct invalid states.
+g=np.array([0,200,np.nan,-10]); dt=np.array([2,.5,1,.5])
+daylight=np.array([False,True,True,True])
+# Step 2: Integrate valid intervals and weight coverage by duration.
+def audit_irradiance(g, dt, daylight):
+    valid=np.isfinite(g)&(g>=0)
+    return (dt[valid].sum()/dt.sum(), dt[valid&daylight].sum()/dt[daylight].sum(),
+            np.dot(g[valid],dt[valid])/1000)
+
+# Step 3: Reconcile coverage and observed irradiation against hand calculations.
+result=audit_irradiance(g,dt,daylight)
+print(result,'total coverage, daylight coverage, observed kWh/m²')
+assert np.allclose(result,[.625,.25,.1])
 ```
 
 **Interpretation:** Zero at night is a valid observation; a missing daylight observation cannot be treated as zero.
@@ -445,11 +457,11 @@ assert clean.iloc[0]==0 and clean.notna().mean()==0.5
 (solar-exercise-14)=
 ### Exercise 14 — Compounded degradation
 
-**Difficulty:** Medium
+**Difficulty:** Hard
 
 **Reference:** Original compounded-degradation scenario; Array calculations: [@numpyDocs].
 
-**Task:** First-year output is 100 MWh. With 0.5% annual degradation, calculate output in years 1–5 and cumulative MWh.
+**Task:** First-year output is 100 MWh. Write a reusable forecast for annual and cumulative output over 25 years. Compare 0.5% and 1% annual degradation and find the first year below 90 MWh in each case.
 
 ```{code-cell} python
 # Your solution for solar exercise 14.
@@ -464,12 +476,19 @@ assert clean.iloc[0]==0 and clean.notna().mean()==0.5
 ```{code-cell} python
 import numpy as np
 # Step 1: Index years with no degradation in the first year.
-years = np.arange(1,6)
+years = np.arange(1,26)
 # Step 2: Apply annual retained output multiplicatively.
-energy = 100*0.995**(years-1)
+def forecast(rate):
+    return 100*(1-rate)**(years-1)
 # Step 3: Check the first and last years and print the sum.
-print(energy,'MWh/year;',energy.sum(),'MWh total')
-assert energy[0]==100 and np.isclose(energy[-1],98.0149500625)
+totals=[]; first=[]
+for rate in [.005,.01]:
+    energy=forecast(rate)
+    first.append(next((int(year) for year,e in zip(years,energy) if e<90),None))
+    totals.append(energy.sum())
+    assert energy[0]==100 and np.isclose(energy[4],100*(1-rate)**4)
+print(totals,'MWh cumulative; first year under 90 MWh:',first)
+assert first==[23,12] and totals[0]>totals[1]
 ```
 
 **Interpretation:** The rate is an assumption; weather and availability are held constant.
@@ -479,11 +498,11 @@ assert energy[0]==100 and np.isclose(energy[-1],98.0149500625)
 (solar-exercise-15)=
 ### Exercise 15 — Daily profile plot
 
-**Difficulty:** Medium
+**Difficulty:** Hard
 
 **Reference:** PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2. Plotting: [@matplotlibDocs].
 
-**Task:** Model 24 hourly mean irradiances as max(0,800 sin(pi(h−6)/12)). Use 20 m² and 20% efficiency. Plot DC kW and integrate MWh.
+**Task:** Model 24 hourly mean irradiances as max(0,800 sin(pi(h−6)/12)). Use 20 m², 20% module efficiency and 96% inverter efficiency. Plot DC and delivered AC for inverter caps of 2 and 3 kW. Integrate DC, delivered AC and clipping in MWh and reconcile the energy budget.
 
 ```{code-cell} python
 # Your solution for solar exercise 15.
@@ -493,7 +512,7 @@ assert energy[0]==100 and np.isclose(energy[-1],98.0149500625)
 
 1. Generate a labelled synthetic hourly irradiance profile.
 2. Convert incident radiation to DC power and energy.
-3. Plot with units and verify the maximum.
+3. Plot scenarios and reconcile energy through both conversion boundaries.
 
 ```{code-cell} python
 import numpy as np
@@ -501,11 +520,18 @@ import matplotlib.pyplot as plt
 # Step 1: Generate a labelled synthetic hourly irradiance profile.
 h = np.arange(24); g = np.maximum(0,800*np.sin(np.pi*(h-6)/12))
 # Step 2: Convert incident radiation to DC power and energy.
-dc_kw = g*20*0.2/1000; energy_mwh = dc_kw.sum()/1000
-# Step 3: Plot with units and verify the maximum.
-fig,ax=plt.subplots(figsize=(6,3)); ax.plot(h,dc_kw)
-ax.set(xlabel='UTC hour',ylabel='DC power (kW)',title='Synthetic PV day'); fig.tight_layout(); plt.show()
-print(energy_mwh,'MWh'); assert np.isclose(dc_kw.max(),3.2)
+dc_kw = g*20*0.2/1000; potential=.96*dc_kw
+# Step 3: Plot scenarios and reconcile energy through both conversion boundaries.
+fig,ax=plt.subplots(figsize=(6,3)); ax.plot(h,dc_kw,label='DC')
+for cap in [2,3]:
+    ac=np.minimum(potential,cap)
+    clipping=(potential-ac).sum()/1000
+    delivered=ac.sum()/1000
+    assert np.isclose(dc_kw.sum()/1000, delivered+clipping+(dc_kw-potential).sum()/1000)
+    print(cap,'kW inverter:',delivered,'MWh delivered;',clipping,'MWh clipped')
+    ax.plot(h,ac,label=f'AC, {cap} kW cap')
+ax.set(xlabel='UTC hour',ylabel='Power (kW)',title='Synthetic PV day')
+ax.legend(); fig.tight_layout(); plt.show()
 ```
 
 **Interpretation:** The irradiance values are treated as interval means; no real location or date is represented.

@@ -9,7 +9,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import nbformat
-from build_chapter_exercises import WORKBOOK_CHAPTERS
+from build_chapter_exercises import DIFFICULTIES, WORKBOOK_CHAPTERS
 
 BASE=Path(__file__).resolve().parents[1]
 ROOT=BASE/'EAGE_PythonRenewableEnergyCourse'
@@ -20,8 +20,8 @@ def validate():
         path=ROOT/relative; text=path.read_text(encoding='utf-8')
         blocks=re.split(r'\n### Exercise \d+ — ',text)[1:]
         assert len(blocks)==20,relative
-        levels=re.findall(r'\*\*Difficulty:\*\* (Easy|Medium|Hard)',text)
-        assert [levels.count(x) for x in ['Easy','Medium','Hard']]==[5,10,5],relative
+        levels=re.findall(r'\*\*Difficulty:\*\* (Basic|Medium|Hard)',text)
+        assert levels==DIFFICULTIES,relative
         solutions=Counter()
         for i,block in enumerate(blocks,1):
             assert '**Reference:**' in block and ('[@' in block or '](' in block),(relative,i,'reference')

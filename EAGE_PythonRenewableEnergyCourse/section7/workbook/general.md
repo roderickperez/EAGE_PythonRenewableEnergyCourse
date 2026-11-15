@@ -10,12 +10,14 @@ kernelspec:
 
 ## Chapter practice — 20 Python exercises
 
-**5 easy · 10 medium · 5 hard.** All inputs are synthetic teaching data. Each solution starts collapsed in the book. Open it after trying your own code. Each solution runs independently.
+**4 Basic · 8 Medium · 8 Hard.** Basic exercises connect concepts, units and short calculations. Medium exercises apply functions and arrays. Hard exercises combine modelling, validation and interpretation. Each solution runs independently.
+
+## Basic
 
 (general-exercise-01)=
 ### Exercise 01 — Convert energy units
 
-**Difficulty:** Easy
+**Difficulty:** Basic
 
 **Reference:** Unit definitions/conversions: [NIST SP 811, Appendix B](https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors).
 
@@ -49,7 +51,7 @@ assert energy_kwh == 2500 and energy_mj == 9000
 (general-exercise-02)=
 ### Exercise 02 — Power over a time interval
 
-**Difficulty:** Easy
+**Difficulty:** Basic
 
 **Reference:** Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
 
@@ -82,7 +84,7 @@ assert energy_mwh == 18
 (general-exercise-03)=
 ### Exercise 03 — Daily capacity factor
 
-**Difficulty:** Easy
+**Difficulty:** Basic
 
 **Reference:** Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2.
 
@@ -115,7 +117,7 @@ assert abs(capacity_factor - 0.4) < 1e-12
 (general-exercise-04)=
 ### Exercise 04 — Conversion losses
 
-**Difficulty:** Easy
+**Difficulty:** Basic
 
 **Reference:** Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
 
@@ -146,10 +148,12 @@ assert output_mwh + loss_mwh == input_mwh
 
 ::::
 
+## Medium
+
 (general-exercise-05)=
 ### Exercise 05 — Generation shares
 
-**Difficulty:** Easy
+**Difficulty:** Medium
 
 **Reference:** Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
 
@@ -427,14 +431,16 @@ assert np.isclose(fleet, np.average(individual, weights=capacity))
 
 ::::
 
+## Hard
+
 (general-exercise-13)=
 ### Exercise 13 — SQL and pandas agreement
 
-**Difficulty:** Medium
+**Difficulty:** Hard
 
 **Reference:** Data handling: [pandas user guide](https://pandas.pydata.org/docs/user_guide/index.html). [@sqliteDocs].
 
-**Task:** Group solar energies [10,12] and wind energies [20,18] MWh by source using both SQL and pandas.
+**Task:** Solar delivers 10 MWh and 12,000 kWh; wind delivers 20 MWh and 18,000 kWh. Normalise mixed units, reject unsupported units and reconcile separate SQL and pandas totals by source.
 
 ```{code-cell} python
 # Your solution for general exercise 13.
@@ -443,21 +449,32 @@ assert np.isclose(fleet, np.average(individual, weights=capacity))
 ::::{dropdown} Step-by-step answer — General 13
 
 1. Create a small table of source observations.
-2. Aggregate independently using SQL and pandas.
-3. Reconcile totals and display the result.
+2. Convert each reading to MWh and reject unknown units.
+3. Aggregate independently using SQL and pandas.
+4. Reconcile totals and display the result.
 
 ```{code-cell} python
 import sqlite3
 import pandas as pd
 # Step 1: Create a small table of source observations.
-df = pd.DataFrame({'source': ['solar','solar','wind','wind'], 'mwh': [10,12,20,18]})
-# Step 2: Aggregate independently using SQL and pandas.
+df = pd.DataFrame({'source': ['solar','solar','wind','wind'],
+                   'energy': [10,12000,20,18000], 'unit': ['MWh','kWh','MWh','kWh']})
+# Step 2: Convert each reading to MWh and reject unknown units.
+def to_mwh(values, units):
+    scale = units.map({'MWh': 1, 'kWh': .001})
+    if scale.isna().any() or values.isna().any() or values.lt(0).any():
+        raise ValueError('Need non-negative readings with known units')
+    return values * scale
+
+df['mwh'] = to_mwh(df.energy, df.unit)
+# Step 3: Aggregate independently using SQL and pandas.
 with sqlite3.connect(':memory:') as con:
     df.to_sql('energy', con, index=False)
     sql = pd.read_sql_query('SELECT source, SUM(mwh) AS mwh FROM energy GROUP BY source ORDER BY source', con).set_index('source').mwh
 expected = df.groupby('source').mwh.sum().sort_index()
-# Step 3: Reconcile totals and display the result.
+# Step 4: Reconcile totals and display the result.
 pd.testing.assert_series_equal(sql, expected)
+assert sql.to_dict() == {'solar': 22.0, 'wind': 38.0}
 print(sql)
 ```
 
@@ -468,11 +485,11 @@ print(sql)
 (general-exercise-14)=
 ### Exercise 14 — Forecast benchmark
 
-**Difficulty:** Medium
+**Difficulty:** Hard
 
 **Reference:** Chronological evaluation: [scikit-learn TimeSeriesSplit](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.TimeSeriesSplit.html).
 
-**Task:** Use monthly MWh [10,12,14,16] as training and [15,17] as test. Compare fixed last-value and training-mean forecast MAE.
+**Task:** Use monthly MWh [10,12,14,16] as training and [15,17] as test. Compare fixed last-value, training-mean and walk-forward last-value forecast MAE. In walk-forward prediction, reveal each test observation only after predicting it.
 
 ```{code-cell} python
 # Your solution for general exercise 14.
@@ -491,9 +508,11 @@ train = np.array([10,12,14,16]); test = np.array([15,17])
 # Step 2: Construct forecasts without reading test values.
 last_forecast = np.repeat(train[-1], len(test)); mean_forecast = np.repeat(train.mean(), len(test))
 # Step 3: Evaluate both forecasts on the same test window.
-last_mae = np.abs(test-last_forecast).mean(); mean_mae = np.abs(test-mean_forecast).mean()
-print(last_mae, mean_mae, 'MWh MAE')
-assert last_mae == 1 and mean_mae == 3
+walk_forecast = np.r_[train[-1],test[:-1]]
+mae = {name: np.abs(test-predictions).mean() for name,predictions in
+       [('fixed last',last_forecast),('training mean',mean_forecast),('walk-forward',walk_forecast)]}
+print(mae,'MWh MAE')
+assert mae == {'fixed last':1, 'training mean':3, 'walk-forward':1.5}
 ```
 
 **Interpretation:** Two test months illustrate evaluation; they do not establish long-term forecast skill.
@@ -503,11 +522,11 @@ assert last_mae == 1 and mean_mae == 3
 (general-exercise-15)=
 ### Exercise 15 — Plot a source mix
 
-**Difficulty:** Medium
+**Difficulty:** Hard
 
 **Reference:** Plotting: [@matplotlibDocs]. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
 
-**Task:** Create a labelled bar chart of solar 20, hydro 35, wind 30 and geothermal 15 MWh, and check the total.
+**Task:** For two one-hour intervals, use solar [0,20], hydro [15,20], wind [20,10], geothermal [7,8] and demand [50,45], all in MW. Plot stacked source output and demand. Reconcile interval and total energy, and explain how surplus and shortfall coexist.
 
 ```{code-cell} python
 # Your solution for general exercise 15.
@@ -515,23 +534,33 @@ assert last_mae == 1 and mean_mae == 3
 
 ::::{dropdown} Step-by-step answer — General 15
 
-1. Store source labels and comparable energies.
-2. Plot values with an explicit energy unit.
-3. Verify the plotted total.
+1. Align per-source power and demand at each hour.
+2. Stack source power and overlay the demand line.
+3. Calculate served energy, surplus and shortfall separately for each hour.
 
 ```{code-cell} python
+import numpy as np
 import matplotlib.pyplot as plt
-# Step 1: Store source labels and comparable energies.
-sources = ['Solar','Hydro','Wind','Geothermal']; energy = [20,35,30,15]
-# Step 2: Plot values with an explicit energy unit.
-fig, ax = plt.subplots(figsize=(6,3)); ax.bar(sources, energy)
-ax.set(ylabel='Energy (MWh)', title='Synthetic one-day generation')
+# Step 1: Align per-source power and demand at each hour.
+sources = {'Solar':[0,20], 'Hydro':[15,20], 'Wind':[20,10], 'Geothermal':[7,8]}
+demand = np.array([50,45])
+# Step 2: Stack source power and overlay the demand line.
+fig, ax = plt.subplots(figsize=(6,3)); bottom = np.zeros(2)
+for name, power in sources.items():
+    ax.bar([1,2],power,bottom=bottom,label=name)
+    bottom += power
+ax.plot([1,2],demand,'ko-',label='Demand')
+ax.set(xlabel='Hour',ylabel='Power (MW)',title='Synthetic grid'); ax.legend()
 fig.tight_layout(); plt.show()
-# Step 3: Verify the plotted total.
-print(sum(energy), 'MWh'); assert sum(energy) == 100
+# Step 3: Calculate served energy, surplus and shortfall separately for each hour.
+served = np.minimum(bottom,demand)
+surplus = bottom-served; shortfall = demand-served
+assert np.allclose(served+surplus,bottom) and np.allclose(served+shortfall,demand)
+assert (bottom.sum(),served.sum(),surplus.sum(),shortfall.sum()) == (100,87,13,8)
+print('MWh available, served, surplus, shortfall:',100,87,13,8)
 ```
 
-**Interpretation:** A common energy unit permits comparison; this synthetic mix is not a regional statistic.
+**Interpretation:** The second-hour surplus cannot cover the earlier shortfall without storage or another balancing source.
 
 ::::
 

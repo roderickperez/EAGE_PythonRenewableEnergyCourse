@@ -107,16 +107,17 @@ def check_energy_curriculum() -> None:
                 fail(f"{path.relative_to(ROOT)} is missing {required}")
 
     quiz_dir = ROOT / "section7" / "renewableEnergyquizzes"
-    core_quizzes = [
-        quiz_dir / "hydroelectricEnergy.md",
-        quiz_dir / "solarEnergy.md",
-        quiz_dir / "windEnergy.md",
-        quiz_dir / "geothermalEnergy.md",
-    ]
-    for path in core_quizzes:
-        question_count = len(re.findall(r"^:::\{admonition\} Quiz \d+", path.read_text(encoding="utf-8"), flags=re.MULTILINE))
-        if question_count < 8:
-            fail(f"{path.relative_to(ROOT)} has only {question_count} quiz questions; expected at least 8")
+    from build_chapter_exercises import DIFFICULTIES
+    for path in sorted(quiz_dir.glob("*.md")):
+        text = path.read_text(encoding="utf-8")
+        blocks = re.split(r"^:::\{admonition\} Quiz (\d+) — ",text,flags=re.M)
+        if blocks[1::2] != [str(i) for i in range(1,21)]:
+            fail(f"{path.relative_to(ROOT)} must contain quizzes numbered 1–20")
+        levels = [re.search(r"^\*\*Difficulty:\*\* (Basic|Medium|Hard)$",block,re.M) for block in blocks[2::2]]
+        if [match[1] if match else None for match in levels] != DIFFICULTIES:
+            fail(f"{path.relative_to(ROOT)} must contain 4 Basic, 8 Medium and 8 Hard questions")
+        if any(block.count(':::{admonition} Solution') != 1 for block in blocks[2::2]):
+            fail(f"{path.relative_to(ROOT)} must include one solution for every question")
 
 
 def execute_energy_code_cells() -> None:

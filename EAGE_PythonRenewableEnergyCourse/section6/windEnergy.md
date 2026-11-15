@@ -223,7 +223,7 @@ Check the ordering: electrical power is below rotor power, which is below availa
 
 Wind-energy development must consider land or sea use, wildlife, noise, visual effects, access, materials and end-of-life management, as well as grid connection. A production calculation does not establish that a site is suitable. The supplementary *Wind Energy Handbook*, third edition, provides further reading on wakes, design loads, offshore structures and grid integration; its publisher information was checked for the reading list, not treated as a substitute for access to the full text [@burton2021wind].
 
-Exercises 1–5 introduce area, kinetic power and conversion ratios. Exercises 6–15 develop resource adjustments, operating boundaries, statistics and direction. Exercises 16–20 integrate probability distributions, fitting, scenario comparisons and uncertainty methods. Read the supplied *Wind Energy Explained*, especially the wind-resource and aerodynamic discussions, before interpreting those models [@manwell2009; @wagner2009].
+Exercises 1–4 cover the Basic skills, Exercises 5–12 apply the models in Medium tasks, and Exercises 13–20 combine models, data, and validation in Hard tasks. Read the supplied *Wind Energy Explained*, especially the wind-resource and aerodynamic discussions, before interpreting those models [@manwell2009; @wagner2009].
 
 
 <!-- expanded-theory:wind:end -->

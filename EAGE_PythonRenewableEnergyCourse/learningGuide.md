@@ -17,11 +17,11 @@ chapter text as well as the code.
 1. Complete the separate [Python Course](https://roderickperezaltamar.com/private-course/eage-python-course/index.html) first if Python functions, NumPy, pandas, notebooks, or plotting are unfamiliar.
 2. Start here with renewable-energy context, units, and easy exercises 1–5.
 3. Check data definitions, missingness, time-series handling, and SQL totals in the data and database chapters.
-4. Study each renewable-energy model and use the interactive diagrams before attempting exercises 6–15.
-5. Complete the hard modelling and conservation exercises 16–20.
+4. Study each renewable-energy model and use the interactive diagrams before attempting Basic (1–4) and Medium (5–12) practice and quiz questions.
+5. Complete the Hard questions (13–20), which combine modelling, validation, comparison and interpretation.
 6. Take the question-only renewable-energy test, then complete the hybrid-portfolio project from its separate CSV datasets. The test answer key and project solution are instructor-only.
 
-Renewable Energy Sources contains the fundamentals, equations and worked examples. The Applied Python Workbook has five practice pages with 20 exercises each: 5 easy, 10 medium and 5 hard. Quizzes and the Course Final Project have their own sections. Allow roughly 10–15 minutes per easy exercise, 20–35 per medium exercise and 45–75 per hard exercise. Hard exercises can be follow-up assignments.
+Renewable Energy Sources contains the fundamentals, equations and worked examples. Every workbook topic and quiz has 20 questions: 4 Basic, 8 Medium and 8 Hard. The Course Final Project progresses from loading the supplied CSVs through Python modelling, validation, plotting and comparing scenarios in one notebook.
 
 ## Running the examples
 

@@ -83,6 +83,12 @@ def validate():
     test=pages[ASSESSMENT];project=pages[PROJECT]
     assert project['group']=='Course Final Project'
     assert all(page['group']=='Quizzes' for path,page in pages.items() if path.startswith('section7/renewableEnergyquizzes/'))
+    for page in pages.values():
+        if page['group']=='Quizzes':
+            answers = BeautifulSoup(page['html'], 'html.parser').select('details.solution')
+            assert len(answers)==20 and all('open' not in answer.attrs for answer in answers),page['id']
+            assert len(page['workspaces'])==20,page['id']
+    assert any(asset['path']=='section8/projectStarter.ipynb' for asset in payload['assets'])
     assert len(test['workspaces'])==25 and len(project['workspaces'])>=8
     for page in [test,project]:
         assert not page['codes'] and '<details' not in page['html']

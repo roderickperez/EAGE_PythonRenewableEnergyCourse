@@ -8,8 +8,14 @@ kernelspec:
 
 Complete these eight cumulative questions before opening the solutions.
 
+**4 Basic · 8 Medium · 8 Hard.** Try each question before opening its solution. Where a prompt refers to an earlier answer, run that code first.
+
+## Basic
+
 :::{admonition} Quiz 1 — Power concepts
 :class: note
+
+**Difficulty:** Basic
 
 **Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
@@ -31,6 +37,8 @@ D. $C_p\rho Av^3$
 :::{admonition} Quiz 2 — Betz reasoning
 :class: note
 
+**Difficulty:** Basic
+
 **Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
 At fixed density and rotor area, by what factor does available power change when wind speed rises from 5 to 10 m/s? Can a turbine with $C_p=0.65$ be consistent with the ideal Betz model?
@@ -50,8 +58,61 @@ assert power_ratio == 8 and 0.65 > betz_limit
 ```
 :::
 
-:::{admonition} Quiz 3 — Implement a bounded power curve
+:::{admonition} Quiz 3 — Convert measured wind speed
 :class: note
+
+**Difficulty:** Basic
+
+**Reference:** [@manwell2009].
+
+Write a function to convert km/h to m/s. Check 36 km/h.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+There are 1,000 metres per kilometre and 3,600 seconds per hour.
+
+```{code-cell} python
+def kmh_to_ms(speed):
+    return speed/3.6
+
+assert kmh_to_ms(36)==10
+```
+:::
+
+:::{admonition} Quiz 4 — Convert rotor speed
+:class: note
+
+**Difficulty:** Basic
+
+**Reference:** [@manwell2009].
+
+Convert 15 rpm to rad/s with a function. Explain why RPM cannot be used directly in P = torque × angular speed.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+Use radians per second with torque in N·m to obtain watts.
+
+```{code-cell} python
+from math import pi,isclose
+def rpm_to_rad_s(rpm):
+    return rpm*2*pi/60
+
+assert isclose(rpm_to_rad_s(15),pi/2)
+```
+:::
+
+## Medium
+
+:::{admonition} Quiz 5 — Implement a bounded power curve
+:class: note
+
+**Difficulty:** Medium
 
 **Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
@@ -84,8 +145,10 @@ assert turbine_power_mw(25) == 0
 ```
 :::
 
-:::{admonition} Quiz 4 — Plot and annotate operating regions
+:::{admonition} Quiz 6 — Plot and annotate operating regions
 :class: note
+
+**Difficulty:** Medium
 
 **Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
@@ -115,8 +178,10 @@ plt.tight_layout()
 ```
 :::
 
-:::{admonition} Quiz 5 — Density and hub-height correction
+:::{admonition} Quiz 7 — Density and hub-height correction
 :class: note
+
+**Difficulty:** Medium
 
 **Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
@@ -151,8 +216,149 @@ print(f"Air density: {air_density(90000, 5):.3f} kg/m³")
 ```
 :::
 
-:::{admonition} Quiz 6 — AEP from a Weibull distribution
+:::{admonition} Quiz 8 — Size rotor area from diameter
 :class: note
+
+**Difficulty:** Medium
+
+**Reference:** [@manwell2009].
+
+Write a function returning swept area from diameter. Compare 60 and 90 m rotors and verify the area ratio.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+Area scales with the square of diameter.
+
+```{code-cell} python
+from math import pi,isclose
+def swept_area(diameter):
+    if diameter<=0:
+        raise ValueError('Diameter must be positive')
+    return pi*(diameter/2)**2
+
+assert isclose(swept_area(90)/swept_area(60),2.25)
+```
+:::
+
+:::{admonition} Quiz 9 — Evaluate tip-speed ratio
+:class: note
+
+**Difficulty:** Medium
+
+**Reference:** [@manwell2009].
+
+At 9 rpm and 45 m radius, calculate tip-speed ratio for 6, 9 and 12 m/s using a function. Reject zero wind speed.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+At fixed rotor speed, tip-speed ratio falls as the wind increases.
+
+```{code-cell} python
+from math import pi
+def tip_ratio(rpm,radius,wind):
+    if wind<=0:
+        raise ValueError('Wind speed must be positive')
+    return 2*pi*rpm/60*radius/wind
+
+ratios=[tip_ratio(9,45,v) for v in [6,9,12]]
+assert ratios[0]>ratios[1]>ratios[2] and abs(ratios[1]-1.5*pi)<1e-9
+```
+:::
+
+:::{admonition} Quiz 10 — Identify losses in atmospheric density
+:class: note
+
+**Difficulty:** Medium
+
+**Reference:** [@manwell2009].
+
+Compute available wind power for ρ = 1.15 and 1.25 kg/m³ at 8 m/s through a 60 m diameter rotor. Use a function and express the reduction relative to denser air.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+This isolates density in the kinetic flux, before turbine control and clipping.
+
+```{code-cell} python
+from math import pi,isclose
+def available_kw(density,diameter,speed):
+    return .5*density*pi*(diameter/2)**2*speed**3/1000
+
+loss=1-available_kw(1.15,60,8)/available_kw(1.25,60,8)
+assert isclose(loss,.08)
+```
+:::
+
+:::{admonition} Quiz 11 — Measure turbulence in two samples
+:class: note
+
+**Difficulty:** Medium
+
+**Reference:** [@manwell2009].
+
+Compare population turbulence intensity for [5,7,9] and [6,7,8] m/s using one function. Report a clear diagnostic for a zero mean.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+Equal mean wind speeds can have different variability.
+
+```{code-cell} python
+import numpy as np
+def turbulence(values):
+    mean=np.mean(values)
+    return np.std(values,ddof=0)/mean if mean>0 else None
+
+assert turbulence([5,7,9])>turbulence([6,7,8]) and turbulence([0,0]) is None
+```
+:::
+
+:::{admonition} Quiz 12 — Estimate hourly operating states
+:class: note
+
+**Difficulty:** Medium
+
+**Reference:** [@manwell2009].
+
+Use speeds [2,3,8,12,24,25] m/s. Label below cut-in, ramp, rated and cut-out with 3/12/25 m/s thresholds. Explain why the ramp starts at zero.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+The continuous cubic ramp gives zero output exactly at its lower edge.
+
+```{code-cell} python
+def state(v):
+    if v<3:
+        return 'below cut-in'
+    if v<12:
+        return 'ramp'
+    if v<25:
+        return 'rated'
+    return 'cut-out'
+
+assert [state(v) for v in [2,3,8,12,24,25]]==['below cut-in','ramp','ramp','rated','rated','cut-out']
+```
+:::
+
+## Hard
+
+:::{admonition} Quiz 13 — AEP from a Weibull distribution
+:class: note
+
+**Difficulty:** Hard
 
 **Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
@@ -177,8 +383,10 @@ assert probability.sum() <= 1 and 0 <= capacity_factor <= 1
 ```
 :::
 
-:::{admonition} Quiz 7 — Compare $P(\bar v)$ with $\overline{P(v)}$
+:::{admonition} Quiz 14 — Compare $P(\bar v)$ with $\overline{P(v)}$
 :class: note
+
+**Difficulty:** Hard
 
 **Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
@@ -209,8 +417,10 @@ print(f"Mean-speed method: {energy_from_mean/1000:.2f} GWh")
 The nonlinear and clipped power curve means a mean input does not preserve mean output.
 :::
 
-:::{admonition} Quiz 8 — Loss waterfall
+:::{admonition} Quiz 15 — Loss waterfall
 :class: note
+
+**Difficulty:** Hard
 
 **Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
@@ -246,4 +456,139 @@ assert list(stages.values())[-1] <= aep_mwh
 ```
 
 Each percentage acts on the energy remaining after prior losses, so the combined factor is multiplicative.
+:::
+
+:::{admonition} Quiz 16 — Integrate an outage-weighted generation histogram
+:class: note
+
+**Difficulty:** Hard
+
+**Reference:** [@manwell2009].
+
+A month has speed bins represented by [2,8,13,27] m/s and counts [20,40,35,5] one-hour samples. Use the earlier 4 MW curve and class-specific availability [1,.8,.95,1]. Verify gross and net energy and compare with applying one average availability.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+Availability can coincide with high- or low-power conditions; mean availability loses that information.
+
+```{code-cell} python
+import numpy as np
+hours=np.array([20,40,35,5]); availability=np.array([1,.8,.95,1])
+power=turbine_power_mw([2,8,13,27])
+gross=power@hours
+net=power@(hours*availability)
+uniform=gross*np.average(availability,weights=hours)
+assert 0<net<gross and not np.isclose(net,uniform)
+```
+:::
+
+:::{admonition} Quiz 17 — Compare tower heights near cut-out
+:class: note
+
+**Difficulty:** Hard
+
+**Reference:** [@manwell2009].
+
+With 50 m speeds [6,11,16,23] m/s and durations [1,2,2,3] h, compare 50 m and 100 m using exponent 0.2 and the 4 MW curve. Show at least one interval affected by cut-out and which tower makes more energy.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+Raising the hub can increase winds past the shutdown threshold.
+
+```{code-cell} python
+import numpy as np
+speeds=np.array([6,11,16,23]); dt=np.array([1,2,2,3])
+low=turbine_power_mw(speeds); high=turbine_power_mw(speeds*2**.2)
+assert low[-1]==4 and high[-1]==0 and low@dt>high@dt
+```
+:::
+
+:::{admonition} Quiz 18 — Compare aerodynamic and electrical estimates
+:class: note
+
+**Difficulty:** Hard
+
+**Reference:** [@manwell2009].
+
+Compare a constant coefficient estimate with the 4 MW electrical curve at [2,8,12,26] m/s for a 60 m rotor, air density 1.22, rotor coefficient .42 and drivetrain efficiency .92. Calculate MW, flag where the uncapped estimate exceeds electrical output, and explain the shutdown discrepancy.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+A resource-based estimate ignores the electrical curve's operating boundaries.
+
+```{code-cell} python
+import numpy as np
+v=np.array([2,8,12,26])
+estimate=.5*1.22*np.pi*30**2*v**3*.42*.92/1e6
+curve=turbine_power_mw(v)
+assert np.all(estimate[[0,3]]>0) and np.all(curve[[0,3]]==0)
+print(v[estimate>curve],'m/s where fixed coefficient exceeds electrical curve')
+```
+:::
+
+:::{admonition} Quiz 19 — Infer shear and propagate it to energy
+:class: note
+
+**Difficulty:** Hard
+
+**Reference:** [@manwell2009].
+
+At heights [20,40,80] m a simultaneous profile is [5,6,7.2] m/s. Fit a power-law shear exponent using log-linear regression, predict 120 m wind, and use the 4 MW curve to estimate six-hour MWh. Compare against reusing the 80 m speed.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+The power-law fit assumes the simultaneous measurements describe one profile.
+
+```{code-cell} python
+import numpy as np
+height=np.array([20,40,80]); speed=np.array([5,6,7.2])
+alpha, intercept=np.polyfit(np.log(height/20),np.log(speed),1)
+prediction=np.exp(intercept)*(120/20)**alpha
+adjusted=turbine_power_mw(prediction)*6
+unadjusted=turbine_power_mw(7.2)*6
+assert np.isclose(alpha,np.log(1.2)/np.log(2)) and adjusted>unadjusted
+```
+:::
+
+:::{admonition} Quiz 20 — Reconcile independent farm losses
+:class: note
+
+**Difficulty:** Hard
+
+**Reference:** [@manwell2009].
+
+Start at 120 GWh and apply wake 8%, downtime 5%, electrical 2%, and curtailment 3%. Return the lost energy at each step, reconcile the total, and compare the gap from treating all losses as fractions of gross.
+
+:::
+
+:::{admonition} Solution
+:class: tip, dropdown
+
+Each stage acts on remaining energy; applying every loss to gross overstates total loss here.
+
+```{code-cell} python
+def waterfall(gross, losses):
+    remaining=gross; stages=[]
+    for loss in losses:
+        lost=remaining*loss
+        stages.append(lost)
+        remaining-=lost
+    return remaining, stages
+
+rates=[.08,.05,.02,.03]
+net, lost=waterfall(120,rates)
+assert abs(net+sum(lost)-120)<1e-9 and net>120*(1-sum(rates))
+```
 :::

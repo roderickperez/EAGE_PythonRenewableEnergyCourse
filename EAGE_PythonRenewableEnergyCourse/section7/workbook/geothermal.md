@@ -10,12 +10,14 @@ kernelspec:
 
 ## Chapter practice — 20 Python exercises
 
-**5 easy · 10 medium · 5 hard.** All inputs are synthetic teaching data. Each solution starts collapsed in the book. Open it after trying your own code. Each solution runs independently.
+**4 Basic · 8 Medium · 8 Hard.** Basic exercises connect concepts, units and short calculations. Medium exercises apply functions and arrays. Hard exercises combine modelling, validation and interpretation. Each solution runs independently.
+
+## Basic
 
 (geothermal-exercise-01)=
 ### Exercise 01 — Temperature at depth
 
-**Difficulty:** Easy
+**Difficulty:** Basic
 
 **Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
@@ -47,7 +49,7 @@ print(temperature,'°C'); assert temperature==75
 (geothermal-exercise-02)=
 ### Exercise 02 — Heat flow in produced water
 
-**Difficulty:** Easy
+**Difficulty:** Basic
 
 **Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
@@ -79,7 +81,7 @@ print(thermal,'MW thermal'); assert abs(thermal-16.72)<1e-12
 (geothermal-exercise-03)=
 ### Exercise 03 — Gross and net electricity
 
-**Difficulty:** Easy
+**Difficulty:** Basic
 
 **Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
@@ -111,7 +113,7 @@ print(gross,net,'MW gross/net'); assert abs(net-2.16)<1e-12
 (geothermal-exercise-04)=
 ### Exercise 04 — Availability-adjusted energy
 
-**Difficulty:** Easy
+**Difficulty:** Basic
 
 **Reference:** Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
@@ -140,10 +142,12 @@ print(energy,'GWh'); assert abs(energy-24.966)<1e-12
 
 ::::
 
+## Medium
+
 (geothermal-exercise-05)=
 ### Exercise 05 — Kelvin and temperature differences
 
-**Difficulty:** Easy
+**Difficulty:** Medium
 
 **Reference:** Unit definitions/conversions: [NIST SP 811, Appendix B](https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors).
 
@@ -404,14 +408,16 @@ print(flux,'W/m²'); assert abs(flux-0.075)<1e-12
 
 ::::
 
+## Hard
+
 (geothermal-exercise-13)=
 ### Exercise 13 — Compounded net-power decline
 
-**Difficulty:** Medium
+**Difficulty:** Hard
 
 **Reference:** Original compounded-decline scenario; Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
-**Task:** A plant starts at 5 MW net and declines 2% per year. Report net operating power and annual energy in years 1–10 at 95% availability.
+**Task:** A plant starts at 5 MW net and declines 2% per year. Report net operating power and annual energy for years 1–10 using 95% availability except 80% in year 4. Compare cumulative energy against constant 95% availability and verify the outage effect.
 
 ```{code-cell} python
 # Your solution for geothermal exercise 13.
@@ -428,11 +434,16 @@ import numpy as np
 # Step 1: Start the decline exponent at zero for year1.
 years=np.arange(1,11)
 # Step 2: Calculate annual net power and availability-adjusted energy.
-power=5*0.98**(years-1); energy=power*8760*0.95/1000
+power=5*0.98**(years-1)
+availability=np.where(years==4,.8,.95)
+energy=power*8760*availability/1000
 # Step 3: Check first-year energy and decreasing power.
 for year, net_mw, annual_gwh in zip(years,power,energy):
     print(f'Year {year}: {net_mw:.3f} MW net, {annual_gwh:.3f} GWh')
+constant=power*8760*.95/1000
+print(constant.sum()-energy.sum(),'GWh lost to the additional outage')
 assert np.isclose(energy[0],41.61) and np.all(np.diff(power)<0)
+assert np.isclose(constant.sum()-energy.sum(),power[3]*8760*(.95-.8)/1000)
 ```
 
 **Interpretation:** A prescribed decline curve is a scenario, not a calibrated reservoir forecast.
@@ -442,11 +453,11 @@ assert np.isclose(energy[0],41.61) and np.all(np.diff(power)<0)
 (geothermal-exercise-14)=
 ### Exercise 14 — Invalid well records
 
-**Difficulty:** Medium
+**Difficulty:** Hard
 
 **Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions. Array calculations: [@numpyDocs].
 
-**Task:** Flows[40,−2,50] kg/s and production[150,160,60]°C have reinjection 70 °C. Retain only finite positive-flow records hotter than reinjection; report exclusions.
+**Task:** Four one-hour observations have flows [40,−2,50,missing] kg/s and production [150,160,60,170] °C with reinjection at 70 °C. Build mutually exclusive quality flags, report coverage and integrate thermal MWh for valid intervals only. Show why it is not a complete-period estimate.
 
 ```{code-cell} python
 # Your solution for geothermal exercise 14.
@@ -461,13 +472,16 @@ assert np.isclose(energy[0],41.61) and np.all(np.diff(power)<0)
 ```{code-cell} python
 import numpy as np
 # Step 1: Preserve aligned well observations.
-flow=np.array([40,-2,50]); production=np.array([150,160,60])
+flow=np.array([40,-2,50,np.nan]); production=np.array([150,160,60,170])
 # Step 2: Construct a physical-validity mask before calculating heat.
-valid=np.isfinite(flow)&np.isfinite(production)&(flow>0)&(production>70)
+flags=np.select([~np.isfinite(flow)|~np.isfinite(production),flow<=0,production<=70],
+                ['missing','nonpositive flow','no useful drop'],default='valid')
+valid=flags=='valid'
 thermal=flow[valid]*4180*(production[valid]-70)/1e6
 # Step 3: Report excluded records and verify the retained count.
-print('Excluded indices:',np.where(~valid)[0],'; thermal MW:',thermal)
-assert valid.sum()==1 and np.isclose(thermal[0],13.376)
+print(flags,'coverage:',valid.mean(),'observed MWh thermal:',thermal.sum())
+assert flags.tolist()==['valid','nonpositive flow','no useful drop','missing']
+assert valid.mean()==.25 and np.isclose(thermal.sum(),13.376)
 ```
 
 **Interpretation:** Excluded values need investigation; silently converting negative heat to positive power would hide errors.
@@ -477,11 +491,11 @@ assert valid.sum()==1 and np.isclose(thermal[0],13.376)
 (geothermal-exercise-15)=
 ### Exercise 15 — Plot decline scenarios
 
-**Difficulty:** Medium
+**Difficulty:** Hard
 
 **Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions. Plotting: [@matplotlibDocs].
 
-**Task:** Compare initial 5 MW with annual decline 0%,1%,3% over 20 years and 95% availability. Plot annual GWh and print cumulative values.
+**Task:** Compare initial 5 MW with annual decline 0%, 1%, 3% over 20 years and 95% availability. Plot annual GWh, print cumulative values, and find the first year below 35 GWh, reporting when the threshold is never crossed.
 
 ```{code-cell} python
 # Your solution for geothermal exercise 15.
@@ -497,14 +511,16 @@ assert valid.sum()==1 and np.isclose(thermal[0],13.376)
 import numpy as np
 import matplotlib.pyplot as plt
 # Step 1: Create the year axis and initialise a labelled plot.
-years=np.arange(1,21); totals=[]; fig,ax=plt.subplots(figsize=(6,3))
+years=np.arange(1,21); totals=[]; crossings=[]; fig,ax=plt.subplots(figsize=(6,3))
 # Step 2: Model each prescribed decline path and retain total energy.
 for rate in [0,0.01,0.03]:
     energy=5*(1-rate)**(years-1)*8760*0.95/1000
     totals.append(energy.sum()); ax.plot(years,energy,label=f'{rate:.0%} decline')
+    crossings.append(next((int(year) for year,gwh in zip(years,energy) if gwh<35),None))
 # Step 3: Check cumulative ordering and show units and legend.
 ax.set(xlabel='Operating year',ylabel='Annual energy (GWh)',title='Synthetic geothermal scenarios'); ax.legend(); fig.tight_layout(); plt.show()
-print(totals,'GWh cumulative'); assert np.all(np.diff(totals)<0)
+print(totals,'GWh cumulative; first years below 35 GWh:',crossings)
+assert np.all(np.diff(totals)<0) and crossings==[None,19,7]
 ```
 
 **Interpretation:** Long-run scenarios are sensitive to decline assumptions and intervention choices.

@@ -264,7 +264,7 @@ The last calculation applies a nonlinear model to interval-average inputs. Rapid
 
 ## From the explanation to the Python exercises
 
-Begin with irradiance, area, electrical rating and time units in exercises 1–5. Exercises 6–15 add temperature, clipping, losses, normalization and data checks. Exercises 16–20 combine design comparisons, storage, discounted cost and chronological performance evaluation. The tested functions below deliberately model the simpler PV relationships; they do not replace a detailed shading, electrical string-design or solar-thermal simulation.
+Begin with irradiance, area, electrical rating and time units in Exercises 1–4 cover the Basic skills, Exercises 5–12 apply the models in Medium tasks, and Exercises 13–20 combine models, data, and validation in Hard tasks. The tested functions below deliberately model the simpler PV relationships; they do not replace a detailed shading, electrical string-design or solar-thermal simulation.
 
 For preparation, read Wade's electricity and PV sections and Foster's PV-system treatment. Use Duffie and Beckman for additional radiation/thermal-system reading and Kalogirou for a broader comparison of solar conversion systems. Keep dated textbook prices or market statistics separate from the physical principles used here [@wade2003; @foster2010; @duffie2013; @kalogirou2014solar].
 

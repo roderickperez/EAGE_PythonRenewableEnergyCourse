@@ -10,12 +10,14 @@ kernelspec:
 
 ## Chapter practice — 20 Python exercises
 
-**5 easy · 10 medium · 5 hard.** All inputs are synthetic teaching data. Each solution starts collapsed in the book. Open it after trying your own code. Each solution runs independently.
+**4 Basic · 8 Medium · 8 Hard.** Basic exercises connect concepts, units and short calculations. Medium exercises apply functions and arrays. Hard exercises combine modelling, validation and interpretation. Each solution runs independently.
+
+## Basic
 
 (wind-exercise-01)=
 ### Exercise 01 — Rotor swept area
 
-**Difficulty:** Easy
+**Difficulty:** Basic
 
 **Reference:** Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2.
 
@@ -48,7 +50,7 @@ print(area,'m²'); assert math.isclose(area,math.pi*(2*radius)**2/4)
 (wind-exercise-02)=
 ### Exercise 02 — Available wind power
 
-**Difficulty:** Easy
+**Difficulty:** Basic
 
 **Reference:** Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2.
 
@@ -80,7 +82,7 @@ print(available_kw,'kW'); assert abs(available_kw-313.6)<1e-10
 (wind-exercise-03)=
 ### Exercise 03 — Cubic speed sensitivity
 
-**Difficulty:** Easy
+**Difficulty:** Basic
 
 **Reference:** Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2.
 
@@ -112,7 +114,7 @@ print(ratio,'times'); assert ratio==8
 (wind-exercise-04)=
 ### Exercise 04 — Aerodynamic extraction
 
-**Difficulty:** Easy
+**Difficulty:** Basic
 
 **Reference:** Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2.
 
@@ -142,10 +144,12 @@ assert cp<16/27 and electrical==190
 
 ::::
 
+## Medium
+
 (wind-exercise-05)=
 ### Exercise 05 — Daily turbine capacity factor
 
-**Difficulty:** Easy
+**Difficulty:** Medium
 
 **Reference:** Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2.
 
@@ -411,14 +415,16 @@ assert counts.sum()==7 and counts[0]==3
 
 ::::
 
+## Hard
+
 (wind-exercise-13)=
 ### Exercise 13 — Combined availability and losses
 
-**Difficulty:** Medium
+**Difficulty:** Hard
 
 **Reference:** Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2.
 
-**Task:** Gross annual energy is 10 GWh. Apply availability 0.97 and retained wake energy 0.92 sequentially.
+**Task:** Two equally long seasons offer 7 and 3 GWh gross. Their availability is 90% and 100%, and retained wake energy is 0.85 and 0.99. Reconcile a sequential loss budget by season and compare against applying mean factors to annual gross energy.
 
 ```{code-cell} python
 # Your solution for wind exercise 13.
@@ -431,12 +437,18 @@ assert counts.sum()==7 and counts[0]==3
 3. Check net energy and show the total loss fraction.
 
 ```{code-cell} python
+import numpy as np
 # Step 1: Store independent retained-energy assumptions.
-gross=10; availability=0.97; wake_retained=0.92
+gross=np.array([7,3]); availability=np.array([.9,1]); wake_retained=np.array([.85,.99])
 # Step 2: Apply each factor once.
-net=gross*availability*wake_retained
+online=gross*availability
+offline=gross-online
+net=online*wake_retained
+wake=online-net
 # Step 3: Check net energy and show the total loss fraction.
-print(net,'GWh; loss fraction:',1-net/gross); assert abs(net-8.924)<1e-12
+aggregate=gross.sum()*availability.mean()*wake_retained.mean()
+print(net.sum(),aggregate,'GWh, by season and mean-factor estimate')
+assert np.allclose(net+offline+wake,gross) and net.sum()<aggregate
 ```
 
 **Interpretation:** Avoid applying a loss twice when an input power curve or energy estimate is already net of it.
@@ -446,11 +458,11 @@ print(net,'GWh; loss fraction:',1-net/gross); assert abs(net-8.924)<1e-12
 (wind-exercise-14)=
 ### Exercise 14 — Unequal operating intervals
 
-**Difficulty:** Medium
+**Difficulty:** Hard
 
 **Reference:** Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
 
-**Task:** Mean powers[0.5,2,3] MW last[2,1,0.5] hours. Calculate energy and CF for a 3 MW turbine.
+**Task:** Mean powers [0.5,2,3] MW last [2,1,0.5] h. Write a function for energy and realised capacity factor at 3 MW. Compare with the biased result obtained if you assume each interval lasts the mean duration. Reject mismatched inputs and out-of-rating power.
 
 ```{code-cell} python
 # Your solution for wind exercise 14.
@@ -467,9 +479,16 @@ import numpy as np
 # Step 1: Store aligned power and duration values.
 p=np.array([0.5,2,3]); dt=np.array([2,1,0.5])
 # Step 2: Integrate and use the same duration in the capacity-factor denominator.
-energy=np.sum(p*dt); cf=energy/(3*dt.sum())
+def metrics(p,dt,rating):
+    if p.shape!=dt.shape or np.any(dt<=0) or np.any((p<0)|(p>rating)):
+        raise ValueError('Invalid aligned power and duration')
+    energy=np.sum(p*dt)
+    return energy,energy/(rating*dt.sum())
 # Step 3: Check the hand sum and report results.
-print(energy,'MWh;',cf,'CF'); assert energy==4.5 and 0<=cf<=1
+energy,cf=metrics(p,dt,3)
+wrong,wrong_cf=metrics(p,np.full(p.shape,dt.mean()),3)
+print(energy,cf,wrong,wrong_cf,'actual MWh and CF, then equal-interval estimates')
+assert energy==4.5 and 0<=cf<wrong_cf<=1
 ```
 
 **Interpretation:** Weight each interval-average power by its duration. Use the same total duration in the capacity-factor denominator.
@@ -479,11 +498,11 @@ print(energy,'MWh;',cf,'CF'); assert energy==4.5 and 0<=cf<=1
 (wind-exercise-15)=
 ### Exercise 15 — Histogram of wind speeds
 
-**Difficulty:** Medium
+**Difficulty:** Hard
 
 **Reference:** Wind statistics: [@manwell2009], §2.4; [@matplotlibDocs].
 
-**Task:** Plot a histogram of[0,2,4,6,8,10,12,14] m/s with bins[0,5,10,15]. Check counts.
+**Task:** Eight one-hour winds [0,2,4,6,8,10,12,14] m/s use bins [0,5,10,15]. Compare observation count and energy by bin using a 3 MW turbine with 3/12/25 m/s thresholds and the chapter cubic ramp. Plot both distributions and reconcile total MWh.
 
 ```{code-cell} python
 # Your solution for wind exercise 15.
@@ -501,11 +520,16 @@ import matplotlib.pyplot as plt
 # Step 1: Specify speeds and bin edges.
 speed=np.array([0,2,4,6,8,10,12,14]); edges=[0,5,10,15]
 # Step 2: Count observations and plot frequency.
+power=np.where((speed>=3)&(speed<12),3*(speed**3-27)/(1728-27),np.where((speed>=12)&(speed<25),3,0))
 counts,_=np.histogram(speed,bins=edges)
-fig,ax=plt.subplots(figsize=(6,3)); ax.hist(speed,bins=edges,edgecolor='black')
-ax.set(xlabel='Wind speed (m/s)',ylabel='Observations',title='Synthetic wind sample'); fig.tight_layout(); plt.show()
+energy,_=np.histogram(speed,bins=edges,weights=power*1.0)
+fig,axes=plt.subplots(1,2,figsize=(8,3))
+for ax, values, units in zip(axes,[counts,energy],['Observations','Energy (MWh)']):
+    ax.stairs(values,edges); ax.set(xlabel='Wind speed (m/s)',ylabel=units)
+fig.tight_layout(); plt.show()
 # Step 3: Check bin counts and completeness.
-print(counts); assert np.array_equal(counts,[3,2,3])
+print(counts,energy,'observations and MWh')
+assert np.array_equal(counts,[3,2,3]) and np.isclose(energy.sum(),power.sum()) and energy.argmax()==2
 ```
 
 **Interpretation:** A frequency histogram uses counts; probability density would have a different vertical-axis unit.
