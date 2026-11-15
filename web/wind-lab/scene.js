@@ -125,22 +125,19 @@ export function mountWindScene(host, tooltip) {
   const powerLines = [];
   const pulseGeometry = new T.SphereGeometry(.088, 10, 8);
   const gold = new T.MeshBasicMaterial({ color: '#ffc554' });
-  function path(points) {
-    return new T.CatmullRomCurve3(points.map(point => new T.Vector3(...point)), false, 'centripetal');
-  }
   function line(points, label, count = 6) {
-    const curve = path(points);
-    const cable = mesh(new T.TubeGeometry(curve, 56, .033, 8, false), dark, [0,0,0], label);
+    const curve = new T.CatmullRomCurve3(points.map(point => new T.Vector3(...point)), false, 'centripetal');
+    mesh(new T.TubeGeometry(curve, 56, .033, 8, false), dark, [0,0,0], label);
     const pulses = Array.from({ length: count }, () => {
       const pulse = mesh(pulseGeometry, gold, [0,0,0]);
       pulse.castShadow = false;
       return pulse;
     });
-    const route = { curve, cable, pulses };
-    powerLines.push(route);
-    return route;
+    powerLines.push({ curve, pulses });
   }
-  const towerRoute = line([[towerX,7.5,0],[towerX,.6,.64],[.0,.16,.65],[1.3,.37,.65]], 'Generator cable, tower and transformer', 9);
+  // Show the generator feeder where it exits the foundation.
+  line([[towerX + .79,.19,.34],[towerX + 1.12,.14,.49],[-.26,.14,.58],[.56,.25,.6]],
+    'Generator feeder to step-up transformer', 4);
   for (const offset of [-.86, 0, .86]) {
     cylinder(.055, .055, .32, steel, [1.3 + offset*.54, 1.28, .6], 'Transformer bushing');
     cylinder(.062, .062, .32, white, [pylonX + offset, 4.79, pylonZ], 'Line insulator');
@@ -170,12 +167,6 @@ export function mountWindScene(host, tooltip) {
       blades.scale.setScalar(radiusScale);
       air.position.copy(head.position);
       air.rotation.y = bearing;
-      head.updateWorldMatrix(true, false);
-      const generator = head.localToWorld(new T.Vector3(.17,.06,-.77));
-      towerRoute.curve = path([generator.toArray(), [towerX,height-.05,.48], [towerX,height*.5,.52],
-        [towerX,.38,.72], [0,.18,.69], [1.3,.32,.69]]);
-      towerRoute.cable.geometry.dispose();
-      towerRoute.cable.geometry = new T.TubeGeometry(towerRoute.curve,56,.035,8,false);
       lastGeometry = key;
     }
     host.dataset.windRegion = result.region;
