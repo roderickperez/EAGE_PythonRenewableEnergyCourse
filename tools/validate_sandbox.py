@@ -11,6 +11,7 @@ from urllib.parse import unquote, urlsplit, parse_qs
 
 from bs4 import BeautifulSoup
 from build_sandbox import BOOK, OUT, ROOT, ASSESSMENT, PROJECT, toc_pages, Builder
+from build_chapter_exercises import WORKBOOK_CHAPTERS, PATHS
 
 
 def validate():
@@ -37,13 +38,12 @@ def validate():
     assert (OUT / 'project-map' / 'project-map.js').is_file()
     assert 'project-map/index.html' not in pages[PROJECT]['html']
     assert 'id="load-the-separate-input-datasets"' in pages[PROJECT]['html']
-    workbook_links = payload['workbook_links']
-    assert [link['title'] for link in workbook_links] == ['Hydroelectric', 'General', 'Solar', 'Wind', 'Geothermal']
-    assert pages['section7/renewableExercises.md']['title'] == 'Workbook introduction'
-    for link in workbook_links:
-        args = parse_qs(link['href'][1:])
-        assert args['anchor'] == ['chapter-practice-20-python-exercises']
-        assert BeautifulSoup(pages[args['lesson'][0]]['html'], 'html.parser').find(id=args['anchor'][0])
+    intro = 'section7/renewableExercises.md'
+    assert pages[intro]['title'] == 'Workbook introduction'
+    workbook = [path for _, _, path in WORKBOOK_CHAPTERS]
+    assert [path for path,page in pages.items() if page['group']=='Applied Python Workbook'] == [intro, *workbook]
+    table = BeautifulSoup(pages[intro]['html'], 'html.parser').select('table a')
+    assert [parse_qs(link['href'][1:])['lesson'][0] for link in table] == workbook
     assert 'private-course/eage-python-course/index.html' in pages['courseIntro.md']['html']
     for path, page in pages.items():
         assert page['source_sha256'] == hashlib.sha256((BOOK/path).read_bytes()).hexdigest(), f'Stale content: {path}'
@@ -63,17 +63,26 @@ def validate():
                 if 'anchor' in args:
                     target_soup=BeautifulSoup(pages[args['lesson'][0]]['html'],'html.parser')
                     assert target_soup.find(id=args['anchor'][0]), (path,target)
-    topics = ['section0/introRenewableEnergy.md'] + ['section6/'+t+'Energy.md' for t in ['solar','hydroelectric','wind','geothermal']]
-    for path in topics:
+    for theory_path in PATHS.values():
+        page=pages[theory_path]
+        assert page['group']=='Renewable Energy Sources',theory_path
+        assert 'expanded-theory:' in page['html'],theory_path
+        assert not page['workspaces'] and not any(cell['solution'] for cell in page['codes']),theory_path
+        assert not BeautifulSoup(page['html'],'html.parser').select('details.solution'),theory_path
+    for path in workbook:
         page=pages[path];soup=BeautifulSoup(page['html'],'html.parser')
+        assert all(workspace['id'] in page['legacy_drafts'] for workspace in page['workspaces']),path
+        assert all(key.split('::')[0] in PATHS.values() for key in page['legacy_drafts'].values()),path
         answers=soup.select('details.solution')
         assert len(answers)==20 and all('open' not in a.attrs for a in answers),path
         assert len(page['workspaces'])==20,path
         assert len([c for c in page['codes'] if c['solution']])==20,path
-        assert 'expanded-theory:' in page['html'],path
+        assert 'expanded-theory:' not in page['html'],path
         for answer in answers:
             assert answer.select('button[data-code]') and 'Step' in answer.get_text(),path
     test=pages[ASSESSMENT];project=pages[PROJECT]
+    assert project['group']=='Course Final Project'
+    assert all(page['group']=='Quizzes' for path,page in pages.items() if path.startswith('section7/renewableEnergyquizzes/'))
     assert len(test['workspaces'])==25 and len(project['workspaces'])>=8
     for page in [test,project]:
         assert not page['codes'] and '<details' not in page['html']

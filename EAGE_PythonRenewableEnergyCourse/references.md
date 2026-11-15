@@ -155,11 +155,11 @@ capacity statistics should be dated rather than presented as current observation
 | Geothermal | Grant and Bixley Chapters 2–3 | Reservoir properties, conduction and fluid flow, enthalpy, net electricity and decline assumptions |
 
 Chapter equations define symbols, units and assumptions. Worked numerical examples
-use synthetic inputs and are separate from the existing 20 exercises per chapter.
+use synthetic inputs. Each topic has 20 practice exercises in the Applied Python Workbook.
 
 ## How to cite an exercise
 
-Give its number and course title, the underlying book/chapter, the code revision used, and any external data’s provider, product/version, retrieval date, units, location and observation period. State all model assumptions. For synthetic data, say so explicitly. See the [100-exercise chapter guide](section7/renewableExercises.md).
+Give its number and course title, the underlying book/chapter, the code revision used, and any external data’s provider, product/version, retrieval date, units, location and observation period. State all model assumptions. For synthetic data, say so explicitly. See the [Applied Python Workbook](section7/renewableExercises.md).
 
 ## October review: source access and equation locators
 

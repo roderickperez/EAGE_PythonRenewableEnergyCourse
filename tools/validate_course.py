@@ -100,8 +100,8 @@ def check_energy_curriculum() -> None:
     for path in source_pages:
         text = path.read_text(encoding="utf-8")
         exercise_count = len(re.findall(r"^### Exercise \d+ —", text, flags=re.MULTILINE))
-        if exercise_count != 20:
-            fail(f"{path.relative_to(ROOT)} has {exercise_count} chapter exercises; expected 20")
+        if exercise_count:
+            fail(f"{path.relative_to(ROOT)} contains workbook exercises")
         for required in ["## Learning goals", "## Concepts and equations", "## Common mistakes"]:
             if required not in text:
                 fail(f"{path.relative_to(ROOT)} is missing {required}")

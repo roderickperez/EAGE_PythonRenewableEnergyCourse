@@ -9,15 +9,14 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import nbformat
+from build_chapter_exercises import WORKBOOK_CHAPTERS
 
 BASE=Path(__file__).resolve().parents[1]
 ROOT=BASE/'EAGE_PythonRenewableEnergyCourse'
-PATHS=['section0/introRenewableEnergy.md','section6/solarEnergy.md',
-       'section6/hydroelectricEnergy.md','section6/windEnergy.md','section6/geothermalEnergy.md']
 
 def validate():
     count=0
-    for relative in PATHS:
+    for _, _, relative in WORKBOOK_CHAPTERS:
         path=ROOT/relative; text=path.read_text(encoding='utf-8')
         blocks=re.split(r'\n### Exercise \d+ — ',text)[1:]
         assert len(blocks)==20,relative

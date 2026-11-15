@@ -6,7 +6,6 @@ root: courseIntro
 parts:
   - caption: Introduction to Renewable Energy
     chapters:
-      - file: section0/introRenewableEnergy
       - file: section0/faq
 
   - caption: Data Processing and Exploration Data Analysis
@@ -28,10 +27,20 @@ parts:
 
   - caption: Renewable Energy Sources
     chapters:
+      - file: section0/introRenewableEnergy
       - file: section6/hydroelectricEnergy
       - file: section6/solarEnergy
       - file: section6/windEnergy
       - file: section6/geothermalEnergy
+
+  - caption: Applied Python Workbook
+    chapters:
+      - file: section7/renewableExercises
+      - file: section7/workbook/hydroelectric
+      - file: section7/workbook/general
+      - file: section7/workbook/solar
+      - file: section7/workbook/wind
+      - file: section7/workbook/geothermal
 
   - caption: Quizzes
     chapters:

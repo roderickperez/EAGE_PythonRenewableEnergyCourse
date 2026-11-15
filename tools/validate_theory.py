@@ -18,11 +18,12 @@ def validate():
         assert text.count(start)==text.count(end)==1,topic
         theory=text.split(start)[1].split(end)[0]
         assert len(theory.split())>=1400,(topic,'Detailed theory was truncated')
-        assert text.index(end)<text.index('## Chapter practice'),topic
+        assert not re.search(r'^### Exercise \d+ —',text,re.M), (topic,'Move exercises to the workbook')
         assert '## Worked calculation before coding' in theory or '## Worked comparison before coding' in theory
         assert '[@' in theory and '$$' in theory
         notebook=nbformat.read(ROOT/(relative+'.ipynb'),as_version=4)
         prose='\n'.join(c.source for c in notebook.cells if c.cell_type=='markdown')
+        assert 'Step-by-step answer' not in prose,(topic,'Theory notebook contains workbook answers')
         # Worked code inside the theory becomes a separate executable cell.
         # Check every prose segment and every code block instead of requiring
         # the complete mixed Markdown/code source in one Markdown cell.

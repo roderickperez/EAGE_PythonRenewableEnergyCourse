@@ -9,7 +9,7 @@
 
 Last technical review: October 2, 2026
 
-Start with the [learning guide](learningGuide.md), use the [100-exercise chapter guide](section7/renewableExercises.md), and consult the [reference catalogue](references.md).
+Start with the [learning guide](learningGuide.md), use the [Applied Python Workbook](section7/renewableExercises.md), and consult the [reference catalogue](references.md).
 
 ## Course Description
 

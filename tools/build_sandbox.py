@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 from course_media import attach_media
+from build_chapter_exercises import PATHS as THEORY_PATHS, WORKBOOK_CHAPTERS
 import ast
 import hashlib
 import html
@@ -275,18 +276,24 @@ class Builder:
             shutil.copytree(source, OUT / lab)
         self.asset(BOOK / 'myst.yml')
         pages = [self.page(path, group) for path, group in self.pages]
-        workbook = next(page for page in pages if page['id'] == 'section7/renewableExercises.md')
-        workbook_html = BeautifulSoup(workbook['html'], 'html.parser')
-        workbook_links = [
-            {'title': link.get_text(), 'href': link['href']}
-            for link in workbook_html.select('table a[href^="#lesson="]')
-        ]
+        by_id = {page['id']: page for page in pages}
+        for topic, _, path in WORKBOOK_CHAPTERS:
+            practice = by_id[path]
+            theory = by_id[THEORY_PATHS[topic]]
+            offset = len(theory['codes'])
+            legacy = {workspace['id']: workspace['id'] for workspace in practice['workspaces']}
+            for index, cell in enumerate(practice['codes'], 1):
+                previous = f'cell-{offset + index}'
+                legacy[cell['id']] = previous
+                if cell['runnable'] and not cell['solution']:
+                    legacy['setup-' + cell['id']] = 'setup-' + previous
+            practice['legacy_drafts'] = {key: theory['id'] + '::' + old for key, old in legacy.items()}
         attach_media(pages, SANDBOX)
         # Data are fetched on demand into the worker, retaining book-relative paths.
         for path in BOOK.rglob('*'):
             if path.suffix in {'.csv', '.xlsx', '.db', '.nc', '.geojson', '.json'} and '_build' not in path.parts:
                 self.asset(path)
-        payload = {'version': 2, 'pages': pages, 'workbook_links': workbook_links,
+        payload = {'version': 2, 'pages': pages,
                    'assets': sorted(self.assets.values(), key=lambda x: x['path']),
                    'book_url': 'https://roderickperez.github.io/EAGE_PythonRenewableEnergyCourse/',
                    'source_digest': hashlib.sha256(''.join(p['source_sha256'] for p in pages).encode()).hexdigest()}

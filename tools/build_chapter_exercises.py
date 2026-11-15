@@ -1,4 +1,4 @@
-"""Maintain 20 original exercises inside each of the five teaching chapters.
+"""Maintain five independent workbook chapters and their notebook companions.
 
 The source chapters are MyST computational notebooks. Each solution is standalone.
 Only practice answers belong here; assessment answers remain instructor-local.
@@ -1114,11 +1114,18 @@ assert np.all(net>0) and np.all(net<=60*4180*100*0.12*0.9/1e6)
 PATHS = {'general':'section0/introRenewableEnergy.md','solar':'section6/solarEnergy.md',
          'hydro':'section6/hydroelectricEnergy.md','wind':'section6/windEnergy.md',
          'geothermal':'section6/geothermalEnergy.md'}
+WORKBOOK_CHAPTERS = [
+    ('hydro', 'Hydroelectric', 'section7/workbook/hydroelectric.md'),
+    ('general', 'General', 'section7/workbook/general.md'),
+    ('solar', 'Solar', 'section7/workbook/solar.md'),
+    ('wind', 'Wind', 'section7/workbook/wind.md'),
+    ('geothermal', 'Geothermal', 'section7/workbook/geothermal.md'),
+]
 
 def render(topic):
     exercises=BANK[topic]
     assert len(exercises)==20, (topic,len(exercises))
-    text='## Chapter practice — 20 Python exercises\n\n**5 easy · 10 medium · 5 hard.** Work through the exercises in order. All inputs are synthetic teaching data. Each solution is directly below its question and starts collapsed in the book. Open it after trying your own code. Each solution runs independently; run the full notebook from the first cell when studying the chapter. References identify the underlying concepts rather than copied textbook problems.\n\n'
+    text='## Chapter practice — 20 Python exercises\n\n**5 easy · 10 medium · 5 hard.** All inputs are synthetic teaching data. Each solution starts collapsed in the book. Open it after trying your own code. Each solution runs independently.\n\n'
     for i,e in enumerate(exercises,1):
         e=e.copy()
         e['prompt']=re.sub(r'(?<=[A-Za-z])(?=\d)', ' ', e['prompt'])
@@ -1148,14 +1155,13 @@ def notebook_citations(text):
     return re.sub(r'\[@([^\]]+)\]',replace,text)
 
 def workbook_intro():
-    text = '# Workbook introduction\n\nThe 100 exercises are embedded directly inside their teaching chapters. Every chapter has **5 easy, 10 medium and 5 hard** exercises, with references, step-by-step explanations and executable checks.\n\n| Chapter practice | Exercises |\n|---|---:|\n'
-    for title, topic in [('Hydroelectric', 'hydro'), ('General', 'general'), ('Solar', 'solar'),
-                         ('Wind', 'wind'), ('Geothermal', 'geothermal')]:
-        text += f'| [{title}](../{PATHS[topic]}#chapter-practice-20-python-exercises) | 20 |\n'
-    return text + '\nEach chapter also offers a complete downloadable `.ipynb` notebook. In the book, practice answers start collapsed; in ordinary notebook viewers the step-by-step answers appear below their prompts.\n\n## After practice\n\nTake the [25-question test](renewableEnergyTest.md), then complete the [four-source final project](../section8/projectIntro.md) using the five separate input datasets. Test answers and the final-project solution are instructor-only and are not included in the student book.\n'
+    text = '# Workbook introduction\n\nThe Applied Python Workbook contains 100 independent exercises across five topics. Each topic has **5 easy, 10 medium and 5 hard** exercises, with references, step-by-step explanations and executable checks. Use **Renewable Energy Sources** for the fundamentals, equations and worked teaching examples.\n\n| Workbook topic | Exercises |\n|---|---:|\n'
+    for _, title, path in WORKBOOK_CHAPTERS:
+        text += f'| [{title}]({Path(path).relative_to("section7").as_posix()}) | 20 |\n'
+    return text + '\nEach workbook page has a downloadable `.ipynb` notebook. Answers start collapsed in the course; ordinary notebook viewers show the answers below the prompts.\n\n## After practice\n\nUse the **Quizzes** section for chapter quizzes. Take the [25-question test](renewableEnergyTest.md), then complete the [four-source final project](../section8/projectIntro.md) using the five separate input datasets. Test answers and the final-project solution are instructor-only.\n'
 
-def export_notebook(path):
-    """Create a companion .ipynb from the complete MyST chapter, not just exercises."""
+def export_notebook(path, prior_code=None):
+    """Create a companion .ipynb from this theory or workbook page."""
     text=path.read_text(encoding='utf-8')
     text=re.sub(r'\A---\n.*?\n---\n','',text,flags=re.S)
     text=re.sub(r'^:::\{iframe\}[^\n]*\n.*?^:::[ \t]*\n\n?', '', text, flags=re.M|re.S)
@@ -1174,14 +1180,17 @@ def export_notebook(path):
             cell.source=notebook_citations(cell.source)
     # Preserve checked code outputs when only surrounding teaching text changes.
     destination=path.with_suffix('.ipynb')
-    previous=None
-    if destination.exists():
-        previous=nbformat.read(destination,as_version=4)
-        old_code={c.source:c for c in previous.cells if c.cell_type=='code'}
-        for cell in cells:
-            if cell.cell_type=='code' and cell.source in old_code:
-                old=old_code[cell.source]
-                cell.outputs=old.outputs;cell.execution_count=old.execution_count;cell.metadata=old.metadata
+    previous=nbformat.read(destination,as_version=4) if destination.exists() else None
+    old_code=dict(prior_code or {})
+    if previous:
+        old_code.update((c.source,c) for c in previous.cells if c.cell_type=='code')
+    for cell in cells:
+        if cell.cell_type=='code' and cell.source in old_code:
+            old=old_code[cell.source]
+            cell.outputs=old.outputs
+            if previous:
+                cell.execution_count=old.execution_count
+                cell.metadata=old.metadata
     # Supply readable bibliographic details in standard notebook viewers too.
     cited=set()
     for group in re.findall(r'\[@([^\]]+)\]',text):
@@ -1204,20 +1213,22 @@ def export_notebook(path):
     nbformat.write(nb,destination)
 
 def main():
-    for topic,relative in PATHS.items():
-        path=ROOT/relative; text=path.read_text(encoding='utf-8')
-        if '## Chapter practice — 20 Python exercises' in text:
-            start=text.index('## Chapter practice — 20 Python exercises')
-        else:
-            start=text.index('## Exercises' if topic=='general' else '## Guided exercises')
-        tail=text[text.index('## Common mistakes',start):] if topic!='general' else ''
-        text=text[:start]+render(topic)+tail
-        if topic=='general':
-            text=text.replace('Start Python practice with the [graded workbook](../section7/renewableExercises.md). The short calculations below are preliminary unit checks.','The 20 exercises below progress from unit conversions to portfolio analysis. Study Python basics before attempting the medium and hard problems.')
-        download=f'\n[Download this complete chapter as a Jupyter notebook]({path.stem}.ipynb). In standard Jupyter viewers, answer headings and code are visible below each prompt; the book provides collapse controls.\n\n'
-        if download not in text:
-            text=text.replace('## Chapter practice — 20 Python exercises',download+'## Chapter practice — 20 Python exercises',1)
-        path.write_text(text,encoding='utf-8'); export_notebook(path)
+    for topic,title,relative in WORKBOOK_CHAPTERS:
+        theory=ROOT/PATHS[topic]
+        previous=nbformat.read(theory.with_suffix('.ipynb'),as_version=4)
+        prior_code={c.source:c for c in previous.cells if c.cell_type=='code'}
+        path=ROOT/relative
+        path.parent.mkdir(parents=True,exist_ok=True)
+        text=(
+            '---\nkernelspec:\n  name: python3\n  display_name: Python 3\n---\n\n'
+            f'# {title}\n\n'
+            f'[Review the theory and worked examples](../../{PATHS[topic]}). '
+            f'[Download the exercise notebook]({path.stem}.ipynb).\n\n'
+            + render(topic)
+        )
+        path.write_text(text,encoding='utf-8')
+        export_notebook(path,prior_code)
+        export_notebook(theory)
         print(topic,len(BANK[topic]),'exercises')
     (ROOT/'section7/renewableExercises.md').write_text(workbook_intro(),encoding='utf-8')
 

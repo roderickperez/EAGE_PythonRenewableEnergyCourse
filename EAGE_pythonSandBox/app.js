@@ -87,6 +87,11 @@ let saved = {}, workerReady = false;
 try { saved = JSON.parse(localStorage.getItem(STORAGE) || '{}'); } catch { /* local storage may be disabled */ }
 const status = (text, state) => { const indicator = $('python-status'); indicator.dataset.state = state; indicator.title = text; indicator.setAttribute('aria-label', text); indicator.querySelector('.sr-only').textContent = text; };
 function key(id = active) { return `${lesson.id}::${id}`; }
+function restoreWorkbookDrafts() {
+  for (const [id, oldKey] of Object.entries(lesson?.legacy_drafts ?? {})) {
+    if (saved[oldKey] && !saved[key(id)]) saved[key(id)] = { ...saved[oldKey] };
+  }
+}
 function persist() {
   if (!lesson) return;
   saved[key()] = {code: $('code').value, notes: $('notes').value, stdin: $('stdin').value, title: $('workspace-title').textContent};
@@ -120,21 +125,14 @@ function selectWork(id, initial) {
 }
 function renderNav() {
   const term=$('search').value.toLowerCase(); const groups = new Map();
-  const locationParams = new URLSearchParams(location.hash.slice(1));
-  const entries = course.pages.flatMap(page => {
-    if (page.id !== 'section7/renewableExercises.md') return [page];
-    return [page, ...(course.workbook_links ?? []).map(link => ({ ...link, group: page.group }))];
-  });
-  const isActive = entry => entry.href
-    ? entry.href === location.hash
-    : entry.id === lesson?.id && locationParams.get('anchor') !== 'chapter-practice-20-python-exercises';
-  for(const p of entries) if ((p.title+' '+p.group).toLowerCase().includes(term)) {
+  const isActive = entry => entry.id === lesson?.id;
+  for(const p of course.pages) if ((p.title+' '+p.group).toLowerCase().includes(term)) {
     if(!groups.has(p.group)) groups.set(p.group,[]);groups.get(p.group).push(p);
   }
   $('lessons').replaceChildren(...[...groups].map(([name,pages]) => {
     const d=document.createElement('details');d.open=!!term || pages.some(isActive);
     const s=document.createElement('summary');s.textContent=name;d.append(s);
-    for(const p of pages){const b=document.createElement('button');b.textContent=p.title;b.classList.toggle('active',isActive(p));b.onclick=()=>{if(p.href)location.hash=p.href;else navigate(p.id);};d.append(b);}return d;
+    for(const p of pages){const b=document.createElement('button');b.textContent=p.title;b.classList.toggle('active',isActive(p));b.onclick=()=>navigate(p.id);d.append(b);}return d;
   }));
 }
 function navigate(id) { location.hash = 'lesson='+encodeURIComponent(id); }
@@ -144,6 +142,7 @@ async function route() {
   if(lesson?.id!==next.id){
     if(busy){location.hash='lesson='+encodeURIComponent(lesson.id);appendText('Stop the current program before changing lessons.','error');return;}
     stopMedia();persist();lessonLab?.destroy();lessonLab=null;lesson=next;active='draft';
+    restoreWorkbookDrafts();
     $('output').replaceChildren();
     $('breadcrumb').textContent=lesson.group;
     const notebookPaths = {
@@ -156,7 +155,9 @@ async function route() {
       "section6/windEnergy.md": "EAGE_PythonRenewableEnergyCourse/section6/windEnergy.ipynb",
       "section6/geothermalEnergy.md": "EAGE_PythonRenewableEnergyCourse/section6/geothermalEnergy.ipynb"
     };
-    const notebookPath = notebookPaths[lesson.id];
+    const notebookPath = lesson.id.startsWith('section7/workbook/')
+      ? 'EAGE_PythonRenewableEnergyCourse/' + lesson.id.replace(/\.md$/, '.ipynb')
+      : notebookPaths[lesson.id];
     const colabButton = $('lesson-colab');
     colabButton.disabled = !notebookPath;
     colabButton.title = notebookPath ? 'Open this lesson in Google Colab' : 'No Google Colab notebook available for this lesson';

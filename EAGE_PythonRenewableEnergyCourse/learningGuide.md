@@ -21,7 +21,7 @@ chapter text as well as the code.
 5. Complete the hard modelling and conservation exercises 16–20.
 6. Take the question-only renewable-energy test, then complete the hybrid-portfolio project from its separate CSV datasets. The test answer key and project solution are instructor-only.
 
-The five energy chapters each contain 20 exercises: 5 easy, 10 medium and 5 hard. These 100 chapter exercises supplement the renewable-energy quizzes. Allow roughly 10–15 minutes per easy exercise, 20–35 per medium exercise and 45–75 per hard exercise. Hard exercises can be follow-up assignments.
+Renewable Energy Sources contains the fundamentals, equations and worked examples. The Applied Python Workbook has five practice pages with 20 exercises each: 5 easy, 10 medium and 5 hard. Quizzes and the Course Final Project have their own sections. Allow roughly 10–15 minutes per easy exercise, 20–35 per medium exercise and 45–75 per hard exercise. Hard exercises can be follow-up assignments.
 
 ## Running the examples
 
@@ -48,4 +48,4 @@ Submit code, a result with units, one or more checks, interpretation, reference 
 
 Core exercises apply prerequisite knowledge of Python, NumPy, pandas and Matplotlib; SQLite comes with Python. General programming and library instruction remains in the separate Python Course. Geospatial tools, Earth Engine, external map services and deep learning are optional. Browser kernels may not support every package or local file. Use the local environment for full validation.
 
-See the [reference catalogue](references.md) and [100-exercise chapter guide](section7/renewableExercises.md).
+See the [reference catalogue](references.md) and [Applied Python Workbook](section7/renewableExercises.md).
