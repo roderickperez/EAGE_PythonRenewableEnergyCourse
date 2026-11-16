@@ -354,7 +354,7 @@ window.addEventListener('keydown', e => {
 applyLayout();
 setWorkspaceMode(true);
 window.addEventListener('hashchange',()=>route());
-try{const response=await fetch('generated/course.json');if(!response.ok)throw Error('Course content has not been built. Run ./start_sandbox.sh from the repository.');course=await response.json();$('book-link').href=course.book_url;await route();}catch(e){$('lesson').textContent=e.message;status('Course loading failed', 'offline');}
+try{if(window.refreshCourseSession)await window.refreshCourseSession();const response=await fetch('generated/course.json');if(!response.ok)throw Error('Course content could not be loaded. If using the private course, sign in again; for local use, run ./start_sandbox.sh.');course=await response.json();$('book-link').href=course.book_url;await route();}catch(e){$('lesson').textContent=e.message;status('Course loading failed', 'offline');}
 
 // Confirm before leaving the course for the main menu.
 $('home-menu').addEventListener('click', () => {

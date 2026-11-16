@@ -66,6 +66,7 @@ jobs:
         run: |
           python tools/build_sandbox.py --deploy
           python tools/validate_sandbox.py
+          python tools/audit_course_images.py
           python tools/check_student_build.py
 
       - name: Upload artifact
