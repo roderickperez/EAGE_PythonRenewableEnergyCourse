@@ -3,6 +3,7 @@ from pathlib import Path
 from urllib.parse import unquote, urlsplit
 import json
 import hashlib
+import os
 
 from bs4 import BeautifulSoup
 from PIL import Image
@@ -28,7 +29,11 @@ def main():
             url = urlsplit(src)
             if not src or url.scheme or url.netloc or src.startswith('//'):
                 continue
-            target = (BOOK / unquote(url.path).lstrip('/')) if url.path.startswith('/') else (page.parent / unquote(url.path))
+            path = unquote(url.path)
+            base = '/' + os.environ.get('BASE_URL', '').strip('/')
+            if base != '/' and (path == base or path.startswith(base + '/')):
+                path = path[len(base):]
+            target = (BOOK / path.lstrip('/')) if path.startswith('/') else (page.parent / path)
             if not target.is_file():
                 missing.append((str(page.relative_to(BOOK)), src))
             else:
