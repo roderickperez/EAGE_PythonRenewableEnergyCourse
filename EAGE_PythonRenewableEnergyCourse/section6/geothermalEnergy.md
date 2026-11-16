@@ -362,4 +362,4 @@ The plot varies only mass flow. In a real reservoir, temperature, pressure, scal
 
 ## Check your understanding
 
-Continue with the [geothermal quiz and Python challenge](../section7/renewableEnergyquizzes/geothermalEnergy.md).
+Continue with the [geothermal quiz](../section7/renewableEnergyquizzes/geothermalEnergy.md).

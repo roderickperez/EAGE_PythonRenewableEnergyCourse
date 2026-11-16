@@ -1,117 +1,257 @@
-# Renewable-energy Python test
+# Assessment
 
-**25 questions · 100 marks · suggested duration 90 minutes.** Each question is worth 4 marks. Show units, assumptions and Python where requested. Use a fresh notebook for calculations. This assessment contains questions only. Practice answers elsewhere in the course are study material, not an answer key for this test.
+**60 questions · six topics · 10 questions per topic.** Each topic has 4 easy, 4 medium and 2 hard questions. Answer the theory questions in words and show calculations, units, assumptions and code where requested. The questions use synthetic teaching values and simplified models. Solutions are not published here. Use a fresh notebook and your own work.
 
-## General
+For questions referring to the shared SQL schema, assume a SQLite table `generation(country TEXT, source TEXT, year INTEGER, generation_gwh REAL)`. One row is one country–source–year observation; `generation_gwh` may be NULL. Source labels are `Hydro`, `Solar`, `Wind` and `Geothermal`. Do not assume missing observations are zero or add overlapping categories.
 
-### Question 01 — 4 marks
+## General Python
 
-Explain the distinction between power, energy, conversion efficiency and capacity factor; give units for the first two.
+### Question 01 — Easy
 
-### Question 02 — 4 marks
+Explain the difference between a Python list, dictionary, and pandas DataFrame; give one use for each.
 
-A 4 MW plant delivers 36 MWh over 12 h. Write Python to compute its capacity factor and mean output.
+### Question 02 — Easy
 
-### Question 03 — 4 marks
+A plant runs at 3 MW for 4 h. Write Python to calculate MWh and label the result.
 
-Interval-average powers[1,3,2] MW persist for[0.5,2,1.5] h. Write code for energy and time-weighted mean power.
+### Question 03 — Easy
 
-### Question 04 — 4 marks
+Write a function that converts kWh to MWh and demonstrate it with 2,500 kWh.
 
-Two source CSV files have unique timestamps, but one lacks an hour. Explain why an inner join and filling missing values with zero can give misleading generation totals. Propose a validation rule.
+### Question 04 — Easy
 
-### Question 05 — 4 marks
+Explain the difference between a measured zero and a missing value in a generation time series.
 
-Hourly supply[2,6] MW serves demand[4,4] MW without storage. Compute served, curtailed, unmet MWh and demand coverage.
+### Question 05 — Medium
 
-## Solar
+Given powers `[2, 4, 1]` MW for durations `[1, 0.5, 2]` h, use Python to calculate total MWh and time-weighted mean MW.
 
-### Question 06 — 4 marks
+### Question 06 — Medium
 
-Distinguish irradiance and irradiation, including units; explain why adding hourly irradiance readings requires a time-step factor.
+Create a pandas DataFrame with three timestamps and power values `[2.0, None, 4.0]`. Count missing readings without filling them.
 
-### Question 07 — 4 marks
+### Question 07 — Medium
 
-At 900 W/m², area 10 m² and efficiency 18%, calculate DC kW in Python.
+Write a function that accepts power and hours, rejects negative inputs with `ValueError`, and returns MWh. Demonstrate one valid and one invalid input.
 
-### Question 08 — 4 marks
+### Question 08 — Medium
 
-A 10 kW STC array at 1000 W/m² has cell temperature 50°C and gamma−0.004/°C. A 97%-efficient inverter is capped at 8 kW AC. Compute DC, unclipped AC and exported AC.
+Explain why duplicate timestamps and mixed time zones can invalidate a join of hourly resource and generation data. Describe two checks.
 
-### Question 09 — 4 marks
+### Question 09 — Hard
 
-A 50 kW DC array exports 6000 kWh during a period with 150 kWh/m² POA irradiation. Calculate PR using reference irradiance 1 kW/m². Is PR cell efficiency?
+Using Python, align hourly generation and demand by timestamp using an outer join, preserve missing values, and report unmatched timestamps. Describe how you would validate energy totals.
 
-### Question 10 — 4 marks
+### Question 10 — Hard
 
-Explain how to compare two inverter ratings using the same hourly DC data, and identify two reasons that the rating with least clipping may not be the best design.
+Design and implement a testable function that calculates energy from interval-average power and unequal durations, rejects invalid inputs, and returns both total MWh and coverage. State your missing-data policy and test boundary cases.
 
-## Hydro
+## Python and SQL
 
-### Question 11 — 4 marks
+### Question 11 — Easy
 
-Explain gross head, hydraulic head loss and net head. Which enters the electrical power equation?
+Explain the roles of a database, a table, SQL, and pandas in an energy-data workflow.
 
-### Question 12 — 4 marks
+### Question 12 — Easy
 
-Calculate electrical MW for flow 6 m³/s, net head 40 m and efficiency 85%, using rho 1000 and g 9.81.
+Write Python imports for pandas and SQLite, then connect to a local file named `assessment.db`.
 
-### Question 13 — 4 marks
+### Question 13 — Easy
 
-River flows[1,5,10] m³/s must first reserve up to 3 m³/s. Write NumPy code for environmental release, shortage and usable turbine flow.
+Write SQL that selects `source` and `generation_gwh` from `generation` for year 2023.
 
-### Question 14 — 4 marks
+### Question 14 — Easy
 
-A reservoir starts with 10000 m³, receives 2 m³/s for 1 h and releases 3 m³/s for 1 h. With no spill or evaporation, calculate final storage and state the water-balance equation.
+Explain the difference between `COUNT(*)` and `COUNT(generation_gwh)` when a measurement is NULL.
 
-### Question 15 — 4 marks
+### Question 15 — Medium
 
-A complete pumped-storage cycle uses pump efficiency 80% and generation efficiency 90%, with equal head both ways and no other losses. Calculate round-trip efficiency and explain why output is not new primary renewable energy.
+Create a DataFrame of three fictional country, source, year and GWh records, and write it to a new SQLite table. Explain the implications of `if_exists="replace"`.
 
-## Wind
+### Question 16 — Medium
 
-### Question 16 — 4 marks
+Use `pd.read_sql_query` and a bound `?` parameter to retrieve one country from `generation`; close the connection.
 
-Explain why the cubic available-wind-power law must not be extrapolated to turbine electrical output above rated and cut-out speeds.
+### Question 17 — Medium
 
-### Question 17 — 4 marks
+Write SQL to group by source and return row count, non-null measurement count, and average GWh.
 
-Available wind power is 600 kW, Cp 0.42 and drivetrain efficiency 0.95. Calculate electrical output and compare Cp against 16/27.
+### Question 18 — Medium
 
-### Question 18 — 4 marks
+Describe what `%load_ext sql`, `%sql sqlite:///assessment.db`, and `%%sql` do in a Jupyter notebook and where `%%sql` must appear.
 
-A 2 MW turbine uses cut-in 3, rated 12 and cut-out 25 m/s. Write a function returning zero below 3, 2(v³−27)/(1728−27) from 3 to 12, rated below 25, and zero at 25 or higher. Give outputs at[0,3,12,25].
+### Question 19 — Hard
 
-### Question 19 — 4 marks
+Design `sources(source PRIMARY KEY, label)` and a `generation` table with a foreign key, a composite key and an appropriate nonnegative check. Explain NULL and SQLite foreign-key enforcement.
 
-Directions are 355° and 5°. Explain the problem with an arithmetic mean and give the circular-mean procedure.
+### Question 20 — Hard
 
-### Question 20 — 4 marks
+A join duplicates some generation records because source labels are not unique. Write SQL checks for duplicate keys and unmatched rows, then propose a corrected join and reconciliation against the original total.
 
-Explain why a Weibull AEP calculation needs a turbine curve, wind-distribution probabilities and a convergence check. State how you would apply one combined 10% loss assumption.
+## Hydroelectric energy
 
-## Geothermal
+### Question 21 — Easy
 
-### Question 21 — 4 marks
+Define gross head, head loss and net head, and identify the units used for each.
 
-Distinguish geothermal gradient, conductive heat flux, thermal power and net electrical power, including units.
+### Question 22 — Easy
 
-### Question 22 — 4 marks
+Distinguish power in MW from energy in MWh for a hydroelectric plant.
 
-Use 40 kg/s, production 140°C, reinjection 60°C and cp 4180 J/(kg K). Calculate thermal MW, gross electrical MW at 10% and net MW after 15% parasitic fraction of gross.
+### Question 23 — Easy
 
-### Question 23 — 4 marks
+Write Python to calculate net head given gross head 42 m and loss 3 m.
 
-A 4 MW net plant has 90% availability during a 365-day year. Calculate annual GWh. Would the same answer apply to a 366-day year?
+### Question 24 — Easy
 
-### Question 24 — 4 marks
+Explain the difference between a run-of-river plant and pumped storage.
 
-Explain how to fit exponential decline and evaluate future-year predictions without leakage. Why does a perfect fit to noiseless synthetic data not establish reservoir forecasting accuracy?
+### Question 25 — Medium
 
-### Question 25 — 4 marks
+Using density 1,000 kg/m³, g 9.81 m/s², flow 8 m³/s, net head 35 m and efficiency 0.85, write Python to calculate electrical MW.
 
-For production temperatures[150,60]°C, reinjection 70°C and positive flow, explain how to handle the second record in a power-generation model and what is needed for two-phase fluids.
+### Question 26 — Medium
 
-## Submission
+For river flows `[1, 5, 9]` m³/s and a 3 m³/s environmental target, calculate release, shortfall, and usable flow for each interval.
 
-Submit one executed notebook with question numbers, workings and concise explanations. Do not include the final-project submission in this test.
+### Question 27 — Medium
+
+A reservoir starts at 20,000 m³, receives 4 m³/s and releases 3 m³/s for one hour. Write Python to calculate final storage, stating assumptions.
+
+### Question 28 — Medium
+
+Using the shared `generation` schema below, write SQL to count non-null hydroelectric readings and calculate their average GWh by country.
+
+### Question 29 — Hard
+
+Implement a reservoir routing function with one-hour intervals, environmental release before turbine withdrawal, a maximum storage and spill. Test a low-inflow and an overflow case and verify mass balance.
+
+### Question 30 — Hard
+
+Compare two generator ratings using hourly flows, fixed net head and efficiency. Write a Python approach for clipped power and energy, then describe an SQL query to compare summed energy by rating without counting missing intervals as zero.
+
+## Solar energy
+
+### Question 31 — Easy
+
+Distinguish irradiance from irradiation and give suitable units for each.
+
+### Question 32 — Easy
+
+Explain the role of an inverter in a photovoltaic system.
+
+### Question 33 — Easy
+
+Write Python to convert 750 Wh/m² to kWh/m².
+
+### Question 34 — Easy
+
+Why can a PV module’s rated power differ from its actual output?
+
+### Question 35 — Medium
+
+Compute ideal DC power for irradiance 800 W/m², module area 12 m² and efficiency 20%; show units and Python.
+
+### Question 36 — Medium
+
+A 10 kW DC output passes through an inverter with 96% efficiency and an 8 kW AC cap. Calculate the exported AC power and clipping.
+
+### Question 37 — Medium
+
+Given interval-average AC outputs `[0, 3, 5, 2]` kW for 30 minutes each, calculate kWh and explain the time factor.
+
+### Question 38 — Medium
+
+Using the shared `generation` schema, write SQL for annual non-null solar GWh by country and report the count of measurements used.
+
+### Question 39 — Hard
+
+Write a function for temperature-adjusted PV DC power using stated reference power, irradiance, cell temperature and temperature coefficient. Validate inputs and test reference and hot conditions.
+
+### Question 40 — Hard
+
+Compare two inverter caps using the same hourly DC series, inverter efficiency and missing-value policy. Implement annual energy and clipping calculations, and explain two design considerations beyond energy.
+
+## Wind energy
+
+### Question 41 — Easy
+
+Explain why wind is variable and distinguish wind speed from wind direction.
+
+### Question 42 — Easy
+
+What is turbine rated power, and why is it not the same as annual energy?
+
+### Question 43 — Easy
+
+Write Python to compute rotor swept area for radius 20 m using `math.pi`.
+
+### Question 44 — Easy
+
+Why must cut-in and cut-out speeds be represented in a turbine power curve?
+
+### Question 45 — Medium
+
+Calculate available wind power in kW for density 1.2 kg/m³, swept area 1,000 m² and wind speed 8 m/s using `0.5*rho*A*v**3`.
+
+### Question 46 — Medium
+
+Write a function returning zero below 3 m/s, increasing linearly from 0 MW at 3 m/s to 2 MW at 12 m/s, remaining at 2 MW below 25 m/s, and returning zero at or above 25 m/s. Test all three boundary speeds.
+
+### Question 47 — Medium
+
+Explain why the arithmetic mean of directions 355° and 5° is misleading and describe a circular-mean method.
+
+### Question 48 — Medium
+
+Using the shared `generation` schema, write SQL to count wind records and non-null readings by year.
+
+### Question 49 — Hard
+
+Given hourly wind speed data and a specified power curve, write Python to calculate energy while flagging invalid and missing speeds; report coverage separately.
+
+### Question 50 — Hard
+
+Describe and implement a comparison of two turbine ratings over the same speed series. Check interval duration, cut-out behavior and missing data, and explain why a short sample cannot establish long-term AEP.
+
+## Geothermal energy
+
+### Question 51 — Easy
+
+Distinguish geothermal temperature gradient from heat flux and give units.
+
+### Question 52 — Easy
+
+Explain the difference between direct heat use and electricity generation.
+
+### Question 53 — Easy
+
+Convert 150°C to kelvin in Python.
+
+### Question 54 — Easy
+
+Define gross electrical power, auxiliary load, and net electrical power.
+
+### Question 55 — Medium
+
+Calculate thermal MW for mass flow 20 kg/s and enthalpy drop 500 kJ/kg, stating the conversion.
+
+### Question 56 — Medium
+
+For 10 MW thermal input, 12% gross conversion efficiency and 0.3 MW auxiliary load, calculate gross and net MW.
+
+### Question 57 — Medium
+
+Explain why reinjection and reservoir replenishment matter when estimating long-term production.
+
+### Question 58 — Medium
+
+Using the shared `generation` schema, write SQL for geothermal GWh by country and year, showing row count and non-null measurement count.
+
+### Question 59 — Hard
+
+Write a Python function for net electrical output from mass flow, enthalpy drop, conversion efficiency and auxiliary load. Validate physical input bounds and test zero-flow behavior.
+
+### Question 60 — Hard
+
+Given annual declining flow measurements with gaps, propose and implement a Python workflow to calculate net generation and report missing coverage; explain why extrapolation needs reservoir evidence.

@@ -415,4 +415,4 @@ Because each sample represents one hour, summing MW values yields MWh. With 15-m
 
 ## Check your understanding
 
-Continue with the [solar quiz and Python challenge](../section7/renewableEnergyquizzes/solarEnergy.md).
+Continue with the [solar quiz](../section7/renewableEnergyquizzes/solarEnergy.md).

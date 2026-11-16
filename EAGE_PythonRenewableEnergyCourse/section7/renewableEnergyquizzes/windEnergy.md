@@ -4,7 +4,7 @@ kernelspec:
   display_name: Python 3
 ---
 
-# Wind-Energy Quiz and Python Challenge
+# Wind Energy Quiz
 
 Complete these eight cumulative questions before opening the solutions.
 

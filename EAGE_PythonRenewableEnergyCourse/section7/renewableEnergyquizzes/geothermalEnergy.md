@@ -4,9 +4,9 @@ kernelspec:
   display_name: Python 3
 ---
 
-# Geothermal-Energy Quiz and Python Challenge
+# Geothermal Energy Quiz
 
-These eight questions connect thermodynamics and subsurface concepts to basic and intermediate Python.
+These questions connect thermodynamics and subsurface concepts to Python.
 
 **4 Basic · 8 Medium · 8 Hard.** Try each question before opening its solution. Where a prompt refers to an earlier answer, run that code first.
 

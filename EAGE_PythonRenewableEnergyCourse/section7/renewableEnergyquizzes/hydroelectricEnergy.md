@@ -4,7 +4,7 @@ kernelspec:
   display_name: Python 3
 ---
 
-# Hydropower Quiz and Python Challenge
+# Hydropower Quiz
 
 Complete the questions before opening the solutions. The sequence progresses from concepts and scalars to functions, arrays, data validation, and plots.
 

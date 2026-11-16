@@ -342,4 +342,4 @@ The flat segments at 35 MW are generator clipping, not constant river flow. This
 
 ## Check your understanding
 
-Continue with the [hydropower quiz and Python challenge](../section7/renewableEnergyquizzes/hydroelectricEnergy.md).
+Continue with the [hydropower quiz](../section7/renewableEnergyquizzes/hydroelectricEnergy.md).

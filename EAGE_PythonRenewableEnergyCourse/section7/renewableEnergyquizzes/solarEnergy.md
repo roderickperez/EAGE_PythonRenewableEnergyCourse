@@ -4,9 +4,9 @@ kernelspec:
   display_name: Python 3
 ---
 
-# Solar PV Quiz and Python Challenge
+# Solar PV Quiz
 
-These eight questions progress from units and concepts to functions, arrays, validation, and plots.
+These questions progress from units and concepts to functions, arrays, validation, and plots.
 
 **4 Basic · 8 Medium · 8 Hard.** Try each question before opening its solution. Where a prompt refers to an earlier answer, run that code first.
 

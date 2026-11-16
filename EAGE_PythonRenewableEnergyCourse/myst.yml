@@ -64,6 +64,8 @@ project:
 
     - title: Quizzes
       children:
+        - file: section7/renewableEnergyquizzes/generalPython.md
+        - file: section7/renewableEnergyquizzes/pythonSQL.md
         - file: section7/renewableEnergyquizzes/hydroelectricEnergy.md
 
         - file: section7/renewableEnergyquizzes/eolicenergy.md
@@ -74,13 +76,13 @@ project:
 
         - file: section7/renewableEnergyquizzes/geothermalEnergy.md
 
+    - title: Assessment
+      children:
+        - file: section7/renewableEnergyTest.md
+
     - title: Course Final Project
       children:
         - file: section8/projectIntro.md
-
-    - title: Assessment — Questions Only
-      children:
-        - file: section7/renewableEnergyTest.md
 
     - title: Summary and Conclusions
       children:

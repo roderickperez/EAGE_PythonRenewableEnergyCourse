@@ -43,10 +43,14 @@ def validate():
     assert 'projectSolution' not in config and 'instructor_private' not in config
     assert not (ROOT/'section8/projectSolution.md').exists()
     test=(ROOT/'section7/renewableEnergyTest.md').read_text()
-    assert len(re.findall(r'^### Question \d+',test,re.M))==25
+    blocks = re.split(r'^## ', test, flags=re.M)[1:]
+    assert len(blocks) == 6
+    for block in blocks:
+        assert re.findall(r'^### Question \d+ — (Easy|Medium|Hard)', block, re.M) == ['Easy']*4 + ['Medium']*4 + ['Hard']*2
+    assert len(re.findall(r'^### Question \d+',test,re.M))==60
     assert '**Answer' not in test and '{code-cell}' not in test and '{dropdown}' not in test
     tracked=subprocess.check_output(['git','ls-files','instructor_private'],cwd=BASE,text=True)
     assert not tracked.strip(),'Private instructor files must never be tracked'
-    print(f'Validated {count} independent chapter solutions, 5 notebook companions, 25 question-only test items and private-file exclusion.')
+    print(f'Validated {count} independent chapter solutions, 5 notebook companions, 60 assessment questions and private-file exclusion.')
 
 if __name__=='__main__':validate()

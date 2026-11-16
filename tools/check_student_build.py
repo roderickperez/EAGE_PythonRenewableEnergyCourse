@@ -16,5 +16,5 @@ for path in ROOT.rglob('*'):
 test=ROOT/'section7/renewableenergytest/index.html'
 assert test.exists(),'Student test page is missing'
 text=test.read_text(encoding='utf-8')
-assert len(re.findall(r'id="question-\d+-4-marks"',text))==25,'Expected 25 test questions'
+assert len(re.findall(r'id="question-\d+-(?:easy|medium|hard)"',text))==60,'Expected 60 assessment questions'
 print('Student build passed: no instructor answer keys, private solution code or obsolete project-solution downloads.')

@@ -1248,7 +1248,7 @@ def workbook_intro():
     text = '# Workbook introduction\n\nThe Applied Python Workbook contains 100 independent exercises across five topics. Each topic has **4 Basic, 8 Medium and 8 Hard** exercises, with references, step-by-step explanations and executable checks. Use **Introduction to Renewable Energy** for the fundamentals, equations and worked teaching examples.\n\n| Workbook topic | Exercises |\n|---|---:|\n'
     for _, title, path in WORKBOOK_CHAPTERS:
         text += f'| [{title}]({Path(path).relative_to("section7").as_posix()}) | 20 |\n'
-    return text + '\nEach workbook page has a downloadable `.ipynb` notebook. Answers start collapsed in the course; ordinary notebook viewers show the answers below the prompts.\n\n## After practice\n\nUse the **Quizzes** section for chapter quizzes. Take the [25-question test](renewableEnergyTest.md), then complete the [four-source final project](../section8/projectIntro.md) using the five separate input datasets. Test answers and the final-project solution are instructor-only.\n'
+    return text + '\nEach workbook page has a downloadable `.ipynb` notebook. Answers start collapsed in the course; ordinary notebook viewers show the answers below the prompts.\n\n## After practice\n\nUse the **Quizzes** section for chapter quizzes. Complete the [assessment](renewableEnergyTest.md), then the [four-source final project](../section8/projectIntro.md) using the five separate input datasets. Assessment solutions are not published.\n'
 
 def export_notebook(path, prior_code=None):
     """Create a companion .ipynb from this theory or workbook page."""

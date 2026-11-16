@@ -89,7 +89,7 @@ def validate():
             assert len(answers)==20 and all('open' not in answer.attrs for answer in answers),page['id']
             assert len(page['workspaces'])==20,page['id']
     assert any(asset['path']=='section8/projectStarter.ipynb' for asset in payload['assets'])
-    assert len(test['workspaces'])==25 and len(project['workspaces'])>=8
+    assert len(test['workspaces'])==60 and len(project['workspaces'])>=8
     for page in [test,project]:
         assert not page['codes'] and '<details' not in page['html']
         assert all(ast.parse(w['code']).body==[] for w in page['workspaces'])
@@ -117,6 +117,6 @@ def validate():
                 executed+=1
                 plt.close('all')
     print(f'Executed {executed} quiz Python cells with explicit input fixtures.')
-    print(f'Sandbox validated: {len(pages)} pages, 100 collapsed answers, 25 question-only assessment workspaces, project workspaces and five matching datasets.')
+    print(f'Sandbox validated: {len(pages)} pages, 100 collapsed workbook answers, 60 assessment workspaces, project workspaces and five matching datasets.')
 
 if __name__=='__main__':validate()
