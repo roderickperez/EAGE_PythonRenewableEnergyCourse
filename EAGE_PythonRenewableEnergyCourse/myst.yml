@@ -45,19 +45,19 @@ project:
     - title: Databases
       children:
         - file: section5/databases.md
-
+        - file: section5/sql-basics.md
+        - file: section5/sql-python.ipynb
+        - file: section5/SQL.md
+        - file: section5/SQL_Pandas.ipynb
         - file: section5/download-to-database.md
         - file: section5/world-energy-download.md
-
-        - file: section5/SQL.md
-
-        - file: section5/SQL_Pandas.ipynb
+        - file: section5/eia-energy-data.md
 
     - title: Applied Python Workbook
       children:
         - file: section7/renewableExercises.md
-        - file: section7/workbook/hydroelectric.md
         - file: section7/workbook/general.md
+        - file: section7/workbook/hydroelectric.md
         - file: section7/workbook/solar.md
         - file: section7/workbook/wind.md
         - file: section7/workbook/geothermal.md

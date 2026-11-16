@@ -4,8 +4,8 @@ The Applied Python Workbook contains 100 independent exercises across five topic
 
 | Workbook topic | Exercises |
 |---|---:|
-| [Hydroelectric](workbook/hydroelectric.md) | 20 |
 | [General](workbook/general.md) | 20 |
+| [Hydroelectric](workbook/hydroelectric.md) | 20 |
 | [Solar](workbook/solar.md) | 20 |
 | [Wind](workbook/wind.md) | 20 |
 | [Geothermal](workbook/geothermal.md) | 20 |

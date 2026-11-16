@@ -1201,8 +1201,8 @@ PATHS = {'general':'section0/introRenewableEnergy.md','solar':'section6/solarEne
          'hydro':'section6/hydroelectricEnergy.md','wind':'section6/windEnergy.md',
          'geothermal':'section6/geothermalEnergy.md'}
 WORKBOOK_CHAPTERS = [
-    ('hydro', 'Hydroelectric', 'section7/workbook/hydroelectric.md'),
     ('general', 'General', 'section7/workbook/general.md'),
+    ('hydro', 'Hydroelectric', 'section7/workbook/hydroelectric.md'),
     ('solar', 'Solar', 'section7/workbook/solar.md'),
     ('wind', 'Wind', 'section7/workbook/wind.md'),
     ('geothermal', 'Geothermal', 'section7/workbook/geothermal.md'),
