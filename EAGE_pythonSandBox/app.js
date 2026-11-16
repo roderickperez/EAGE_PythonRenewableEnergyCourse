@@ -82,6 +82,19 @@ function ensureWorkspaceVisible() {
   }
 }
 
+function setWorkspaceMode(notebook) {
+  const frame = $('workspace-notebook');
+  $('lab').classList.toggle('show-notebook', notebook);
+  frame.hidden = !notebook;
+  $('workspace-mode-editor').setAttribute('aria-pressed', String(!notebook));
+  $('workspace-mode-notebook').setAttribute('aria-pressed', String(notebook));
+  if (notebook && !frame.hasAttribute('src')) {
+    frame.src = 'jupyterlite/lab/index.html?path=Start%20here.ipynb';
+  }
+}
+$('workspace-mode-editor').onclick = () => setWorkspaceMode(false);
+$('workspace-mode-notebook').onclick = () => setWorkspaceMode(true);
+
 let course, lesson, active = 'draft', worker, busy = false, timer, draftTimer, lessonLab;
 let saved = {}, workerReady = false;
 try { saved = JSON.parse(localStorage.getItem(STORAGE) || '{}'); } catch { /* local storage may be disabled */ }
@@ -297,6 +310,7 @@ window.addEventListener('beforeunload',persist);
 $('lesson').onclick=e=>{
   const b=e.target.closest('button');if(!b || !(b.dataset.workspace || b.dataset.code || b.dataset.setup))return;
   ensureWorkspaceVisible();
+  setWorkspaceMode(false);
   if(b.dataset.workspace)selectWork(b.dataset.workspace);
   if(b.dataset.code)selectWork(b.dataset.code);
   if(b.dataset.setup){const index=lesson.codes.findIndex(c=>c.id===b.dataset.setup);const code=lesson.codes.slice(0,index+1).filter(c=>!c.solution&&c.runnable).map(c=>c.code).join('\n\n');selectWork('setup-'+b.dataset.setup,code);}
@@ -338,6 +352,7 @@ window.addEventListener('keydown', e => {
 
 // Apply initial layout state
 applyLayout();
+setWorkspaceMode(true);
 window.addEventListener('hashchange',()=>route());
 try{const response=await fetch('generated/course.json');if(!response.ok)throw Error('Course content has not been built. Run ./start_sandbox.sh from the repository.');course=await response.json();$('book-link').href=course.book_url;await route();}catch(e){$('lesson').textContent=e.message;status('Course loading failed', 'offline');}
 

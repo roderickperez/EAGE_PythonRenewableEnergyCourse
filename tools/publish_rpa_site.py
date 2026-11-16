@@ -4,6 +4,7 @@ Credentials are read from environment variables and are never printed. This scri
 only accepts the student browser output, not a course repository or instructor files.
 """
 import argparse
+from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
 import mimetypes
@@ -11,6 +12,7 @@ import os
 from pathlib import Path
 import re
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -40,7 +42,7 @@ def build_inventory(root):
         relative = file.relative_to(root).as_posix()
         if FORBIDDEN.search(relative):
             continue
-        if relative not in ROOT_FILES and not relative.startswith(("generated/", "vendor/")):
+        if relative not in ROOT_FILES and not relative.startswith(("generated/", "vendor/", "jupyterlite/")):
             continue
         digest = hashlib.sha256(file.read_bytes()).hexdigest()
         entries[relative] = (file, digest)
@@ -49,7 +51,7 @@ def build_inventory(root):
     return entries
 
 
-def request(method, path, *, token=None, data=None, content_type=None, upsert=False):
+def request(method, path, *, token=None, data=None, content_type=None, upsert=False, missing_ok=False):
     headers = {"apikey": PUBLIC_KEY}
     if token:
         headers["Authorization"] = "Bearer " + token
@@ -58,13 +60,26 @@ def request(method, path, *, token=None, data=None, content_type=None, upsert=Fa
     if upsert:
         headers["x-upsert"] = "true"
     req = urllib.request.Request(URL + path, data=data, headers=headers, method=method)
-    try:
-        with urllib.request.urlopen(req, timeout=120) as response:
-            return response.read()
-    except urllib.error.HTTPError as exc:
-        raise RuntimeError("Publishing request failed with HTTP " + str(exc.code)) from None
-    except urllib.error.URLError:
-        raise RuntimeError("Could not contact course storage.") from None
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(req, timeout=120) as response:
+                return response.read()
+        except urllib.error.HTTPError as exc:
+            if missing_ok and exc.code == 404:
+                return None
+            if missing_ok and exc.code == 400:
+                try:
+                    error = json.load(exc)
+                except (ValueError, OSError):
+                    error = {}
+                if str(error.get("statusCode")) == "404":
+                    return None
+            if exc.code not in {429, 500, 502, 503, 504, 520, 522, 524} or attempt == 2:
+                raise RuntimeError(f"{method} {path} failed with HTTP {exc.code}") from None
+        except (urllib.error.URLError, TimeoutError):
+            if attempt == 2:
+                raise RuntimeError(f"{method} {path} could not contact course storage.") from None
+        time.sleep(2 ** attempt)
 
 
 def object_path(course, file):
@@ -81,21 +96,46 @@ def publish(course, root, email, password):
     token = auth.get("access_token")
     if not token:
         raise RuntimeError("Publisher authentication failed.")
-    # Immutable content-addressed objects are uploaded before the manifest.
-    # One small manifest replacement then switches readers to the new release.
-    manifest = {}
-    for index, (name, (file, digest)) in enumerate(sorted(inventory.items()), 1):
-        manifest[name] = digest
-        encoded = object_path(course, "objects/" + digest)
-        data = file.read_bytes()
-        request("POST", encoded, token=token, data=data,
+    pointer = object_path(course, "current.json")
+    read_pointer = pointer.replace("/object/", "/object/authenticated/", 1)
+    current = request("GET", f"{read_pointer}?cacheNonce={time.time_ns()}", token=token, missing_ok=True)
+    previous = json.loads(current) if current is not None else {}
+    if current is not None and (not isinstance(previous, dict) or previous.get("version") != 1 or not isinstance(previous.get("files"), dict)):
+        raise ValueError("Unexpected course manifest format.")
+    existing = set(previous.get("files", {}).values())
+
+    # Course objects are immutable and named by their content hash. Publish new
+    # objects first, then switch the manifest once the full release is available.
+    manifest = {name: digest for name, (_, digest) in sorted(inventory.items())}
+    if previous.get("files") == manifest:
+        print("Verified existing release for", course, "with", len(inventory), "files.")
+        return
+    uploads = {}
+    for name, digest in manifest.items():
+        if digest not in existing:
+            uploads.setdefault(digest, name)
+
+    def upload(entry):
+        digest, name = entry
+        file, _ = inventory[name]
+        request("POST", object_path(course, "objects/" + digest), token=token,
+                data=file.read_bytes(),
                 content_type=mimetypes.guess_type(name)[0] or "application/octet-stream",
                 upsert=True)
-        print("Uploaded", index, "of", len(inventory), flush=True)
+        return name
+
+    # The vendored JupyterLite distribution adds hundreds of independent assets.
+    with ThreadPoolExecutor(max_workers=6) as workers:
+        for index, name in enumerate(workers.map(upload, uploads.items()), 1):
+            print(f"Uploaded {index}/{len(uploads)}: {name}", flush=True)
     payload = json.dumps({"version": 1, "files": manifest}, separators=(",", ":")).encode()
-    request("POST", object_path(course, "current.json"), token=token, data=payload,
+    request("POST", pointer, token=token, data=payload,
             content_type="application/json", upsert=True)
-    print("Published", course, "with", len(inventory), "files.")
+    # The previous pointer may still be cached immediately after the upsert.
+    published = json.loads(request("GET", f"{read_pointer}?cacheNonce={time.time_ns()}", token=token))
+    if published != {"version": 1, "files": manifest}:
+        raise RuntimeError("Published course manifest did not match the build.")
+    print("Published and verified", course, "with", len(inventory), "files.")
 
 
 def main():

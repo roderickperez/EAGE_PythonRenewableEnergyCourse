@@ -312,4 +312,5 @@ if __name__ == '__main__':
         for name in ['index.html', 'app.js', 'styles.css', 'python-worker.js', 'eagelogo.jpg']:
             shutil.copyfile(SANDBOX / name, target / name)
         shutil.copytree(OUT, target / 'generated', dirs_exist_ok=True)
+        shutil.copytree(SANDBOX / 'jupyterlite', target / 'jupyterlite', dirs_exist_ok=True)
         print('Participant sandbox staged at /sandbox/ beside the Jupyter Book.')
