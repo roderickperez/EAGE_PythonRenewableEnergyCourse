@@ -1,11 +1,11 @@
 # Python–SQL Quiz
 
-**4 Basic · 8 Medium · 8 Hard.** Try each question before opening its practice solution.
+**4 Easy · 8 Medium · 8 Hard.** Try each question before opening its practice solution.
 
 :::{admonition} Quiz 1 — Database and table
 :class: note
 
-**Difficulty:** Basic
+<span class="difficulty-badge difficulty-easy">Easy</span>
 
 How is a SQLite database different from a table?
 
@@ -21,7 +21,7 @@ The database is the managed collection stored in a file; a table is one named co
 :::{admonition} Quiz 2 — Select
 :class: note
 
-**Difficulty:** Basic
+<span class="difficulty-badge difficulty-easy">Easy</span>
 
 Write SQL to select `source` and `year` from `generation`.
 
@@ -37,7 +37,7 @@ Write SQL to select `source` and `year` from `generation`.
 :::{admonition} Quiz 3 — Filter
 :class: note
 
-**Difficulty:** Basic
+<span class="difficulty-badge difficulty-easy">Easy</span>
 
 Select all generation rows for 2023.
 
@@ -53,7 +53,7 @@ Select all generation rows for 2023.
 :::{admonition} Quiz 4 — Count
 :class: note
 
-**Difficulty:** Basic
+<span class="difficulty-badge difficulty-easy">Easy</span>
 
 How do you count every row in `generation`?
 
@@ -69,7 +69,7 @@ How do you count every row in `generation`?
 :::{admonition} Quiz 5 — Pandas import
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 Which Python imports provide pandas and SQLite access?
 
@@ -85,7 +85,7 @@ Which Python imports provide pandas and SQLite access?
 :::{admonition} Quiz 6 — Connect
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 How do you open or create a local `course.db` SQLite file?
 
@@ -101,7 +101,7 @@ How do you open or create a local `course.db` SQLite file?
 :::{admonition} Quiz 7 — DataFrame to SQL
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 Write DataFrame `df` into a new table called `generation` without its index.
 
@@ -117,7 +117,7 @@ Write DataFrame `df` into a new table called `generation` without its index.
 :::{admonition} Quiz 8 — Read into pandas
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 How do you load all rows from `generation` into a DataFrame?
 
@@ -133,7 +133,7 @@ How do you load all rows from `generation` into a DataFrame?
 :::{admonition} Quiz 9 — Sort
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 Select source and GWh, largest GWh first.
 
@@ -149,7 +149,7 @@ Select source and GWh, largest GWh first.
 :::{admonition} Quiz 10 — Missing values
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 How do you select unknown generation values?
 
@@ -165,7 +165,7 @@ How do you select unknown generation values?
 :::{admonition} Quiz 11 — Non-null count
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 What is the difference between `COUNT(*)` and `COUNT(generation_gwh)`?
 
@@ -181,7 +181,7 @@ The first counts rows; the second counts only non-NULL values in that column.
 :::{admonition} Quiz 12 — Conversion
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 Write a query converting `generation_gwh` to MWh.
 
@@ -197,7 +197,7 @@ Write a query converting `generation_gwh` to MWh.
 :::{admonition} Quiz 13 — Group
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 How do you count rows for each source?
 
@@ -213,7 +213,7 @@ How do you count rows for each source?
 :::{admonition} Quiz 14 — Parameter binding
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 How can Python safely bind a year in a SQLite query?
 
@@ -229,7 +229,7 @@ How can Python safely bind a year in a SQLite query?
 :::{admonition} Quiz 15 — Magic commands
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 What do `%load_ext sql` and `%%sql` do in Jupyter?
 
@@ -245,7 +245,7 @@ The first loads the installed extension. The second, on the first line of a cell
 :::{admonition} Quiz 16 — Connection URL
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 What file does `%sql sqlite:///course.db` refer to?
 
@@ -261,7 +261,7 @@ A SQLite file named `course.db` relative to the kernel working directory. The SQ
 :::{admonition} Quiz 17 — Join
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 Join `generation g` to `sources s` on source code.
 
@@ -277,7 +277,7 @@ Join `generation g` to `sources s` on source code.
 :::{admonition} Quiz 18 — Duplicate join
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 Why can a join inflate a sum?
 
@@ -293,7 +293,7 @@ If a matching key occurs multiple times in the joined table, one observation can
 :::{admonition} Quiz 19 — Transactions
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 What should happen when one step of a multi-step database update fails?
 
@@ -309,7 +309,7 @@ Use a transaction and roll back the group so a partial update is not committed. 
 :::{admonition} Quiz 20 — Replace
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 What is the risk of `df.to_sql(..., if_exists="replace")`?
 

@@ -8,14 +8,12 @@ kernelspec:
 
 These questions progress from units and concepts to functions, arrays, validation, and plots.
 
-**4 Basic · 8 Medium · 8 Hard.** Try each question before opening its solution. Where a prompt refers to an earlier answer, run that code first.
-
-## Basic
+**4 Easy · 8 Medium · 8 Hard.** Try each question before opening its solution. Where a prompt refers to an earlier answer, run that code first.
 
 :::{admonition} Quiz 1 — Irradiance or irradiation?
 :class: note
 
-**Difficulty:** Basic
+<span class="difficulty-badge difficulty-easy">Easy</span>
 
 **Reference:** Wade, Chapters 2–3 and 9 [@wade2003]; Foster et al., photovoltaic systems [@foster2010].
 
@@ -35,7 +33,7 @@ Classify each quantity: `850 W/m²`, `5.2 kWh/m²/day`, `3 MW`, and `18 MWh`.
 :::{admonition} Quiz 2 — Panel calculation
 :class: note
 
-**Difficulty:** Basic
+<span class="difficulty-badge difficulty-easy">Easy</span>
 
 **Reference:** Wade, Chapters 2–3 and 9 [@wade2003]; Foster et al., photovoltaic systems [@foster2010].
 
@@ -61,7 +59,7 @@ The calculation omits temperature, inverter behavior, wiring, mismatch, soiling,
 :::{admonition} Quiz 3 — Convert irradiation units
 :class: note
 
-**Difficulty:** Basic
+<span class="difficulty-badge difficulty-easy">Easy</span>
 
 **Reference:** [@foster2010; @pvlibDocs].
 
@@ -85,7 +83,7 @@ assert wh_to_kwh(750)==.75
 :::{admonition} Quiz 4 — Convert efficiency percentages
 :class: note
 
-**Difficulty:** Basic
+<span class="difficulty-badge difficulty-easy">Easy</span>
 
 **Reference:** [@foster2010; @pvlibDocs].
 
@@ -108,12 +106,10 @@ assert 600*2*fraction(19)==228
 ```
 :::
 
-## Medium
-
 :::{admonition} Quiz 5 — Build the temperature-aware function
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** Wade, Chapters 2–3 and 9 [@wade2003]; Foster et al., photovoltaic systems [@foster2010].
 
@@ -150,7 +146,7 @@ assert np.all(pv_power_mw([0, 500, 1000], 25, 10, 8) <= 8)
 :::{admonition} Quiz 6 — Plot a solar day
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** Wade, Chapters 2–3 and 9 [@wade2003]; Foster et al., photovoltaic systems [@foster2010].
 
@@ -188,7 +184,7 @@ assert energy_mwh > 0
 :::{admonition} Quiz 7 — Find inverter clipping
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** Wade, Chapters 2–3 and 9 [@wade2003]; Foster et al., photovoltaic systems [@foster2010].
 
@@ -226,7 +222,7 @@ plt.tight_layout()
 :::{admonition} Quiz 8 — Find irradiance on a horizontal panel
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** [@foster2010; @pvlibDocs].
 
@@ -251,7 +247,7 @@ assert isclose(ghi(700,120,60),470)
 :::{admonition} Quiz 9 — Compute clipped quarter-hour energy
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** [@foster2010; @pvlibDocs].
 
@@ -276,7 +272,7 @@ assert capped_energy([1,4,6,2],3,15)==(2.25,1.0)
 :::{admonition} Quiz 10 — Separate optical and wiring losses
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** [@foster2010; @pvlibDocs].
 
@@ -302,7 +298,7 @@ assert ideal==360 and abs(output-335.16)<1e-8
 :::{admonition} Quiz 11 — Assess the units of a monitoring series
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** [@foster2010; @pvlibDocs].
 
@@ -328,7 +324,7 @@ assert all(abs(a-b)<1e-9 for a,b in zip(integrate_kw([.3,.6,1.2,.9],30),[1.5,.75
 :::{admonition} Quiz 12 — Find a module's fill factor
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** [@foster2010; @pvlibDocs].
 
@@ -351,12 +347,10 @@ assert .74<fill_factor(38,9,46,10)<.75
 ```
 :::
 
-## Hard
-
 :::{admonition} Quiz 13 — Validate monthly performance ratio
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** Wade, Chapters 2–3 and 9 [@wade2003]; Foster et al., photovoltaic systems [@foster2010].
 
@@ -396,7 +390,7 @@ assert not monthly["flag"].any()
 :::{admonition} Quiz 14 — Temperature–irradiance map
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** Wade, Chapters 2–3 and 9 [@wade2003]; Foster et al., photovoltaic systems [@foster2010].
 
@@ -426,7 +420,7 @@ plt.tight_layout()
 :::{admonition} Quiz 15 — Lifetime degradation
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** Wade, Chapters 2–3 and 9 [@wade2003]; Foster et al., photovoltaic systems [@foster2010].
 
@@ -462,7 +456,7 @@ plt.tight_layout()
 :::{admonition} Quiz 16 — Join inverter and irradiance readings
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** [@foster2010; @pvlibDocs].
 
@@ -491,7 +485,7 @@ assert len(joined)==4 and len(paired)==2 and abs(pr-.625)<1e-12
 :::{admonition} Quiz 17 — Select an inverter under a clipping target
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** [@foster2010; @pvlibDocs].
 
@@ -518,7 +512,7 @@ assert choice==6 and retained(5)<.95
 :::{admonition} Quiz 18 — Back-test a performance drift rule
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** [@foster2010; @pvlibDocs].
 
@@ -544,7 +538,7 @@ assert np.isclose(factor,.95) and flagged.tolist()==[6,7]
 :::{admonition} Quiz 19 — Evaluate battery charging losses
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** [@foster2010; @pvlibDocs].
 
@@ -575,7 +569,7 @@ assert np.isclose(state,2.7-2/.9)
 :::{admonition} Quiz 20 — Compare lifetime energy and financial yield
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** [@foster2010; @pvlibDocs].
 

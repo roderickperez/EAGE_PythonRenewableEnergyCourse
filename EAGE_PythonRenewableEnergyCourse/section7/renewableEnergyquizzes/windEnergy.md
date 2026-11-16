@@ -8,14 +8,12 @@ kernelspec:
 
 Complete these eight cumulative questions before opening the solutions.
 
-**4 Basic · 8 Medium · 8 Hard.** Try each question before opening its solution. Where a prompt refers to an earlier answer, run that code first.
-
-## Basic
+**4 Easy · 8 Medium · 8 Hard.** Try each question before opening its solution. Where a prompt refers to an earlier answer, run that code first.
 
 :::{admonition} Quiz 1 — Power concepts
 :class: note
 
-**Difficulty:** Basic
+<span class="difficulty-badge difficulty-easy">Easy</span>
 
 **Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
@@ -37,7 +35,7 @@ D. $C_p\rho Av^3$
 :::{admonition} Quiz 2 — Betz reasoning
 :class: note
 
-**Difficulty:** Basic
+<span class="difficulty-badge difficulty-easy">Easy</span>
 
 **Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
@@ -61,7 +59,7 @@ assert power_ratio == 8 and 0.65 > betz_limit
 :::{admonition} Quiz 3 — Convert measured wind speed
 :class: note
 
-**Difficulty:** Basic
+<span class="difficulty-badge difficulty-easy">Easy</span>
 
 **Reference:** [@manwell2009].
 
@@ -85,7 +83,7 @@ assert kmh_to_ms(36)==10
 :::{admonition} Quiz 4 — Convert rotor speed
 :class: note
 
-**Difficulty:** Basic
+<span class="difficulty-badge difficulty-easy">Easy</span>
 
 **Reference:** [@manwell2009].
 
@@ -107,12 +105,10 @@ assert isclose(rpm_to_rad_s(15),pi/2)
 ```
 :::
 
-## Medium
-
 :::{admonition} Quiz 5 — Implement a bounded power curve
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
@@ -148,7 +144,7 @@ assert turbine_power_mw(25) == 0
 :::{admonition} Quiz 6 — Plot and annotate operating regions
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
@@ -181,7 +177,7 @@ plt.tight_layout()
 :::{admonition} Quiz 7 — Density and hub-height correction
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
@@ -219,7 +215,7 @@ print(f"Air density: {air_density(90000, 5):.3f} kg/m³")
 :::{admonition} Quiz 8 — Size rotor area from diameter
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** [@manwell2009].
 
@@ -246,7 +242,7 @@ assert isclose(swept_area(90)/swept_area(60),2.25)
 :::{admonition} Quiz 9 — Evaluate tip-speed ratio
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** [@manwell2009].
 
@@ -274,7 +270,7 @@ assert ratios[0]>ratios[1]>ratios[2] and abs(ratios[1]-1.5*pi)<1e-9
 :::{admonition} Quiz 10 — Identify losses in atmospheric density
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** [@manwell2009].
 
@@ -300,7 +296,7 @@ assert isclose(loss,.08)
 :::{admonition} Quiz 11 — Measure turbulence in two samples
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** [@manwell2009].
 
@@ -326,7 +322,7 @@ assert turbulence([5,7,9])>turbulence([6,7,8]) and turbulence([0,0]) is None
 :::{admonition} Quiz 12 — Estimate hourly operating states
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** [@manwell2009].
 
@@ -353,12 +349,10 @@ assert [state(v) for v in [2,3,8,12,24,25]]==['below cut-in','ramp','ramp','rate
 ```
 :::
 
-## Hard
-
 :::{admonition} Quiz 13 — AEP from a Weibull distribution
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
@@ -386,7 +380,7 @@ assert probability.sum() <= 1 and 0 <= capacity_factor <= 1
 :::{admonition} Quiz 14 — Compare $P(\bar v)$ with $\overline{P(v)}$
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
@@ -420,7 +414,7 @@ The nonlinear and clipped power curve means a mean input does not preserve mean 
 :::{admonition} Quiz 15 — Loss waterfall
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
@@ -461,7 +455,7 @@ Each percentage acts on the energy remaining after prior losses, so the combined
 :::{admonition} Quiz 16 — Integrate an outage-weighted generation histogram
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** [@manwell2009].
 
@@ -488,7 +482,7 @@ assert 0<net<gross and not np.isclose(net,uniform)
 :::{admonition} Quiz 17 — Compare tower heights near cut-out
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** [@manwell2009].
 
@@ -512,7 +506,7 @@ assert low[-1]==4 and high[-1]==0 and low@dt>high@dt
 :::{admonition} Quiz 18 — Compare aerodynamic and electrical estimates
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** [@manwell2009].
 
@@ -538,7 +532,7 @@ print(v[estimate>curve],'m/s where fixed coefficient exceeds electrical curve')
 :::{admonition} Quiz 19 — Infer shear and propagate it to energy
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** [@manwell2009].
 
@@ -565,7 +559,7 @@ assert np.isclose(alpha,np.log(1.2)/np.log(2)) and adjusted>unadjusted
 :::{admonition} Quiz 20 — Reconcile independent farm losses
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** [@manwell2009].
 

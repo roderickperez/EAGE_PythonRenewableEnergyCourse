@@ -29,6 +29,8 @@ BOOK = ROOT / 'EAGE_PythonRenewableEnergyCourse'
 SANDBOX = ROOT / 'EAGE_pythonSandBox'
 OUT = SANDBOX / 'generated'
 ASSESSMENT = 'section7/renewableEnergyTest.md'
+ASSESSMENT_PAGES = [f'section7/assessment/{name}.md' for name in
+                    ('python', 'python-sql', 'hydroelectric', 'solar', 'wind', 'geothermal')]
 PROJECT = 'section8/projectIntro.md'
 ALLOWED_ASSETS = {'.png', '.jpg', '.jpeg', '.svg', '.gif', '.webp', '.pdf', '.csv',
                   '.xlsx', '.db', '.nc', '.geojson', '.json', '.ipynb', '.bib'}
@@ -192,9 +194,9 @@ class Builder:
                 i = j + 1
             elif heading:
                 flush()
-                self.heading = heading[2]
+                self.heading = re.sub(r'<[^>]+>', '', heading[2])
                 level = len(heading[1])
-                output.append(f'<h{level} id="{slug(self.heading)}">{self.md.renderInline(self.heading)}</h{level}>')
+                output.append(f'<h{level} id="{slug(self.heading)}">{self.md.renderInline(heading[2])}</h{level}>')
                 if (re.match(r'(?i)(exercise\s+\d|question\s+\d)', self.heading)
                     or self.path == PROJECT and level == 2):
                     output.append(self.workspace(self.heading))
@@ -261,7 +263,7 @@ class Builder:
                 tag['title'] = 'See the book for this resource'
         return {'id': relative, 'title': title, 'group': group, 'html': str(soup),
                 'codes': self.codes, 'workspaces': self.workspaces,
-                'assessment': relative == ASSESSMENT, 'project': relative == PROJECT,
+                'assessment': relative in [ASSESSMENT, *ASSESSMENT_PAGES], 'project': relative == PROJECT,
                 'source_sha256': hashlib.sha256((BOOK / relative).read_bytes()).hexdigest()}
 
     def build(self):

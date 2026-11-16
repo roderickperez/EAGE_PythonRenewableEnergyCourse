@@ -164,6 +164,13 @@ article code{font-size:12px;background:#f0f4f0;padding:2px 4px;border-radius:3px
 article pre code{padding:0;background:none}
 .math{overflow-x:auto;max-width:100%}
 .callout{padding:2px 18px 9px;background:#f2f7f2;border-left:3px solid #9cbda2;margin:20px 0}
+.difficulty-badge{display:inline-block;border-radius:999px;padding:3px 10px;font:600 12px/1.4 system-ui,sans-serif;white-space:nowrap;color:#124d3c;background:#d7f1e4}
+.difficulty-medium{color:#684900;background:#fff0bc}
+.difficulty-hard{color:#7b2832;background:#fbe0e1}
+.callout:has(.difficulty-badge){position:relative}
+.callout:has(.difficulty-badge) h3{padding-right:75px}
+.callout .difficulty-badge{position:absolute;top:10px;right:12px}
+h3 .difficulty-badge{float:right;margin-left:12px}
 .solution{border:1px solid #b5d4c0;border-radius:7px;margin:15px 0;padding:11px 15px;background:#f9fcf9}
 .solution summary{cursor:pointer;color:#12654e;font-weight:650}
 .solution[open] summary{margin-bottom:12px}

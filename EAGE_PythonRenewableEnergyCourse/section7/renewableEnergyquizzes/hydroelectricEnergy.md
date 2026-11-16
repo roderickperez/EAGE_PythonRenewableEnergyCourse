@@ -8,14 +8,12 @@ kernelspec:
 
 Complete the questions before opening the solutions. The sequence progresses from concepts and scalars to functions, arrays, data validation, and plots.
 
-**4 Basic · 8 Medium · 8 Hard.** Try each question before opening its solution. Where a prompt refers to an earlier answer, run that code first.
-
-## Basic
+**4 Easy · 8 Medium · 8 Hard.** Try each question before opening its solution. Where a prompt refers to an earlier answer, run that code first.
 
 :::{admonition} Quiz 1 — Choose the correct statement
 :class: note
 
-**Difficulty:** Basic
+<span class="difficulty-badge difficulty-easy">Easy</span>
 
 **Reference:** JICA, Chapter 3 and Chapters 7–8 [@jica2011]; IFC, Chapter 7 [@ifc2015].
 
@@ -37,7 +35,7 @@ D. Pumped storage produces more energy than it consumes.
 :::{admonition} Quiz 2 — Trace the units
 :class: note
 
-**Difficulty:** Basic
+<span class="difficulty-badge difficulty-easy">Easy</span>
 
 **Reference:** JICA, Chapter 3 and Chapters 7–8 [@jica2011]; IFC, Chapter 7 [@ifc2015].
 
@@ -63,7 +61,7 @@ assert 32 < power_mw < 33
 :::{admonition} Quiz 3 — Convert flow units
 :class: note
 
-**Difficulty:** Basic
+<span class="difficulty-badge difficulty-easy">Easy</span>
 
 **Reference:** [@jica2011; @ifc2015].
 
@@ -87,7 +85,7 @@ assert litres_to_m3s(2500) == 2.5
 :::{admonition} Quiz 4 — Convert generation units
 :class: note
 
-**Difficulty:** Basic
+<span class="difficulty-badge difficulty-easy">Easy</span>
 
 **Reference:** [@jica2011; @ifc2015].
 
@@ -108,12 +106,10 @@ assert kwh_to_mwh(14500) == 14.5
 ```
 :::
 
-## Medium
-
 :::{admonition} Quiz 5 — Write and test a function
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** JICA, Chapter 3 and Chapters 7–8 [@jica2011]; IFC, Chapter 7 [@ifc2015].
 
@@ -151,7 +147,7 @@ assert hydro_power_mw(100, 80, rated_mw=40) == 40
 :::{admonition} Quiz 6 — Environmental flow and plant limit
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** JICA, Chapter 3 and Chapters 7–8 [@jica2011]; IFC, Chapter 7 [@ifc2015].
 
@@ -177,7 +173,7 @@ assert np.all(plant_power >= 0) and np.all(plant_power <= 25)
 :::{admonition} Quiz 7 — Unequal time steps
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** JICA, Chapter 3 and Chapters 7–8 [@jica2011]; IFC, Chapter 7 [@ifc2015].
 
@@ -201,7 +197,7 @@ assert np.isclose(energy_mwh, 20.5)
 :::{admonition} Quiz 8 — Flow-duration and power-duration curves
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** JICA, Chapter 3 and Chapters 7–8 [@jica2011]; IFC, Chapter 7 [@ifc2015].
 
@@ -236,7 +232,7 @@ The horizontal high-power segment is generator clipping at rated power.
 :::{admonition} Quiz 9 — Derate for head loss
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** [@jica2011; @ifc2015].
 
@@ -262,7 +258,7 @@ assert [net_head(18, loss) for loss in [1,7,20]] == [17,11,0]
 :::{admonition} Quiz 10 — Water accounting at the intake
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** [@jica2011; @ifc2015].
 
@@ -289,7 +285,7 @@ assert sum(allocate(2,4,8)) == 2
 :::{admonition} Quiz 11 — Infer turbine efficiency
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** [@jica2011; @ifc2015].
 
@@ -313,7 +309,7 @@ assert .75 < efficiency(900,5.5,22) < .76
 :::{admonition} Quiz 12 — Assess water-use intensity
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** [@jica2011; @ifc2015].
 
@@ -335,12 +331,10 @@ assert intensity(9,2,.75) == intensity(9,2,2) == 16200
 ```
 :::
 
-## Hard
-
 :::{admonition} Quiz 13 — Monthly energy and capacity factor
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** JICA, Chapter 3 and Chapters 7–8 [@jica2011]; IFC, Chapter 7 [@ifc2015].
 
@@ -378,7 +372,7 @@ assert 0 <= capacity_factor <= 1
 :::{admonition} Quiz 14 — Pumped-storage comparison
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** JICA, Chapter 3 and Chapters 7–8 [@jica2011]; IFC, Chapter 7 [@ifc2015].
 
@@ -417,7 +411,7 @@ Pumping input is always at least as large as recovered electricity.
 :::{admonition} Quiz 15 — Route a reservoir during a storm
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** [@jica2011; @ifc2015].
 
@@ -453,7 +447,7 @@ assert route([0,10,0]) == (0,9600,0)
 :::{admonition} Quiz 16 — Search a turbine limit under low flows
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** [@jica2011; @ifc2015].
 
@@ -481,7 +475,7 @@ assert choice==8 and energy(6)<target
 :::{admonition} Quiz 17 — Recover net head from measured power
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** [@jica2011; @ifc2015].
 
@@ -513,7 +507,7 @@ assert abs(output((lo+hi)/2)-1.5)<1e-9
 :::{admonition} Quiz 18 — Compare monthly policies with unequal hours
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** [@jica2011; @ifc2015].
 
@@ -545,7 +539,7 @@ assert low[0]>high[0] and low[1]==0 and high[1]==7200
 :::{admonition} Quiz 19 — Quantify missing-hour energy bounds
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** [@jica2011; @ifc2015].
 
@@ -575,7 +569,7 @@ assert np.allclose(energy_bounds([.4,np.nan,.8,np.nan],1.5),[1.2,.5,4.2])
 :::{admonition} Quiz 20 — Check pumped-storage arbitrage
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** [@jica2011; @ifc2015].
 

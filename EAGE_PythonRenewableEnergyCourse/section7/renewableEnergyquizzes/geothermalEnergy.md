@@ -8,14 +8,12 @@ kernelspec:
 
 These questions connect thermodynamics and subsurface concepts to Python.
 
-**4 Basic · 8 Medium · 8 Hard.** Try each question before opening its solution. Where a prompt refers to an earlier answer, run that code first.
-
-## Basic
+**4 Easy · 8 Medium · 8 Hard.** Try each question before opening its solution. Where a prompt refers to an earlier answer, run that code first.
 
 :::{admonition} Quiz 1 — Gradient, heat flux, or power?
 :class: note
 
-**Difficulty:** Basic
+<span class="difficulty-badge difficulty-easy">Easy</span>
 
 **Reference:** Grant and Bixley, Chapters 2–3 [@grant2011].
 
@@ -37,7 +35,7 @@ Units: W, W/m², °C/km, MWh.
 :::{admonition} Quiz 2 — Minimum depth
 :class: note
 
-**Difficulty:** Basic
+<span class="difficulty-badge difficulty-easy">Easy</span>
 
 **Reference:** Grant and Bixley, Chapters 2–3 [@grant2011].
 
@@ -62,7 +60,7 @@ The constant gradient is a simplified extrapolation and does not establish flow 
 :::{admonition} Quiz 3 — Convert heat-flow units
 :class: note
 
-**Difficulty:** Basic
+<span class="difficulty-badge difficulty-easy">Easy</span>
 
 **Reference:** [@grant2011].
 
@@ -86,7 +84,7 @@ assert kw_to_mw(12500)==12.5
 :::{admonition} Quiz 4 — Convert a temperature to Kelvin
 :class: note
 
-**Difficulty:** Basic
+<span class="difficulty-badge difficulty-easy">Easy</span>
 
 **Reference:** [@grant2011].
 
@@ -108,12 +106,10 @@ assert isclose(to_kelvin(85),358.15) and isclose(to_kelvin(95)-to_kelvin(85),10)
 ```
 :::
 
-## Medium
-
 :::{admonition} Quiz 5 — Write a well-power function
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** Grant and Bixley, Chapters 2–3 [@grant2011].
 
@@ -153,7 +149,7 @@ print(f"Thermal={thermal:.2f} MW, gross={gross:.2f} MW, net={net:.2f} MW")
 :::{admonition} Quiz 6 — Carnot bound in Kelvin
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** Grant and Bixley, Chapters 2–3 [@grant2011].
 
@@ -188,7 +184,7 @@ assert np.all((carnot > 0) & (carnot < 1))
 :::{admonition} Quiz 7 — Analyze a well field
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** Grant and Bixley, Chapters 2–3 [@grant2011].
 
@@ -222,7 +218,7 @@ assert wells["net_mw"].ge(0).all()
 :::{admonition} Quiz 8 — Convert Darcy quantities
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** [@grant2011].
 
@@ -251,7 +247,7 @@ assert isclose(flux,7.049452142857e-8,rel_tol=1e-9)
 :::{admonition} Quiz 9 — Estimate single-phase enthalpy drop
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** [@grant2011].
 
@@ -276,7 +272,7 @@ assert recovered_heat(4.1,155,85,45)==(287.,12.915)
 :::{admonition} Quiz 10 — Estimate hydraulic pumping demand
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** [@grant2011].
 
@@ -302,7 +298,7 @@ assert abs(q-.07368421)<1e-8 and .176<power<.178
 :::{admonition} Quiz 11 — Distinguish heat pump COP from efficiency
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** [@grant2011].
 
@@ -327,7 +323,7 @@ assert [heat_pump(heat,3) for heat in [3,6,9]]==[(1,2),(2,4),(3,6)]
 :::{admonition} Quiz 12 — Calculate availability-adjusted annual energy
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** [@grant2011].
 
@@ -351,12 +347,10 @@ assert abs(annual(4,1)[1]-.8)<1e-9
 ```
 :::
 
-## Hard
-
 :::{admonition} Quiz 13 — Sensitivity surface
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** Grant and Bixley, Chapters 2–3 [@grant2011].
 
@@ -387,7 +381,7 @@ plt.tight_layout()
 :::{admonition} Quiz 14 — Decline, availability, and energy
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** Grant and Bixley, Chapters 2–3 [@grant2011].
 
@@ -419,7 +413,7 @@ assert np.all(np.diff(annual_gwh) < 0) and np.all(np.diff(cumulative_gwh) > 0)
 :::{admonition} Quiz 15 — Detect invalid observations
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** Grant and Bixley, Chapters 2–3 [@grant2011].
 
@@ -449,7 +443,7 @@ assert set(problems["well"]) == {"E", "F"}
 :::{admonition} Quiz 16 — Optimise export under pumping and rating constraints
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** [@grant2011].
 
@@ -477,7 +471,7 @@ assert best==60 and all(net>0 for _,net in cases.values())
 :::{admonition} Quiz 17 — Share plant capacity across wells
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** [@grant2011].
 
@@ -506,7 +500,7 @@ assert all(field([i])[0]<full and field([i])[1]==0 for i in range(2))
 :::{admonition} Quiz 18 — Search reinjection scenarios with an export floor
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** [@grant2011].
 
@@ -532,7 +526,7 @@ assert choice==70 and net(80)<1.5
 :::{admonition} Quiz 19 — Quantify a two-fluid-model discrepancy
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** [@grant2011].
 
@@ -560,7 +554,7 @@ assert isclose(reference[0],26.4) and .39<bias<.40
 :::{admonition} Quiz 20 — Evaluate a reinjection intervention with downtime
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** [@grant2011].
 

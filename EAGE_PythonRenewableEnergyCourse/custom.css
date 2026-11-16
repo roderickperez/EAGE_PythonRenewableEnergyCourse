@@ -1,4 +1,21 @@
 /* Fix code cell output contrast: ensure light text on dark background */
+.difficulty-badge {
+  display: inline-block;
+  border-radius: 999px;
+  padding: .2rem .65rem;
+  font: 600 .75rem/1.4 system-ui, sans-serif;
+  letter-spacing: .025em;
+  white-space: nowrap;
+  color: #124d3c;
+  background: #d7f1e4;
+}
+.difficulty-medium { color: #684900; background: #fff0bc; }
+.difficulty-hard { color: #7b2832; background: #fbe0e1; }
+article.content :is(h2, h3, h4):has(.difficulty-badge) { display: flow-root; }
+article.content :is(h2, h3, h4) .difficulty-badge { float: right; margin-left: .75rem; }
+.myst-admonition:has(.difficulty-badge) { position: relative; }
+.myst-admonition:has(.difficulty-badge) .myst-admonition-title { padding-right: 5.5rem; }
+.myst-admonition .difficulty-badge { position: absolute; top: .55rem; right: .7rem; }
 .section-audio-control {
   display: flex;
   align-items: center;

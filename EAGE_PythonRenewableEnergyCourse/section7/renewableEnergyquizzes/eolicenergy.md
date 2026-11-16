@@ -29,14 +29,12 @@ wind.iloc[120, wind.columns.get_loc("direction_deg")] = 370
 wind.head()
 ```
 
-**4 Basic · 8 Medium · 8 Hard.** Try each question before opening its solution. Where a prompt refers to an earlier answer, run that code first.
-
-## Basic
+**4 Easy · 8 Medium · 8 Hard.** Try each question before opening its solution. Where a prompt refers to an earlier answer, run that code first.
 
 :::{admonition} Quiz 1 — Quality profile
 :class: note
 
-**Difficulty:** Basic
+<span class="difficulty-badge difficulty-easy">Easy</span>
 
 **Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
@@ -63,7 +61,7 @@ assert quality["negative_speed"] == 1 and quality["invalid_direction"] == 1
 :::{admonition} Quiz 2 — Convert anemometer reports
 :class: note
 
-**Difficulty:** Basic
+<span class="difficulty-badge difficulty-easy">Easy</span>
 
 **Reference:** [@manwell2009; @pandasDocs].
 
@@ -88,7 +86,7 @@ assert isclose(knots_to_ms(10),5.1444444444,rel_tol=1e-9)
 :::{admonition} Quiz 3 — Wrap a direction
 :class: note
 
-**Difficulty:** Basic
+<span class="difficulty-badge difficulty-easy">Easy</span>
 
 **Reference:** [@manwell2009; @pandasDocs].
 
@@ -112,7 +110,7 @@ assert [wrap(v) for v in [-10,360,370]]==[350,0,10]
 :::{admonition} Quiz 4 — Translate sampling cadence
 :class: note
 
-**Difficulty:** Basic
+<span class="difficulty-badge difficulty-easy">Easy</span>
 
 **Reference:** [@manwell2009; @pandasDocs].
 
@@ -133,12 +131,10 @@ assert 24*minutes_to_hours(15)==6
 ```
 :::
 
-## Medium
-
 :::{admonition} Quiz 5 — Repair with explicit rules
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
@@ -167,7 +163,7 @@ assert clean["direction_deg"].between(0, 360, inclusive="left").all()
 :::{admonition} Quiz 6 — Circular mean
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
@@ -198,7 +194,7 @@ print(f"Circular mean direction: {circular_mean_deg(clean['direction_deg']):.1f}
 :::{admonition} Quiz 7 — Direction sectors
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
@@ -227,7 +223,7 @@ print((sector_share * 100).round(1))
 :::{admonition} Quiz 8 — Frequency wind rose
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
@@ -253,7 +249,7 @@ plt.tight_layout()
 :::{admonition} Quiz 9 — Build an hourly timestamp validator
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** [@manwell2009; @pandasDocs].
 
@@ -281,7 +277,7 @@ assert list(missing_hours(t))==[pd.Timestamp('2025-01-01 02:00',tz='UTC')]
 :::{admonition} Quiz 10 — Flag physical and instrument limits
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** [@manwell2009; @pandasDocs].
 
@@ -312,7 +308,7 @@ assert [status(v) for v in [0,-1,np.nan,10,65]]==['valid','negative','missing or
 :::{admonition} Quiz 11 — Find energy in subhourly meter data
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** [@manwell2009; @pandasDocs].
 
@@ -337,7 +333,7 @@ assert all(abs(a-b)<1e-9 for a,b in zip(interval_summary([.2,.8,1.2,.6],30),[1.4
 :::{admonition} Quiz 12 — Count wind sectors on bin edges
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 **Reference:** [@manwell2009; @pandasDocs].
 
@@ -358,12 +354,10 @@ assert np.bincount(sector,minlength=4).tolist()==[2,1,1,1]
 ```
 :::
 
-## Hard
-
 :::{admonition} Quiz 13 — Add a turbine function and energy
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
@@ -393,7 +387,7 @@ print(f"Thirty-day energy: {monthly_energy_mwh:.1f} MWh")
 :::{admonition} Quiz 14 — Energy-weighted wind rose
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
@@ -421,7 +415,7 @@ Frequent low-speed winds may contribute less energy than less-frequent high-spee
 :::{admonition} Quiz 15 — Chronological baseline
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
@@ -455,7 +449,7 @@ assert train.index.max() < test.index.min()
 :::{admonition} Quiz 16 — Validate and merge wind and meter files
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** [@manwell2009; @pandasDocs].
 
@@ -483,7 +477,7 @@ assert matched.speed.mean()==7 and matched.loc[matched.speed>5,'mw'].sum()==3
 :::{admonition} Quiz 17 — Protect long and edge gaps
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** [@manwell2009; @pandasDocs].
 
@@ -509,7 +503,7 @@ assert clean.iloc[2]==6 and clean.isna().sum()==4
 :::{admonition} Quiz 18 — Reconcile sector energy with unequal durations
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** [@manwell2009; @pandasDocs].
 
@@ -537,7 +531,7 @@ assert count.argmax()==0 and energy.argmax()==1
 :::{admonition} Quiz 19 — Compare circular and speed-weighted direction
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** [@manwell2009; @pandasDocs].
 
@@ -563,7 +557,7 @@ assert 0<unweighted<weighted<90 and east<0
 :::{admonition} Quiz 20 — Estimate coverage versus modelled energy
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 **Reference:** [@manwell2009; @pandasDocs].
 

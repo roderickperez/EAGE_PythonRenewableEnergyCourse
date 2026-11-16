@@ -13,8 +13,10 @@ for path in ROOT.rglob('*'):
         for marker in ['Instructor-only test answer key','INSTRUCTOR ONLY — excluded',
                        'def locate_data():','project_solution_validation.ipynb']:
             assert marker not in text,f'Private solution content found in {path}'
-test=ROOT/'section7/renewableenergytest/index.html'
-assert test.exists(),'Student test page is missing'
-text=test.read_text(encoding='utf-8')
-assert len(re.findall(r'id="question-\d+-(?:easy|medium|hard)"',text))==60,'Expected 60 assessment questions'
+for topic in ('python', 'python-sql', 'hydroelectric', 'solar', 'wind', 'geothermal'):
+    test=ROOT/'section7'/'assessment'/topic/'index.html'
+    assert test.exists(), f'Assessment page missing: {topic}'
+    text=test.read_text(encoding='utf-8')
+    assert len(re.findall(r'id="question-\d+(?:-(?:easy|medium|hard))?"',text))==10, topic
+    assert len(re.findall(r'difficulty-badge', text)) >= 10, topic
 print('Student build passed: no instructor answer keys, private solution code or obsolete project-solution downloads.')

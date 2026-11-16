@@ -10,7 +10,7 @@ from pathlib import Path
 from urllib.parse import unquote, urlsplit, parse_qs
 
 from bs4 import BeautifulSoup
-from build_sandbox import BOOK, OUT, ROOT, ASSESSMENT, PROJECT, toc_pages, Builder
+from build_sandbox import BOOK, OUT, ROOT, ASSESSMENT, ASSESSMENT_PAGES, PROJECT, toc_pages, Builder
 from build_chapter_exercises import WORKBOOK_CHAPTERS, PATHS
 
 
@@ -80,7 +80,7 @@ def validate():
         assert 'expanded-theory:' not in page['html'],path
         for answer in answers:
             assert answer.select('button[data-code]') and 'Step' in answer.get_text(),path
-    test=pages[ASSESSMENT];project=pages[PROJECT]
+    tests=[pages[path] for path in ASSESSMENT_PAGES];project=pages[PROJECT]
     assert project['group']=='Course Final Project'
     assert all(page['group']=='Quizzes' for path,page in pages.items() if path.startswith('section7/renewableEnergyquizzes/'))
     for page in pages.values():
@@ -89,8 +89,9 @@ def validate():
             assert len(answers)==20 and all('open' not in answer.attrs for answer in answers),page['id']
             assert len(page['workspaces'])==20,page['id']
     assert any(asset['path']=='section8/projectStarter.ipynb' for asset in payload['assets'])
-    assert len(test['workspaces'])==60 and len(project['workspaces'])>=8
-    for page in [test,project]:
+    assert all(len(test['workspaces'])==10 and test['assessment'] for test in tests)
+    assert len(project['workspaces'])>=8
+    for page in [*tests,project]:
         assert not page['codes'] and '<details' not in page['html']
         assert all(ast.parse(w['code']).body==[] for w in page['workspaces'])
     for name in ['solar','wind','hydro','geothermal','demand']:

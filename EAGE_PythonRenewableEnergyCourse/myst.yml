@@ -79,6 +79,12 @@ project:
     - title: Assessment
       children:
         - file: section7/renewableEnergyTest.md
+        - file: section7/assessment/python.md
+        - file: section7/assessment/python-sql.md
+        - file: section7/assessment/hydroelectric.md
+        - file: section7/assessment/solar.md
+        - file: section7/assessment/wind.md
+        - file: section7/assessment/geothermal.md
 
     - title: Course Final Project
       children:

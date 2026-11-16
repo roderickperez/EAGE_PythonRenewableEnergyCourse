@@ -113,9 +113,9 @@ def check_energy_curriculum() -> None:
         blocks = re.split(r"^:::\{admonition\} Quiz (\d+) — ",text,flags=re.M)
         if blocks[1::2] != [str(i) for i in range(1,21)]:
             fail(f"{path.relative_to(ROOT)} must contain quizzes numbered 1–20")
-        levels = [re.search(r"^\*\*Difficulty:\*\* (Basic|Medium|Hard)$",block,re.M) for block in blocks[2::2]]
-        if [match[1] if match else None for match in levels] != DIFFICULTIES:
-            fail(f"{path.relative_to(ROOT)} must contain 4 Basic, 8 Medium and 8 Hard questions")
+        levels = [re.search(r'difficulty-(easy|medium|hard)"',block) for block in blocks[2::2]]
+        if [match[1] if match else None for match in levels] != ['easy']*4 + ['medium']*8 + ['hard']*8:
+            fail(f"{path.relative_to(ROOT)} must contain 4 Easy, 8 Medium and 8 Hard badges")
         if any(block.count(':::{admonition} Solution') != 1 for block in blocks[2::2]):
             fail(f"{path.relative_to(ROOT)} must include one solution for every question")
 

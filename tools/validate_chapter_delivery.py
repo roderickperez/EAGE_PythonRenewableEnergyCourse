@@ -42,13 +42,12 @@ def validate():
     config=(ROOT/'myst.yml').read_text()
     assert 'projectSolution' not in config and 'instructor_private' not in config
     assert not (ROOT/'section8/projectSolution.md').exists()
-    test=(ROOT/'section7/renewableEnergyTest.md').read_text()
-    blocks = re.split(r'^## ', test, flags=re.M)[1:]
-    assert len(blocks) == 6
-    for block in blocks:
-        assert re.findall(r'^### Question \d+ — (Easy|Medium|Hard)', block, re.M) == ['Easy']*4 + ['Medium']*4 + ['Hard']*2
-    assert len(re.findall(r'^### Question \d+',test,re.M))==60
-    assert '**Answer' not in test and '{code-cell}' not in test and '{dropdown}' not in test
+    from build_sandbox import ASSESSMENT_PAGES
+    for relative in ASSESSMENT_PAGES:
+        test=(ROOT/relative).read_text()
+        assert re.findall(r'difficulty-(easy|medium|hard)"', test) == ['easy']*4 + ['medium']*4 + ['hard']*2, relative
+        assert len(re.findall(r'^### Question \d+',test,re.M))==10
+        assert '**Answer' not in test and '{code-cell}' not in test and '{dropdown}' not in test
     tracked=subprocess.check_output(['git','ls-files','instructor_private'],cwd=BASE,text=True)
     assert not tracked.strip(),'Private instructor files must never be tracked'
     print(f'Validated {count} independent chapter solutions, 5 notebook companions, 60 assessment questions and private-file exclusion.')

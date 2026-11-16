@@ -1,11 +1,11 @@
 # General Python Quiz
 
-**4 Basic · 8 Medium · 8 Hard.** Try each question before opening its practice solution.
+**4 Easy · 8 Medium · 8 Hard.** Try each question before opening its practice solution.
 
 :::{admonition} Quiz 1 — Types
 :class: note
 
-**Difficulty:** Basic
+<span class="difficulty-badge difficulty-easy">Easy</span>
 
 What are the types of `3`, `3.0`, and `"3"`?
 
@@ -21,7 +21,7 @@ What are the types of `3`, `3.0`, and `"3"`?
 :::{admonition} Quiz 2 — Division
 :class: note
 
-**Difficulty:** Basic
+<span class="difficulty-badge difficulty-easy">Easy</span>
 
 What do `7 / 2` and `7 // 2` return?
 
@@ -37,7 +37,7 @@ What do `7 / 2` and `7 // 2` return?
 :::{admonition} Quiz 3 — List indexing
 :class: note
 
-**Difficulty:** Basic
+<span class="difficulty-badge difficulty-easy">Easy</span>
 
 For `values = [10, 20, 30]`, what are `values[0]` and `values[-1]`?
 
@@ -53,7 +53,7 @@ For `values = [10, 20, 30]`, what are `values[0]` and `values[-1]`?
 :::{admonition} Quiz 4 — Units
 :class: note
 
-**Difficulty:** Basic
+<span class="difficulty-badge difficulty-easy">Easy</span>
 
 Convert 3 MW sustained for 2 hours to MWh with Python.
 
@@ -69,7 +69,7 @@ Convert 3 MW sustained for 2 hours to MWh with Python.
 :::{admonition} Quiz 5 — Condition
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 Write a condition that is true when `power` is at least zero and no greater than `rating`.
 
@@ -85,7 +85,7 @@ Write a condition that is true when `power` is at least zero and no greater than
 :::{admonition} Quiz 6 — Loop
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 How can you compute the squares of the values in `[1, 2, 3]`?
 
@@ -101,7 +101,7 @@ How can you compute the squares of the values in `[1, 2, 3]`?
 :::{admonition} Quiz 7 — Functions
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 Write a function returning MWh from MW and hours.
 
@@ -117,7 +117,7 @@ Write a function returning MWh from MW and hours.
 :::{admonition} Quiz 8 — Dictionary
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 Get the value for `"wind"` from `d = {"wind": 12, "solar": 8}`; what happens with a missing key?
 
@@ -133,7 +133,7 @@ Get the value for `"wind"` from `d = {"wind": 12, "solar": 8}`; what happens wit
 :::{admonition} Quiz 9 — Slicing
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 What is `[2, 4, 6, 8][1:3]`?
 
@@ -149,7 +149,7 @@ What is `[2, 4, 6, 8][1:3]`?
 :::{admonition} Quiz 10 — Mean
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 Compute the mean of `[2, 4, 6]` without an external library.
 
@@ -165,7 +165,7 @@ Compute the mean of `[2, 4, 6]` without an external library.
 :::{admonition} Quiz 11 — Input validation
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 Why should a function reject a negative duration before calculating energy?
 
@@ -181,7 +181,7 @@ A negative duration is invalid for this model. Raise `ValueError` instead of sil
 :::{admonition} Quiz 12 — Missing data
 :class: note
 
-**Difficulty:** Medium
+<span class="difficulty-badge difficulty-medium">Medium</span>
 
 Why is a missing sensor measurement different from zero?
 
@@ -197,7 +197,7 @@ Missing means unknown; zero is a measured value. Replacing missing readings with
 :::{admonition} Quiz 13 — Weighted average
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 Compute mean MW for `[1, 3]` MW over `[1, 3]` hours.
 
@@ -213,7 +213,7 @@ Compute mean MW for `[1, 3]` MW over `[1, 3]` hours.
 :::{admonition} Quiz 14 — Exceptions
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 When is `try`/`except ValueError` useful for numeric input?
 
@@ -229,7 +229,7 @@ It handles an invalid conversion, such as `float("abc")`, while allowing the pro
 :::{admonition} Quiz 15 — Mutation
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 What is the difference between `b = a` and `b = a.copy()` for a list?
 
@@ -245,7 +245,7 @@ What is the difference between `b = a` and `b = a.copy()` for a list?
 :::{admonition} Quiz 16 — Alignment
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 Why check timestamps before adding two time series?
 
@@ -261,7 +261,7 @@ Rows may represent different times, missing intervals, or time zones. Align on v
 :::{admonition} Quiz 17 — Duplicate keys
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 How can pandas identify duplicate pairs of `site` and `time` in a DataFrame?
 
@@ -277,7 +277,7 @@ How can pandas identify duplicate pairs of `site` and `time` in a DataFrame?
 :::{admonition} Quiz 18 — Time integration
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 Given average MW and unequal interval durations, how do you obtain MWh?
 
@@ -293,7 +293,7 @@ Multiply each interval-average power by its duration in hours and sum; do not su
 :::{admonition} Quiz 19 — Function boundaries
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 How would you test a clipping function at 0, its rating, and above its rating?
 
@@ -309,7 +309,7 @@ Include assertions at each boundary and just below/above it; check that output r
 :::{admonition} Quiz 20 — Reproducibility
 :class: note
 
-**Difficulty:** Hard
+<span class="difficulty-badge difficulty-hard">Hard</span>
 
 Name three things to record so another person can reproduce an analysis.
 
