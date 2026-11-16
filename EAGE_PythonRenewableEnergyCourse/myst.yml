@@ -16,9 +16,15 @@ project:
         - file: preface/acknowledgements.md
         - file: preface/foreword.md
         - file: preface/preface.md
+        - file: section0/faq.md
     - title: Introduction to Renewable Energy
       children:
-        - file: section0/faq.md
+        - file: section0/introRenewableEnergy.md
+          title: General fundamentals
+        - file: section6/hydroelectricEnergy.md
+        - file: section6/solarEnergy.md
+        - file: section6/windEnergy.md
+        - file: section6/geothermalEnergy.md
 
     - title: Data Processing and Exploration Data Analysis
       children:
@@ -46,19 +52,6 @@ project:
         - file: section5/SQL.md
 
         - file: section5/SQL_Pandas.ipynb
-
-    - title: Renewable Energy Sources
-      children:
-        - file: section0/introRenewableEnergy.md
-          title: General fundamentals
-
-        - file: section6/hydroelectricEnergy.md
-
-        - file: section6/solarEnergy.md
-
-        - file: section6/windEnergy.md
-
-        - file: section6/geothermalEnergy.md
 
     - title: Applied Python Workbook
       children:

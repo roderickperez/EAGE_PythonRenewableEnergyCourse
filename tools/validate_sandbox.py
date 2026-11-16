@@ -65,7 +65,7 @@ def validate():
                     assert target_soup.find(id=args['anchor'][0]), (path,target)
     for theory_path in PATHS.values():
         page=pages[theory_path]
-        assert page['group']=='Renewable Energy Sources',theory_path
+        assert page['group']=='Introduction to Renewable Energy',theory_path
         assert 'expanded-theory:' in page['html'],theory_path
         assert not page['workspaces'] and not any(cell['solution'] for cell in page['codes']),theory_path
         assert not BeautifulSoup(page['html'],'html.parser').select('details.solution'),theory_path

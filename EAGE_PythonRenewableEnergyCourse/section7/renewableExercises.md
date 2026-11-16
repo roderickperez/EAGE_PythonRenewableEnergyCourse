@@ -1,6 +1,6 @@
 # Workbook introduction
 
-The Applied Python Workbook contains 100 independent exercises across five topics. Each topic has **4 Basic, 8 Medium and 8 Hard** exercises, with references, step-by-step explanations and executable checks. Use **Renewable Energy Sources** for the fundamentals, equations and worked teaching examples.
+The Applied Python Workbook contains 100 independent exercises across five topics. Each topic has **4 Basic, 8 Medium and 8 Hard** exercises, with references, step-by-step explanations and executable checks. Use **Introduction to Renewable Energy** for the fundamentals, equations and worked teaching examples.
 
 | Workbook topic | Exercises |
 |---|---:|
