@@ -30,26 +30,64 @@ export function createOperationScene(kind, { scene, material, mesh, box, tank, l
 
   box(8.9, .18, 3.05, rock, 0, -.09, -.15);
   if (kind === 'hydraulic-loss') {
-    box(1.1, .18, .85, steel, -2.85, .11, .48);
-    box(.3, 1.2, .36, rock, -2.85, .72, .48);
-    box(1.1, .18, .85, steel, .35, .11, .48);
-    box(.3, 1.2, .36, rock, .35, .72, .48);
-    const gaugeBase = .35;
-    box(.98, .20, .86, steel, 3.14, gaugeBase - .1, .42);
-    box(.45, 2.85, .22, material('#c4d9d0'), 3.14, gaugeBase + 1.425, .2);
-    const frictionBar = box(.46, 1, .19, material(palette.loss), 3.14, 0, .39);
-    const fittingBar = box(.46, 1, .19, material('#8a645f'), 3.14, 0, .39);
+    box(1.1, .18, .85, steel, -2.85, .11, .12);
+    box(.3, 1.13, .36, rock, -2.85, .69, .12);
+    box(1.1, .18, .85, steel, .35, .11, .12);
+    box(.3, 1.13, .36, rock, .35, .69, .12);
+    const pipeY = 1.34;
+    const tapSpan = 2.05;
+    const glass = new T.MeshStandardMaterial({
+      color: '#b4d6d9', transparent: true, opacity: .28, depthWrite: false, side: T.DoubleSide,
+    });
+    function tap(x, z, tint, name) {
+      const connector = mesh(new T.CylinderGeometry(.112, .112, .35, 14), steel, x, pipeY + .16, z);
+      const tube = mesh(new T.CylinderGeometry(.105, .105, tapSpan, 18, 1, true), glass,
+        x, pipeY + tapSpan / 2, z);
+      const column = mesh(new T.CylinderGeometry(.078, .078, 1, 18), tint, x, pipeY, z);
+      tube.renderOrder = 2;
+      const canvas = document.createElement('canvas');
+      canvas.width = canvas.height = 64;
+      const context = canvas.getContext('2d');
+      context.fillStyle = '#f8fcfa';
+      context.beginPath();
+      context.arc(32, 32, 29, 0, 2 * Math.PI);
+      context.fill();
+      context.fillStyle = '#24584e';
+      context.font = 'bold 40px system-ui';
+      context.textAlign = 'center';
+      context.textBaseline = 'middle';
+      context.fillText(name, 32, 34);
+      const texture = new T.CanvasTexture(canvas);
+      texture.colorSpace = T.SRGBColorSpace;
+      const label = new T.Sprite(new T.SpriteMaterial({ map: texture }));
+      label.position.set(x, pipeY + tapSpan + .21, z);
+      label.scale.set(.38, .38, 1);
+      scene.add(label);
+      return {
+        moveTo(nextX, nextZ) {
+          for (const item of [connector, tube, column, label]) {
+            item.position.x = nextX;
+            item.position.z = nextZ;
+          }
+        },
+        setHead(head, scale) { level(column, head * scale, pipeY); },
+      };
+    }
+    const inlet = tap(-3.38, .12, blue, 'A');
+    const outlet = tap(1.2, 1.23, teal, 'B');
+    const fitting = mesh(new T.TorusGeometry(1, .085, 12, 28), material('#8a645f'), 0, pipeY, .25);
+    fitting.rotation.y = Math.PI / 2;
     const flow = makeParticles(15, waterDot);
     const cutaway = steel.clone();
     cutaway.transparent = true;
     cutaway.opacity = .26;
     cutaway.depthWrite = false;
     let route, shell, lining, lastLength, lastDiameter;
-    return ([length, velocity, diameter, friction, fittings], phase) => {
+    return ([length, velocity, diameter, inletHead, outletHead], phase) => {
       if (lastLength !== length || lastDiameter !== diameter) {
-        const end = .7 + 1.45 * length / 1000;
-        route = path([[-3.8, 1.58, .4], [-1.4, 1.58, .4], [end - .4, 1.58, .4],
-          [end, 1.53, .57], [end + .22, 1.15, .75], [end + .22, .94, .75]]);
+        const end = .78 + 1.85 * length / 1000;
+        route = path([[-3.8, pipeY, .12], [-1.4, pipeY, .12], [end - .52, pipeY, .12],
+          [end, pipeY, .25], [end + .19, pipeY, .65], [end + .23, pipeY, 1.38]]);
         for (const old of [shell, lining]) {
           if (!old) continue;
           old.geometry.dispose();
@@ -58,14 +96,15 @@ export function createOperationScene(kind, { scene, material, mesh, box, tank, l
         const radius = .12 + diameter * .057;
         shell = pipe(route, radius, cutaway);
         lining = pipe(route, radius * .72, blue);
+        fitting.position.set(end - .22, pipeY, .15);
+        fitting.scale.setScalar(radius * 1.08);
+        outlet.moveTo(end + .22, 1.18);
         lastLength = length;
         lastDiameter = diameter;
       }
-      const total = friction + fittings;
-      const scale = 2.75 * Math.log1p(total) / Math.log1p(4000);
-      const frictionHeight = total > 0 ? scale * friction / total : 0;
-      level(frictionBar, frictionHeight, gaugeBase);
-      level(fittingBar, scale - frictionHeight, gaugeBase + frictionHeight);
+      const scale = tapSpan * .91 / Math.max(5, inletHead);
+      inlet.setHead(inletHead, scale);
+      outlet.setHead(outletHead, scale);
       move(flow, route, phase, velocity > 0, .17 + diameter * .036);
     };
   }

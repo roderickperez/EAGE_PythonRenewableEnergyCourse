@@ -1,5 +1,8 @@
 export const MAX_FLOW_M3S = 8;
 export const MAX_INTERVAL_MINUTES = 240;
+export const OUTLET_PRESSURE_HEAD_M = 2;
+export const FITTING_POSITION = .8;
+export const MAX_PIPE_FLOW_M3S = 16;
 
 export function netHead(gross, loss) {
   return gross - loss;
@@ -34,4 +37,12 @@ export function turbineOperation(flow, head, efficiency, ratingMW, density, grav
     bypassFlow: flow - turbineFlow,
     outputMW: turbineFlow * wattsPerFlow / 1e6,
   };
+}
+
+export function pipeHeadProfile(loss, length) {
+  const location = length * FITTING_POSITION;
+  const inlet = OUTLET_PRESSURE_HEAD_M + loss.total;
+  const beforeFitting = inlet - loss.friction * FITTING_POSITION;
+  return [[0, inlet], [location, beforeFitting],
+    [location, beforeFitting - loss.fittings], [length, OUTLET_PRESSURE_HEAD_M]];
 }

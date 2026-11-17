@@ -146,17 +146,17 @@ For a circular pipe, a useful friction model is the Darcy–Weisbach equation, [
 $$h_f=f_D\frac{L}{D}\frac{v^2}{2g},\qquad
 v=\frac{Q}{A_p},\qquad A_p=\frac{\pi D^2}{4}.$$
 
-*Equation basis:* [@jica2011], §8.3 and Chapter 10; [@ifc2015], Chapter 3.
-
-$f_D$ is the dimensionless **Darcy** friction factor, $L$ and $D$ are pipe length and diameter in metres, and $A_p$ is pipe cross-sectional area. Do not substitute the numerically different Fanning friction factor without conversion. Fittings and transitions may be represented by $h_m=\sum K_jv^2/(2g)$ with appropriately defined local velocities. If geometry and coefficients are held fixed, losses scale approximately with $Q^2$. Thus doubling turbine flow need not double output: net head may fall as flow increases. [@jica2011], §8.3 and Chapter 10; [@ifc2015], Chapter 3.
-
-The Python exercises sometimes use a supplied loss value or an illustrative coefficient $h_{loss}=aQ^2$. That coefficient is not a universal property of hydropower. A real estimate needs geometry, roughness, fluid properties and a defensible hydraulic model. [@jica2011], §8.3 and Chapter 10; [@ifc2015], Chapter 3.
-
 (hydraulic-loss-explorer)=
 :::{iframe} ../../hydro-lab/balance.html?demo=hydraulic-loss
 :width: 100%
 :title: Hydraulic losses explorer
 :::
+
+*Equation basis:* [@jica2011], §8.3 and Chapter 10; [@ifc2015], Chapter 3.
+
+$f_D$ is the dimensionless **Darcy** friction factor, $L$ and $D$ are pipe length and diameter in metres, and $A_p$ is pipe cross-sectional area. Do not substitute the numerically different Fanning friction factor without conversion. Fittings and transitions may be represented by $h_m=\sum K_jv^2/(2g)$ with appropriately defined local velocities. If geometry and coefficients are held fixed, losses scale approximately with $Q^2$. Thus doubling turbine flow need not double output: net head may fall as flow increases. [@jica2011], §8.3 and Chapter 10; [@ifc2015], Chapter 3.
+
+The Python exercises sometimes use a supplied loss value or an illustrative coefficient $h_{loss}=aQ^2$. That coefficient is not a universal property of hydropower. A real estimate needs geometry, roughness, fluid properties and a defensible hydraulic model. [@jica2011], §8.3 and Chapter 10; [@ifc2015], Chapter 3.
 
 ### Turbine families
 

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { flowBalance, netHead, pipeLoss, powerBalance, turbineOperation } from './balance-model.js';
+import { flowBalance, netHead, pipeHeadProfile, pipeLoss, powerBalance, turbineOperation } from './balance-model.js';
 
 test('net head subtracts the loss once and reaches zero at full loss', () => {
   assert.equal(netHead(30, 2), 28);
@@ -35,6 +35,16 @@ test('Darcy and fitting losses are both quadratic when geometry is fixed', () =>
   assert.equal(doubled.friction, original.friction * 4);
   assert.equal(doubled.fittings, original.fittings * 4);
   assert.equal(pipeLoss(0, 250, 1.5, .02, 2, 9.81).total, 0);
+});
+
+test('the pressure taps span friction and the lumped fitting drop', () => {
+  const [[start, inlet], [fitting, before], [sameFitting, after], [end, outlet]] =
+    pipeHeadProfile({ friction: 3, fittings: 2, total: 5 }, 250);
+  assert.deepEqual([start, fitting, sameFitting, end], [0, 200, 200, 250]);
+  assert.equal(outlet, 2);
+  assert.equal(inlet - outlet, 5);
+  assert.equal(before - after, 2);
+  assert.deepEqual(pipeHeadProfile({ friction: 0, fittings: 0, total: 0 }, 250).map(([, head]) => head), [2, 2, 2, 2]);
 });
 
 test('turbine operation keeps the rating and closes the flow balance', () => {

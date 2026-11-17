@@ -94,26 +94,26 @@ export function mountCanvasDiagram(host, kind) {
       ctx.fillRect(228, base - gross, 17, loss);
       line([[221, base], [252, base]], colors.pipe);
     } else if (kind === 'hydraulic-loss') {
-      const x = 54;
-      const end = 202 + 125 * first / 1000;
-      const y = 106;
+      const x = 92;
+      const end = 267 + 114 * first / 1000;
+      const y = 151;
       const width = 10 + third * 6;
       const path = [[x, y], [end, y], [end + 16, y + 24]];
       line(path, colors.pipe, width + 5);
       line(path, colors.water, width * .68);
+      line([[end - 4, y - width / 2], [end - 4, y + width / 2]], '#8a645f', 5);
+      const span = 96;
+      const scale = span * .91 / Math.max(5, fourth);
+      function tap(xx, yy, head, color, label) {
+        line([[xx, yy], [xx, yy - span]], '#accbd1', 12);
+        line([[xx, yy], [xx, yy - head * scale]], color, 6);
+        ctx.fillStyle = '#31524f';
+        ctx.font = 'bold 16px system-ui';
+        ctx.fillText(label, xx - 5, yy - span - 10);
+      }
+      tap(x + 34, y, fourth, colors.water, 'A');
+      tap(end + 16, y + 24, values[4], colors.net, 'B');
       if (flow > 0) particles(14, path, '#c8f8ff', 3.6);
-      const total = fourth + values[4];
-      const height = 112 * Math.log1p(total) / Math.log1p(4000);
-      const frictionHeight = total > 0 ? height * fourth / total : 0;
-      ctx.fillStyle = '#d6e7e1';
-      ctx.fillRect(383, 47, 20, 112);
-      ctx.fillStyle = colors.loss;
-      ctx.fillRect(383, 159 - frictionHeight, 20, frictionHeight);
-      ctx.fillStyle = '#8a645f';
-      ctx.fillRect(383, 159 - height, 20, height - frictionHeight);
-      ctx.fillStyle = '#31524f';
-      ctx.font = 'bold 14px system-ui';
-      ctx.fillText('Loss gauge', 355, 181);
     } else if (kind === 'turbine-operation') {
       const center = [218, 118];
       const routes = [

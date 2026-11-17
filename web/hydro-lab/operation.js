@@ -1,6 +1,7 @@
-import { pipeLoss, turbineOperation } from './balance-model.js';
+import { MAX_PIPE_FLOW_M3S, pipeHeadProfile, pipeLoss, turbineOperation } from './balance-model.js';
 import { mountBalanceScene, palette } from './balance-scene.js';
 import { HYDRO_CONSTANTS } from './model.js';
+import { mountPipeLossPlots } from './pipe-loss-plots.js';
 
 export const operationDemos = new Map([
   ['hydraulic-loss', 'Hydraulic losses in a pipe'],
@@ -21,14 +22,14 @@ export function mountOperationDemo(kind) {
   $('title').textContent = document.title = operationDemos.get(kind);
   $('result').setAttribute('aria-label', lossMode ? 'Total head loss in metres' : 'Electrical output in megawatts');
   $('drawing').setAttribute('aria-label', lossMode
-    ? 'A pipe with moving water and a stacked gauge for friction and fitting losses'
+    ? 'A level, constant-diameter pipe with moving water and connected upstream and downstream open pressure taps'
     : 'A selectable turbine runner with separate generating and bypass water routes');
   $('note').textContent = lossMode
-    ? 'Gravity is fixed at 9.81 m/s². The fittings use one summed K at the pipe velocity. The gauge uses a compressed scale. Try doubling Q with the other controls fixed.'
+    ? 'Tap B is held at 2 m of pressure head. Tap A rises by the head needed to drive the selected flow. The columns share a scale that adjusts for large losses. The bend represents one lumped fitting loss; gravity is fixed at 9.81 m/s².'
     : 'The family changes the runner and flow path. The calculation uses the head and efficiency you choose, with ρ = 1,000 kg/m³ and g = 9.81 m/s².';
 
   const legend = lossMode
-    ? [[palette.water, 'Pipe flow'], [palette.loss, 'Friction loss'], ['#8a645f', 'Fitting losses']]
+    ? [[palette.water, 'Tap A · Inlet'], [palette.net, 'Tap B · Outlet'], ['#8a645f', 'Fitting']]
     : [[palette.water, 'Turbine flow'], [palette.net, 'Bypass flow'], [palette.electricity, 'Electrical output']];
   for (const [color, name] of legend) {
     const item = document.createElement('span');
@@ -53,7 +54,7 @@ export function mountOperationDemo(kind) {
   }
 
   const sliders = lossMode ? [
-    ['flow', 'Volume flow Q', 'm³/s', 0, 16, .1, 4],
+    ['flow', 'Volume flow Q', 'm³/s', 0, MAX_PIPE_FLOW_M3S, .1, 4],
     ['length', 'Pipe length L', 'm', 50, 1000, 10, 250],
     ['diameter', 'Pipe diameter D', 'm', .8, 4, .1, 1.5],
     ['factor', 'Darcy friction factor', '', .01, .05, .001, .02],
@@ -72,9 +73,10 @@ export function mountOperationDemo(kind) {
     $('controls').append(control);
     return [key, { input: control.querySelector('input'), output: control.querySelector('output'), unit }];
   }));
-  const equations = Array.from({ length: 3 }, () => document.createElement('div'));
+  const equations = Array.from({ length: lossMode ? 4 : 3 }, () => document.createElement('div'));
   $('equations').append(...equations);
   const { densityKgM3, gravityMS2 } = HYDRO_CONSTANTS;
+  const renderPlots = lossMode ? mountPipeLossPlots($('note'), gravityMS2) : null;
   let draw;
   try {
     draw = mountBalanceScene($('scene'), kind, $('motion'));
@@ -95,7 +97,10 @@ export function mountOperationDemo(kind) {
       equations[0].innerHTML = `A<sub>p</sub> = πD²/4 ≈ ${n(loss.area)} m² · v = Q/A<sub>p</sub> ≈ ${n(loss.velocity)} m/s`;
       equations[1].innerHTML = `h<sub>f</sub> = f<sub>D</sub>(L/D)v²/(2g) ≈ ${loss.friction.toFixed(3)} m`;
       equations[2].innerHTML = `h<sub>m</sub> = ΣK · v²/(2g) ≈ ${loss.fittings.toFixed(3)} m · Total = h<sub>f</sub> + h<sub>m</sub>`;
-      draw?.([length, loss.velocity, diameter, loss.friction, loss.fittings]);
+      const head = pipeHeadProfile(loss, length);
+      equations[3].innerHTML = `Tap A: <strong>${head[0][1].toFixed(3)} m</strong> · Tap B: <strong>${head.at(-1)[1].toFixed(3)} m</strong> · A − B = h<sub>loss</sub>`;
+      draw?.([length, loss.velocity, diameter, head[0][1], head.at(-1)[1]]);
+      renderPlots(values, loss);
     } else {
       const { flow, head, efficiency, rating } = values;
       const result = turbineOperation(flow, head, efficiency / 100, rating, densityKgM3, gravityMS2);
