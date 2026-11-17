@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { gridPoint, powerKw, evaluate, validCandidate, rankCandidates, windFieldSampler } from './project-model.js';
-import { createHistory, seasonalWind } from './project-history.js';
+import { createHistory, seasonalWind, nextSeasonalVariation } from './project-history.js';
+import { createGame, GAME_COST, PRICE_PER_MWH } from './project-game.js';
 import { wakePixels, wakeRaster, particleWind, advanceParticle, localParticle, particleAppearance, rotorRate, plasma } from './project-field.js';
 
 test('coordinates and the teaching turbine curve are explicit',()=>{
@@ -94,17 +95,17 @@ test('wake particles drift sideways and fade while clear wind remains undisturbe
 
 
 test('session energy integrates each turbine across model changes and pauses',()=>{
+  const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-8);
   const h=createHistory(0), two={results:[{id:5,power:360,speed:12},{id:6,power:180,speed:9}]};
   h.setModel(two,12,0);
   let state=h.tick(10000);
-  assert.equal(state.energy[5],1000);assert.equal(state.energy[6],500);assert.equal(state.total,1500);
+  near(state.energy[5],262.8);near(state.energy[6],131.4);near(state.total,394.2);
   h.setModel({results:[{id:6,power:360,speed:12}]},12,10000);
-  state=h.tick(20000);assert.equal(state.energy[5],1000);assert.equal(state.energy[6],1500);assert.equal(state.total,2500);
-  state=h.tick(30000,false);assert.equal(state.total,2500);assert.equal(state.time,20);
-  state=h.tick(35000,true);assert.equal(state.energy[6],2000);assert.equal(state.time,25);
+  state=h.tick(20000);near(state.energy[5],262.8);near(state.energy[6],394.2);near(state.total,657);
+  state=h.tick(30000,false);near(state.total,657);assert.equal(state.time,20);
+  state=h.tick(35000,true);near(state.energy[6],525.6);assert.equal(state.time,25);
   assert.equal(h.reset(35000).total,0);
 });
-
 
 test('seasonal scenario repeats annually and varies speed and wind direction',()=>{
   assert.deepEqual(seasonalWind(0),seasonalWind(120));
@@ -113,4 +114,24 @@ test('seasonal scenario repeats annually and varies speed and wind direction',()
   for(let second=0;second<120;second++){
     const w=seasonalWind(second);assert.ok(w.speed>=7 && w.speed<=13);assert.ok(w.direction>=0 && w.direction<360);
   }
+});
+
+
+test('game charges purchases, credits generation, and pays half on removal',()=>{
+  const g=createGame(0);assert.equal(g.buy(0),true);assert.equal(g.buy(0),false);
+  g.setPower(360,0);const state=g.tick(10000);
+  assert.ok(Math.abs(state.earnings-262.8*PRICE_PER_MWH)<1e-8);
+  assert.ok(Math.abs(state.balance-state.earnings)<1e-8);
+  const paused=g.tick(20000,false);assert.equal(paused.balance,state.balance);
+  const sold=g.sell(20000);assert.equal(sold.balance,state.balance+GAME_COST/2);
+  assert.equal(g.buy(20000),false);
+  g.tick(40000);assert.equal(g.buy(40000),true);
+});
+
+test('seasonal variability is bounded and reacts to random samples',()=>{
+  const a=nextSeasonalVariation({speed:0,direction:0},()=>1);
+  const b=nextSeasonalVariation({speed:0,direction:0},()=>0);
+  assert.ok(a.speed>0 && b.speed<0);assert.notEqual(seasonalWind(30,a).direction,seasonalWind(30,b).direction);
+  let v={speed:0,direction:0};for(let i=0;i<100;i++)v=nextSeasonalVariation(v,()=>1);
+  assert.ok(v.speed<=2.5 && v.direction<=25);
 });

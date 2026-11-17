@@ -1,6 +1,7 @@
 import { evaluate, gridPoint, validCandidate, DIAMETER } from './project-model.js';
 import { mountFarmScene } from './project-scene.js';
-import { createHistory, seasonalWind } from './project-history.js';
+import { createHistory, seasonalWind, nextSeasonalVariation } from './project-history.js';
+import { createGame, GAME_COST, PRICE_PER_MWH } from './project-game.js';
 import css from './project.css';
 
 export function mountWindProject(host) {
@@ -8,21 +9,23 @@ export function mountWindProject(host) {
   const root=document.createElement('section'); root.className='wind-project';
   root.innerHTML=`<div class="wp-heading"><div><h2>Wind farm layout explorer</h2><p>Place turbines on a 2 km × 2 km site. Drag to rotate; scroll to zoom. Turbines are enlarged for visibility.</p></div></div>
     <div class="wp-layout"><div class="wp-scene-wrap"><div class="wp-scene" role="application" tabindex="0" aria-label="Wind farm grid. Use arrow keys to select a location and Enter or Space to place or remove a turbine."></div><button class="wp-motion" data-action="motion" type="button" aria-label="Stop animation" title="Stop animation"><span aria-hidden="true">■</span></button><div class="wp-legend" aria-label="Modeled wake wind speed color scale"><strong>Modeled wind speed (m/s)</strong><div class="wp-gradient"></div><div class="wp-legend-labels"><span data-out="legend-min">0.0</span><span data-out="legend-max">12.0 (free stream)</span></div><span>Scale adapts to the sampled wake minimum.</span></div></div>
-    <div class="wp-settings"><div class="wp-energy"><span>Estimated session energy</span><strong data-value="energy">0.00 Wh</strong><small>Model estimate for this open session</small></div>
-      <div class="wp-controls-charts"><div class="wp-sliders"><label>Wind mode <select data-field="mode" aria-label="Wind mode"><option value="manual">Manual</option><option value="seasonal">Seasonal</option></select></label><div class="wp-season" data-value="season" hidden></div><label>Wind from <output data-out="direction">0° N</output><input data-field="direction" type="range" min="0" max="359" step="1" value="0"></label>
+    <div class="wp-settings"><div class="wp-energy"><span>Simulated energy generated</span><strong data-value="energy">0.00 MWh</strong><small>73 simulated operating hours per visible second</small></div>
+      <div class="wp-game"><div><span>Available budget</span><strong data-value="balance">$50,000</strong></div><div><span>Generation revenue</span><strong data-value="earnings">$0</strong></div><small>Each turbine costs $50,000. Energy earns $75/MWh; removing one recovers $25,000.</small></div><div class="wp-controls-charts"><div class="wp-sliders"><label>Wind mode <select data-field="mode" aria-label="Wind mode"><option value="manual">Manual</option><option value="seasonal">Seasonal</option></select></label><div class="wp-season" data-value="season" hidden></div><label>Wind from <output data-out="direction">0° N</output><input data-field="direction" type="range" min="0" max="359" step="1" value="0"></label>
       <label>Wind speed <output data-out="speed">12.0 m/s</output><input data-field="speed" type="range" min="0" max="25" step="0.5" value="12"></label>
       <label>Minimum spacing <output data-out="spacing">200 m (5 D)</output><input data-field="spacing" type="range" min="0" max="600" step="40" value="200"></label></div>
-      <div class="wp-charts"><div><strong>Cumulative energy (Wh)</strong><svg class="wp-chart" data-chart="energy" viewBox="0 0 260 120" role="img" aria-label="Estimated cumulative energy over session time"></svg></div><div><strong>Wind speed (m/s)</strong><svg class="wp-chart" data-chart="speed" viewBox="0 0 260 120" role="img" aria-label="Free-stream and turbine wind speeds over session time"></svg></div><div class="wp-chart-legend" data-value="chart-legend"></div><small>Elapsed visible-session time (s); latest 300 samples. Dark: farm total or free stream; colors: turbine locations.</small></div></div></div></div>
+      <div class="wp-charts"><div><strong>Cumulative simulated energy (MWh)</strong><svg class="wp-chart" data-chart="energy" viewBox="0 0 260 120" role="img" aria-label="Estimated cumulative energy over session time"></svg></div><div><strong>Wind speed (m/s)</strong><svg class="wp-chart" data-chart="speed" viewBox="0 0 260 120" role="img" aria-label="Free-stream and turbine wind speeds over session time"></svg></div><div class="wp-chart-legend" data-value="chart-legend"></div><small>Elapsed visible-session time (s); latest 300 samples. Dark: farm total or free stream; colors: turbine locations.</small></div></div></div></div>
     <p class="wp-status" role="status" aria-live="polite">Click the grid to place a turbine. Keyboard: focus the grid, use arrow keys, then Enter or Space.</p>
     <div class="wp-metrics"><div><span>Turbines</span><strong data-value="count">0</strong></div><div><span>Farm power</span><strong data-value="power">0.000 MW</strong></div><div><span>No-wake power</span><strong data-value="ideal">0.000 MW</strong></div><div><span>Wake loss</span><strong data-value="loss">0.000 MW</strong></div><div><span>Efficiency</span><strong data-value="efficiency">—</strong></div></div>
     <p data-value="selection"></p><p class="wp-note">Educational, single-speed top-hat wake model; results are illustrative, not a site assessment.</p>`;
   host.append(root);
   const $=s=>root.querySelector(s), field=n=>$(`[data-field="${n}"]`), output=n=>$(`[data-out="${n}"]`), value=n=>$(`[data-value="${n}"]`);
   let ids=[], selected=0, scene=null, motion=true, pageActive=!document.hidden, seasonalStart=0;
-  let manual={speed:12,direction:0};
+  let manual={speed:12,direction:0}, variation={speed:0,direction:0};
   const status=$('.wp-status'), speed=()=>Number(field('speed').value), direction=()=>Number(field('direction').value), spacing=()=>Number(field('spacing').value);
   const format=n=>(n/1000).toFixed(3)+' MW';
-  const history=createHistory(performance.now());
+  const history=createHistory(performance.now()), game=createGame(performance.now());
+  const money=n=>'$'+Math.floor(n).toLocaleString('en-US');
+  function showGame(state){value('balance').textContent=money(state.balance);value('earnings').textContent=money(state.earnings);}
   const palette=['#b9414e','#287fa7','#8d5db5','#b07017','#21836b','#bb4d88','#5d6fa7','#7a7530'];
   const turbineColor=id=>palette[id%palette.length];
   function drawChart(name, points, turbineIds) {
@@ -36,28 +39,28 @@ export function mountWindProject(host) {
     svg.innerHTML=markup;
   }
   function showHistory(state) {
-    value('energy').textContent=`${state.total.toFixed(2)} Wh`;
+    value('energy').textContent=`${state.total.toFixed(2)} MWh`;
     const allIds=[...new Set(state.points.flatMap(p=>[...Object.keys(p.energy),...Object.keys(p.speeds)].map(Number)))].sort((a,b)=>a-b);
     drawChart('energy',state.points,allIds);drawChart('speed',state.points,allIds);
-    value('chart-legend').innerHTML='<span><i style="background:#153d55"></i>Farm / free stream</span>'+allIds.map(id=>`<span><i style="background:${turbineColor(id)}"></i>Location ${id+1}: ${(state.energy[id] || 0).toFixed(2)} Wh</span>`).join('');
+    value('chart-legend').innerHTML='<span><i style="background:#153d55"></i>Farm / free stream</span>'+allIds.map(id=>`<span><i style="background:${turbineColor(id)}"></i>Location ${id+1}: ${(state.energy[id] || 0).toFixed(2)} MWh</span>`).join('');
   }
   const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   function applySeason(elapsed){
-    const weather=seasonalWind(elapsed);
+    const weather=seasonalWind(elapsed,variation);
     field('speed').value=weather.speed;field('direction').value=weather.direction;
     value('season').textContent=`Synthetic ${months[weather.month]} · one year / 120 seconds`;
   }
   const historyTimer=setInterval(()=>{
     if(!pageActive)return;
-    const state=history.tick(performance.now(),true);
-    if(field('mode').value==='seasonal'){applySeason(state.time-seasonalStart);redraw();}
+    const now=performance.now(), state=history.tick(now,true);showGame(game.tick(now,true));
+    if(field('mode').value==='seasonal'){variation=nextSeasonalVariation(variation);applySeason(state.time-seasonalStart);redraw();}
     else showHistory(state);
   },1000);
-  const visibility=()=>{showHistory(history.tick(performance.now(),pageActive));pageActive=!document.hidden;};
+  const visibility=()=>{const now=performance.now();showHistory(history.tick(now,pageActive));showGame(game.tick(now,pageActive));pageActive=!document.hidden;};
   document.addEventListener('visibilitychange',visibility);
   function redraw(message) {
     const result=evaluate(ids,direction(),speed());
-    showHistory(history.setModel(result,speed(),performance.now(),pageActive));
+    const now=performance.now();showHistory(history.setModel(result,speed(),now,pageActive));showGame(game.setPower(result.total,now,pageActive));
     output('direction').textContent=`${direction()}° from north`;
     output('speed').textContent=`${speed().toFixed(1)} m/s`;
     output('legend-max').textContent=`${speed().toFixed(1)} (free stream)`;
@@ -70,9 +73,11 @@ export function mountWindProject(host) {
     const bounds=scene?.update(ids,selected,null,direction(),speed());output('legend-min').textContent=(bounds?.min ?? 0).toFixed(1);
   }
   function toggle(){
-    if(ids.includes(selected)){ids=ids.filter(i=>i!==selected);redraw(`Turbine removed from location ${selected+1}.`);}
-    else if(validCandidate(selected,ids,spacing())){ids=[...ids,selected];redraw(`Turbine placed at location ${selected+1}.`);}
-    else redraw('Location is too close to an existing turbine.');
+    const now=performance.now();
+    if(ids.includes(selected)){game.sell(now,pageActive);ids=ids.filter(i=>i!==selected);redraw(`Turbine removed from location ${selected+1}; ${money(GAME_COST/2)} recovered.`);}
+    else if(!validCandidate(selected,ids,spacing()))redraw('Location is too close to an existing turbine.');
+    else if(!game.buy(now,pageActive))redraw(`Not enough budget. A turbine costs ${money(GAME_COST)}; wait for generation revenue.`);
+    else {ids=[...ids,selected];redraw(`Turbine purchased and placed at location ${selected+1}.`);}
   }
   const sceneHost=$('.wp-scene');
   sceneHost.addEventListener('keydown',event=>{
@@ -89,7 +94,7 @@ export function mountWindProject(host) {
   field('mode').addEventListener('change',()=>{
     const state=history.tick(performance.now(),pageActive), seasonal=field('mode').value==='seasonal';
     field('speed').hidden=seasonal;field('direction').hidden=seasonal;value('season').hidden=!seasonal;
-    if(seasonal){manual={speed:speed(),direction:direction()};seasonalStart=state.time;applySeason(0);}
+    if(seasonal){manual={speed:speed(),direction:direction()};seasonalStart=state.time;variation=nextSeasonalVariation({speed:0,direction:0});applySeason(0);}
     else {field('speed').value=manual.speed;field('direction').value=manual.direction;}
     redraw(seasonal?'Seasonal wind scenario started.':'Manual wind controls restored.');
   });

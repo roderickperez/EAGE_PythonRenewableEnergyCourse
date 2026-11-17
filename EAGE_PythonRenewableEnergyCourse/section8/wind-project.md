@@ -5,7 +5,7 @@ Design a small wind farm and explore how the position of a turbine changes the w
 ## How to use the explorer
 
 1. Choose **Manual** to set the wind direction **from** which air arrives and the wind speed, or choose **Seasonal** for a repeating synthetic annual variation. North is 0°, east 90°, south 180° and west 270°. The particles move **downwind**, slowing and shortening in wakes. Turbines turn according to their local modeled wind speed. Use the stop/play icon to control the animation.
-2. Click a grid cell to place or remove a turbine. Drag the scene to rotate it and scroll to zoom. For keyboard control, focus the grid and use the arrow keys to select a location; press Enter or Space to place or remove a turbine.
+2. Start with \$50,000. Click a grid cell to purchase a turbine for \$50,000; click an occupied cell to remove it and recover \$25,000. Earn revenue from simulated energy and save enough to purchase additional turbines. Drag the scene to rotate it and scroll to zoom. For keyboard control, focus the grid and use the arrow keys to select a location; press Enter or Space to place or remove a turbine.
 3. Read farm power, no-wake power, wake loss and efficiency. The selected location's wind and turbine power appear below the scene. Gold indicates the selected location; the colorbar inside the scene shows modeled wind speed in the wakes. Uncolored terrain indicates undisturbed wind.
 4. Compare the energy and wind-speed histories as you change the layout and conditions. Remove a turbine by clicking its location again.
 
@@ -19,15 +19,17 @@ The square site is 2,000 m by 2,000 m; its 10 × 10 grid points are 200 m apart.
 
 ## Manual and seasonal wind
 
-Manual mode lets you set wind speed and direction with sliders. Seasonal mode replaces those sliders with a repeating synthetic scenario: speed varies smoothly between 7 and 13 m/s and direction oscillates around north. Each synthetic year takes 120 seconds of visible session time; the month label and conditions update approximately once per second. Switching back to Manual restores your previous manual settings. Spacing remains adjustable in both modes.
+Manual mode lets you set wind speed and direction with sliders. Seasonal mode replaces those sliders with a repeating synthetic scenario: speed and direction vary around a repeating annual pattern with additional unpredictable fluctuations. Each synthetic year takes 120 seconds of visible session time; the month label and conditions update approximately once per second. Switching back to Manual restores your previous manual settings. Spacing remains adjustable in both modes.
 
-This cycle is an illustration, not measured local climate or a forecast. The month label is a scenario position, not today's date. Changing modes preserves the session history. Energy is still integrated over actual visible-session seconds, **not** over an accelerated year, so it is not an annual-energy estimate.
+This cycle is an illustration, not measured local climate or a forecast. The month label is a scenario position, not today's date. Changing modes preserves the session history. A synthetic year takes 120 visible seconds; the game converts one visible second into 73 simulated operating hours. This is a teaching scenario, not an estimate of actual annual production.
 
-## Energy and wind history
+## Energy, revenue and the game
 
-The large energy value and the first graph show estimated cumulative energy for the current session in watt-hours (Wh), with one line for the farm total and one for each turbine location. The second graph shows the free-stream and local wind speeds over the same elapsed time. The model assumes each displayed power remains constant until the next change; it integrates power over real elapsed visible-session time. The display pauses while the page is hidden. Reopening the project starts a new history. Stopping the 3D animation does not stop this calculation. Graphs show the most recent 300 samples; totals cover the full session. A removed turbine keeps its accumulated contribution under its location number.
+The game starts with **\$50,000**. A turbine costs **\$50,000**, and removing one recovers **\$25,000**. The farm earns **\$75 per MWh** generated, credited to the available budget. These deliberately simplified game values are not project costs or market prices. Choose locations that reduce wake losses so the farm earns enough to buy the next turbine. The price, turbine cost and salvage value are fixed.
 
-These are illustrative model estimates, not measurements, forecasts, or annual production. Power (kW or MW) is an instantaneous rate; energy (Wh) accumulates over time. The simplified wake model and illustrative wind conditions limit the results.
+The large value and first chart show cumulative **simulated energy** in MWh for the whole farm and each turbine location. The second chart shows free-stream and local wind speeds. One visible second represents 73 operating hours, so 120 seconds represents 8,760 hours. The model holds power constant between updates, integrates it over simulated time and applies the game energy price. Energy and money pause while the page is hidden. Stopping the 3D animation does not stop the game; reopening the project starts a new session. Charts retain the latest 300 samples; totals cover the full session. Removed turbines retain their previously accumulated energy under their location number.
+
+This is an illustrative game, not measured data, a forecast, a real project budget or an annual energy assessment. The teaching turbine curve, wake model and wind scenario omit many real-world effects. Power (kW or MW) is an instantaneous rate; energy (MWh) accumulates over time.
 
 ## The model
 
