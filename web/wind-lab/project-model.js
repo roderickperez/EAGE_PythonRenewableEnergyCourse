@@ -2,6 +2,7 @@
 export const FARM = 2000;
 export const GRID = 10;
 export const DIAMETER = 40;
+export const MIN_SPACING = 200;
 export const HUB = 60;
 export const ROUGHNESS = 0.3;
 export const CT = 0.88;

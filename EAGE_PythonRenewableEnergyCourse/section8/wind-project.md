@@ -4,7 +4,7 @@ Design a small wind farm and explore how the position of a turbine changes the w
 
 ## How to use the explorer
 
-1. Choose **Manual** to set the wind direction **from** which air arrives and the wind speed, or choose **Seasonal** for a repeating synthetic annual variation. North is 0°, east 90°, south 180° and west 270°. The particles move **downwind**, slowing and shortening in wakes. Turbines turn according to their local modeled wind speed. Use the stop/play icon to control the animation.
+1. Watch the synthetic seasonal wind speed and direction change automatically. Direction is where wind comes **from**: north is 0°, east 90°, south 180° and west 270°. Particles move downwind and slow in wakes. Use the stop/play icon to control the animation.
 2. Start with \$50,000. Click a grid cell to purchase a turbine for \$50,000; click an occupied cell to remove it and recover \$25,000. Earn revenue from simulated energy and save enough to purchase additional turbines. Drag the scene to rotate it and scroll to zoom. For keyboard control, focus the grid and use the arrow keys to select a location; press Enter or Space to place or remove a turbine.
 3. Read farm power, no-wake power, wake loss and efficiency. The selected location's wind and turbine power appear below the scene. Gold indicates the selected location; the colorbar inside the scene shows modeled wind speed in the wakes. Uncolored terrain indicates undisturbed wind.
 4. Compare the energy and wind-speed histories as you change the layout and conditions. Remove a turbine by clicking its location again.
@@ -15,13 +15,13 @@ Design a small wind farm and explore how the position of a turbine changes the w
 :title: Interactive isometric wind farm layout explorer
 :::
 
-The square site is 2,000 m by 2,000 m; its 10 × 10 grid points are 200 m apart. Easting and northing are illustrative local coordinates. The minimum-spacing slider constrains new placements; if a larger spacing would make an existing layout invalid, remove or move turbines first. Turbines in the illustration are enlarged relative to the farm so they can be seen.
+The square site is 2,000 m by 2,000 m; its 10 × 10 grid points are 200 m apart. Easting and northing are illustrative local coordinates. Turbine locations must be at least 200 m apart (five rotor diameters). Turbines in the illustration are enlarged relative to the farm so they can be seen.
 
-## Manual and seasonal wind
+## Seasonal wind
 
-Manual mode lets you set wind speed and direction with sliders. Seasonal mode replaces those sliders with a repeating synthetic scenario: speed and direction vary around a repeating annual pattern with additional unpredictable fluctuations. Each synthetic year takes 120 seconds of visible session time; the month label and conditions update approximately once per second. Switching back to Manual restores your previous manual settings. Spacing remains adjustable in both modes.
+Wind speed and direction change automatically around a repeating synthetic annual pattern with additional unpredictable fluctuations. Each synthetic year takes 120 seconds of visible session time; the month label and conditions update approximately once per second. The minimum turbine spacing is fixed at 200 m.
 
-This cycle is an illustration, not measured local climate or a forecast. The month label is a scenario position, not today's date. Changing modes preserves the session history. A synthetic year takes 120 visible seconds; the game converts one visible second into 73 simulated operating hours. This is a teaching scenario, not an estimate of actual annual production.
+This cycle is an illustration, not measured local climate or a forecast. The month label is a scenario position, not today's date. One visible second represents 73 simulated operating hours. This is a teaching scenario, not an estimate of actual annual production.
 
 ## Energy, revenue and the game
 
@@ -41,7 +41,7 @@ The power results are instantaneous estimates, not annual energy, cost, a wind-r
 
 ## Check a two-turbine layout in Python
 
-For wind from north, place turbines at locations **96** and **86**. They share an east coordinate and are 200 m apart; 96 is upstream. This independent calculation checks the same single-wake model used in the explorer. It assumes the downstream rotor center is inside the wake.
+For a fixed-condition example, consider wind from north at 12 m/s and turbines at locations **96** and **86**. They share an east coordinate and are 200 m apart; 96 is upstream. This independent calculation checks the same single-wake model used in the explorer. The live seasonal wind changes automatically, so its results will match only when the wind conditions match this example. The calculation assumes the downstream rotor center is inside the wake.
 
 ```{code-cell} python
 import math
@@ -72,11 +72,11 @@ print(f'Efficiency: {100*farm/ideal:.2f}%')
 
 ## Your investigation
 
-1. Set wind from north at 12 m/s and spacing to 200 m. Place two turbines on the same north–south grid column, one downstream of the other. Record farm power, no-wake power, wake loss and each local wind speed.
-2. Record this layout as a baseline. Remove the downstream turbine and place it on a different east–west column at the same northing. Compare power and explain the change using the wake direction.
-3. Try several locations with the first turbine fixed. Record which gives the greatest farm power and compare the corresponding wake losses.
-4. Rotate the wind direction to 90° from east and compare the same layouts again. Explain why a layout that performs well for one direction may perform differently for another.
-5. Record your selected wind speed, direction, spacing, farm power and the model's limitations. Propose how a measured wind rose could support comparisons over several conditions; do not treat one wind direction as a full-year result.
+1. Place a turbine and observe its output as the synthetic wind changes. Record the wind direction and speed at the time of your observation.
+2. Once you can afford a second turbine, try a position downstream of the first. Record farm power, wake loss and each local wind speed at that moment.
+3. Compare layouts under similar wind conditions, accounting for the cost of removing a turbine. Explain how wake direction affects output and revenue.
+4. Observe the layout over a complete synthetic seasonal cycle. Discuss how changing wind direction can change which turbine is affected by a wake.
+5. Record the model's limitations. Explain how a measured wind rose and site-specific data could support a more realistic assessment.
 
 ## Going further
 

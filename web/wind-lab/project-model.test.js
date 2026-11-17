@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { gridPoint, powerKw, evaluate, validCandidate, rankCandidates, windFieldSampler } from './project-model.js';
+import { gridPoint, powerKw, evaluate, validCandidate, rankCandidates, windFieldSampler, MIN_SPACING } from './project-model.js';
 import { createHistory, seasonalWind, nextSeasonalVariation } from './project-history.js';
 import { createGame, GAME_COST, PRICE_PER_MWH } from './project-game.js';
 import { wakePixels, wakeRaster, particleWind, advanceParticle, localParticle, particleAppearance, rotorRate, plasma } from './project-field.js';
@@ -23,6 +23,7 @@ test('northern wind wakes the downstream turbine; rotating wind changes the layo
 });
 
 test('spacing excludes duplicates and close neighbors',()=>{
+  assert.equal(MIN_SPACING,200);assert.equal(validCandidate(1,[0],MIN_SPACING),true);
   assert.equal(validCandidate(0,[0],200),false);
   assert.equal(validCandidate(1,[0],200),true);
   assert.equal(validCandidate(1,[0],240),false);
