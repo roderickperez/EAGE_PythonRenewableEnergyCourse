@@ -19,7 +19,7 @@ def main() -> None:
         if lab == "wind-lab":
             required.update({"aerodynamics.html", "aerodynamics.js"})
         if lab == "geothermal-lab":
-            required.update({"project.html", "geothermal-project.js", "drilling.html", "drilling.js"})
+            required.update({"project.html", "geothermal-project.js", "drilling.html", "drilling.js", "closed-loop.html", "closed-loop.js"})
         missing = sorted(name for name in required if not (source / name).is_file())
         if missing:
             raise SystemExit(f"Build {lab} before staging it: " + ", ".join(missing))

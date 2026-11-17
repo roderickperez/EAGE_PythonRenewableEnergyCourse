@@ -25,6 +25,7 @@ for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'proj
     entryPoints.equations = resolve(source, 'equations.js');
     entryPoints['geothermal-project'] = resolve(source, 'project.js');
     entryPoints.drilling = resolve(source, 'drilling.js');
+    entryPoints['closed-loop'] = resolve(source, 'closed-loop.js');
   }
   if (lab === 'wind-lab') {
     entryPoints.aerodynamics = resolve(source, 'aerodynamics.js');
@@ -48,6 +49,7 @@ for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'proj
     await cp(resolve(source, 'equations.html'), resolve(output, 'equations.html'));
     await cp(resolve(source, 'project.html'), resolve(output, 'project.html'));
     await cp(resolve(source, 'drilling.html'), resolve(output, 'drilling.html'));
+    await cp(resolve(source, 'closed-loop.html'), resolve(output, 'closed-loop.html'));
   }
   if (lab === 'solar-lab') {
     await cp(resolve(source, 'resource.html'), resolve(output, 'resource.html'));

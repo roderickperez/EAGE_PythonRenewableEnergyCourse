@@ -78,6 +78,12 @@ def validate():
         assert f'id="geo-{demo}-explorer"' in geothermal_page
     for file in ('equations.html', 'equations.js'):
         assert (OUT / 'geothermal-lab' / file).is_file()
+    for demo in ('systems', 'conduction', 'area', 'energy'):
+        assert f'id="geo-closed-{demo}"' in geothermal_page
+    for file in ('closed-loop.html', 'closed-loop.js'):
+        assert (OUT / 'geothermal-lab' / file).is_file()
+    assert geothermal_page.index('id="tested-python-functions"') > geothermal_page.index('id="hydrostatic-and-circulating-pressure"')
+    assert geothermal_page.index('id="check-your-understanding"') < geothermal_page.index('id="check-the-units-in-python"')
     assert (OUT / 'project-map' / 'project-map.js').is_file()
     assert 'project-map/index.html' not in pages[PROJECT]['html']
     assert 'id="load-the-separate-input-datasets"' in pages[PROJECT]['html']

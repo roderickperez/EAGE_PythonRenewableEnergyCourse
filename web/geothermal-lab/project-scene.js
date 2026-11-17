@@ -41,13 +41,15 @@ export function mountGeothermalScene(host,onPick) {
   function update(state,selection,config){
     for(const obj of [...dynamic.children]){dynamic.remove(obj);obj.geometry?.dispose();obj.material?.dispose();}particles.length=0;
     const initial=config.initial, low=config.injection;
-    state.temperature.forEach((t,i)=>{const f=Math.max(0,Math.min(1,(t-low)/(initial-low)));color.setHSL(.62*(1-f),.78,.5);cells.setColorAt(i,color);});cells.instanceColor.needsUpdate=true;
+    const depthY=depth=>-4.1-(depth-1500)/1300*1.05;
+    state.temperature.forEach((t,i)=>{const f=Math.max(0,Math.min(1,(t-low)/(initial-low)));color.setHSL(.62*(1-f),.78,.5);cells.setColorAt(i,color);temp.position.set((i%N-4.5)*2,depthY(config.depth),(4.5-Math.floor(i/N))*2);temp.updateMatrix();cells.setMatrixAt(i,temp.matrix);});cells.instanceColor.needsUpdate=true;cells.instanceMatrix.needsUpdate=true;
     const selected=pos(selection),marker=new T.Mesh(new T.RingGeometry(.28,.45,24),new T.MeshBasicMaterial({color:'#e5ae3e',side:T.DoubleSide}));marker.rotation.x=-Math.PI/2;marker.position.copy(selected);marker.position.y=.14;dynamic.add(marker);
-    for(const [id,hex] of [[config.injector,'#258cc3'],[config.producer,'#d64d36']]){
-      const p=pos(id),top=p.clone().setY(.5),bottom=p.clone().setY(-5.15),plant=new T.Vector3(0,.45,0);
+    for(const well of config.wells){
+      const {id,type,depth}=well,hex=type==='injector'?'#258cc3':'#d64d36';
+      const p=pos(id),top=p.clone().setY(.5),bottom=p.clone().setY(depthY(depth)),plant=new T.Vector3(0,.45,0);
       segment(top,bottom,.12,hex);segment(top,plant,.09,hex);
       const ring=new T.Mesh(new T.CylinderGeometry(.29,.29,.2,16),new T.MeshStandardMaterial({color:hex}));ring.position.copy(top);dynamic.add(ring);
-      for(let k=0;k<5;k++){const bead=new T.Mesh(new T.SphereGeometry(.13,10,8),new T.MeshBasicMaterial({color:hex}));dynamic.add(bead);particles.push({bead,top,bottom,offset:k/5,inject:id===config.injector});}
+      for(let k=0;k<5;k++){const bead=new T.Mesh(new T.SphereGeometry(.13,10,8),new T.MeshBasicMaterial({color:hex}));dynamic.add(bead);particles.push({bead,top,bottom,offset:k/5,inject:type==='injector'});}
     }
   }
   const ray=new T.Raycaster(),pointer=new T.Vector2();let start=null;

@@ -1,0 +1,4 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {conduction,areas,energy} from './closed-loop-model.js';
+test('tube areas reproduce the course example',()=>{assert.ok(Math.abs(areas({inner:.1,outer:.12,bore:.18}).ratio-1.8)<1e-12);assert.throws(()=>areas({inner:.1,outer:.2,bore:.18}));});
+test('transient conduction approaches prescribed wall temperature',()=>{const x={k:3,rho:2750,cp:790,days:365,wall:40,far:200};assert.ok(Math.abs(conduction({...x,distance:0}).temperature-40)<.001);assert.ok(conduction({...x,distance:1}).temperature>40);assert.ok(conduction({...x,distance:1}).temperature<200);assert.ok(conduction({...x,days:30,distance:1}).temperature>conduction({...x,days:365,distance:1}).temperature);});
+test('heat and exergy rates preserve the signed entropy term',()=>{const r=energy({flow:50,dh:300,ds:.2,ambient:300,years:1});assert.equal(r.thermal,15);assert.equal(r.available,12);assert.equal(r.thermalMWh,131400);});

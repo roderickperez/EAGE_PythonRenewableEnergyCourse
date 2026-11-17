@@ -237,6 +237,10 @@ async function route() {
       ['geo-compact-carnot-explorer', 'equations.html?demo=carnot', 'Carnot limit explorer', 'geothermal-lab'],
       ['geo-compact-energy-explorer', 'equations.html?demo=energy', 'Energy and availability explorer', 'geothermal-lab'],
       ['geo-compact-decline-explorer', 'equations.html?demo=decline', 'Annual decline explorer', 'geothermal-lab'],
+      ['geo-closed-systems', 'closed-loop.html?demo=systems', 'Animated closed-loop systems', 'geothermal-lab'],
+      ['geo-closed-conduction', 'closed-loop.html?demo=conduction', 'Transient rock conduction explorer', 'geothermal-lab'],
+      ['geo-closed-area', 'closed-loop.html?demo=area', 'Coaxial tube flow areas explorer', 'geothermal-lab'],
+      ['geo-closed-energy', 'closed-loop.html?demo=energy', 'Thermal energy and available work explorer', 'geothermal-lab'],
     ]) {
       const spot = $(anchor);
       if (!spot) continue;
@@ -263,7 +267,7 @@ async function route() {
         mount: async host => (await import('./generated/wind-lab/wind-lab.js')).mountWindLab(host),
       },
       'section6/geothermalEnergy.md': {
-        anchor: '#physical-description-useful-heat-from-the-subsurface', id: 'geothermal-3d-lab',
+        anchor: '#closed-loop-designs-u-shaped-and-coaxial', id: 'geothermal-3d-lab',
         mount: async host => (await import('./generated/geothermal-lab/geothermal-lab.js')).mountGeothermalLab(host),
       },
       'section8/projectIntro.md': {
@@ -280,7 +284,7 @@ async function route() {
       },
       'section8/geothermal-project.md': {
         anchor: '#how-to-use-the-explorer', id: 'geothermal-field-project',
-        mount: async host => (await import('./generated/geothermal-lab/geothermal-project.js?v=3')).mountGeothermalProject(host),
+        mount: async host => (await import('./generated/geothermal-lab/geothermal-project.js?v=5')).mountGeothermalProject(host),
       },
     }[lesson.id];
     if(lab){
@@ -306,7 +310,7 @@ async function route() {
       if (spot) {
         const host = document.createElement('div'); host.id = 'geothermal-drilling-lab'; host.className = 'hydro-3d-lab';
         spot.after(host);
-        import('./generated/geothermal-lab/drilling.js?v=1').then(mod => mod.mountDrillingExplorer(host)).then(instance => {
+        import('./generated/geothermal-lab/drilling.js?v=2').then(mod => mod.mountDrillingExplorer(host)).then(instance => {
           if (host.isConnected) {
             const previous = lessonLab;
             lessonLab = {destroy(){previous?.destroy();instance.destroy();}};
