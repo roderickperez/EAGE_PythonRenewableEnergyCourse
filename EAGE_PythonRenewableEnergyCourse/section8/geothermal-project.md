@@ -1,4 +1,4 @@
-# Project 4: Geothermal Field Designer
+# Project 4: Geothermal Energy
 
 Design a geothermal doublet: inject cooled water into a reservoir, produce warmer water at another well, and use a simplified binary plant to generate electricity. Explore the trade-off between early generation and thermal breakthrough. This synthetic teaching model is not a reservoir forecast or engineering design.
 
@@ -6,8 +6,8 @@ Design a geothermal doublet: inject cooled water into a reservoir, produce warme
 
 1. The plant is at the center of a 2 km × 2 km site. Select **Injection well** or **Production well**, then click a grid cell to move that well. The wells must occupy different cells. Drag to rotate and scroll to zoom. Focus the grid and use the arrow keys and Enter or Space to select a cell without a mouse.
 2. Change reservoir depth, circulation rate or injection temperature. Depth determines initial temperature using a teaching gradient of 72.5 °C/km and a 15 °C surface temperature, rounded to 10 °C. Each change or well move **restarts** the simulation and resets upgrades. The blue well injects and the red well produces at the same mass rate; their vertical connections reach the modeled reservoir layer.
-3. Watch the reservoir layer cool and compare production temperature, thermal and net electrical power, cumulative energy and revenue. The plant starts at 5 MW net capacity; when available upgrade budget reaches \$1 million, purchase 1 MW more, up to 10 MW. Upgrades preserve simulation history. Pause with the square button; restart with Reset simulation. One year takes 30 seconds of visible running time. The simulation pauses in a hidden browser tab.
-4. Download results as CSV. The temperature curve shows production in red and injection in blue. The depth plot shows an illustrative initial formation gradient in gray and the modeled producer reservoir temperature as a red point. The depth–time image shows the modeled producer layer at the bottom; the surrounding formation is a fixed illustrative gradient, not a calculated wellbore profile.
+3. Watch the colored reservoir layer cool around the wells as the simulation advances. The stacked, translucent surrounding geological layers are schematic. Compare production temperature, thermal and net electrical power, cumulative energy and revenue. The plant starts at 5 MW net capacity; when available upgrade budget reaches \$1 million, purchase 1 MW more, up to 10 MW. Upgrades preserve simulation history. Pause with the square button; use the circular-arrow icon in the upper-left of the grid to reset. One year takes 30 seconds of visible running time. The simulation pauses in a hidden browser tab.
+4. Use the download icon in the lower-right of the grid to save results as CSV. The temperature curve shows production in red and injection in blue. The depth plot shows an illustrative initial formation gradient in gray and the modeled producer reservoir temperature as a red point. The depth–time image shows the modeled producer layer at the bottom; the surrounding formation is a fixed illustrative gradient, not a calculated wellbore profile.
 
 :::{iframe} ../../geothermal-lab/project.html
 :width: 100%
