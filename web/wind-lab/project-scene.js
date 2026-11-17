@@ -1,6 +1,7 @@
 import * as T from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { FARM, GRID, DIAMETER, DECAY, INITIAL_WAKE, gridPoint } from './project-model.js';
+import { FARM, GRID, gridPoint } from './project-model.js';
+import { wakePixels, particleWind, advanceParticle } from './project-field.js';
 
 export function mountFarmScene(host, onPick) {
   const scene = new T.Scene();
@@ -18,41 +19,51 @@ export function mountFarmScene(host, onPick) {
   const sun = new T.DirectionalLight(0xffedcd, 2.6); sun.position.set(-7, 20, 9); scene.add(sun);
   const terrain = new T.Mesh(new T.BoxGeometry(20, .3, 20), new T.MeshStandardMaterial({color:'#657e62', roughness:.8}));
   terrain.position.y = -.17; scene.add(terrain);
-  const grid = new T.GridHelper(20, GRID, '#d7e8dc', '#b4c7b7'); grid.position.y = .01; scene.add(grid);
+  const grid = new T.GridHelper(20, GRID, '#e4f0e6', '#c2d6c4'); grid.position.y = .07; scene.add(grid);
   const ground = new T.Mesh(new T.PlaneGeometry(20, 20), new T.MeshBasicMaterial({visible:false, side:T.DoubleSide}));
   ground.rotation.x = -Math.PI / 2; ground.position.y = .03; scene.add(ground);
   const elements = new T.Group(); scene.add(elements);
-  const arrow=new T.ArrowHelper(new T.Vector3(0,0,-1), new T.Vector3(), 2.2, '#f3d476', .55, .3); scene.add(arrow);
   const white = new T.MeshStandardMaterial({color:'#e3e9eb', roughness:.59});
   const dark = new T.MeshStandardMaterial({color:'#788a93', roughness:.59});
   const mark = new T.MeshBasicMaterial({color:'#e5ae3e'});
   const pointColor = new T.MeshBasicMaterial({color:'#dbece6', transparent:true, opacity:.72});
-  const wakeMat = new T.MeshBasicMaterial({color:'#328baa', transparent:true, opacity:.16, depthWrite:false, side:T.DoubleSide});
+  const resolution=160;
+  const texture=new T.DataTexture(new Uint8Array(resolution*resolution*4),resolution,resolution,T.RGBAFormat);
+  texture.colorSpace=T.SRGBColorSpace; texture.magFilter=T.NearestFilter; texture.minFilter=T.NearestFilter; texture.needsUpdate=true;
+  const wakeMat = new T.MeshBasicMaterial({map:texture, transparent:true, depthWrite:false, side:T.DoubleSide});
+  const wakePlane = new T.Mesh(new T.PlaneGeometry(20,20),wakeMat);
+  wakePlane.rotation.x=-Math.PI/2;wakePlane.position.y=.035;scene.add(wakePlane);
+  const particleGeometry=new T.BoxGeometry(.065,.065,1), particleMaterial=new T.MeshBasicMaterial({color:'#e6fbff',transparent:true,opacity:.95,depthWrite:false});
+  const particleCount=140, particles=new T.InstancedMesh(particleGeometry,particleMaterial,particleCount);
+  particles.frustumCulled=false; scene.add(particles);
+  const seeds=Array.from({length:particleCount},(_,i)=>({x:((i*7.173)%20)-10,z:((i*11.739+3)%20)-10,h:.7+(i%5)*.18}));
+  const dummy=new T.Object3D();let wind=particleWind(0,0), windSpeed=0;
+  function moveParticles(dt) {
+    particles.visible=windSpeed>0;
+    for(let i=0;i<seeds.length;i++) {
+      const p=seeds[i]; if(dt) Object.assign(p,advanceParticle(p,wind,dt));
+      dummy.position.set(p.x,p.h,p.z);dummy.rotation.set(0,wind.angle,0);dummy.scale.set(1,1,wind.length);dummy.updateMatrix();particles.setMatrixAt(i,dummy.matrix);
+    }
+    particles.instanceMatrix.needsUpdate=true;
+  }
   const geometries = new Set();
   function mesh(geometry, material, parent=elements) { geometries.add(geometry); const m=new T.Mesh(geometry, material); parent.add(m); return m; }
   const scale = value => value / FARM * 20;
   const world = p => ({ x:scale(p.x)-10, z:10-scale(p.y) });
-  let rotors = [], running=true, visible=true, last=0;
+  let rotors = [], running=true, visible=true, last=0, fieldKey='';
   function update(ids, selected, recommended, direction, speed) {
     elements.clear(); geometries.forEach(g=>g.dispose()); geometries.clear(); rotors=[];
     for (let id=0; id<GRID*GRID; id++) {
       const p=world(gridPoint(id));
       const dot=mesh(new T.CircleGeometry(id===selected || id===recommended ? .16 : .065, 16), id===selected || id===recommended ? mark : pointColor);
-      dot.rotation.x=-Math.PI/2; dot.position.set(p.x,.05,p.z);
+      dot.rotation.x=-Math.PI/2; dot.position.set(p.x,.09,p.z);
     }
-    const angle=direction*Math.PI/180, dx=-Math.sin(angle), dy=-Math.cos(angle);
-    const windVector=new T.Vector3(dx,0,-dy);
-    arrow.setDirection(windVector); arrow.position.set(0,.18,0).addScaledVector(windVector,-8);
+    const angle=direction*Math.PI/180;
+    wind=particleWind(direction,speed);windSpeed=speed;moveParticles(0);
+    const key=[...ids].sort((a,b)=>a-b).join(',')+'|'+direction+'|'+speed;
+    if(key!==fieldKey){texture.image.data.set(wakePixels(ids,direction,speed,resolution));texture.needsUpdate=true;fieldKey=key;}
     for (const id of ids) {
       const p=gridPoint(id), w=world(p);
-      if (speed > 0) {
-        const length=FARM, width0=INITIAL_WAKE, width1=INITIAL_WAKE+DECAY*length;
-        const side={x:-dy,y:dx};
-        const xy=[[-width0,0],[width0,0],[width1,length],[-width1,length]].map(([sideDist,dist])=>world({x:p.x+side.x*sideDist+dx*dist,y:p.y+side.y*sideDist+dy*dist}));
-        const g=new T.BufferGeometry();
-        g.setAttribute('position',new T.Float32BufferAttribute(xy.flatMap(v=>[v.x,.04,v.z]),3)); g.setIndex([0,1,2,0,2,3]); g.computeVertexNormals();
-        mesh(g,wakeMat);
-      }
       const tower=mesh(new T.CylinderGeometry(.08,.15,2.0,12),white); tower.position.set(w.x,1,w.z);
       const nacelle=mesh(new T.BoxGeometry(.3,.22,.46),dark); nacelle.position.set(w.x,2.05,w.z); nacelle.rotation.y=angle;
       const rotor=new T.Group(); rotor.position.set(w.x,2.05,w.z); rotor.rotation.y=angle; elements.add(rotor);
@@ -74,9 +85,9 @@ export function mountFarmScene(host, onPick) {
     onPick(row*GRID+col);
   };
   renderer.domElement.addEventListener('pointerdown',start); renderer.domElement.addEventListener('pointerup',end);
-  const resize=new ResizeObserver(()=>{const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return; const half=12; camera.left=-half*w/h;camera.right=half*w/h;camera.top=half;camera.bottom=-half;camera.updateProjectionMatrix();renderer.setSize(w,h,false);});
+  const resize=new ResizeObserver(()=>{const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return; const half=Math.max(12,16*h/w); camera.left=-half*w/h;camera.right=half*w/h;camera.top=half;camera.bottom=-half;camera.updateProjectionMatrix();renderer.setSize(w,h,false);});
   resize.observe(host);
   const observer=new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;}); observer.observe(host);
-  renderer.setAnimationLoop(time=>{const dt=Math.min(.05,(time-last)/1000);last=time;if(!visible)return;if(running)rotors.forEach(r=>{r.rotation.z-=dt;});renderer.render(scene,camera);});
-  return {update,setMotion(value){running=value;},destroy(){renderer.setAnimationLoop(null);resize.disconnect();observer.disconnect();orbit.dispose();renderer.domElement.removeEventListener('pointerdown',start);renderer.domElement.removeEventListener('pointerup',end);geometries.forEach(g=>g.dispose());[white,dark,mark,pointColor,wakeMat,terrain.material].forEach(m=>m.dispose());terrain.geometry.dispose();grid.geometry.dispose();grid.material.dispose();ground.geometry.dispose();ground.material.dispose();arrow.dispose();renderer.dispose();renderer.domElement.remove();}};
+  renderer.setAnimationLoop(time=>{const dt=Math.min(.05,(time-last)/1000);last=time;if(!visible)return;if(running){rotors.forEach(r=>{r.rotation.z-=dt;});moveParticles(dt);}renderer.render(scene,camera);});
+  return {update,setMotion(value){running=value;},destroy(){renderer.setAnimationLoop(null);resize.disconnect();observer.disconnect();orbit.dispose();renderer.domElement.removeEventListener('pointerdown',start);renderer.domElement.removeEventListener('pointerup',end);geometries.forEach(g=>g.dispose());[white,dark,mark,pointColor,wakeMat,terrain.material,particleMaterial].forEach(m=>m.dispose());texture.dispose();wakePlane.geometry.dispose();particleGeometry.dispose();terrain.geometry.dispose();grid.geometry.dispose();grid.material.dispose();ground.geometry.dispose();ground.material.dispose();renderer.dispose();renderer.domElement.remove();}};
 }

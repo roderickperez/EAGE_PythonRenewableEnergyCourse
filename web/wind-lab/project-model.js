@@ -19,23 +19,31 @@ export function powerKw(speed) {
   return speed < 12 ? 0.3 * speed ** 3 : 518.4;
 }
 
-export function evaluate(ids, fromDegrees, speed) {
+export function windFieldSampler(ids, fromDegrees, speed) {
   if (!Number.isFinite(speed) || speed < 0 || !Number.isFinite(fromDegrees)) throw new RangeError('Invalid wind');
+  if (new Set(ids).size !== ids.length) throw new Error('Duplicate turbines');
   const theta = fromDegrees * Math.PI / 180;
   const down = { x: -Math.sin(theta), y: -Math.cos(theta) };
   const cross = { x: Math.cos(theta), y: -Math.sin(theta) };
-  const points = ids.map(gridPoint).map(p => ({ ...p, along: p.x * down.x + p.y * down.y, across: p.x * cross.x + p.y * cross.y }));
-  if (new Set(ids).size !== ids.length) throw new Error('Duplicate turbines');
-  const results = points.map(p => {
+  const turbines = ids.map(gridPoint).map(p => ({ along:p.x * down.x + p.y * down.y, across:p.x * cross.x + p.y * cross.y }));
+  return (x, y) => {
+    const along = x * down.x + y * down.y, across = x * cross.x + y * cross.y;
     let sum = 0;
-    for (const other of points) {
-      const distance = p.along - other.along;
-      if (distance > 1e-8 && Math.abs(p.across - other.across) < INITIAL_WAKE + DECAY * distance) {
+    for (const other of turbines) {
+      const distance = along - other.along;
+      if (distance > 1e-8 && Math.abs(across - other.across) < INITIAL_WAKE + DECAY * distance) {
         const deficit = 2 * INDUCTION / (1 + DECAY * distance / INITIAL_WAKE) ** 2;
         sum += deficit ** 2;
       }
     }
-    const effective = Math.max(0, speed * (1 - Math.sqrt(sum)));
+    return Math.max(0, speed * (1 - Math.sqrt(sum)));
+  };
+}
+
+export function evaluate(ids, fromDegrees, speed) {
+  const sample = windFieldSampler(ids, fromDegrees, speed);
+  const results = ids.map(gridPoint).map(p => {
+    const effective = sample(p.x, p.y);
     return { ...p, speed: effective, power: powerKw(effective) };
   });
   const total = results.reduce((sum, p) => sum + p.power, 0);

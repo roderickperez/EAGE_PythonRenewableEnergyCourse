@@ -6,13 +6,13 @@ export function mountWindProject(host) {
   const style=document.createElement('style'); style.textContent=css; host.append(style);
   const root=document.createElement('section'); root.className='wind-project';
   root.innerHTML=`<div class="wp-heading"><div><h2>Wind farm layout explorer</h2><p>Place turbines on a 2 km × 2 km site. Drag to rotate; scroll to zoom. Turbines are enlarged for visibility.</p></div><button data-action="motion" type="button" aria-pressed="true">Pause motion</button></div>
-    <div class="wp-layout"><div class="wp-scene" role="img" aria-label="Isometric wind farm grid. Use the location selector below for keyboard placement."></div>
+    <div class="wp-layout"><div><div class="wp-scene" role="img" aria-label="Isometric wind farm grid with animated wind particles and colored wake speeds. Use the location selector below for keyboard placement."></div><div class="wp-legend" aria-label="Modeled wake wind speed color scale"><strong>Modeled wind speed (m/s)</strong><div class="wp-gradient"></div><div class="wp-legend-labels"><span>0.0</span><span data-out="legend-max">12.0 (free stream)</span></div></div></div>
     <div class="wp-settings"><label>Wind from <output data-out="direction">0° N</output><input data-field="direction" type="range" min="0" max="359" step="1" value="0"></label>
       <label>Wind speed <output data-out="speed">12.0 m/s</output><input data-field="speed" type="range" min="0" max="25" step="0.5" value="12"></label>
       <label>Minimum spacing <output data-out="spacing">200 m (5 D)</output><input data-field="spacing" type="range" min="0" max="600" step="40" value="200"></label>
       <label>Grid location <select data-field="location" aria-label="Grid location"></select></label>
       <div class="wp-buttons"><button data-action="toggle" type="button">Place turbine</button><button data-action="recommend" type="button">Find best next location</button><button data-action="baseline" type="button">Save baseline</button><button data-action="reset" type="button">Reset layout</button><button data-action="export" type="button">Download CSV</button></div>
-      <p class="wp-note">Gold marks the selected location; blue shapes show idealized wakes. The yellow arrow points downwind. Wind direction is where wind comes from.</p></div></div>
+      <p class="wp-note">Gold marks the selected location. Wind particles move downwind and grow as speed increases. Plasma colors show modeled speed inside wakes; unchanged terrain is free-stream wind.</p></div></div>
     <p class="wp-status" role="status" aria-live="polite">Select an empty location and place a turbine.</p>
     <div class="wp-metrics"><div><span>Turbines</span><strong data-value="count">0</strong></div><div><span>Farm power</span><strong data-value="power">0.000 MW</strong></div><div><span>No-wake power</span><strong data-value="ideal">0.000 MW</strong></div><div><span>Wake loss</span><strong data-value="loss">0.000 MW</strong></div><div><span>Efficiency</span><strong data-value="efficiency">—</strong></div></div>
     <p data-value="selection"></p><p data-value="baseline"></p><p data-value="recommendation"></p>
@@ -28,6 +28,7 @@ export function mountWindProject(host) {
     const result=evaluate(ids,direction(),speed());
     output('direction').textContent=`${direction()}° from north`;
     output('speed').textContent=`${speed().toFixed(1)} m/s`;
+    output('legend-max').textContent=`${speed().toFixed(1)} (free stream)`;
     output('spacing').textContent=`${spacing()} m (${(spacing()/DIAMETER).toFixed(1)} D)`;
     value('count').textContent=ids.length; value('power').textContent=format(result.total);value('ideal').textContent=format(result.ideal); value('loss').textContent=format(result.loss);
     value('efficiency').textContent=result.efficiency===null?'—':result.efficiency.toFixed(1)+'%';
