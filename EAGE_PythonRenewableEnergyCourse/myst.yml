@@ -88,9 +88,12 @@ project:
         - file: section7/assessment/wind.md
         - file: section7/assessment/geothermal.md
 
-    - title: Course Final Project
+    - title: Course Projects
       children:
+        - file: section8/hydraulic-project.md
+        - file: section8/solar-project.md
         - file: section8/wind-project.md
+        - file: section8/geothermal-project.md
         - file: section8/projectIntro.md
 
     - title: Summary and Conclusions

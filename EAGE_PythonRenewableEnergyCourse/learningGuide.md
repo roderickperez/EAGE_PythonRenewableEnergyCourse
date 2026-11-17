@@ -21,7 +21,7 @@ chapter text as well as the code.
 5. Complete the Hard questions (13–20), which combine modelling, validation, comparison and interpretation.
 6. Take the question-only renewable-energy test, then complete the hybrid-portfolio project from its separate CSV datasets. The test answer key and project solution are instructor-only.
 
-Introduction to Renewable Energy contains the fundamentals, equations and worked examples. Every workbook topic and quiz has 20 questions: 4 Basic, 8 Medium and 8 Hard. The Course Final Project progresses from loading the supplied CSVs through Python modelling, validation, plotting and comparing scenarios in one notebook.
+Introduction to Renewable Energy contains the fundamentals, equations and worked examples. Every workbook topic and quiz has 20 questions: 4 Basic, 8 Medium and 8 Hard. The final project in Course Projects progresses from loading the supplied CSVs through Python modelling, validation, plotting and comparing scenarios in one notebook.
 
 ## Running the examples
 

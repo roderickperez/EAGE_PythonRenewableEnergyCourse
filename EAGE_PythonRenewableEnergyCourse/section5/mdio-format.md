@@ -76,35 +76,3 @@ if __name__ == "__main__":
 ```
 
 This is an illustration of storing an array, not a complete wind-resource assessment. Store actual latitude/longitude, UTC timestamps, units, height, source and licensing metadata in an appropriate documented workflow, and inspect missing values before analysis. Choose chunks for your own access pattern. The [NumPy converter API](https://mdio-python.readthedocs.io/en/v0.9.3/api_reference.html) and [installation guide](https://mdio-python.readthedocs.io/en/v0.9.3/installation.html) describe the supported options.
-
-## Optional: import a seismic SEG-Y volume
-
-The following separate local script shows a common 3D poststack workflow. Replace the input path and inspect the SEG-Y trace headers first. Bytes 189 and 193 are common inline and crossline locations, but **your file may use different locations or conventions**. A regular, uniquely indexed grid is required. The converter uses multiprocessing, so keep the `__main__` guard. The output must be a new path, and conversion may require substantial disk space.
-
-```python
-from pathlib import Path
-from mdio import MDIOReader, segy_to_mdio
-
-
-def main():
-    output = Path("survey.mdio").resolve().as_uri()
-    segy_to_mdio(
-        "survey.sgy", output,
-        index_bytes=(189, 193),
-        index_names=("inline", "crossline"),
-        lossless=True,
-        storage_options_output={"auto_mkdir": True},
-        overwrite=False,
-    )
-    reader = MDIOReader(output, return_metadata=True)
-    live_mask, headers, amplitudes = reader[0]
-    print("Inline shape:", amplitudes.shape)
-    print("Live traces:", live_mask.sum())
-    print("Header fields:", headers.dtype.names)
-
-
-if __name__ == "__main__":
-    main()
-```
-
-The [official SEG-Y tutorial](https://mdio-python.readthedocs.io/en/v0.9.3/tutorials/quickstart.html) uses a different dataset-specific byte mapping and illustrates mask and header inspection. Validate geometry, axes and trace samples against the source before relying on a conversion. This course example does not add MDIO import to Petrel or to another application.

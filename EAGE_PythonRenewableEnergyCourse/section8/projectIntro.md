@@ -1,4 +1,4 @@
-# Final Project: Design and Analyse a Hybrid Renewable Portfolio
+# Project 5: Final Project — Design and Analyse a Hybrid Renewable Portfolio
 
 ## Purpose
 

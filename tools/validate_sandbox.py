@@ -82,8 +82,9 @@ def validate():
     assert 'project-map/index.html' not in pages[PROJECT]['html']
     assert 'id="load-the-separate-input-datasets"' in pages[PROJECT]['html']
     wind_project = 'section8/wind-project.md'
-    project_order = [path for path, page in pages.items() if page['group'] == 'Course Final Project']
-    assert project_order.index(wind_project) < project_order.index(PROJECT)
+    project_order = [path for path, page in pages.items() if page['group'] == 'Course Projects']
+    assert project_order[:5] == ['section8/hydraulic-project.md', 'section8/solar-project.md',
+                                 wind_project, 'section8/geothermal-project.md', PROJECT]
     assert 'id="how-to-use-the-explorer"' in pages[wind_project]['html']
     assert (OUT / 'wind-lab' / 'wind-project.js').is_file()
     assert (OUT / 'wind-lab' / 'project.html').is_file()
@@ -130,7 +131,7 @@ def validate():
         for answer in answers:
             assert answer.select('button[data-code]') and 'Step' in answer.get_text(),path
     tests=[pages[path] for path in ASSESSMENT_PAGES];project=pages[PROJECT]
-    assert project['group']=='Course Final Project'
+    assert project['group']=='Course Projects'
     assert all(page['group']=='Quizzes' for path,page in pages.items() if path.startswith('section7/renewableEnergyquizzes/'))
     for page in pages.values():
         if page['group']=='Quizzes':

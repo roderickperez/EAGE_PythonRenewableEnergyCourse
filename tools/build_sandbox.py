@@ -58,7 +58,7 @@ def toc_pages():
             visit(item.get('children', []), item.get('title', group))
     visit(yaml.safe_load((BOOK / 'myst.yml').read_text())['project']['toc'])
     # Referenced dataset definitions should be readable inside the sandbox too.
-    result.append(('section8/data/README.md', 'Course Final Project'))
+    result.append(('section8/data/README.md', 'Course Projects'))
     result.append(('data/examples/README.md', 'Data Processing and Exploration Data Analysis'))
     return result
 

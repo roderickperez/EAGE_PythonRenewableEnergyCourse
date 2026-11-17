@@ -1,4 +1,4 @@
-# Project 1: Wind farm layout
+# Project 3: Wind Energy — Wind farm layout
 
 Design a small wind farm and explore how the position of a turbine changes the wind and power available to its neighbors. This project comes before the [combined renewable portfolio project](projectIntro.md). It uses an idealized, synthetic site to teach layout reasoning; it is not a design recommendation for an actual site.
 
