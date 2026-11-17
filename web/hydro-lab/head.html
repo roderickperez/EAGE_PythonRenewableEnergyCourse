@@ -12,6 +12,7 @@
   #head{font-size:clamp(22px,5vw,32px);font-weight:750;color:#176d86;white-space:nowrap}
   #scene{position:relative;height:204px;overflow:hidden;border-radius:8px;background:#e9f3f4}
   #scene canvas{display:block}
+  #scene:has(canvas[data-orbit])::after{content:'Drag to rotate';position:absolute;right:7px;bottom:5px;color:#31524f;background:#ffffffdb;padding:2px 5px;border-radius:4px;font-size:.7rem;pointer-events:none}
   #motion{position:absolute;z-index:2;top:8px;left:8px;padding:5px 8px;color:#163b38;background:#fff;border:1px solid #adc7c1;border-radius:6px;font:inherit;font-size:.78rem;cursor:pointer}
   .scene-label{position:absolute;z-index:1;color:#24584e;background:#f6faf8e8;border-radius:4px;padding:1px 4px;font-size:.72rem;font-weight:700;white-space:nowrap;pointer-events:none;transform:translate(-50%,-50%)}
   #fallback{margin:0;padding:12px}
@@ -49,5 +50,5 @@
   <div id="controls" role="group" aria-label="Hydraulic head inputs"></div>
   <p class="note">Elevation <i>z</i> is measured vertically from the fixed datum to the pipe centreline. The blue column shows pressure head above the centreline. Particle speed follows water speed.</p>
 </main>
-<script type="module" src="head.js?v=motion-icons-5"></script>
+<script type="module" src="head.js?v=diagram-orbit-6"></script>
 </html>

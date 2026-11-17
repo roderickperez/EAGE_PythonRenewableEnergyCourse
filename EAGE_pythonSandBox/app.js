@@ -191,6 +191,7 @@ async function route() {
       ['solar-irradiation-explorer', 'resource.html?demo=irradiation', 'Interval irradiation explorer', 'solar-lab'],
       ['solar-tilt-explorer', 'resource.html?demo=tilt', 'Tilted-module irradiance explorer', 'solar-lab'],
       ['solar-incidence-explorer', 'resource.html?demo=incidence', 'Solar incidence angle explorer', 'solar-lab'],
+      ['solar-iv-explorer', 'resource.html?demo=iv', 'Photovoltaic current and power curve explorer', 'solar-lab'],
     ]) {
       const spot = $(anchor);
       if (!spot) continue;

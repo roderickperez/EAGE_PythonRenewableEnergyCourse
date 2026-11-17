@@ -185,6 +185,14 @@ $$FF=\frac{V_{mp}I_{mp}}{V_{oc}I_{sc}}$$
 
 describes the shape of the I–V curve and is dimensionless. It is not conversion efficiency or capacity factor. Irradiance strongly affects photocurrent, while voltage and power also respond to temperature. MPPT attempts to operate near the available maximum rather than at either I–V endpoint [@wade2003; @foster2010]; see also [@goswami2015], §§9.2–9.2.2, pp. 525–532. MPPT and inverter conversion efficiency describe different operations: choosing the available DC operating point and converting DC electrical power to AC.
 
+The explorer models one uniformly illuminated silicon module. Change irradiance and cell temperature to see the same maximum-power voltage marked on both curves. The dashed traces show the module at standard test conditions. [De Soto single-diode model](https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/single-diode-equivalent-circuit-models/de-soto-five-parameter-module-model/); [pvlib module example](https://pvlib-python.readthedocs.io/en/latest/gallery/iv-modeling/plot_singlediode.html).
+
+(solar-iv-explorer)=
+:::{iframe} ../../solar-lab/resource.html?demo=iv
+:width: 100%
+:title: Photovoltaic current and power curve explorer
+:::
+
 For a simple area model,
 
 $$P_{DC}=G_{POA}A\eta_{PV},\qquad

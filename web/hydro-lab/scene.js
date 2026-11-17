@@ -14,9 +14,12 @@ export class HydroScene {
     this.renderer.shadowMap.enabled=true; this.renderer.shadowMap.type=T.PCFSoftShadowMap;
     this.renderer.toneMapping=T.ACESFilmicToneMapping; this.renderer.toneMappingExposure=1.2;
     host.append(this.renderer.domElement);
-    this.camera=new T.PerspectiveCamera(35,1,.1,150);
+    this.camera=new T.OrthographicCamera(-10,10,8,-8,.1,150);
+    this.camera.position.set(5,9.75,22);
     this.controls=new OrbitControls(this.camera,this.renderer.domElement);
-    Object.assign(this.controls,{enablePan:false,minPolarAngle:.65,maxPolarAngle:1.4,minAzimuthAngle:-.65,maxAzimuthAngle:.65,minDistance:17,maxDistance:65});
+    this.controls.target.set(-.4,2.5,0);
+    Object.assign(this.controls,{enablePan:false,minPolarAngle:.65,maxPolarAngle:1.4,minAzimuthAngle:-.65,maxAzimuthAngle:.65,minZoom:.7,maxZoom:1.85});
+    this.controls.update();
     this.scene.add(new T.HemisphereLight(0xdbeeff,0x74695a,2));
     const sun=new T.DirectionalLight(0xfff2dd,4); sun.position.set(-6,15,12); sun.castShadow=true;
     sun.shadow.mapSize.set(2048,2048); Object.assign(sun.shadow.camera,{left:-15,right:15,top:12,bottom:-12}); sun.shadow.normalBias=.035; this.scene.add(sun);
@@ -128,7 +131,15 @@ export class HydroScene {
     this.electrical.push({curve,particles,material,phase:0});
   }
   update(result){this.result=result;this.state=visualState(result);const h=this.state.surfaceY+.25;this.reservoir.scale.y=h;this.reservoir.position.y=h/2-.25;this.lamp.emissive.set('#29d6b0');this.lamp.emissiveIntensity=this.state.load;this.host.dataset.turbineFlow=String(result.turbineFlowM3s);this.host.dataset.waterSurface=String(this.state.surfaceY);this.host.dataset.energized=String(this.state.energized);}
-  resize(){const{width,height}=this.host.getBoundingClientRect();if(!width||!height)return;this.renderer.setSize(width,height,false);this.camera.aspect=width/height;const d=Math.max(25,20/this.camera.aspect);this.camera.position.set(d*.2,d*.39,d*.88);this.controls.target.set(-.4,2.5,0);this.camera.updateProjectionMatrix();this.controls.update();}
+  resize(){
+    const { width, height } = this.host.getBoundingClientRect();
+    if (!width || !height) return;
+    this.renderer.setSize(width,height,false);
+    const aspect = width / height;
+    const half = Math.max(7.9, 11.25 / aspect);
+    Object.assign(this.camera, { left: -half * aspect, right: half * aspect, top: half, bottom: -half });
+    this.camera.updateProjectionMatrix();
+  }
   frame(time){const dt=Math.min((time-this.lastTime)/1000,.05);this.lastTime=time;if(!this.visible)return;const flow=this.result?.turbineFlowM3s??0;
     const r=this.animate?dt*Math.min(7,flow*1.3):0;this.runner.rotation.y+=r;this.rotor.rotation.y+=r;
     for(const s of this.streams){const q=s.type==='spill'?(this.result?.spillFlowM3s??0):flow;if(this.animate)s.phase=(s.phase+dt*Math.min(.5,q*.025))%1;s.particles.forEach((p,i)=>{p.visible=q>0;p.position.copy(s.curve.getPointAt((i/s.particles.length+s.phase)%1));p.position.z+=s.type==='spill'?.14:.32;});}

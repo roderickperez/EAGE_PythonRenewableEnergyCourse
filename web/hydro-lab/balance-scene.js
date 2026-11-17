@@ -1,15 +1,17 @@
 import * as T from 'three';
+import { mountDiagramOrbit } from '../diagram-orbit.js';
 import { mountCanvasDiagram } from './diagram-canvas.js';
 import { mountDiagramMotion, mountDiagramRenderer } from './diagram-motion.js';
 import { createOperationScene } from './operation-scene.js';
 import { createPumpedStorageScene } from './pumped-storage-scene.js';
+import { MAX_FLOW_M3S, MAX_INTERVAL_MINUTES } from './balance-model.js';
 
-const palette = { water: '#288daa', net: '#398470', loss: '#c17932', shaft: '#98744c', electricity: '#e5a124' };
+const palette = { water: '#168fb2', net: '#267b80', loss: '#c17932', shaft: '#b97140', electricity: '#e5a124' };
 export { palette };
 
 export function mountBalanceRenderer(host, kind) {
   return mountDiagramRenderer(host,
-    kind === 'flow-volume' ? null : () => create3DScene(host, kind),
+    () => create3DScene(host, kind),
     () => mountCanvasDiagram(host, kind));
 }
 
@@ -25,10 +27,9 @@ export function mountBalanceScene(host, kind, motionButton) {
 
 function create3DScene(host, kind) {
   const scene = new T.Scene();
-  scene.background = new T.Color('#e9f3f4');
+  scene.background = new T.Color('#edf1f4');
   const camera = new T.OrthographicCamera();
   camera.position.set(7, 6, 14);
-  camera.lookAt(0, 2, 0);
   scene.add(new T.HemisphereLight(0xffffff, 0x6e8a82, 2.4));
   const light = new T.DirectionalLight(0xffffff, 2.3);
   light.position.set(-5, 7, 4);
@@ -38,8 +39,8 @@ function create3DScene(host, kind) {
   (host.querySelector('#drawing') || host).append(renderer.domElement);
   const material = color => new T.MeshStandardMaterial({ color, roughness: .65 });
   const water = material(palette.water);
-  const rock = material('#a7bcb2');
-  const steel = material('#49666f');
+  const rock = material('#c9cbc8');
+  const steel = material('#667886');
 
   function mesh(geometry, surface, x, y, z) {
     const object = new T.Mesh(geometry, surface);
@@ -64,7 +65,28 @@ function create3DScene(host, kind) {
   }
 
   let draw;
-  if (kind === 'pumped-storage') {
+  if (kind === 'flow-volume') {
+    box(8.4, .15, 3.4, rock, 0, -.16, 0);
+    const x = 1.85;
+    const collected = tank(x, 2.75, 2.8, 2.3);
+    const nozzle = mesh(new T.CylinderGeometry(.14, .14, 5.2, 18), steel, -1.55, 2.78, .37);
+    nozzle.rotation.z = Math.PI / 2;
+    const spray = new T.MeshBasicMaterial({ color: '#22a9c5' });
+    const marker = new T.SphereGeometry(.073, 12, 8);
+    const particles = Array.from({ length: 16 }, () => mesh(marker, spray, 0, 0, 0));
+    draw = ([volume, flow], phase) => {
+      const height = 2.45 * volume / (MAX_FLOW_M3S * MAX_INTERVAL_MINUTES * 60);
+      level(collected, height);
+      for (const [i, particle] of particles.entries()) {
+        const t = (phase + i / particles.length) % 1;
+        const along = Math.min(t / .62, 1);
+        const fall = Math.max(0, (t - .62) / .38);
+        const y = 2.92 - 2.9 * fall ** 1.35;
+        particle.visible = flow > 0 && y > height;
+        particle.position.set(-4.12 + along * 5.16 + .25 * fall, y, .47);
+      }
+    };
+  } else if (kind === 'pumped-storage') {
     draw = createPumpedStorageScene({ material, mesh, box, tank, level, steel, rock, palette });
   } else if (kind === 'hydraulic-loss' || kind === 'turbine-operation') {
     draw = createOperationScene(kind, { scene, material, mesh, box, tank, level, steel, rock, palette });
@@ -151,10 +173,11 @@ function create3DScene(host, kind) {
     if (values) draw(values, phase);
     renderer.render(scene, camera);
   }
+  mountDiagramOrbit(camera, renderer.domElement, [0, kind === 'flow-volume' ? 1.65 : 2, 0], render);
   new ResizeObserver(() => {
     const { clientWidth: w, clientHeight: h } = host;
     if (!w || !h || !renderer.domElement.isConnected) return;
-    const half = Math.max(kind === 'pumped-storage' ? 3.08 : 2.85, 5.2 * h / w);
+    const half = Math.max(kind === 'pumped-storage' ? 3.08 : 2.95, 5.2 * h / w);
     Object.assign(camera, { left: -half * w / h, right: half * w / h, top: half, bottom: -half });
     camera.updateProjectionMatrix();
     renderer.setSize(w, h);

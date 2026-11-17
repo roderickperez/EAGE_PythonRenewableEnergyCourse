@@ -1,4 +1,5 @@
 import * as T from 'three';
+import { mountDiagramOrbit } from '../diagram-orbit.js';
 import { computeHead } from './head-model.js';
 import { mountCanvasDiagram } from './diagram-canvas.js';
 import { mountDiagramMotion, mountDiagramRenderer } from './diagram-motion.js';
@@ -63,17 +64,16 @@ function createScene(container) {
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   container.querySelector('#drawing').append(renderer.domElement);
   const scene = new T.Scene();
-  scene.background = new T.Color('#e9f3f4');
+  scene.background = new T.Color('#edf1f4');
   const camera = new T.OrthographicCamera();
   camera.position.set(7, 7, 13);
-  camera.lookAt(0, 2.1, 0);
   scene.add(new T.HemisphereLight(0xffffff, 0x5c7a79, 2.3));
   const key = new T.DirectionalLight(0xffffff, 2.2);
   key.position.set(-4, 8, 4);
   scene.add(key);
-  const steel = new T.MeshStandardMaterial({ color: '#49666f', roughness: .55 });
-  const blue = new T.MeshStandardMaterial({ color: '#247f9d', roughness: .43 });
-  const datum = new T.MeshStandardMaterial({ color: '#9cb7ae' });
+  const steel = new T.MeshStandardMaterial({ color: '#667886', roughness: .55 });
+  const blue = new T.MeshStandardMaterial({ color: '#168fb2', roughness: .43 });
+  const datum = new T.MeshStandardMaterial({ color: '#c9cbc8' });
   const dimension = new T.MeshBasicMaterial({ color: '#24584e' });
   const glass = new T.MeshStandardMaterial({ color: '#8cccdb', transparent: true, opacity: .28, depthWrite: false });
   function mesh(geometry, material, parent, x = 0, y = 0, z = 0) {
@@ -131,12 +131,15 @@ function createScene(container) {
 
   let speed = 0, phase = 0;
   function render() {
+    placeLabel(datumLabel, datumPoint);
+    placeLabel(elevationLabel, elevationPoint);
     particles.forEach((particle, index) => {
       particle.position.x = -3.55 + 7.1 * ((phase + index / particles.length) % 1);
       particle.visible = speed > 0;
     });
     renderer.render(scene, camera);
   }
+  mountDiagramOrbit(camera, renderer.domElement, [0, 2.1, 0], render, .68);
   function resize() {
     const { clientWidth: width, clientHeight: height } = container;
     if (!width || !height || !renderer.domElement.isConnected) return;
@@ -145,8 +148,6 @@ function createScene(container) {
     camera.updateProjectionMatrix();
     renderer.setSize(width, height);
     datumLabel.hidden = false;
-    placeLabel(datumLabel, datumPoint);
-    placeLabel(elevationLabel, elevationPoint);
     render();
   }
   new ResizeObserver(resize).observe(container);
@@ -158,7 +159,6 @@ function createScene(container) {
     guide.position.y = datumY + height / 2;
     elevationPoint.set(bracketX - .35, guide.position.y, bracketZ);
     elevationLabel.hidden = height === 0;
-    placeLabel(elevationLabel, elevationPoint);
     water.visible = pressureHeight > 0;
     water.scale.y = pressureHeight;
     water.position.y = pressureHeight / 2;

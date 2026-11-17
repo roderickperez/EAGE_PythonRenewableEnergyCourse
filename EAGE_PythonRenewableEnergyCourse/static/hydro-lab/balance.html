@@ -12,6 +12,11 @@
   #result { font-size: clamp(22px,5vw,32px); font-weight: 750; color: #176d86 }
   #scene { position: relative; height: 204px; overflow: hidden; border-radius: 8px; background: #e9f3f4 }
   #scene canvas { display: block }
+  .turbine-viewport { position: relative }
+  #scene:not(.turbine-comparison):has(canvas[data-orbit])::after, .turbine-viewport:has(canvas[data-orbit])::after {
+    content: 'Drag to rotate'; position: absolute; right: 7px; bottom: 5px; color: #31524f;
+    background: #ffffffdb; padding: 2px 5px; border-radius: 4px; font-size: .7rem; pointer-events: none;
+  }
   #motion { position: absolute; z-index: 1; top: 8px; left: 8px; padding: 5px 8px; color: #163b38; background: #fff; border: 1px solid #adc7c1; border-radius: 6px; font: inherit; font-size: .78rem; cursor: pointer }
   #scene:has(#fallback:not([hidden])) { height: auto }
   #fallback { margin: 0; padding: 12px }
@@ -52,5 +57,5 @@
   <div id="controls" role="group" aria-label="Equation inputs"></div>
   <p id="note"></p>
 </main>
-<script type="module" src="balance.js?v=flow-duration-9"></script>
+<script type="module" src="balance.js?v=diagram-orbit-10"></script>
 </html>

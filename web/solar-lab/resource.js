@@ -1,7 +1,10 @@
 import { addPlot, mountPlotGroup, setupPlot } from '../hydro-lab/comparison-plots.js';
-import { mountDiagramMotion } from '../hydro-lab/diagram-motion.js';
+import { mountDiagramMotion, mountDiagramRenderer } from '../hydro-lab/diagram-motion.js';
 import { RAD, beamOnPlane, incidenceCosine, intervalIrradiation, isotropicIrradiance, solarVector } from './model.js';
 import { mountResourceScene, solarColors, solarSvgNode } from './resource-scene.js';
+
+import { mountIvExplorer } from './iv-explorer.js';
+import { mountResourceThree } from './resource-three.js';
 
 const $ = id => document.getElementById(id);
 const format = new Intl.NumberFormat('en', { maximumFractionDigits: 2 });
@@ -149,50 +152,64 @@ function mountIntervalPlot() {
 }
 
 const requested = new URLSearchParams(location.search).get('demo');
-const kind = Object.hasOwn(demos, requested) ? requested : 'horizontal';
-const demo = demos[kind];
-$('title').textContent = document.title = demo.title;
-$('note').textContent = demo.note;
-$('drawing').setAttribute('aria-label', `Isometric solar diagram. ${Object.values(demo.legend).join('. ')}.`);
-for (const [key, name] of Object.entries(demo.legend)) {
-  const item = document.createElement('span');
-  item.textContent = name;
-  item.style.setProperty('--swatch', solarColors[key]);
-  $('legend').append(item);
+if (requested === 'iv') mountIvExplorer();
+else mountResourceExplorer(Object.hasOwn(demos, requested) ? requested : 'horizontal');
+
+function mountResourceExplorer(kind) {
+  const demo = demos[kind];
+  $('title').textContent = document.title = demo.title;
+  $('note').textContent = demo.note;
+  const svg = $('drawing');
+  const label = `Isometric solar diagram. ${Object.values(demo.legend).join('. ')}.`;
+  svg.setAttribute('aria-label', label);
+  for (const [key, name] of Object.entries(demo.legend)) {
+    const item = document.createElement('span');
+    item.textContent = name;
+    item.style.setProperty('--swatch', solarColors[key]);
+    $('legend').append(item);
+  }
+  const fields = demo.sliders.map(([key, label, unit, min, max, step, initial]) => {
+    const control = document.createElement('div');
+    control.className = 'control';
+    control.innerHTML = `<label for="${key}"><span>${label}</span><output for="${key}"></output></label>
+      <input id="${key}" type="range" min="${min}" max="${max}" step="${step}" value="${initial}">`;
+    $('controls').append(control);
+    return { key, unit, input: control.querySelector('input'), output: control.querySelector('output') };
+  });
+
+  const showAngle = kind !== 'irradiation';
+  const render = mountDiagramRenderer($('scene'), () => {
+    const draw = mountResourceThree($('scene'), showAngle, label);
+    svg.setAttribute('hidden', '');
+    return draw;
+  }, () => {
+    svg.removeAttribute('hidden');
+    return mountResourceScene(svg, showAngle);
+  });
+  const intervalPlot = kind === 'irradiation' ? mountIntervalPlot() : null;
+  const updateMotion = mountDiagramMotion(document.querySelector('main'), $('motion'), (state, phase) => {
+    const scene = intervalPlot ? { ...state, beam: intervalPlot(state, phase), sky: 0, ground: 0 } : state;
+    render(scene, intervalPlot ? phase * 5 : phase);
+  }, () => kind === 'irradiation' ? 1 / 9000 : 1 / 1650);
+
+  function update() {
+    const inputs = Object.fromEntries(fields.map(({ key, unit, input, output }) => {
+      const number = input.valueAsNumber;
+      const text = unit === '°' ? angle(number) : unit ? `${n(number)} ${unit}` : n(number);
+      output.value = text;
+      input.setAttribute('aria-valuetext', text);
+      return [key, number];
+    }));
+    const state = calculate(kind, inputs);
+    const [result, ...rows] = readout(kind, inputs, state);
+    $('result').innerHTML = result;
+    $('equations').innerHTML = rows.map(row => `<p>${row}</p>`).join('');
+    updateMotion(state);
+  }
+
+  for (const { input } of fields) input.addEventListener('input', update);
+  update();
 }
-const fields = demo.sliders.map(([key, label, unit, min, max, step, initial]) => {
-  const control = document.createElement('div');
-  control.className = 'control';
-  control.innerHTML = `<label for="${key}"><span>${label}</span><output for="${key}"></output></label>
-    <input id="${key}" type="range" min="${min}" max="${max}" step="${step}" value="${initial}">`;
-  $('controls').append(control);
-  return { key, unit, input: control.querySelector('input'), output: control.querySelector('output') };
-});
-
-const render = mountResourceScene($('drawing'), kind !== 'irradiation');
-const intervalPlot = kind === 'irradiation' ? mountIntervalPlot() : null;
-const updateMotion = mountDiagramMotion(document.querySelector('main'), $('motion'), (state, phase) => {
-  const scene = intervalPlot ? { ...state, beam: intervalPlot(state, phase), sky: 0, ground: 0 } : state;
-  render(scene, intervalPlot ? phase * 5 : phase);
-}, () => kind === 'irradiation' ? 1 / 9000 : 1 / 1650);
-
-function update() {
-  const inputs = Object.fromEntries(fields.map(({ key, unit, input, output }) => {
-    const number = input.valueAsNumber;
-    const text = unit === '°' ? angle(number) : unit ? `${n(number)} ${unit}` : n(number);
-    output.value = text;
-    input.setAttribute('aria-valuetext', text);
-    return [key, number];
-  }));
-  const state = calculate(kind, inputs);
-  const [result, ...rows] = readout(kind, inputs, state);
-  $('result').innerHTML = result;
-  $('equations').innerHTML = rows.map(row => `<p>${row}</p>`).join('');
-  updateMotion(state);
-}
-
-for (const { input } of fields) input.addEventListener('input', update);
-update();
 
 if (window.frameElement) {
   const frame = window.frameElement;

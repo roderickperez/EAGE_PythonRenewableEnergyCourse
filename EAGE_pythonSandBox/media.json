@@ -18,7 +18,8 @@
         "from-sunlight-to-delivered-electricity": "en/solar/from-sunlight-to-delivered-electricity.mp3",
         "irradiance": "en/solar/irradiance.mp3",
         "plane-of-array-irradiance": "en/solar/plane-of-array-irradiance.mp3",
-        "a-first-model-for-a-tilted-module": "en/solar/a-first-model-for-a-tilted-module.mp3"
+        "a-first-model-for-a-tilted-module": "en/solar/a-first-model-for-a-tilted-module.mp3",
+        "the-currentvoltage-characteristic": "en/solar/the-current-voltage-characteristic.mp3"
       }
     }
   }

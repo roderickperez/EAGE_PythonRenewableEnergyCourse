@@ -1,6 +1,7 @@
 import * as T from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RAD, sunDirection } from './model.js';
+import { createSolarPanel } from './panel.js';
 
 export function mountScene(host) {
   const scene = new T.Scene();
@@ -44,20 +45,10 @@ export function mountScene(host) {
   box([.3, 2, .3], steel, [0, 1, 0]);
   box([.8, .16, .8], steel, [0, .19, 0]);
   const rack = new T.Group();
-  const panel = new T.Group();
+  const panel = createSolarPanel(box, mat, steel);
   rack.add(panel);
   rack.position.y = 2.05;
   scene.add(rack);
-  box([3.8, .16, 2.85], steel, [0, 0, 0], panel);
-  box([3.66, .045, 2.71], mat('#142740', .28), [0, .083, 0], panel);
-  const cells = ['#173963', '#1a416e', '#204a77'].map(color => mat(color, .27, .26));
-  for (let row = 0; row < 6; row++) {
-    for (let col = 0; col < 8; col++) {
-      const x = (col - 3.5) * .45;
-      const z = (row - 2.5) * .442;
-      box([.426, .019, .418], cells[(row + col * 2) % 3], [x, .114, z], panel);
-    }
-  }
   const inverter = box([.95, .72, .59], mat('#dce2e3'), [3.13, .45, -.9]);
   const led = new T.MeshBasicMaterial({ color: '#425a63' });
   box([.43, .14, .018], led, [3.13, .57, -1.20]);

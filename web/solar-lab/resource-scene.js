@@ -2,7 +2,8 @@ import { RAD, incidenceCosine, solarVector } from './model.js';
 
 const ns = 'http://www.w3.org/2000/svg';
 export const solarColors = { beam: '#d98c22', sky: '#368caf', ground: '#408778', normal: '#526976' };
-const center = [0, 1.26, 0];
+export const panelCenter = [0, 1.26, 0];
+const center = panelCenter;
 const up = [0, 1, 0];
 
 function offset(origin, direction, length) {
@@ -18,6 +19,42 @@ export function solarSvgNode(parent, tag, attributes) {
   for (const [name, value] of Object.entries(attributes)) element.setAttribute(name, value);
   parent.append(element);
   return element;
+}
+
+export function resourcePaths({ tilt, azimuth, sunDirection, normal }) {
+  const right = solarVector(90, azimuth + 90);
+  const down = solarVector(90 + tilt, azimuth);
+  const panel = (x, y) => offset(offset(center, right, x), down, y);
+  const source = offset(center, sunDirection, 3.53);
+  const normalEnd = offset(center, normal, 2.0);
+  const cosine = incidenceCosine(sunDirection, normal);
+  const angle = Math.acos(cosine);
+  const tangent = 1 + cosine < 1e-10 ? up : sunDirection.map((value, i) =>
+    (value - cosine * normal[i]) / Math.sin(angle || 1));
+  const arcPoints = [];
+  if (angle > .01) for (let step = 0; step <= 18; step++) {
+    const t = angle * step / 18;
+    const blend = normal.map((n, i) => n * Math.cos(t) + tangent[i] * Math.sin(t));
+    arcPoints.push(offset(center, blend, 1.45));
+  }
+  const facing = solarVector(90, azimuth);
+  const routes = {
+    beam: [-.85, 0, .85].map(x => {
+      const end = panel(x, .12);
+      return [offset(end, sunDirection, 2.83), end];
+    }),
+    sky: [-1.0, 1.0].map(x => {
+      const end = panel(x, -.16);
+      return [offset(offset(end, up, 1.8), right, x * .65), end];
+    }),
+    ground: [-.76, .76].map(x => {
+      const end = panel(x, .46);
+      const start = offset(end, facing, 2.5);
+      start[1] = end[1] - Math.min(end[1] - .04, Math.sin(tilt * RAD) * 1.6);
+      return [start, end];
+    }),
+  };
+  return { source, normalEnd, arcPoints, routes };
 }
 
 export function mountResourceScene(svg, showAngle) {
@@ -64,40 +101,14 @@ export function mountResourceScene(svg, showAngle) {
         const y = -.75 + Math.floor(index / 6) * .38;
         points(tile, corners(x, y, x + .43, y + .338));
       });
-      const source = offset(center, sunDirection, 3.53);
-      const [x, y] = project(source);
+      const paths = resourcePaths({ tilt, azimuth, sunDirection, normal });
+      const [x, y] = project(paths.source);
       sun.setAttribute('cx', x);
       sun.setAttribute('cy', y);
-      points(axis, [center, offset(center, normal, 2.0)]);
-      points(direction, [center, source]);
-      const cosine = incidenceCosine(sunDirection, normal);
-      const angle = Math.acos(cosine);
-      const tangent = 1 + cosine < 1e-10 ? up : sunDirection.map((value, i) =>
-        (value - cosine * normal[i]) / Math.sin(angle || 1));
-      const arcPoints = [];
-      if (angle > .01) for (let step = 0; step <= 18; step++) {
-        const t = angle * step / 18;
-        const blend = normal.map((n, i) => n * Math.cos(t) + tangent[i] * Math.sin(t));
-        arcPoints.push(offset(center, blend, 1.45));
-      }
-      points(arc, arcPoints);
-      const facing = solarVector(90, azimuth);
-      routes = {
-        beam: [-.85, 0, .85].map(x => {
-          const end = panel(x, .12);
-          return [offset(end, sunDirection, 2.83), end];
-        }),
-        sky: [-1.0, 1.0].map(x => {
-          const end = panel(x, -.16);
-          return [offset(offset(end, up, 1.8), right, x * .65), end];
-        }),
-        ground: [-.76, .76].map(x => {
-          const end = panel(x, .46);
-          const start = offset(end, facing, 2.5);
-          start[1] = end[1] - Math.min(end[1] - .04, Math.sin(tilt * RAD) * 1.6);
-          return [start, end];
-        }),
-      };
+      points(axis, [center, paths.normalEnd]);
+      points(direction, [center, paths.source]);
+      points(arc, paths.arcPoints);
+      routes = paths.routes;
       for (const { key, set } of rays) set.forEach(({ line }, i) => points(line, routes[key][i]));
     }
     const shown = showAngle || components.beam > 0 || components.sky > 0 || components.ground > 0;

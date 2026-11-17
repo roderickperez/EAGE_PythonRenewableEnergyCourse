@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { solarPower, solarDay, batteryDay, lifetime, solarVector, incidenceCosine,
   beamOnPlane, isotropicIrradiance, intervalIrradiation } from './model.js';
+import { moduleCurve } from './iv-model.js';
 
 const worked = {
   hour: 12, latitude: 0, declination: 0, tilt: 0, azimuth: 180,
@@ -9,6 +10,29 @@ const worked = {
   area: 50, efficiency: 20, soiling: 0, wiring: 0, inverterEfficiency: 97, rating: 8000,
 };
 const close = (actual, expected) => assert.ok(Math.abs(actual - expected) < 1e-8, `${actual} ≠ ${expected}`);
+
+test('single-diode MPP agrees with pvlib’s published 1000 W/m², 55 °C case', () => {
+  const { isc, voc, peak, samples } = moduleCurve(1000, 55);
+  assert.ok(Math.abs(isc - 5.235561) < .00001);
+  assert.ok(Math.abs(voc - 52.129783) < .00001);
+  assert.ok(Math.abs(peak.voltage - 39.614016) < .00001);
+  assert.ok(Math.abs(peak.power - 187.868473) < .00001);
+  assert.deepEqual(samples[0], [0, isc, 0]);
+  assert.deepEqual(samples.at(-1), [voc, 0, 0]);
+  close(Math.max(...samples.map(sample => sample[2])), peak.power);
+});
+
+test('irradiance changes current, heat reduces MPP voltage, and darkness has no MPP', () => {
+  const standard = moduleCurve(1000, 25);
+  assert.ok(moduleCurve(500, 25).isc < standard.isc * .51);
+  assert.ok(moduleCurve(1000, 65).peak.voltage < standard.peak.voltage);
+  assert.equal(moduleCurve(0, 25).peak, null);
+  for (const irradiance of [10, 1200]) for (const temp of [-10, 85]) {
+    const { isc, voc, peak } = moduleCurve(irradiance, temp);
+    assert.ok(isc > 0 && isc < 8 && voc > 0 && voc < 72);
+    assert.ok(peak.power > 0 && peak.power < 360);
+  }
+});
 
 test('isotropic transposition reproduces the lesson example and horizontal limit', () => {
   const sun = solarVector(40, 180);
