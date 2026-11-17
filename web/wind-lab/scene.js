@@ -2,7 +2,7 @@ import * as T from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RAD } from './model.js';
 
-export function mountWindScene(host, tooltip) {
+export function mountWindScene(host, tooltip, { showSweep = false } = {}) {
   const scene = new T.Scene();
   scene.background = new T.Color('#e6eff3');
   const renderer = new T.WebGLRenderer({ antialias: true });
@@ -104,6 +104,12 @@ export function mountWindScene(host, tooltip) {
   airfoil.computeVertexNormals();
   const blades = new T.Group();
   rotor.add(blades);
+  if (showSweep) {
+    const ring = new T.MeshBasicMaterial({ color: '#328baa', opacity: .65, transparent: true, side: T.DoubleSide, depthWrite: false });
+    const disk = new T.MeshBasicMaterial({ color: '#66a8ba', opacity: .14, transparent: true, side: T.DoubleSide, depthWrite: false });
+    mesh(new T.CircleGeometry(3.36, 64), disk, [0, 0, -.11], 'Rotor swept area', blades).castShadow = false;
+    mesh(new T.RingGeometry(3.33, 3.37, 64), ring, [0, 0, -.10], 'Edge of swept area', blades).castShadow = false;
+  }
   for (let i = 0; i < 3; i++) {
     const blade = mesh(airfoil, white, [0, 0, 0], 'Rotor blade', blades);
     blade.rotation.z = i * 2 * Math.PI / 3;
@@ -158,7 +164,7 @@ export function mountWindScene(host, tooltip) {
     const key = [input.hub, input.radius, input.direction].join(':');
     if (key !== lastGeometry) {
       const height = 7.5 + (input.hub - 90) / 44;
-      const radiusScale = Math.min(1.24, Math.max(.64, input.radius / 58));
+      const radiusScale = showSweep ? input.radius / 60 : Math.min(1.24, Math.max(.64, input.radius / 58));
       const bearing = input.direction * RAD;
       column.scale.y = height / 7.5;
       column.position.y = height / 2 + .1;

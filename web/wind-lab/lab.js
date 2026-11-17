@@ -59,12 +59,14 @@ function drawCurve(svg, input, point) {
   const maxSpeed = Math.max(37, Math.ceil(point.speed));
   const x = speed => 53 + 460 * speed / maxSpeed;
   const y = power => 160 - 132 * power / input.ratedMW;
-  const points = [[0,0], [input.cutIn,0]];
+  const cutInRight = input.outputMode === 'aero' ? powerAt(input.cutIn + 1e-7) : 0;
+  const points = [[input.cutIn, cutInRight]];
   for (let i = 1; i <= 120; i++) {
     const speed = input.cutIn + (input.cutOut - input.cutIn) * i / 120;
     points.push([speed, powerAt(Math.min(speed, input.cutOut - 1e-7))]);
   }
-  points.push([input.cutOut,0], [maxSpeed,0]);
+  const cutoff = x(input.cutOut);
+  const leftLimit = y(points.at(-1)[1]);
   const ticks = [[input.cutIn, 'Cut-in'], [input.cutOut, 'Cut-out']];
   if (input.outputMode === 'curve') ticks.splice(1, 0, [input.ratedSpeed, 'Rated']);
   svg.innerHTML = `<path class="axis" fill="none" d="M53 16V160H513"/>
@@ -72,7 +74,13 @@ function drawCurve(svg, input, point) {
     <text x="16" y="164">0 MW</text><text x="514" y="186" text-anchor="end">Hub-height wind (m/s)</text>
     ${ticks.map(([speed,label]) => `<path stroke="#91a6a5" stroke-dasharray="4 4" d="M${x(speed)} 16V160"/>
       <text x="${x(speed)}" y="176" text-anchor="middle">${label}</text>`).join('')}
+    <path stroke="#087660" stroke-width="3" d="M${x(0)} ${y(0)}H${x(input.cutIn)}"/>
     <polyline fill="none" stroke="#087660" stroke-width="3" points="${points.map(([speed,power]) => `${x(speed)},${y(power)}`).join(' ')}"/>
+    ${cutInRight > 0 ? `<circle cx="${x(input.cutIn)}" cy="${y(cutInRight)}" r="4" fill="#fff" stroke="#087660" stroke-width="1.5"/>
+      <circle cx="${x(input.cutIn)}" cy="${y(0)}" r="4" fill="#087660"/>` : ''}
+    <path stroke="#087660" stroke-width="3" d="M${cutoff} ${y(0)}H${x(maxSpeed)}"/>
+    <circle cx="${cutoff}" cy="${leftLimit}" r="4" fill="#fff" stroke="#087660" stroke-width="1.5"/>
+    <circle cx="${cutoff}" cy="${y(0)}" r="4" fill="#087660"/>
     <circle fill="#c77616" stroke="#fff" stroke-width="2" cx="${x(point.speed)}" cy="${y(point.gridMW)}" r="6"/>`;
 }
 
@@ -108,7 +116,7 @@ export function mountWindLab(container) {
       </section>
     </div>
     <div class="solar-analysis">
-      <section class="chart-card"><h3>Electrical power curve</h3><p>The dot is the current hub-height wind speed.</p>
+      <section class="chart-card"><h3>Electrical power curve</h3><p>The orange dot marks the current hub-height wind speed. At cut-out, the filled point marks zero output.</p>
         <svg id="wind-chart" viewBox="0 0 535 192" role="img" aria-label="Electrical power versus hub-height wind speed"></svg></section>
       <details open><summary>Live equations</summary><div id="wind-equations"></div></details>
       <details><summary>${groups[4][0]}</summary><div class="solar-controls">${sliders(groups[4][1])}</div><div id="wind-measurements"></div></details>

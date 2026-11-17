@@ -5,6 +5,7 @@ import { mountResourceScene, solarColors, solarSvgNode } from './resource-scene.
 
 import { mountIvEquation, mountIvExplorer } from './iv-explorer.js';
 import { mountPvEquation } from './pv-equations.js';
+import { mountSolarThermal } from './thermal.js';
 import { mountResourceThree } from './resource-three.js';
 
 const $ = id => document.getElementById(id);
@@ -156,6 +157,7 @@ const requested = new URLSearchParams(location.search).get('demo');
 if (requested === 'iv') mountIvExplorer();
 else if (requested === 'operating-point' || requested === 'fill-factor') mountIvEquation(requested);
 else if (['dc-temperature', 'cell-temperature', 'inverter-clipping'].includes(requested)) mountPvEquation(requested);
+else if (requested === 'thermal-collector') mountSolarThermal();
 else mountResourceExplorer(Object.hasOwn(demos, requested) ? requested : 'horizontal');
 
 function mountResourceExplorer(kind) {

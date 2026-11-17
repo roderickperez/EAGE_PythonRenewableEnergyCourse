@@ -197,11 +197,23 @@ async function route() {
       ['solar-dc-temperature-explorer', 'resource.html?demo=dc-temperature', 'Temperature-corrected solar DC power explorer', 'solar-lab'],
       ['solar-cell-temperature-explorer', 'resource.html?demo=cell-temperature', 'Solar cell temperature and NOCT explorer', 'solar-lab'],
       ['solar-inverter-clipping-explorer', 'resource.html?demo=inverter-clipping', 'Solar inverter clipping and loss explorer', 'solar-lab'],
+      ['solar-thermal-collector-explorer', 'resource.html?demo=thermal-collector', 'Solar thermal collector heat-balance explorer', 'solar-lab'],
+      ['wind-cube-law-explorer', 'aerodynamics.html?demo=cube-law', 'Available wind power and the cube law explorer', 'wind-lab'],
+      ['wind-betz-explorer', 'aerodynamics.html?demo=betz', 'Rotor extraction and Betz limit explorer', 'wind-lab'],
+      ['wind-air-density-explorer', 'aerodynamics.html?demo=air-density', 'Dry-air density and available wind power explorer', 'wind-lab'],
+      ['wind-shear-explorer', 'aerodynamics.html?demo=shear', 'Hub-height wind shear explorer', 'wind-lab'],
+      ['wind-turbulence-explorer', 'aerodynamics.html?demo=turbulence', 'Turbulence and averaging explorer', 'wind-lab'],
+      ['wind-electrical-curve-explorer', 'aerodynamics.html?demo=electrical-curve', 'Electrical wind turbine power curve explorer', 'wind-lab'],
+      ['wind-annual-energy-explorer', 'aerodynamics.html?demo=annual-energy', 'From wind resource to annual energy explorer', 'wind-lab'],
+      ['wind-weibull-explorer', 'aerodynamics.html?demo=weibull', 'Weibull wind resource and bin integration explorer', 'wind-lab'],
+      ['wind-losses-explorer', 'aerodynamics.html?demo=losses', 'Wind energy losses and uncertainty explorer', 'wind-lab'],
+      ['wind-direction-explorer', 'aerodynamics.html?demo=direction', 'Circular wind direction explorer', 'wind-lab'],
     ]) {
       const spot = $(anchor);
       if (!spot) continue;
       const frame = document.createElement('iframe');
-      frame.className = labPath === 'hydro-lab' ? 'hydraulic-head-explorer' : 'solar-resource-explorer';
+      frame.className = { 'hydro-lab': 'hydraulic-head-explorer', 'solar-lab': 'solar-resource-explorer',
+        'wind-lab': 'wind-equation-explorer' }[labPath];
       frame.title = title;
       frame.loading = 'lazy';
       frame.src = `generated/${labPath}/${path}`;
@@ -286,7 +298,8 @@ function setupMedia(){
   const audio=configured.en || configured.es ? (configured[lang] || {}) : (lang === 'en' ? configured : {});
   const headings=[...$('lesson').querySelectorAll('h2[id],h3[id],h4[id]')].filter(heading =>
     !['head-flow-and-the-hydraulic-energy-balance', 'water-allocation-hydrology-and-storage',
-      'solar-resource-and-measurement-definitions', 'pv-conversion-definitions-equations-and-limits'].includes(heading.id) &&
+      'solar-resource-and-measurement-definitions', 'pv-conversion-definitions-equations-and-limits',
+      'deriving-the-main-aerodynamic-relationships', 'resource-characterization-density-height-and-variability'].includes(heading.id) &&
     (heading.tagName === 'H2' || audio[heading.id]));
   const items=[];
   if(audio.intro) items.push({url:audio.intro,title:lesson.title});

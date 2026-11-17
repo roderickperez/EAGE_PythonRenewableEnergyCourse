@@ -295,6 +295,14 @@ $\dot Q_u$ is heat-transfer rate in W when mass flow is kg/s and $c_p$ is J/(kg 
 
 Concentrating systems use optics and tracking to deliver beam radiation to a receiver; their resource assessment relies strongly on DNI. A concentrating solar power plant then converts collected heat to electricity through a heat engine, potentially using thermal storage between collection and generation. A flat-plate PV array can use direct and diffuse radiation without concentrating it. These distinctions matter when choosing the input dataset and interpreting a claimed solar conversion efficiency [@foster2010; @duffie2013; @kalogirou2014solar].
 
+The flat-plate collector below uses a steady-state teaching model. While the pump runs, absorbed solar power is split between useful fluid heating and heat loss to the ambient air. The model estimates loss as $UA(T_{mean}-T_a)$, with $T_{mean}=(T_{in}+T_{out})/2$. The pump stops when the selected flow is zero or solar input cannot provide positive useful heat. [NREL flat-plate collector evaluation](https://www.nrel.gov/docs/fy16osti/66215.pdf).
+
+(solar-thermal-collector-explorer)=
+:::{iframe} ../../solar-lab/resource.html?demo=thermal-collector
+:width: 100%
+:title: Solar thermal collector heat-balance explorer
+:::
+
 ### Thermal storage: energy is not power
 
 For a well-mixed storage mass with no phase change, the increase in sensible thermal energy is

@@ -32,5 +32,24 @@
         "why-the-checks-matter": "en/solar/why-the-checks-matter.mp3"
       }
     }
+  },
+  "section6/windEnergy.md": {
+    "audio": {
+      "en": {
+        "components-and-system-boundaries": "en/wind/components-and-system-boundaries.mp3",
+        "why-available-power-contains-the-cube-of-wind-speed": "en/wind/why-available-power-contains-the-cube-of-wind-speed.mp3",
+        "power-coefficient-drivetrain-efficiency-and-betzs-limit": "en/wind/power-coefficient-drivetrain-efficiency-and-betzs-limit.mp3",
+        "torque-and-tip-speed-ratio": "en/wind/torque-and-tip-speed-ratio.mp3",
+        "air-density": "en/wind/air-density.mp3",
+        "wind-shear-and-extrapolation-to-hub-height": "en/wind/wind-shear-and-extrapolation-to-hub-height.mp3",
+        "turbulence-gusts-and-averaging": "en/wind/turbulence-gusts-and-averaging.mp3",
+        "weibull-resource-model-and-numerical-integration": "en/wind/weibull-resource-model-and-numerical-integration.mp3",
+        "losses-wakes-and-uncertainty": "en/wind/losses-wakes-and-uncertainty.mp3",
+        "available-wind-power": "en/wind/available-wind-power.mp3",
+        "air-density-and-hub-height": "en/wind/air-density-and-hub-height.mp3",
+        "power-curve-aep-and-capacity-factor": "en/wind/power-curve-aep-and-capacity-factor.mp3",
+        "from-resource-distributions-to-annual-energy": "en/wind/from-resource-distributions-to-annual-energy.mp3"
+      }
+    }
   }
 }

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { solarPower, solarDay, batteryDay, lifetime, solarVector, incidenceCosine,
   beamOnPlane, isotropicIrradiance, intervalIrradiation } from './model.js';
 import { moduleCurve } from './iv-model.js';
+import { THERMAL_ABSORPTION, THERMAL_AMBIENT_C, thermalCollector } from './thermal-model.js';
 import { estimateCellTemperature, temperatureMultiplier, retainedFraction, inverterOutput } from './model.js';
 
 const worked = {
@@ -11,6 +12,23 @@ const worked = {
   area: 50, efficiency: 20, soiling: 0, wiring: 0, inverterEfficiency: 97, rating: 8000,
 };
 const close = (actual, expected) => assert.ok(Math.abs(actual - expected) < 1e-8, `${actual} ≠ ${expected}`);
+
+test('solar thermal water-side balance equals absorbed power minus mean-temperature loss', () => {
+  const input = { irradiance: 800, area: 4, flow: .08, heatCapacity: 4180, inlet: 35, lossCoefficient: 6 };
+  const result = thermalCollector(input);
+  const meanFluid = (input.inlet + result.outlet) / 2;
+  assert.equal(result.running, true);
+  close(result.absorbed, 800 * 4 * THERMAL_ABSORPTION);
+  close(result.thermalLoss, input.lossCoefficient * input.area * (meanFluid - THERMAL_AMBIENT_C));
+  close(result.useful, input.flow * input.heatCapacity * (result.outlet - input.inlet));
+  close(result.useful + result.thermalLoss, result.absorbed);
+  assert.ok(result.efficiency < THERMAL_ABSORPTION);
+  const slow = thermalCollector({ ...input, flow: .04 });
+  assert.ok(slow.outlet > result.outlet && slow.useful < result.useful);
+  assert.equal(thermalCollector({ ...input, flow: 0 }).outlet, null);
+  assert.equal(thermalCollector({ ...input, irradiance: 0 }).efficiency, null);
+  assert.equal(thermalCollector({ ...input, irradiance: 60 }).running, false);
+});
 
 test('solar temperature and inverter equations preserve their separate loss boundaries', () => {
   close(estimateCellTemperature(800, 25, 45), 50);

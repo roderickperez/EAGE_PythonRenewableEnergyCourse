@@ -48,7 +48,7 @@ def validate():
     assert 'solar-lab/index.html' not in solar_page
     assert 'solar-lab/resource.html' not in solar_page
     for demo in ('horizontal', 'poa', 'irradiation', 'tilt', 'incidence', 'iv', 'operating-point', 'fill-factor',
-                 'dc-temperature', 'cell-temperature', 'inverter-clipping'):
+                 'dc-temperature', 'cell-temperature', 'inverter-clipping', 'thermal-collector'):
         assert f'id="solar-{demo}-explorer"' in solar_page
     for file in ('resource.html', 'resource.js'):
         assert (OUT / 'solar-lab' / file).is_file()
@@ -56,8 +56,18 @@ def validate():
     assert {heading['id'] for heading in solar_subtitles} <= set(solar['media']['audio']['en'])
     assert 'id="physical-description-what-solar-energy-systems-do"' in solar_page
     assert (OUT / 'wind-lab' / 'wind-lab.js').is_file()
-    wind_page = pages['section6/windEnergy.md']['html']
+    wind = pages['section6/windEnergy.md']
+    wind_page = wind['html']
     assert 'wind-lab/index.html' not in wind_page
+    assert 'wind-lab/aerodynamics.html' not in wind_page
+    for demo in ('cube-law', 'betz', 'air-density', 'shear', 'turbulence', 'electrical-curve',
+                 'annual-energy', 'weibull', 'losses', 'direction'):
+        assert f'id="wind-{demo}-explorer"' in wind_page
+    for file in ('aerodynamics.html', 'aerodynamics.js'):
+        assert (OUT / 'wind-lab' / file).is_file()
+    wind_subtitles = BeautifulSoup(wind_page, 'html.parser').select('h3[id], h4[id]')
+    assert {heading['id'] for heading in wind_subtitles} <= set(wind['media']['audio']['en'])
+    assert 'from-resource-distributions-to-annual-energy' in wind['media']['audio']['en']
     assert 'id="physical-description-extracting-energy-from-moving-air"' in wind_page
     assert (OUT / 'geothermal-lab' / 'geothermal-lab.js').is_file()
     geothermal_page = pages['section6/geothermalEnergy.md']['html']

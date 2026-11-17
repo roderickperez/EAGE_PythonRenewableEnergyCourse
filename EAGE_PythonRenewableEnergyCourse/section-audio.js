@@ -73,7 +73,8 @@
     if (!pages.test(location.pathname)) return;
     document.querySelectorAll('article.content h2, article.content h3, article.content h4').forEach(heading => {
       if (['head-flow-and-the-hydraulic-energy-balance', 'water-allocation-hydrology-and-storage',
-        'solar-resource-and-measurement-definitions', 'pv-conversion-definitions-equations-and-limits'].includes(heading.id)) return;
+        'solar-resource-and-measurement-definitions', 'pv-conversion-definitions-equations-and-limits',
+        'deriving-the-main-aerodynamic-relationships', 'resource-characterization-density-height-and-variability'].includes(heading.id)) return;
       if (heading.nextElementSibling?.classList.contains('section-audio-control')) return;
       const title = (heading.querySelector('.heading-text')?.textContent || heading.textContent).trim();
       const control = document.createElement('div');

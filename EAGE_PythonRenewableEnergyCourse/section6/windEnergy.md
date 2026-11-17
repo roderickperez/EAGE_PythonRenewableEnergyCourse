@@ -60,7 +60,7 @@ The supplied *Wind Energy Explained* is the principal reference for the physics 
 
 ### Why available power contains the cube of wind speed
 
-For air density $\rho$, uniform undisturbed speed $v$ and rotor area $A$, the mass crossing the area in one second is $\dot m=\rho Av$. The kinetic energy per unit mass is $v^2/2$. Multiplying the two gives [@manwell2009], §2.5 and §3.2.
+For air density $\rho$, uniform undisturbed speed $v$ and rotor area $A$, the reference mass flow through that area in the undisturbed wind is $\dot m=\rho Av$ in kg/s. The kinetic energy per unit mass is $v^2/2$. Multiplying the two gives [@manwell2009], §2.5 and §3.2; [@wagner2009], §3.1.
 
 $$P_{wind}=\dot m\frac{v^2}{2}=\frac12\rho Av^3.$$
 
@@ -69,6 +69,12 @@ $$P_{wind}=\dot m\frac{v^2}{2}=\frac12\rho Av^3.$$
 The cubic dependence combines two effects: faster air carries more kinetic energy per kilogram and more kilograms pass the rotor each second. At fixed density and area, doubling speed gives eight times the **available kinetic-energy flux**. It does not imply eight times electrical output once turbine operating limits are involved. [@manwell2009], §2.5 and §3.2.
 
 For a circular rotor, $A=\pi R^2=\pi D^2/4$. Doubling diameter gives four times the swept area, not twice the area. With density in kg/m³, area in m² and speed in m/s, power is watts. The relationship assumes a representative speed across the rotor; real shear, turbulence and spatial variation complicate that approximation [@manwell2009].
+
+(wind-cube-law-explorer)=
+:::{iframe} ../../wind-lab/aerodynamics.html?demo=cube-law
+:width: 100%
+:title: Available wind power and the cube law explorer
+:::
 
 ### Power coefficient, drivetrain efficiency and Betz's limit
 
@@ -84,9 +90,15 @@ $$P_e=\eta_{drive}C_p\frac12\rho Av^3.$$
 
 *Equation basis:* [@manwell2009], §3.2 (ideal actuator-disc assumptions).
 
-The ideal actuator-disk analysis yields $C_p\le16/27\approx0.593$ under its assumptions of steady, incompressible, unconfined ideal flow. The bound concerns power extracted from the undisturbed kinetic-energy flux. It is not a typical operating value, an electrical efficiency, or a capacity factor. Real rotors incur additional aerodynamic and mechanical losses [@manwell2009; @wagner2009].
+The ideal actuator-disk analysis yields $C_p\le16/27\approx0.593$ under its assumptions of steady, incompressible, unconfined ideal flow. The bound concerns power extracted from the undisturbed kinetic-energy flux. Real rotors incur additional aerodynamic and mechanical losses. [@manwell2009], §3.2; [@wagner2009], §3.3.1.
 
 Both $C_p$ and $\eta_{drive}$ can vary with operating point. If a supplied power curve already represents electrical output, do **not** multiply it by $C_p$ and generator efficiency again. First identify whether the input model describes wind power, rotor power, generator power or exported power. [@manwell2009], §3.2 (ideal actuator-disc assumptions).
+
+(wind-betz-explorer)=
+:::{iframe} ../../wind-lab/aerodynamics.html?demo=betz
+:width: 100%
+:title: Rotor extraction and Betz limit explorer
+:::
 
 ### Torque and tip-speed ratio
 
@@ -116,6 +128,12 @@ $$\rho=\frac{p}{R_dT},\qquad R_d\approx287.05\ \mathrm{J/(kg\,K)}.$$
 
 Pressure $p$ is in pascals and absolute temperature $T$ is kelvin. Humidity and local conditions modify density; 1.225 kg/m³ is a stated reference assumption, not a universal site value. At fixed speed and swept area, lower density reduces available power. Applying a density adjustment to a manufacturer power curve requires that curve's specified correction procedure, especially near rated output [@manwell2009; @wagner2009].
 
+(wind-air-density-explorer)=
+:::{iframe} ../../wind-lab/aerodynamics.html?demo=air-density
+:width: 100%
+:title: Dry-air density and available wind power explorer
+:::
+
 ### Wind shear and extrapolation to hub height
 
 Surface friction and atmospheric structure produce a vertical wind profile. An often-used empirical approximation is [@manwell2009], §2.3.4.2, pp. 45–46.
@@ -130,15 +148,27 @@ A neutral-atmosphere log-law model is another approximation,
 
 $$v(z)=\frac{u_*}{\kappa}\ln\left(\frac{z-d}{z_0}\right),$$
 
-*Equation basis:* [@manwell2009], §2.3.4.2, pp. 45–46.
+*Equation basis:* [@manwell2009], §2.3.4.1; [@wagner2009], §3.4.1.
 
-where $u_*$ is friction velocity, $\kappa$ is the von Kármán constant, $z_0$ is roughness length and $d$ is displacement height. It requires an appropriate surface-layer setting and height range; it is not a universal replacement for the power law over complex terrain. The beginner calculations use the power law and explicitly state its exponent rather than fitting a more advanced atmospheric model without adequate data [@manwell2009].
+where $u_*$ is friction velocity, $\kappa$ is the von Kármán constant, $z_0$ is roughness length and $d$ is displacement height. The model requires a suitable neutral surface layer and heights with $z-d>z_0$. The beginner calculations use the power law and state its exponent. [@manwell2009], §§2.3.4.1–2.3.4.2; [@wagner2009], §3.4.1.
+
+(wind-shear-explorer)=
+:::{iframe} ../../wind-lab/aerodynamics.html?demo=shear
+:width: 100%
+:title: Hub-height wind shear explorer
+:::
 
 ### Turbulence, gusts and averaging
 
 **Turbulence intensity** for a defined observation window is $TI=\sigma_v/\bar v$ for positive mean speed. State the sampling window, data filtering and standard-deviation convention. It describes variability relative to the mean, not the same quantity as a gust speed. Turbulence influences loads, fatigue and power fluctuations; an energy-only model does not assess structural safety. [@manwell2009], §2.3; the averaging interval and standard-deviation convention must be stated.
 
 For a nonlinear power model, $P(\bar v)$ is generally different from the average $\overline{P(v)}$. With equal-duration speeds of 4 and 8 m/s, the mean cubed speed is $(4^3+8^3)/2=288$, while the cube of the mean is $6^3=216$. Above rated speed or around cut-out, clipping and shutdown create further differences. Use interval data or an explicit probability distribution rather than assuming mean speed fully characterizes the resource. [@manwell2009], §2.3; the averaging interval and standard-deviation convention must be stated.
+
+(wind-turbulence-explorer)=
+:::{iframe} ../../wind-lab/aerodynamics.html?demo=turbulence
+:width: 100%
+:title: Turbulence and averaging explorer
+:::
 
 ## The electrical power curve
 
@@ -159,6 +189,12 @@ $v_{in}$ is cut-in speed, $v_r$ is rated speed, $v_{out}$ is cut-out speed, and 
 
 Testing exactly at the thresholds is important. For the exercise convention, output is zero at cut-in, rated at rated speed, and zero at cut-out. Reject negative or non-finite resource inputs before calculating output. Do not permit an unconstrained cubic equation to predict power above the equipment limit. Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2. [@doeWindWeather]. The continuous cubic ramp is an original simplified interpolation.
 
+(wind-electrical-curve-explorer)=
+:::{iframe} ../../wind-lab/aerodynamics.html?demo=electrical-curve
+:width: 100%
+:title: Electrical wind turbine power curve explorer
+:::
+
 ## From resource distributions to annual energy
 
 For interval-average modeled electrical power,
@@ -170,6 +206,12 @@ When speed is represented by a probability density $f(v)$ instead of an ordered 
 $$\bar P=\int_0^\infty P(v)f(v)\,dv,\qquad E=T\bar P.$$
 
 The integral averages **electrical power**, not wind speed. Use $T=8760$ h for a non-leap year only when that is the intended period. Multiplying a short or unrepresentative sample by annual hours is an extrapolation whose assumptions must be stated.
+
+(wind-annual-energy-explorer)=
+:::{iframe} ../../wind-lab/aerodynamics.html?demo=annual-energy
+:width: 100%
+:title: From wind resource to annual energy explorer
+:::
 
 ### Weibull resource model and numerical integration
 
@@ -187,11 +229,23 @@ $$\bar P\approx\sum_i P\!\left(\frac{a_i+b_i}{2}\right)p_i.$$
 
 Bin probability is dimensionless, while density has inverse-speed units; they cannot be substituted for one another without the bin width. Refine the bins to check numerical convergence and account for the probability beyond the integration range. A Weibull fit is a statistical approximation, not a law that all sites must follow [@manwell2009].
 
+(wind-weibull-explorer)=
+:::{iframe} ../../wind-lab/aerodynamics.html?demo=weibull
+:width: 100%
+:title: Weibull wind resource and bin integration explorer
+:::
+
 ### Losses, wakes and uncertainty
 
 A downstream turbine may encounter reduced wind speed and altered turbulence due to an upstream wake. Wake interaction depends on direction, spacing, controls and atmospheric conditions. Other energy reductions include equipment downtime, electrical losses, icing and curtailment. A simple retained-energy factor can summarize explicitly stated assumptions, but it does not represent the detailed physics or hourly coincidence of those effects. [@manwell2009], §§2.5 and 2.6; [@wagner2009], wind-farm operation.
 
 Separate variability from uncertainty. Weather changes from hour to hour and year to year; uncertainty also arises from measurement, long-term adjustment and modelling choices. In common wind-project terminology, an annual-energy **P90** is an energy level expected to be exceeded with 90% probability under the defined uncertainty model—thus a lower quantile than P50. It is not “90% of the mean.” Synthetic bootstrap or Monte Carlo exercises demonstrate methods; they do not create a bankable uncertainty estimate from a few invented observations. [@manwell2009], §§2.5 and 2.6; [@wagner2009], wind-farm operation.
+
+(wind-losses-explorer)=
+:::{iframe} ../../wind-lab/aerodynamics.html?demo=losses
+:width: 100%
+:title: Wind energy losses and uncertainty explorer
+:::
 
 ## Wind direction and circular data
 
@@ -205,12 +259,18 @@ then express it on the desired 0–360° interval. Convert degrees to radians be
 
 An equal-weight mean direction is not a speed-weighted vector-mean wind. For east/north velocity components under the meteorological “from” convention, $u=-v\sin\theta$ and $w_N=-v\cos\theta$. Distinguish these definitions when combining speed and direction. A wind rose groups directional frequencies, speed ranges or energy contributions; its weighting should be identified. Circular mean and zero-resultant limitation: [SciPy circmean](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.circmean.html).
 
+(wind-direction-explorer)=
+:::{iframe} ../../wind-lab/aerodynamics.html?demo=direction
+:width: 100%
+:title: Circular wind direction explorer
+:::
+
 ## Worked calculation before coding
 
 Take a synthetic rotor radius of 20 m, density 1.225 kg/m³, undisturbed speed 8 m/s, $C_p=0.40$ and drivetrain efficiency 0.95. Original numerical substitution; Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2.
 
 1. Swept area is $\pi20^2\approx1256.64$ m².
-2. Available wind power is $0.5(1.225)(1256.64)(8^3)\approx394{,}082$ W. Divide by 1000 to obtain **394.08 kW**.
+2. Available wind power is $0.5(1.225)(\pi20^2)(8^3)\approx394{,}081$ W. Divide by 1000 to obtain **394.08 kW**.
 3. Rotor extraction is about $0.40(394.08)=157.63$ kW.
 4. Electrical output is about $0.95(157.63)=149.75$ kW before additional site losses or equipment limits.
 5. At a constant mean electrical output of 149.75 kW for two hours, energy is about 299.5 kWh.
