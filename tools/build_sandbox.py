@@ -116,7 +116,7 @@ class Builder:
             runnable = True
         except SyntaxError:
             runnable = False
-        local_only = bool(re.search(r'^import marimo\b', code, re.M))
+        local_only = self.path == 'section5/mdio-format.md' or bool(re.search(r'^import marimo\b', code, re.M))
         runnable = runnable and not local_only
         self.codes.append({'id': code_id, 'code': code, 'solution': self.in_solution > 0,
                            'title': self.heading, 'runnable': runnable,
