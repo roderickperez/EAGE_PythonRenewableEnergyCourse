@@ -6,7 +6,7 @@
     "build": "npm run build:hydro-lab",
     "build:hydro-lab": "node tools/build-hydro-lab.mjs",
     "test": "npm run test:hydro-lab && node --test web/solar-lab/model.test.js web/solar-lab/project-model.test.js web/wind-lab/model.test.js web/wind-lab/physical-demos.test.js web/wind-lab/project-model.test.js web/geothermal-lab/model.test.js web/geothermal-lab/equation-demos.test.js web/project-map/data.test.js tools/test-course-session.cjs",
-    "test:hydro-lab": "node --test web/hydro-lab/model.test.js web/hydro-lab/visual-state.test.js web/hydro-lab/head-model.test.js web/hydro-lab/balance-model.test.js web/geothermal-lab/project-model.test.js"
+    "test:hydro-lab": "node --test web/hydro-lab/model.test.js web/hydro-lab/visual-state.test.js web/hydro-lab/head-model.test.js web/hydro-lab/balance-model.test.js web/geothermal-lab/project-model.test.js web/geothermal-lab/drilling-model.test.js"
   },
   "dependencies": {
     "three": "0.187.0"

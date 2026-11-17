@@ -278,13 +278,29 @@ async function route() {
       host.className = 'hydro-3d-lab';
       (content.querySelector(lab.anchor) || content.firstElementChild)?.before(host);
       lab.mount(host).then(instance => {
-        if (host.isConnected) lessonLab = instance;
+        if (host.isConnected) {
+          const previous = lessonLab;
+          lessonLab = {destroy(){previous?.destroy();instance.destroy();}};
+        }
         else instance.destroy();
       }).catch(error => {
         host.className = 'callout';
         host.textContent = 'The interactive lab could not load. The lesson equations and examples remain available below.';
         console.error('Course lab failed to load', error);
       });
+    }
+    if (lesson.id === 'section6/geothermalEnergy.md') {
+      const spot = $('lesson').querySelector('#drilling-a-geothermal-well-fluid-and-hydraulics');
+      if (spot) {
+        const host = document.createElement('div'); host.id = 'geothermal-drilling-lab'; host.className = 'hydro-3d-lab';
+        spot.after(host);
+        import('./generated/geothermal-lab/drilling.js?v=1').then(mod => mod.mountDrillingExplorer(host)).then(instance => {
+          if (host.isConnected) {
+            const previous = lessonLab;
+            lessonLab = {destroy(){previous?.destroy();instance.destroy();}};
+          } else instance.destroy();
+        }).catch(error => {host.className='callout';host.textContent='The drilling explorer could not load; the equations remain available below.';console.error(error);});
+      }
     }
     setupMedia();
     if(lesson.assessment || lesson.project){const banner=document.createElement('p');banner.className='assessment-banner';banner.textContent='Questions and requirements only. Use the dedicated workspace buttons to write and save your own answers. No reference solution is included.';$('lesson').prepend(banner);}

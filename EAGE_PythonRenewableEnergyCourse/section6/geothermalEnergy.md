@@ -541,3 +541,59 @@ The plot varies only mass flow. In a real reservoir, temperature, pressure, scal
 ## Check your understanding
 
 Continue with the [geothermal quiz](../section7/renewableEnergyquizzes/geothermalEnergy.md).
+
+## Drilling a geothermal well: fluid and hydraulics
+
+Drilling creates the borehole; its circulation system must remove rock cuttings, cool the bit and drill string, and help manage pressure. In **direct circulation**, pumps send fluid down the drill pipe, through the bit and back up the annulus between pipe and borehole. Surface equipment separates cuttings before the fluid is recirculated. Dayan (2014) describes water-based muds, air and aerated fluids, and explains the trade-offs among hole cleaning, circulation losses, formation damage and well control [@dayan2014drilling].
+
+:::{iframe} ../../geothermal-lab/drilling.html
+:width: 100%
+:height: 1000px
+:title: Interactive geothermal drilling fluid explorer
+:::
+
+In the explorer, blue beads illustrate downflow in the pipe and gold beads illustrate cuttings returning in the annulus. The three-dimensional plot shows hydrostatic pressure in blue and circulating pressure in red against vertical depth. Select depth, flow, diameters, fluid density and viscosity, and a **prescribed annular friction loss**. Changes to flow do not automatically recalculate that loss: it is a separate illustrative input. The visualization is schematic, not to scale.
+
+### Annular velocity and cuttings
+
+For concentric circular sections, hole diameter $D_h$ and pipe outside diameter $D_p$ in metres, volumetric circulation rate $Q$ in m³/s, and an incompressible single-phase fluid,
+
+$$A_a=\frac{\pi}{4}(D_h^2-D_p^2), \qquad v_a=\frac{Q}{A_a}.$$
+
+The annular area $A_a$ is m² and average annular velocity $v_a$ is m/s. The explorer converts L/min to m³/s by dividing by 60,000. In the simplified vertical model, cuttings transport velocity is $v_t=v_a-v_s$, where $v_s$ is the settling or slip velocity relative to fluid. Flow direction, inclination, rotation, cuttings beds, shape, concentration, fluid rheology and temperature complicate real hole cleaning [@dayan2014drilling].
+
+For an isolated sphere in a Newtonian fluid under creeping-flow assumptions, Stokes' ideal settling estimate and its particle Reynolds number are
+
+$$v_s=\frac{(\rho_s-\rho_f)gd_s^2}{18\mu},\qquad Re_p=\frac{\rho_f v_s d_s}{\mu}.$$
+
+$\rho_s$ and $\rho_f$ are particle and fluid density (kg/m³), $d_s$ is diameter (m), $\mu$ is dynamic viscosity (Pa s), and $g=9.80665$ m/s². The explorer uses a synthetic particle density of 2,650 kg/m³ and suppresses the estimate if $Re_p\ge1$. It is not valid for arbitrary particles, non-Newtonian mud or high-Reynolds conditions, and it is **not** an operational hole-cleaning decision rule. A negative ideal transport velocity is a model result, not a complete prediction of a cuttings bed.
+
+### Hydrostatic and circulating pressure
+
+For a constant-density single-phase fluid, true vertical depth $z$, a surface gauge pressure of zero, and an explicitly supplied annular frictional pressure drop $\Delta p_a$ over that depth,
+
+$$p_h=\rho_fgz,\quad p_{circ}=p_h+\Delta p_a,\quad \rho_{ECD}=\rho_f+\frac{\Delta p_a}{gz}.$$
+
+These SI equations express the hydrostatic, circulating-pressure and equivalent-circulating-density ideas discussed by Dayan. Pressure is in Pa, depth is in metres and ECD is kg/m³. The explorer assumes the specified total annular friction is distributed uniformly along depth for its red plotted line. Actual annular loss depends on geometry, flow, fluid rheology and other conditions; it is not total pump pressure, which also includes pipe, bit and surface losses. Gas expansion, thermal effects, pressure transients and formation flow are not represented [@dayan2014drilling].
+
+For a simple water-bentonite Bingham interpretation using conventional 600 and 300 rpm viscometer readings, $PV=\theta_{600}-\theta_{300}$ in cP and $YP=\theta_{300}-PV$ in the standard field convention (lbf/100 ft²). This is a rheological model, not a direct substitution for Newtonian viscosity in the Stokes estimate. Gel strength and filtration are additional measured properties. Temperature changes, solids and additives affect fluid behavior; aerated fluids require multiphase treatment [@dayan2014drilling].
+
+### Check the units in Python
+
+```{code-cell} python
+import math
+depth, density, annular_loss = 2000.0, 1100.0, 1.0e6  # m TVD, kg/m³, Pa
+hole, pipe, flow_l_min = 0.215, 0.125, 1200.0        # m, m, L/min
+area = math.pi * (hole**2 - pipe**2) / 4
+velocity = (flow_l_min / 60000) / area
+hydrostatic = density * 9.80665 * depth
+ecd = density + annular_loss / (9.80665 * depth)
+print(f'Annular velocity: {velocity:.3f} m/s')
+print(f'Hydrostatic pressure: {hydrostatic / 1e6:.3f} MPa')
+print(f'Circulating pressure: {(hydrostatic + annular_loss) / 1e6:.3f} MPa')
+print(f'ECD: {ecd:.1f} kg/m³')
+```
+
+**Investigate:** Hold geometry fixed and double the flow rate. What happens to annular velocity? Then change only the prescribed friction loss: which pressure and ECD values change? Compare the fluid types and their functions in Dayan's report, and identify which measurements would be needed before applying a real drilling program.
+
+The explorer is a simplified educational calculation. It does not calculate pore pressure, fracture pressure, well stability, fluid losses, gas influx, temperature-dependent properties, complete pump pressure or operational safety margins. It must not be used to select an actual mud program or operate a well. Actual geothermal drilling requires site-specific engineering and approved well-control procedures.

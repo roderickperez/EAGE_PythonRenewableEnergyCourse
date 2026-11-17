@@ -1,0 +1,2 @@
+.drilling-explorer .geo-controls{display:grid;grid-template-columns:1fr 1fr;gap:10px}.drilling-explorer .geo-controls label{font-size:.8rem}.drilling-explorer .drill-key{display:flex;flex-wrap:wrap;gap:5px 12px;color:#315e69;font-size:.77rem}.drilling-explorer small{color:#526b77}.drilling-explorer .drill-metrics{margin-top:12px}.drilling-explorer .wp-scene-wrap .wp-motion{position:absolute;top:8px;right:10px}
+@container(max-width:720px){.drilling-explorer .geo-controls{grid-template-columns:1fr 1fr}}

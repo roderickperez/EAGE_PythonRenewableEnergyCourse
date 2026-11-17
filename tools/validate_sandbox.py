@@ -95,6 +95,8 @@ def validate():
     assert (OUT / 'solar-lab' / 'project.html').is_file()
     assert (OUT / 'geothermal-lab' / 'geothermal-project.js').is_file()
     assert (OUT / 'geothermal-lab' / 'project.html').is_file()
+    assert (OUT / 'geothermal-lab' / 'drilling.js').is_file()
+    assert "'geothermal-drilling-lab'" in (ROOT / 'EAGE_pythonSandBox' / 'app.js').read_text(encoding='utf-8')
     assert "'section8/geothermal-project.md'" in (ROOT / 'EAGE_pythonSandBox' / 'app.js').read_text(encoding='utf-8')
     assert "'section8/solar-project.md'" in (ROOT / 'EAGE_pythonSandBox' / 'app.js').read_text(encoding='utf-8')
     intro = 'section7/renewableExercises.md'
