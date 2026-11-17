@@ -4,7 +4,7 @@ Design a small wind farm and explore how the position of a turbine changes the w
 
 ## How to use the explorer
 
-1. Watch the synthetic seasonal wind speed and direction change automatically. Direction is where wind comes **from**: north is 0°, east 90°, south 180° and west 270°. Particles move downwind and slow in wakes. Use the stop/play icon to control the animation.
+1. Watch the synthetic seasonal wind speed and direction change automatically. Direction is where wind comes **from**: north is 0°, east 90°, south 180° and west 270°. The compass displays speed and where the wind comes from; its arrow points downwind, the direction the air travels. Particles move downwind and slow in wakes. Use the stop/play icon to control the animation.
 2. Start with \$50,000. Click a grid cell to purchase a turbine for \$50,000; click an occupied cell to remove it and recover \$25,000. Earn revenue from simulated energy and save enough to purchase additional turbines. Drag the scene to rotate it and scroll to zoom. For keyboard control, focus the grid and use the arrow keys to select a location; press Enter or Space to place or remove a turbine.
 3. Read farm power, no-wake power, wake loss and efficiency. The selected location's wind and turbine power appear below the scene. Gold indicates the selected location; the colorbar inside the scene shows modeled wind speed in the wakes. Uncolored terrain indicates undisturbed wind.
 4. Compare the energy and wind-speed histories as you change the layout and conditions. Remove a turbine by clicking its location again.
