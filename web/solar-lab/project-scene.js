@@ -3,6 +3,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { sunDirection, RAD } from './model.js';
 import { SITES } from './project-model.js';
 import land from './natural-earth-land.geojson';
+import { cloudBlockage, cloudDensity } from './project-clouds.js';
 
 export function mountProjectScene(host, onPick, onSite) {
   const renderer=new T.WebGLRenderer({antialias:true});
@@ -36,19 +37,29 @@ export function mountProjectScene(host, onPick, onSite) {
   const sun=mesh(new T.SphereGeometry(.42,24,16),new T.MeshBasicMaterial({color:'#ffc34c'}),[0,0,0],farm);
   const path=new T.Line(new T.BufferGeometry(),new T.LineDashedMaterial({color:'#d49130',dashSize:.18,gapSize:.13}));farm.add(path);
   const clouds=new T.Group(); farm.add(clouds);
-  const cloudMat=new T.MeshStandardMaterial({color:'#f8fbfd',transparent:true,opacity:.6,roughness:1,depthWrite:false});
-  const cloudGeo=new T.SphereGeometry(1,16,10);
-  for(let i=0;i<3;i++){const cloud=new T.Group();clouds.add(cloud);
-    for(const [x,y,z,s] of [[-.8,0,0,.8],[0,.3,0,1.15],[.95,0,0,.82]]){const puff=mesh(cloudGeo,cloudMat,[x,y,z],cloud);puff.scale.set(s*1.15,s*.55,s*.7);}}
+  const cloudPixels=new Uint8Array(128*128*4);
+  for(let y=0;y<128;y++)for(let x=0;x<128;x++){const i=(y*128+x)*4, density=cloudDensity((x/127-.5)*10,(.5-y/127)*6);cloudPixels[i]=235;cloudPixels[i+1]=242;cloudPixels[i+2]=244;cloudPixels[i+3]=Math.round(235*density);}
+  const cloudTexture=new T.DataTexture(cloudPixels,128,128,T.RGBAFormat);cloudTexture.colorSpace=T.SRGBColorSpace;cloudTexture.magFilter=T.LinearFilter;cloudTexture.minFilter=T.LinearFilter;cloudTexture.needsUpdate=true;
+  const cloudMat=new T.MeshBasicMaterial({map:cloudTexture,transparent:true,depthWrite:false,side:T.DoubleSide,opacity:.8});
+  const cloudGeo=new T.PlaneGeometry(10,6);
+  for(let i=0;i<3;i++){const cloud=mesh(cloudGeo,cloudMat,[0,0,0],clouds);cloud.rotation.x=-Math.PI/2;}
+  const shadowSize=96,shadowPixels=new Uint8Array(shadowSize*shadowSize*4);
+  const shadowTexture=new T.DataTexture(shadowPixels,shadowSize,shadowSize,T.RGBAFormat);shadowTexture.magFilter=T.LinearFilter;shadowTexture.minFilter=T.LinearFilter;shadowTexture.needsUpdate=true;
+  const shadowMaterial=new T.MeshBasicMaterial({map:shadowTexture,transparent:true,depthWrite:false,side:T.DoubleSide});
+  const shadows=mesh(new T.PlaneGeometry(20,20),shadowMaterial,[0,.025,0],farm);shadows.rotation.x=-Math.PI/2;
+  let panelMaterials=new Map(),labelTextures=[];
   const frame=mat('#9daeb4'),panel=mat('#1c4269'),cell=mat('#3975a0'),post=mat('#7d9094');
   function updateRacks(ids,tilt,azimuth){
-    racks.traverse(o=>o.geometry?.dispose());racks.clear();
+    racks.traverse(o=>{o.geometry?.dispose();if(o.isSprite)o.material.dispose();});for(const texture of labelTextures)texture.dispose();labelTextures=[];for(const pair of panelMaterials.values())pair.forEach(m=>m.dispose());panelMaterials=new Map();racks.clear();
     for(const id of ids){const x=-9+(id%10)*2,z=9-Math.floor(id/10)*2;
       mesh(new T.CylinderGeometry(.045,.055,.6,8),post,[x,.3,z],racks);
       const rack=new T.Group();rack.position.set(x,.68,z);rack.rotation.y=Math.PI-azimuth*RAD;racks.add(rack);
       const face=new T.Group();face.rotation.x=tilt*RAD;rack.add(face);
-      mesh(new T.BoxGeometry(1.52,.10,1.06),frame,[0,0,0],face);mesh(new T.BoxGeometry(1.44,.025,.98),panel,[0,.065,0],face);
-      for(let a=0;a<4;a++)for(let b=0;b<3;b++)mesh(new T.BoxGeometry(.33,.015,.29),cell,[(a-1.5)*.35,.085,(b-1)*.31],face);
+      const panelMat=panel.clone(),cellMat=cell.clone();panelMaterials.set(id,[panelMat,cellMat]);
+      mesh(new T.BoxGeometry(1.52,.10,1.06),frame,[0,0,0],face);mesh(new T.BoxGeometry(1.44,.025,.98),panelMat,[0,.065,0],face);
+      for(let a=0;a<4;a++)for(let b=0;b<3;b++)mesh(new T.BoxGeometry(.33,.015,.29),cellMat,[(a-1.5)*.35,.085,(b-1)*.31],face);
+      const label=document.createElement('canvas');label.width=128;label.height=64;const ctx=label.getContext('2d');ctx.fillStyle='#f4faf8';ctx.fillRect(4,4,120,56);ctx.fillStyle='#16384c';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold 36px system-ui';ctx.fillText(String(id+1),64,33);
+      const labelTexture=new T.CanvasTexture(label);labelTexture.colorSpace=T.SRGBColorSpace;labelTextures.push(labelTexture);const sprite=new T.Sprite(new T.SpriteMaterial({map:labelTexture,depthTest:false}));sprite.position.set(x,1.35,z);sprite.scale.set(.75,.375,1);racks.add(sprite);
     }
   }
   let globeMode=true, transition=0, clock=0, dragging=null, rackKey='', pathKey='';
@@ -67,13 +78,15 @@ export function mountProjectScene(host, onPick, onSite) {
     start(){globeMode=false;transition=0;farm.visible=true;farm.scale.setScalar(.001);camera.zoom=1;camera.updateProjectionMatrix();orbit.target.set(0,1,0);orbit.update();},
     showGlobe(){globeMode=true;globe.visible=true;globe.scale.setScalar(1);farm.visible=false;camera.zoom=1.75;camera.updateProjectionMatrix();},
     setPlaying(){},
-    update(ids,settings,site,date,hour,dec,selected=0,weather,cloudState){
+    update(ids,settings,site,date,hour,dec,selected=0,weather,cloudState,panelResults){
       const nextRackKey=[ids.join(','),settings.tilt,settings.azimuth].join('|');if(nextRackKey!==rackKey){updateRacks(ids,settings.tilt,settings.azimuth);rackKey=nextRackKey;}
       selection.position.set(-9+(selected%10)*2,.09,9-Math.floor(selected/10)*2);
       const nextPathKey=`${site.lat}|${dec}`;if(pathKey!==nextPathKey){const points=[];for(let i=0;i<=288;i++){const s=sunDirection(i/12,site.lat,dec);if(s[1]>=0)points.push(new T.Vector3(s[0]*12,s[1]*12+.2,-s[2]*12));}path.geometry.dispose();path.geometry=new T.BufferGeometry().setFromPoints(points);path.computeLineDistances();pathKey=nextPathKey;}
-      cloudMat.opacity=.55+weather.clouds*.35;clouds.children.forEach((cloud,i)=>{cloud.visible=cloudState.active;cloud.position.set(...cloudState.clouds[i].position);cloud.position.addScaledVector(camera.position.clone().sub(orbit.target).normalize(),.7);});
-      const s=sunDirection(hour,site.lat,dec);sun.visible=s[1]>0;sun.position.set(s[0]*12,s[1]*12+.2,-s[2]*12);light.position.copy(sun.position);light.intensity=s[1]>0?1.5*(1-.65*weather.clouds)*(1-cloudState.blockage):0;
+      cloudMat.opacity=.6+weather.clouds*.35;clouds.children.forEach((cloud,i)=>{cloud.visible=cloudState.active;cloud.position.set(...cloudState.clouds[i].position);});
+      for(let y=0;y<shadowSize;y++)for(let x=0;x<shadowSize;x++){const i=(y*shadowSize+x)*4, shade=cloudBlockage(cloudState,-10+20*x/(shadowSize-1),10-20*y/(shadowSize-1));shadowPixels[i]=22;shadowPixels[i+1]=38;shadowPixels[i+2]=45;shadowPixels[i+3]=Math.round(shade*230);}shadowTexture.needsUpdate=true;
+      for(const p of panelResults){const mats=panelMaterials.get(p.id);if(!mats)continue;const shade=1-.7*p.blockage;mats[0].color.copy(panel.color).multiplyScalar(shade);mats[1].color.copy(cell.color).multiplyScalar(shade);}
+      const s=sunDirection(hour,site.lat,dec);sun.visible=s[1]>0;sun.position.set(s[0]*12,s[1]*12+.2,-s[2]*12);light.position.copy(sun.position);light.intensity=s[1]>0?1.5*(1-.65*weather.clouds):0;
     },
-    destroy(){renderer.setAnimationLoop(null);resize.disconnect();orbit.dispose();scene.traverse(o=>{o.geometry?.dispose();if(o.material)o.material.dispose();});tex.dispose();renderer.dispose();renderer.domElement.remove();}
+    destroy(){renderer.setAnimationLoop(null);resize.disconnect();orbit.dispose();scene.traverse(o=>{o.geometry?.dispose();if(o.material)o.material.dispose();});for(const texture of labelTextures)texture.dispose();panel.dispose();cell.dispose();tex.dispose();cloudTexture.dispose();shadowTexture.dispose();renderer.dispose();renderer.domElement.remove();}
   };
 }

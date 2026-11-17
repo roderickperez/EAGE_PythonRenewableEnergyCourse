@@ -264,7 +264,7 @@ async function route() {
       },
       'section8/solar-project.md': {
         anchor: '#how-to-use-the-explorer', id: 'solar-farm-project',
-        mount: async host => (await import('./generated/solar-lab/solar-project.js?v=solar-project-3')).mountSolarProject(host),
+        mount: async host => (await import('./generated/solar-lab/solar-project.js?v=solar-project-4')).mountSolarProject(host),
       },
       'section8/geothermal-project.md': {
         anchor: '#how-to-use-the-explorer', id: 'geothermal-field-project',

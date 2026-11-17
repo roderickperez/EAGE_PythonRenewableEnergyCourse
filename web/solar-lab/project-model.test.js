@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { calculate, conditions, declination, surfaceLoss, SITES } from './project-model.js';
-import { cloudState, applyCloudShadow } from './project-clouds.js';
+import { calculate, calculateFarm, conditions, declination, surfaceLoss, SITES } from './project-model.js';
+import { cloudState, cloudBlockage } from './project-clouds.js';
 import { readFileSync } from 'node:fs';
 const site={lat:48.208,lon:16.374}, settings={tilt:30,azimuth:180,shading:5,count:2};
 test('sun and seasonal generation respond to latitude and date',()=>{
@@ -32,14 +32,21 @@ test('cloud cover changes irradiance and midday output, independently of surface
   assert.ok(surfaceLoss(.1)>surfaceLoss(-.1));
   assert.deepEqual(SITES.map(s=>s.region),['North America','South America','Africa','Europe','Asia']);
 });
-test('a moving cloud crossing the solar ray reduces irradiance and power',()=>{
+test('a moving cloud shades individual panels and farm output is their sum',()=>{
   const d=new Date('2025-06-21T12:00:00Z'),base=conditions(d,site.lat),dec=declination(d);
-  const covered=cloudState(12,site.lat,dec,0,base.clouds),clear=cloudState(12,site.lat,dec,2.22,base.clouds);
-  assert.ok(covered.blockage>clear.blockage+.25);
-  const a=calculate(site,d,12,settings,applyCloudShadow(base,covered)).current;
-  const b=calculate(site,d,12,settings,applyCloudShadow(base,clear)).current;
-  assert.ok(a.poa<b.poa);assert.ok(a.ac<b.ac);
-  assert.equal(cloudState(0,site.lat,dec,0,base.clouds).blockage,0);
+  const covered=cloudState(12,site.lat,dec,0,base.clouds),[east,up,north]=covered.sun;
+  covered.clouds=[{position:[-9+east/up*5.32,6,9-north/up*5.32]}];
+  const result=calculateFarm(site,d,12,settings,base,covered,[0,9]);
+  assert.ok(result.panels[0].blockage>.4);assert.ok(result.panels[1].blockage<.001);
+  assert.ok(result.panels[0].current.poa<result.panels[1].current.poa);
+  assert.ok(result.panels[0].current.ac<result.panels[1].current.ac);
+  assert.ok(Math.abs(result.current.ac-result.panels.reduce((n,p)=>n+p.current.ac,0))<1e-9);
+  covered.clouds[0].position[0]+=12;
+  assert.ok(cloudBlockage(covered,-9,9,.68)<.01);
+  assert.equal(cloudBlockage(cloudState(0,site.lat,dec,0,base.clouds),-9,9),0);
+  const next=cloudState(12,site.lat,dec,1,base.clouds),start=cloudState(12,site.lat,dec,0,base.clouds);
+  assert.equal(next.clouds[0].position[2],start.clouds[0].position[2]);
+  assert.ok(next.clouds[0].position[0]>start.clouds[0].position[0]);
 });
 test('all chosen coordinates fall on Natural Earth land polygons',()=>{
   const land=JSON.parse(readFileSync(new URL('./natural-earth-land.geojson',import.meta.url)));

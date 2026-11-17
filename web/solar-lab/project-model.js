@@ -1,4 +1,5 @@
 import { solarPower, solarDay } from './model.js';
+import { cloudBlockage, gridPosition, applyCloudShadow } from './project-clouds.js';
 
 export const SITES = [
   { region:'North America', name:'Phoenix, USA', lat:33.448, lon:-112.074 },
@@ -34,4 +35,18 @@ export function calculate(site, date, hour, settings, weather) {
   const input=inputs(site,date,settings,weather);
   // solarDay divides by rating; avoid undefined zero-panel metrics.
   return { current:solarPower(input,hour), day:settings.count ? solarDay(input) : { samples:[],energy:0 } };
+}
+
+export function calculateFarm(site,date,hour,settings,weather,cloud,ids) {
+  const panels=ids.map(id=>{
+    const p=gridPosition(id),blockage=cloudBlockage(cloud,p.x,p.z,.68);
+    const input=inputs(site,date,{...settings,count:1},applyCloudShadow(weather,blockage));
+    return {id,blockage,current:solarPower(input,hour),day:solarDay(input)};
+  });
+  const reference=solarPower(inputs(site,date,{...settings,count:1},weather),hour);
+  const current={...reference,ac:panels.reduce((n,p)=>n+p.current.ac,0),
+    poa:panels.length?panels.reduce((n,p)=>n+p.current.poa,0)/panels.length:reference.poa};
+  const samples=panels.length?panels[0].day.samples.map((_,i)=>({ac:panels.reduce((sum,p)=>sum+p.day.samples[i].ac,0)})):[];
+  return {panels,current,blockage:panels.length?panels.reduce((n,p)=>n+p.blockage,0)/panels.length:0,
+    day:{samples,energy:panels.reduce((n,p)=>n+p.day.energy,0)}};
 }
