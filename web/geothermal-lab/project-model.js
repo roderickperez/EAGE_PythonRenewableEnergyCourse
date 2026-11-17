@@ -76,7 +76,7 @@ export function createModel(settings={}) {
     const production=temperature[config.producer];
     const thermal=Math.max(0,config.rate*CP*(production-config.injection)/1e6);
     const net=Math.min(config.capacity,thermal*config.efficiency*(1-config.auxiliary));
-    return {years:seconds/YEAR, production, thermal, net, energy, revenue, extractedJ,
+    return {years:seconds/YEAR, production, thermal, net, energy, revenue, capacity:config.capacity, extractedJ,
       remainingJ:temperature.reduce((a,t)=>a+(t-config.injection)*cellCapacity,0),
       temperature:Array.from(temperature)};
   }

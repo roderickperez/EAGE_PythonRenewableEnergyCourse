@@ -268,7 +268,7 @@ async function route() {
       },
       'section8/geothermal-project.md': {
         anchor: '#how-to-use-the-explorer', id: 'geothermal-field-project',
-        mount: async host => (await import('./generated/geothermal-lab/geothermal-project.js?v=1')).mountGeothermalProject(host),
+        mount: async host => (await import('./generated/geothermal-lab/geothermal-project.js?v=2')).mountGeothermalProject(host),
       },
     }[lesson.id];
     if(lab){
