@@ -184,6 +184,7 @@ async function route() {
       ['electrical-power-explorer', 'balance.html?demo=electrical-power', 'Electrical power explorer'],
       ['hydraulic-loss-explorer', 'balance.html?demo=hydraulic-loss', 'Hydraulic losses explorer'],
       ['turbine-operation-explorer', 'balance.html?demo=turbine-operation', 'Turbine families and operation explorer'],
+      ['pumped-storage-explorer', 'balance.html?demo=pumped-storage', 'Pumped storage explorer'],
     ]) {
       const spot = $(anchor);
       if (!spot) continue;
@@ -272,7 +273,7 @@ function setupMedia(){
   const configured=lesson.media?.audio || {};
   const audio=configured.en || configured.es ? (configured[lang] || {}) : (lang === 'en' ? configured : {});
   const headings=[...$('lesson').querySelectorAll('h2[id],h3[id]')].filter(heading =>
-    heading.id !== 'head-flow-and-the-hydraulic-energy-balance' &&
+    !['head-flow-and-the-hydraulic-energy-balance', 'water-allocation-hydrology-and-storage'].includes(heading.id) &&
     (heading.tagName === 'H2' || audio[heading.id]));
   const items=[];
   if(audio.intro) items.push({url:audio.intro,title:lesson.title});

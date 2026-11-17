@@ -1,4 +1,4 @@
-import { MAX_FLOW_M3S, MAX_INTERVAL_MINUTES } from './balance-model.js';
+import { MAX_CYCLE_VOLUME_M3, MAX_FLOW_M3S, MAX_INTERVAL_MINUTES, pumpedCycle } from './balance-model.js';
 
 const colors = { water: '#288daa', net: '#398470', loss: '#c17932', pipe: '#49666f', electricity: '#e5a124' };
 
@@ -42,9 +42,10 @@ export function mountCanvasDiagram(host, kind) {
     polygon([[x, floor], [x + width, floor], [x + width, height], [x, height]], '#227e99');
     polygon([[x, height], [x + width, height], [x + width + rear, height - 17], [x + rear, height - 17]], '#58b7cd');
   }
-  function particles(count, points, color, radius, limit = Infinity) {
+  function particles(count, points, color, radius, limit = Infinity, offset = phase, reverse = false) {
     for (let i = 0; i < count; i++) {
-      const progress = ((phase + i / count) % 1) * (points.length - 1);
+      const t01 = (offset + i / count) % 1;
+      const progress = Math.min((reverse ? 1 - t01 : t01) * (points.length - 1), points.length - 1.000001);
       const index = Math.floor(progress);
       const [x, y] = points[index];
       const [nextX, nextY] = points[index + 1];
@@ -114,6 +115,26 @@ export function mountCanvasDiagram(host, kind) {
       tap(x + 34, y, fourth, colors.water, 'A');
       tap(end + 16, y + 24, values[4], colors.net, 'B');
       if (flow > 0) particles(14, path, '#c8f8ff', 3.6);
+    } else if (kind === 'pumped-storage') {
+      const active = first > 0 && flow > 0;
+      const { pumping, upper } = pumpedCycle(active ? phase : 0);
+      const fill = 44 * first / MAX_CYCLE_VOLUME_M3;
+      polygon([[64, 189], [174, 189], [201, 172], [201, 89], [64, 89]], '#a7bcb2');
+      tank(64, 92, 108, 68, 16 + upper * fill);
+      tank(308, 189, 108, 68, 16 + (1 - upper) * fill);
+      const waterPath = [[148, 80], [172, 80], [200, 92], [227, 127], [246, 155], [267, 165], [308, 178], [340, 178]];
+      const cable = [[252, 148], [269, 131], [288, 128], [309, 105], [326, 98]];
+      line(waterPath, colors.pipe, 14);
+      line(waterPath, colors.water, 8);
+      line(cable, colors.pipe, 4);
+      dot(251, 155, 15, '#98744c');
+      dot(251, 155, 8, colors.pipe);
+      ctx.fillStyle = colors.pipe;
+      ctx.fillRect(322, 89, 25, 16);
+      if (active) {
+        particles(12, waterPath, '#beeffb', 3.4, Infinity, phase * 8, pumping);
+        particles(5, cable, colors.electricity, 3.4, Infinity, phase * 8, pumping);
+      }
     } else if (kind === 'turbine-operation') {
       const center = [218, 118];
       const routes = [

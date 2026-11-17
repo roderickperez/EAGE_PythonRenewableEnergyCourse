@@ -31,12 +31,15 @@ def validate():
     assert 'id="electrical-power-explorer"' in hydro['html']
     assert 'id="hydraulic-loss-explorer"' in hydro['html']
     assert 'id="turbine-operation-explorer"' in hydro['html']
+    assert 'id="pumped-storage-explorer"' in hydro['html']
     assert 'hydro-lab/head.html' not in hydro['html']
     assert 'hydro-lab/balance.html' not in hydro['html']
     for file in ('head.html', 'head.js', 'balance.html', 'balance.js'):
         assert (OUT / 'hydro-lab' / file).is_file()
     assert set(hydro['media']['audio']['en']) == {
         'what-head-means', 'flow-and-volume-are-different-quantities', 'deriving-the-power-equation', 'turbine-families',
+        'environmental-releases-before-generation', 'hydrographs-and-flow-duration-curves',
+        'reservoir-conservation-and-variable-head',
     }
     assert (OUT / 'solar-lab' / 'solar-lab.js').is_file()
     solar_page = pages['section6/solarEnergy.md']['html']

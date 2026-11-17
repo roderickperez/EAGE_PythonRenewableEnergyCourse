@@ -1,9 +1,11 @@
 import { flowBalance, MAX_FLOW_M3S, MAX_INTERVAL_MINUTES, netHead, powerBalance } from './balance-model.js';
 import { mountBalanceScene, palette } from './balance-scene.js';
 import { mountOperationDemo, operationDemos } from './operation.js';
+import { mountPumpedStorage } from './pumped-storage.js';
 
 const requested = new URLSearchParams(location.search).get('demo');
-if (operationDemos.has(requested)) mountOperationDemo(requested);
+if (requested === 'pumped-storage') mountPumpedStorage();
+else if (operationDemos.has(requested)) mountOperationDemo(requested);
 else mountBalanceDemo(requested);
 
 function mountBalanceDemo(requested) {

@@ -2,6 +2,7 @@ import * as T from 'three';
 import { mountCanvasDiagram } from './diagram-canvas.js';
 import { mountDiagramMotion, mountDiagramRenderer } from './diagram-motion.js';
 import { createOperationScene } from './operation-scene.js';
+import { createPumpedStorageScene } from './pumped-storage-scene.js';
 
 const palette = { water: '#288daa', net: '#398470', loss: '#c17932', shaft: '#98744c', electricity: '#e5a124' };
 export { palette };
@@ -48,11 +49,11 @@ function create3DScene(host, kind) {
   }
   const box = (width, height, depth, surface, x, y, z) =>
     mesh(new T.BoxGeometry(width, height, depth), surface, x, y, z);
-  function tank(x, width, height, depth) {
-    box(width + .16, .14, depth + .16, rock, x, -.07, 0);
-    box(width, height, .10, rock, x, height / 2, -depth / 2);
+  function tank(x, width, height, depth, bottom = 0) {
+    box(width + .16, .14, depth + .16, rock, x, bottom - .07, 0);
+    box(width, height, .10, rock, x, bottom + height / 2, -depth / 2);
     for (const side of [-1, 1]) {
-      box(.10, height, depth, rock, x + side * width / 2, height / 2, 0);
+      box(.10, height, depth, rock, x + side * width / 2, bottom + height / 2, 0);
     }
     return box(width - .10, 1, depth - .09, water, x, 0, .01);
   }
@@ -63,7 +64,9 @@ function create3DScene(host, kind) {
   }
 
   let draw;
-  if (kind === 'hydraulic-loss' || kind === 'turbine-operation') {
+  if (kind === 'pumped-storage') {
+    draw = createPumpedStorageScene({ material, mesh, box, tank, level, steel, rock, palette });
+  } else if (kind === 'hydraulic-loss' || kind === 'turbine-operation') {
     draw = createOperationScene(kind, { scene, material, mesh, box, tank, level, steel, rock, palette });
   } else if (kind === 'net-head') {
     const upper = tank(-2.75, 3, 3.75, 2.4);
@@ -151,7 +154,7 @@ function create3DScene(host, kind) {
   new ResizeObserver(() => {
     const { clientWidth: w, clientHeight: h } = host;
     if (!w || !h || !renderer.domElement.isConnected) return;
-    const half = Math.max(2.85, 5.2 * h / w);
+    const half = Math.max(kind === 'pumped-storage' ? 3.08 : 2.85, 5.2 * h / w);
     Object.assign(camera, { left: -half * w / h, right: half * w / h, top: half, bottom: -half });
     camera.updateProjectionMatrix();
     renderer.setSize(w, h);

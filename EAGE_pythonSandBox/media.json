@@ -5,7 +5,10 @@
         "what-head-means": "en/hydroelectric/what-head-means.mp3",
         "flow-and-volume-are-different-quantities": "en/hydroelectric/flow-and-volume-are-different-quantities.mp3",
         "deriving-the-power-equation": "en/hydroelectric/deriving-the-power-equation.mp3",
-        "turbine-families": "en/hydroelectric/turbine-families.mp3"
+        "turbine-families": "en/hydroelectric/turbine-families.mp3",
+        "environmental-releases-before-generation": "en/hydroelectric/environmental-releases-before-generation.mp3",
+        "hydrographs-and-flow-duration-curves": "en/hydroelectric/hydrographs-and-flow-duration-curves.mp3",
+        "reservoir-conservation-and-variable-head": "en/hydroelectric/reservoir-conservation-and-variable-head.mp3"
       }
     }
   }

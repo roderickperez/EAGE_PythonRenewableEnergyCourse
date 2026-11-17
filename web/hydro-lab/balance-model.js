@@ -46,3 +46,18 @@ export function pipeHeadProfile(loss, length) {
   return [[0, inlet], [location, beforeFitting],
     [location, beforeFitting - loss.fittings], [length, OUTLET_PRESSURE_HEAD_M]];
 }
+export const MAX_CYCLE_VOLUME_M3 = 500_000;
+
+export function pumpedStorage(volume, head, pump, turbine, generator, density, gravity) {
+  const stored = density * gravity * volume * head / 3.6e9;
+  return {
+    stored,
+    input: stored / pump,
+    recovered: stored * turbine * generator,
+    roundTrip: pump * turbine * generator,
+  };
+}
+
+export function pumpedCycle(phase) {
+  return { pumping: phase < .5, upper: 1 - Math.abs(2 * phase - 1) };
+}

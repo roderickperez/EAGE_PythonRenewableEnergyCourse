@@ -216,6 +216,12 @@ E_{gen}=\eta_t\eta_gE_{pot}.$$
 
 With the same head and water volume on both legs and no additional losses, $\eta_{RT}=\eta_p\eta_t\eta_g$. In a partial cycle, remaining water still contains stored energy; comparing generated energy with pumping input before accounting for that remaining storage gives an incomplete efficiency calculation. Pumped storage provides timing and flexibility services while consuming net electrical energy over a complete cycle [@jrc2025hydro].
 
+(pumped-storage-explorer)=
+:::{iframe} ../../hydro-lab/balance.html?demo=pumped-storage
+:width: 100%
+:title: Pumped storage explorer
+:::
+
 ## Worked calculation before coding
 
 Take a synthetic river flow of 12 m³/s, environmental reservation of 2 m³/s, gross head of 30 m, hydraulic loss of 2 m and combined turbine-generator efficiency of 0.85. Original numerical substitution; Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7.

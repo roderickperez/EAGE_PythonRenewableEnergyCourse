@@ -1,6 +1,23 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { flowBalance, netHead, pipeHeadProfile, pipeLoss, powerBalance, turbineOperation } from './balance-model.js';
+import { flowBalance, netHead, pipeHeadProfile, pipeLoss, powerBalance, pumpedCycle, pumpedStorage, turbineOperation } from './balance-model.js';
+
+test('pumped storage accounts for input, stored and recovered energy at separate boundaries', () => {
+  const { stored, input, recovered, roundTrip } = pumpedStorage(120000, 80, .85, .9, .95, 1000, 9.81);
+  assert.equal(stored, 26.16);
+  assert.ok(Math.abs(input - 30.7764705882353) < 1e-9);
+  assert.ok(Math.abs(recovered - 22.3668) < 1e-9);
+  assert.ok(Math.abs(recovered / input - roundTrip) < 1e-12);
+  assert.equal(pumpedStorage(120000, 0, .85, .9, .95, 1000, 9.81).input, 0);
+});
+
+test('the upper reservoir fills while pumping and drains during generation', () => {
+  assert.deepEqual(pumpedCycle(0), { pumping: true, upper: 0 });
+  assert.deepEqual(pumpedCycle(.25), { pumping: true, upper: .5 });
+  assert.deepEqual(pumpedCycle(.5), { pumping: false, upper: 1 });
+  assert.deepEqual(pumpedCycle(.75), { pumping: false, upper: .5 });
+  assert.equal(pumpedCycle(1).upper, 0);
+});
 
 test('net head subtracts the loss once and reaches zero at full loss', () => {
   assert.equal(netHead(30, 2), 28);
