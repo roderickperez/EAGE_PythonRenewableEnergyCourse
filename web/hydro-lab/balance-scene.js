@@ -1,10 +1,22 @@
 import * as T from 'three';
-import { flowBalance, MAX_FLOW_M3S, MAX_INTERVAL_MINUTES } from './balance-model.js';
+import { mountCanvasDiagram } from './diagram-canvas.js';
+import { mountDiagramMotion, mountDiagramRenderer } from './diagram-motion.js';
 
 const palette = { water: '#288daa', net: '#398470', loss: '#c17932', shaft: '#98744c', electricity: '#e5a124' };
 export { palette };
 
 export function mountBalanceScene(host, kind, motionButton) {
+  const draw = mountDiagramRenderer(host,
+    kind === 'flow-volume' ? null : () => create3DScene(host, kind),
+    () => mountCanvasDiagram(host, kind));
+  motionButton.hidden = kind === 'net-head';
+  const rate = kind === 'flow-volume' ? .00015 : .000045;
+  return kind === 'net-head'
+    ? mountDiagramMotion(host, motionButton, draw, undefined, 400)
+    : mountDiagramMotion(host, motionButton, draw, values => values[1] * rate);
+}
+
+function create3DScene(host, kind) {
   const scene = new T.Scene();
   scene.background = new T.Color('#e9f3f4');
   const camera = new T.OrthographicCamera();
@@ -59,26 +71,6 @@ export function mountBalanceScene(host, kind, motionButton) {
       level(upper, lowerLevel + gross * .03);
       level(net, usable, lowerLevel);
       level(loss, lossHead * .03, lowerLevel + usable);
-    };
-  } else if (kind === 'flow-volume') {
-    const capacity = flowBalance(MAX_FLOW_M3S, MAX_INTERVAL_MINUTES, 1000).volume;
-    const receiving = tank(2.1, 3.9, 2.9, 2.8);
-    const path = new T.CatmullRomCurve3([
-      new T.Vector3(-4.05, 3.28, .45), new T.Vector3(-.75, 3.28, .45),
-      new T.Vector3(.55, 3.28, .45), new T.Vector3(.85, 3.04, .45),
-      new T.Vector3(.85, .16, .45),
-    ]);
-    box(4.85, .13, .64, steel, -1.61, 3.15, .45);
-    const pearl = new T.SphereGeometry(.082, 10, 8);
-    const stream = material('#42a6bf');
-    const particles = Array.from({ length: 18 }, () => mesh(pearl, stream, 0, 0, 0));
-    draw = ([volume, flow], phase) => {
-      const height = volume / capacity * 2.65;
-      level(receiving, height);
-      for (const [index, particle] of particles.entries()) {
-        particle.position.copy(path.getPointAt((phase + index / particles.length) % 1));
-        particle.visible = flow > 0 && particle.position.y > height;
-      }
     };
   } else {
     const tailwater = .75;
@@ -143,84 +135,23 @@ export function mountBalanceScene(host, kind, motionButton) {
     };
   }
 
-  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
-  const continuous = kind !== 'net-head';
-  let current, start, target, startTime, frame, phase = 0, previousTime = 0;
-  let playing = !reducedMotion.matches, onScreen = false;
+  let values, phase;
   function render() {
-    if (current) draw(current, phase);
+    if (values) draw(values, phase);
     renderer.render(scene, camera);
   }
-  function schedule() {
-    if (!frame && current && playing && onScreen && !document.hidden &&
-        (start || (continuous && target[1] > 0))) {
-      frame = requestAnimationFrame(tick);
-    }
-  }
-  function tick(time) {
-    frame = undefined;
-    if (start) {
-      const progress = Math.min(1, (time - startTime) / 500);
-      current = target.map((value, index) => start[index] + (value - start[index]) * (1 - (1 - progress) ** 3));
-      if (progress === 1) start = undefined;
-    }
-    if (continuous && previousTime) {
-      const dt = Math.min(45, time - previousTime);
-      phase = (phase + dt * current[1] * (kind === 'flow-volume' ? .00012 : .000045)) % 1;
-    }
-    previousTime = time;
-    render();
-    schedule();
-  }
-  function refreshMotion() {
-    motionButton.textContent = playing ? 'Pause motion' : 'Play motion';
-    if (!playing || !onScreen || document.hidden) {
-      if (frame) cancelAnimationFrame(frame);
-      frame = undefined;
-      previousTime = 0;
-      if (!playing && target) {
-        start = undefined;
-        current = target;
-        render();
-      }
-    }
-    schedule();
-  }
-  motionButton.hidden = !continuous;
-  motionButton.addEventListener('click', () => {
-    playing = !playing;
-    refreshMotion();
-  });
-  reducedMotion.addEventListener('change', () => {
-    playing = !reducedMotion.matches;
-    refreshMotion();
-  });
-  document.addEventListener('visibilitychange', refreshMotion);
-  new IntersectionObserver(([entry]) => {
-    onScreen = entry.isIntersecting;
-    refreshMotion();
-  }).observe(host);
-  refreshMotion();
   new ResizeObserver(() => {
     const { clientWidth: w, clientHeight: h } = host;
-    if (!w || !h) return;
+    if (!w || !h || !renderer.domElement.isConnected) return;
     const half = Math.max(2.85, 5.2 * h / w);
     Object.assign(camera, { left: -half * w / h, right: half * w / h, top: half, bottom: -half });
     camera.updateProjectionMatrix();
     renderer.setSize(w, h);
     render();
   }).observe(host);
-  return values => {
-    if (target?.every((value, index) => value === values[index])) return;
-    target = values;
-    if (!current || !playing || !onScreen) {
-      start = undefined;
-      current = values;
-      render();
-    } else {
-      start = current;
-      startTime = performance.now();
-    }
-    schedule();
+  return (next, position) => {
+    values = next;
+    phase = position;
+    render();
   };
 }

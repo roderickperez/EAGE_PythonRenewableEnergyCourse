@@ -1,5 +1,7 @@
 import * as T from 'three';
 import { computeHead } from './head-model.js';
+import { mountCanvasDiagram } from './diagram-canvas.js';
+import { mountDiagramMotion, mountDiagramRenderer } from './diagram-motion.js';
 
 const sliders = [
   ['elevation', 'Elevation', 'z', 'm', 0, 50, 1, 15],
@@ -21,7 +23,13 @@ const fields = sliders.map(([key, label, symbol, unit, min, max, step, value]) =
 const host = document.querySelector('#scene');
 let draw;
 try {
-  draw = createScene(host);
+  const motion = document.querySelector('#motion');
+  const render = mountDiagramRenderer(host, () => createScene(host), () => {
+    document.querySelectorAll('.scene-label').forEach(label => { label.hidden = true; });
+    return mountCanvasDiagram(host, 'head');
+  });
+  draw = mountDiagramMotion(host, motion, render, values => values[1] * .000065);
+  motion.hidden = false;
 } catch {
   document.querySelector('#fallback').hidden = false;
 }
@@ -37,7 +45,7 @@ function update() {
   document.querySelector('#elevation-head').value = metres(head.elevation);
   document.querySelector('#pressure-head').value = metres(head.pressure);
   document.querySelector('#velocity-head').value = metres(head.kinetic);
-  draw?.(head, inputs.velocity);
+  draw?.([head.elevation, inputs.velocity, head.pressure]);
 }
 fields.forEach(({ input }) => input.addEventListener('input', update));
 update();
@@ -53,7 +61,7 @@ if (window.frameElement) {
 function createScene(container) {
   const renderer = new T.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-  container.append(renderer.domElement);
+  container.querySelector('#drawing').append(renderer.domElement);
   const scene = new T.Scene();
   scene.background = new T.Color('#e9f3f4');
   const camera = new T.OrthographicCamera();
@@ -68,7 +76,6 @@ function createScene(container) {
   const datum = new T.MeshStandardMaterial({ color: '#9cb7ae' });
   const dimension = new T.MeshBasicMaterial({ color: '#24584e' });
   const glass = new T.MeshStandardMaterial({ color: '#8cccdb', transparent: true, opacity: .28, depthWrite: false });
-  const motion = matchMedia('(prefers-reduced-motion: reduce)');
   function mesh(geometry, material, parent, x = 0, y = 0, z = 0) {
     const shape = new T.Mesh(geometry, material);
     shape.position.set(x, y, z);
@@ -122,7 +129,7 @@ function createScene(container) {
   const particleMaterial = new T.MeshBasicMaterial({ color: '#dcf8ff' });
   const particles = Array.from({ length: 10 }, () => mesh(particleShape, particleMaterial, pipe, 0, -.07, .24));
 
-  let speed = 0, phase = 0, frame = 0, previous = 0, until = 0;
+  let speed = 0, phase = 0;
   function render() {
     particles.forEach((particle, index) => {
       particle.position.x = -3.55 + 7.1 * ((phase + index / particles.length) % 1);
@@ -130,16 +137,9 @@ function createScene(container) {
     });
     renderer.render(scene, camera);
   }
-  function tick(time) {
-    frame = 0;
-    if (previous) phase = (phase + Math.min(.04, (time - previous) / 1000) * speed * .065) % 1;
-    previous = time;
-    render();
-    if (time < until && !motion.matches && speed > 0) frame = requestAnimationFrame(tick);
-  }
   function resize() {
     const { clientWidth: width, clientHeight: height } = container;
-    if (!width || !height) return;
+    if (!width || !height || !renderer.domElement.isConnected) return;
     const half = Math.max(3.5, 5.25 * height / width);
     Object.assign(camera, { left: -half * width / height, right: half * width / height, top: half, bottom: -half, near: .1, far: 80 });
     camera.updateProjectionMatrix();
@@ -150,9 +150,9 @@ function createScene(container) {
     render();
   }
   new ResizeObserver(resize).observe(container);
-  return (head, velocity) => {
-    const height = head.elevation * metresToScene;
-    const pressureHeight = head.pressure * metresToScene;
+  return ([elevation, velocity, pressure], position) => {
+    const height = elevation * metresToScene;
+    const pressureHeight = pressure * metresToScene;
     pipe.position.y = datumY + height;
     guide.scale.y = height;
     guide.position.y = datumY + height / 2;
@@ -163,13 +163,7 @@ function createScene(container) {
     water.scale.y = pressureHeight;
     water.position.y = pressureHeight / 2;
     speed = velocity;
+    phase = position;
     render();
-    if (!motion.matches && speed > 0) {
-      until = performance.now() + 2400;
-      if (!frame) {
-        previous = 0;
-        frame = requestAnimationFrame(tick);
-      }
-    }
   };
 }

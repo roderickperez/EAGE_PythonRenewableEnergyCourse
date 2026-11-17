@@ -12,6 +12,7 @@
   #head{font-size:clamp(22px,5vw,32px);font-weight:750;color:#176d86;white-space:nowrap}
   #scene{position:relative;height:204px;overflow:hidden;border-radius:8px;background:#e9f3f4}
   #scene canvas{display:block}
+  #motion{position:absolute;z-index:2;top:8px;left:8px;padding:5px 8px;color:#163b38;background:#fff;border:1px solid #adc7c1;border-radius:6px;font:inherit;font-size:.78rem;cursor:pointer}
   .scene-label{position:absolute;z-index:1;color:#24584e;background:#f6faf8e8;border-radius:4px;padding:1px 4px;font-size:.72rem;font-weight:700;white-space:nowrap;pointer-events:none;transform:translate(-50%,-50%)}
   #fallback{margin:0;padding:12px}
   #scene:has(#fallback:not([hidden])){height:auto}
@@ -33,7 +34,9 @@
     <h1>Hydraulic head at a point</h1>
     <output id="head" aria-label="Total hydraulic head"></output>
   </header>
-  <div id="scene" role="img" aria-label="Elevation z from the fixed zero-metre datum to the pipe centreline, with a pressure column and flow particles">
+  <div id="scene">
+    <div id="drawing" role="img" aria-label="Elevation z from the fixed zero-metre datum to the pipe centreline, with a pressure column and flow particles"></div>
+    <button id="motion" type="button" hidden></button>
     <p id="fallback" hidden>The diagram is unavailable. The head terms below update with the sliders.</p>
     <span id="datum-label" class="scene-label" aria-hidden="true" hidden>Datum · 0 m</span>
     <span id="elevation-label" class="scene-label" aria-hidden="true" hidden><i>z</i></span>
@@ -46,5 +49,5 @@
   <div id="controls" role="group" aria-label="Hydraulic head inputs"></div>
   <p class="note">Elevation <i>z</i> is measured vertically from the fixed datum to the pipe centreline. The blue column shows pressure head above the centreline. Particle speed follows water speed.</p>
 </main>
-<script type="module" src="head.js"></script>
+<script type="module" src="head.js?v=motion-2"></script>
 </html>
