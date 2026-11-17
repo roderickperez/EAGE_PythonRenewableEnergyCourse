@@ -27,11 +27,22 @@ test('irradiance changes current, heat reduces MPP voltage, and darkness has no 
   assert.ok(moduleCurve(500, 25).isc < standard.isc * .51);
   assert.ok(moduleCurve(1000, 65).peak.voltage < standard.peak.voltage);
   assert.equal(moduleCurve(0, 25).peak, null);
+  assert.equal(moduleCurve(0, 25).fillFactor, null);
   for (const irradiance of [10, 1200]) for (const temp of [-10, 85]) {
     const { isc, voc, peak } = moduleCurve(irradiance, temp);
     assert.ok(isc > 0 && isc < 8 && voc > 0 && voc < 72);
     assert.ok(peak.power > 0 && peak.power < 360);
   }
+});
+
+test('selected DC operating points follow the same curve and collapse at both endpoints', () => {
+  const { isc, voc, peak, atVoltage, fillFactor } = moduleCurve(1000, 25);
+  assert.deepEqual(atVoltage(0), { voltage: 0, current: isc, power: 0 });
+  assert.deepEqual(atVoltage(voc), { voltage: voc, current: 0, power: 0 });
+  close(atVoltage(peak.voltage).current, peak.current);
+  close(atVoltage(peak.voltage).power, peak.power);
+  assert.ok(fillFactor > .7 && fillFactor < .8);
+  close(fillFactor * voc * isc, peak.power);
 });
 
 test('isotropic transposition reproduces the lesson example and horizontal limit', () => {

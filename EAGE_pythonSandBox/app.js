@@ -192,6 +192,8 @@ async function route() {
       ['solar-tilt-explorer', 'resource.html?demo=tilt', 'Tilted-module irradiance explorer', 'solar-lab'],
       ['solar-incidence-explorer', 'resource.html?demo=incidence', 'Solar incidence angle explorer', 'solar-lab'],
       ['solar-iv-explorer', 'resource.html?demo=iv', 'Photovoltaic current and power curve explorer', 'solar-lab'],
+      ['solar-operating-point-explorer', 'resource.html?demo=operating-point', 'Photovoltaic operating point and DC power explorer', 'solar-lab'],
+      ['solar-fill-factor-explorer', 'resource.html?demo=fill-factor', 'Photovoltaic fill factor explorer', 'solar-lab'],
     ]) {
       const spot = $(anchor);
       if (!spot) continue;
@@ -280,7 +282,8 @@ function setupMedia(){
   const configured=lesson.media?.audio || {};
   const audio=configured.en || configured.es ? (configured[lang] || {}) : (lang === 'en' ? configured : {});
   const headings=[...$('lesson').querySelectorAll('h2[id],h3[id],h4[id]')].filter(heading =>
-    !['head-flow-and-the-hydraulic-energy-balance', 'water-allocation-hydrology-and-storage', 'solar-resource-and-measurement-definitions'].includes(heading.id) &&
+    !['head-flow-and-the-hydraulic-energy-balance', 'water-allocation-hydrology-and-storage',
+      'solar-resource-and-measurement-definitions', 'pv-conversion-definitions-equations-and-limits'].includes(heading.id) &&
     (heading.tagName === 'H2' || audio[heading.id]));
   const items=[];
   if(audio.intro) items.push({url:audio.intro,title:lesson.title});

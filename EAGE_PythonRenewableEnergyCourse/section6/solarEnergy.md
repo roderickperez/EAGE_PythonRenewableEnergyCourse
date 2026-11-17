@@ -177,13 +177,25 @@ $$P_{DC}=VI.$$
 
 *Equation basis:* [@foster2010], §5.13, pp. 125–126; [@wade2003], Chapter 3.
 
+(solar-operating-point-explorer)=
+:::{iframe} ../../solar-lab/resource.html?demo=operating-point
+:width: 100%
+:title: Photovoltaic operating point and DC power explorer
+:::
+
 At open circuit, current is zero and voltage is $V_{oc}$; at short circuit, voltage is zero and current is $I_{sc}$. Neither condition delivers useful electrical power. At the maximum-power point, $P_{mp}=V_{mp}I_{mp}$. The fill factor [@foster2010], §5.13, pp. 125–126; [@wade2003], Chapter 3.
 
 $$FF=\frac{V_{mp}I_{mp}}{V_{oc}I_{sc}}$$
 
 *Equation basis:* [@foster2010], §5.13, pp. 125–126; [@wade2003], Chapter 3.
 
-describes the shape of the I–V curve and is dimensionless. It is not conversion efficiency or capacity factor. Irradiance strongly affects photocurrent, while voltage and power also respond to temperature. MPPT attempts to operate near the available maximum rather than at either I–V endpoint [@wade2003; @foster2010]; see also [@goswami2015], §§9.2–9.2.2, pp. 525–532. MPPT and inverter conversion efficiency describe different operations: choosing the available DC operating point and converting DC electrical power to AC.
+(solar-fill-factor-explorer)=
+:::{iframe} ../../solar-lab/resource.html?demo=fill-factor
+:width: 100%
+:title: Photovoltaic fill factor explorer
+:::
+
+Fill factor describes the shape of the I–V curve and is dimensionless. It is not conversion efficiency or capacity factor. Irradiance strongly affects photocurrent, while voltage and power also respond to temperature. MPPT attempts to operate near the available maximum rather than at either I–V endpoint [@wade2003; @foster2010]; see also [@goswami2015], §§9.2–9.2.2, pp. 525–532. MPPT and inverter conversion efficiency describe different operations: choosing the available DC operating point and converting DC electrical power to AC.
 
 The explorer models one uniformly illuminated silicon module. Change irradiance and cell temperature to see the same maximum-power voltage marked on both curves. The dashed traces show the module at standard test conditions. [De Soto single-diode model](https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/single-diode-equivalent-circuit-models/de-soto-five-parameter-module-model/); [pvlib module example](https://pvlib-python.readthedocs.io/en/latest/gallery/iv-modeling/plot_singlediode.html).
 

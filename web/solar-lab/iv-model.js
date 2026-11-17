@@ -14,7 +14,8 @@ function bisect(low, high, aboveZero) {
 
 export function moduleCurve(irradiance, cellTemperatureC) {
   if (irradiance === 0) {
-    return { isc: 0, voc: 0, peak: null, samples: [[0, 0, 0]] };
+    return { isc: 0, voc: 0, peak: null, fillFactor: null, samples: [[0, 0, 0]],
+      atVoltage: () => ({ voltage: 0, current: 0, power: 0 }) };
   }
 
   const temperature = cellTemperatureC + 273.15;
@@ -47,5 +48,12 @@ export function moduleCurve(irradiance, cellTemperatureC) {
   diodeSamples.push(optimum);
   diodeSamples.sort((a, b) => a - b);
   const samples = [[0, isc, 0], ...diodeSamples.map(v => [voltage(v), current(v), power(v)]), [voc, 0, 0]];
-  return { isc, voc, peak, samples };
+  function atVoltage(selected) {
+    if (selected <= 0) return { voltage: 0, current: isc, power: 0 };
+    if (selected >= voc) return { voltage: voc, current: 0, power: 0 };
+    const diode = bisect(shortCircuit, voc, candidate => voltage(candidate) < selected);
+    const amps = current(diode);
+    return { voltage: selected, current: amps, power: selected * amps };
+  }
+  return { isc, voc, peak, samples, atVoltage, fillFactor: peak.power / (isc * voc) };
 }

@@ -3,7 +3,7 @@ import { mountDiagramMotion, mountDiagramRenderer } from '../hydro-lab/diagram-m
 import { RAD, beamOnPlane, incidenceCosine, intervalIrradiation, isotropicIrradiance, solarVector } from './model.js';
 import { mountResourceScene, solarColors, solarSvgNode } from './resource-scene.js';
 
-import { mountIvExplorer } from './iv-explorer.js';
+import { mountIvEquation, mountIvExplorer } from './iv-explorer.js';
 import { mountResourceThree } from './resource-three.js';
 
 const $ = id => document.getElementById(id);
@@ -153,6 +153,7 @@ function mountIntervalPlot() {
 
 const requested = new URLSearchParams(location.search).get('demo');
 if (requested === 'iv') mountIvExplorer();
+else if (requested === 'operating-point' || requested === 'fill-factor') mountIvEquation(requested);
 else mountResourceExplorer(Object.hasOwn(demos, requested) ? requested : 'horizontal');
 
 function mountResourceExplorer(kind) {
