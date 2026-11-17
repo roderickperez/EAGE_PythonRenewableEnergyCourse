@@ -1,6 +1,17 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { flowBalance, netHead, pipeHeadProfile, pipeLoss, powerBalance, pumpedCycle, pumpedStorage, turbineOperation } from './balance-model.js';
+import { flowBalance, flowDuration, netHead, pipeHeadProfile, pipeLoss, powerBalance, pumpedCycle, pumpedStorage, turbineOperation } from './balance-model.js';
+
+test('duration ranks preserve observation identity, including ties and endpoints', () => {
+  const flows = [12, 8, 12, 20];
+  assert.deepEqual(flowDuration(flows), [
+    { day: 4, flow: 20, rank: 1, exceedancePercent: 20 },
+    { day: 1, flow: 12, rank: 2, exceedancePercent: 40 },
+    { day: 3, flow: 12, rank: 3, exceedancePercent: 60 },
+    { day: 2, flow: 8, rank: 4, exceedancePercent: 80 },
+  ]);
+  assert.deepEqual(flows, [12, 8, 12, 20]);
+});
 
 test('pumped storage accounts for input, stored and recovered energy at separate boundaries', () => {
   const { stored, input, recovered, roundTrip } = pumpedStorage(120000, 80, .85, .9, .95, 1000, 9.81);

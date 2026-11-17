@@ -185,6 +185,7 @@ async function route() {
       ['hydraulic-loss-explorer', 'balance.html?demo=hydraulic-loss', 'Hydraulic losses explorer'],
       ['turbine-operation-explorer', 'balance.html?demo=turbine-operation', 'Turbine families and operation explorer'],
       ['pumped-storage-explorer', 'balance.html?demo=pumped-storage', 'Pumped storage explorer'],
+      ['flow-duration-explorer', 'balance.html?demo=flow-duration', 'Hydrograph and flow-duration curve explorer'],
     ]) {
       const spot = $(anchor);
       if (!spot) continue;

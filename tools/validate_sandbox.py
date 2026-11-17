@@ -32,6 +32,7 @@ def validate():
     assert 'id="hydraulic-loss-explorer"' in hydro['html']
     assert 'id="turbine-operation-explorer"' in hydro['html']
     assert 'id="pumped-storage-explorer"' in hydro['html']
+    assert 'id="flow-duration-explorer"' in hydro['html']
     assert 'hydro-lab/head.html' not in hydro['html']
     assert 'hydro-lab/balance.html' not in hydro['html']
     for file in ('head.html', 'head.js', 'balance.html', 'balance.js'):

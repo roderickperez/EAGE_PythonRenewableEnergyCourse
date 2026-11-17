@@ -39,6 +39,8 @@
   .comparison-plots h2 { margin: 0; font-size: .95rem }
   .comparison-plots svg { display: block; width: 100%; max-height: 248px; margin: auto }
   .comparison-plots figcaption { color: #506b67; font-size: .79rem }
+  .flow-duration-control { margin-top: 12px }
+  .flow-duration-summary { margin: 4px 0 0; font-size: .85rem; font-variant-numeric: tabular-nums }
   @media (max-width:459px) { #scene.turbine-comparison { grid-template-columns: 1fr } }
   @media (max-width:430px) { main { padding: 10px } #scene { height: 156px } #controls, #controls.turbine-inputs { grid-template-columns: repeat(2,minmax(0,1fr)) } }
 </style>
@@ -50,5 +52,5 @@
   <div id="controls" role="group" aria-label="Equation inputs"></div>
   <p id="note"></p>
 </main>
-<script type="module" src="balance.js?v=pumped-storage-8"></script>
+<script type="module" src="balance.js?v=flow-duration-9"></script>
 </html>

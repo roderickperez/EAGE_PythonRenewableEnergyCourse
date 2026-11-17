@@ -27,23 +27,26 @@ export function addPlot(container, title, caption) {
   return svg;
 }
 
-export function setupPlot(svg, xMax, yMax, xLabel, yLabel) {
+export function setupPlot(svg, xMax, yMax, xLabel, yLabel, xMin = 0) {
   svg.replaceChildren();
   const plot = { left: 59, right: 393, top: 14, bottom: 149 };
-  const x = value => plot.left + value / xMax * (plot.right - plot.left);
+  const x = value => plot.left + (value - xMin) / (xMax - xMin) * (plot.right - plot.left);
   const y = value => plot.bottom - value / yMax * (plot.bottom - plot.top);
   const tick = value => Number(value.toPrecision(3)).toLocaleString('en');
   function line(x1, y1, x2, y2, stroke, dash = '') {
-    svg.append(svgNode('line', { x1, y1, x2, y2, stroke, 'stroke-dasharray': dash }));
+    const element = svgNode('line', { x1, y1, x2, y2, stroke, 'stroke-dasharray': dash });
+    svg.append(element);
+    return element;
   }
   function text(value, xx, yy, anchor = 'middle') {
     svg.append(svgNode('text', { x: xx, y: yy, 'text-anchor': anchor, fill: '#365951', 'font-size': 11 }, value));
   }
   for (let i = 0; i <= 4; i++) {
-    const xx = x(xMax * i / 4);
+    const xTick = xMin + (xMax - xMin) * i / 4;
+    const xx = x(xTick);
     const yy = y(yMax * i / 4);
     line(plot.left, yy, plot.right, yy, '#d8e8e1');
-    text(tick(xMax * i / 4), xx, plot.bottom + 15);
+    text(tick(xTick), xx, plot.bottom + 15);
     text(tick(yMax * i / 4), plot.left - 7, yy + 4, 'end');
   }
   line(plot.left, plot.top, plot.left, plot.bottom, '#829d93');
@@ -57,7 +60,9 @@ export function setupPlot(svg, xMax, yMax, xLabel, yLabel) {
     }));
   }
   function dot(xx, yy, color, radius = 4.5) {
-    svg.append(svgNode('circle', { cx: x(xx), cy: y(yy), r: radius, fill: color, stroke: 'white', 'stroke-width': 1.2 }));
+    const element = svgNode('circle', { cx: x(xx), cy: y(yy), r: radius, fill: color, stroke: 'white', 'stroke-width': 1.2 });
+    svg.append(element);
+    return element;
   }
   return { x, y, line, series, dot };
 }

@@ -191,6 +191,12 @@ A **hydrograph** retains the time sequence of flow. A **flow-duration curve** so
 
 A duration curve can support a simplified run-of-river energy estimate, but it cannot on its own determine reservoir operation or a sequence of shortages. Long-term assessment should cover wet and dry conditions, missing observations, upstream abstractions and changes in the catchment. A four-day exercise is not evidence of firm year-round production. [@jica2011], Chapters 7–8; [@ifc2015], Chapter 7.
 
+(flow-duration-explorer)=
+:::{iframe} ../../hydro-lab/balance.html?demo=flow-duration
+:width: 100%
+:title: Hydrograph and flow-duration curve explorer
+:::
+
 ### Reservoir conservation and variable head
 
 For a time step with constant or interval-average flows,

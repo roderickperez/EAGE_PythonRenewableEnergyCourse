@@ -61,3 +61,10 @@ export function pumpedStorage(volume, head, pump, turbine, generator, density, g
 export function pumpedCycle(phase) {
   return { pumping: phase < .5, upper: 1 - Math.abs(2 * phase - 1) };
 }
+export function flowDuration(dailyFlows) {
+  return dailyFlows.map((flow, index) => ({ day: index + 1, flow }))
+    .sort((a, b) => b.flow - a.flow || a.day - b.day)
+    .map((observation, index, ranked) => ({
+      ...observation, rank: index + 1, exceedancePercent: 100 * (index + 1) / (ranked.length + 1),
+    }));
+}

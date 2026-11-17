@@ -2,9 +2,11 @@ import { flowBalance, MAX_FLOW_M3S, MAX_INTERVAL_MINUTES, netHead, powerBalance 
 import { mountBalanceScene, palette } from './balance-scene.js';
 import { mountOperationDemo, operationDemos } from './operation.js';
 import { mountPumpedStorage } from './pumped-storage.js';
+import { mountFlowDuration } from './flow-duration.js';
 
 const requested = new URLSearchParams(location.search).get('demo');
-if (requested === 'pumped-storage') mountPumpedStorage();
+if (requested === 'flow-duration') mountFlowDuration();
+else if (requested === 'pumped-storage') mountPumpedStorage();
 else if (operationDemos.has(requested)) mountOperationDemo(requested);
 else mountBalanceDemo(requested);
 
