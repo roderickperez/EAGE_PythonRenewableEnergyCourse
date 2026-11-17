@@ -208,12 +208,29 @@ async function route() {
       ['wind-weibull-explorer', 'aerodynamics.html?demo=weibull', 'Weibull wind resource and bin integration explorer', 'wind-lab'],
       ['wind-losses-explorer', 'aerodynamics.html?demo=losses', 'Wind energy losses and uncertainty explorer', 'wind-lab'],
       ['wind-direction-explorer', 'aerodynamics.html?demo=direction', 'Circular wind direction explorer', 'wind-lab'],
+      ['geo-darcy-explorer', 'equations.html?demo=darcy', 'Darcy flux explorer', 'geothermal-lab'],
+      ['geo-gradient-explorer', 'equations.html?demo=gradient', 'Geothermal gradient and heat flux explorer', 'geothermal-lab'],
+      ['geo-heat-explorer', 'equations.html?demo=heat', 'Thermal power explorer', 'geothermal-lab'],
+      ['geo-carnot-explorer', 'equations.html?demo=carnot', 'Carnot efficiency explorer', 'geothermal-lab'],
+      ['geo-conversion-explorer', 'equations.html?demo=conversion', 'Gross and net power explorer', 'geothermal-lab'],
+      ['geo-pump-explorer', 'equations.html?demo=pump', 'Pumping power explorer', 'geothermal-lab'],
+      ['geo-heatpump-explorer', 'equations.html?demo=heatpump', 'Heat pump explorer', 'geothermal-lab'],
+      ['geo-storage-explorer', 'equations.html?demo=storage', 'Reservoir stored heat explorer', 'geothermal-lab'],
+      ['geo-decline-explorer', 'equations.html?demo=decline', 'Production decline explorer', 'geothermal-lab'],
+      ['geo-energy-explorer', 'equations.html?demo=energy', 'Energy and capacity factor explorer', 'geothermal-lab'],
+      ['geo-worked-explorer', 'equations.html?demo=conversion', 'Worked calculation explorer', 'geothermal-lab'],
+      ['geo-compact-gradient-explorer', 'equations.html?demo=gradient', 'Gradient and Fourier law explorer', 'geothermal-lab'],
+      ['geo-compact-heat-explorer', 'equations.html?demo=heat', 'Thermal power and enthalpy explorer', 'geothermal-lab'],
+      ['geo-compact-efficiency-explorer', 'equations.html?demo=conversion', 'Conversion and net power explorer', 'geothermal-lab'],
+      ['geo-compact-carnot-explorer', 'equations.html?demo=carnot', 'Carnot limit explorer', 'geothermal-lab'],
+      ['geo-compact-energy-explorer', 'equations.html?demo=energy', 'Energy and availability explorer', 'geothermal-lab'],
+      ['geo-compact-decline-explorer', 'equations.html?demo=decline', 'Annual decline explorer', 'geothermal-lab'],
     ]) {
       const spot = $(anchor);
       if (!spot) continue;
       const frame = document.createElement('iframe');
       frame.className = { 'hydro-lab': 'hydraulic-head-explorer', 'solar-lab': 'solar-resource-explorer',
-        'wind-lab': 'wind-equation-explorer' }[labPath];
+        'wind-lab': 'wind-equation-explorer', 'geothermal-lab': 'geothermal-equation-explorer' }[labPath];
       frame.title = title;
       frame.loading = 'lazy';
       frame.src = `generated/${labPath}/${path}`;
@@ -300,7 +317,7 @@ function setupMedia(){
     !['head-flow-and-the-hydraulic-energy-balance', 'water-allocation-hydrology-and-storage',
       'solar-resource-and-measurement-definitions', 'pv-conversion-definitions-equations-and-limits',
       'deriving-the-main-aerodynamic-relationships', 'resource-characterization-density-height-and-variability'].includes(heading.id) &&
-    (heading.tagName === 'H2' || audio[heading.id]));
+    (heading.tagName === 'H2' || lesson.id === 'section6/geothermalEnergy.md' || audio[heading.id]));
   const items=[];
   if(audio.intro) items.push({url:audio.intro,title:lesson.title});
   for(const heading of headings){

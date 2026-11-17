@@ -73,6 +73,11 @@ def validate():
     geothermal_page = pages['section6/geothermalEnergy.md']['html']
     assert 'geothermal-lab/index.html' not in geothermal_page
     assert 'id="physical-description-useful-heat-from-the-subsurface"' in geothermal_page
+    for demo in ('darcy', 'gradient', 'heat', 'carnot', 'conversion', 'pump', 'heatpump', 'storage', 'decline', 'energy', 'worked',
+                 'compact-gradient', 'compact-heat', 'compact-carnot', 'compact-efficiency', 'compact-energy', 'compact-decline'):
+        assert f'id="geo-{demo}-explorer"' in geothermal_page
+    for file in ('equations.html', 'equations.js'):
+        assert (OUT / 'geothermal-lab' / file).is_file()
     assert (OUT / 'project-map' / 'project-map.js').is_file()
     assert 'project-map/index.html' not in pages[PROJECT]['html']
     assert 'id="load-the-separate-input-datasets"' in pages[PROJECT]['html']

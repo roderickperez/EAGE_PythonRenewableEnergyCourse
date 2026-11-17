@@ -481,3 +481,5 @@ article th{background:#eaf6ef}
 #breadcrumb{font-size:16px;line-height:1.3}
 .colab-button svg{width:22px;fill:currentColor;stroke:none}
 .hydro-3d-lab{display:block;margin:20px 0 28px;min-width:0}
+
+.geothermal-equation-explorer{display:block;width:100%;height:var(--geothermal-equation-height,720px);border:0;margin:12px 0}

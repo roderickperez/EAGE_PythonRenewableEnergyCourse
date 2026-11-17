@@ -56,9 +56,10 @@ function sliders(items) {
 
 function drawCurve(svg, input, point) {
   const powerAt = powerModel(input);
-  const maxSpeed = Math.max(37, Math.ceil(point.speed));
+  // Maximum hub-height speed across the wind and height-correction controls is below 270 m/s.
+  const maxSpeed = 270;
   const x = speed => 53 + 460 * speed / maxSpeed;
-  const y = power => 160 - 132 * power / input.ratedMW;
+  const y = power => 160 - 132 * power / 12;
   const cutInRight = input.outputMode === 'aero' ? powerAt(input.cutIn + 1e-7) : 0;
   const points = [[input.cutIn, cutInRight]];
   for (let i = 1; i <= 120; i++) {
@@ -70,8 +71,8 @@ function drawCurve(svg, input, point) {
   const ticks = [[input.cutIn, 'Cut-in'], [input.cutOut, 'Cut-out']];
   if (input.outputMode === 'curve') ticks.splice(1, 0, [input.ratedSpeed, 'Rated']);
   svg.innerHTML = `<path class="axis" fill="none" d="M53 16V160H513"/>
-    <text x="4" y="32">${fixed(input.ratedMW, 1)} MW</text>
-    <text x="16" y="164">0 MW</text><text x="514" y="186" text-anchor="end">Hub-height wind (m/s)</text>
+    <text x="4" y="32">12 MW</text>
+    <text x="16" y="164">0 MW</text><text x="53" y="190">0</text><text x="513" y="190" text-anchor="end">270</text><text x="514" y="180" text-anchor="end">Hub-height wind (m/s)</text>
     ${ticks.map(([speed,label]) => `<path stroke="#91a6a5" stroke-dasharray="4 4" d="M${x(speed)} 16V160"/>
       <text x="${x(speed)}" y="176" text-anchor="middle">${label}</text>`).join('')}
     <path stroke="#087660" stroke-width="3" d="M${x(0)} ${y(0)}H${x(input.cutIn)}"/>

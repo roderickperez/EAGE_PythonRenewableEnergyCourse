@@ -16,6 +16,7 @@ for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'proj
     entryPoints.balance = resolve(source, 'balance.js');
   }
   if (lab === 'solar-lab') entryPoints.resource = resolve(source, 'resource.js');
+  if (lab === 'geothermal-lab') entryPoints.equations = resolve(source, 'equations.js');
   if (lab === 'wind-lab') entryPoints.aerodynamics = resolve(source, 'aerodynamics.js');
   await build({
     entryPoints,
@@ -31,12 +32,13 @@ for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'proj
   });
   const html = await readFile(resolve(source, 'index.html'), 'utf8');
   await writeFile(resolve(output, 'index.html'), html);
+  if (lab === 'geothermal-lab') await cp(resolve(source, 'equations.html'), resolve(output, 'equations.html'));
   if (lab === 'solar-lab') await cp(resolve(source, 'resource.html'), resolve(output, 'resource.html'));
   if (lab === 'wind-lab') {
     const card = await readFile(resolve(root, 'web/solar-lab/resource.html'), 'utf8');
     await writeFile(resolve(output, 'aerodynamics.html'), card
       .replace('<title>Solar radiation explorer</title>', '<title>Wind aerodynamics explorer</title>')
-      .replace(/src="resource\.js\?[^"]+"/, 'src="aerodynamics.js?v=wind-equations-1"'));
+      .replace(/src="resource\.js\?[^"]+"/, 'src="aerodynamics.js?v=wind-fixed-axes-3"'));
   }
   if (lab === 'hydro-lab') {
     await cp(resolve(source, 'fallback.svg'), resolve(output, 'fallback.svg'));

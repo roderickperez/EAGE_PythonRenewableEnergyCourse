@@ -8,6 +8,7 @@ const diameter = ['diameter', 'Rotor diameter D', 40, 140, 1, 80, 'm'];
 const pressure = ['pressure', 'Air pressure', 80, 105, .005, 101.325, 'kPa'];
 const temperature = ['temperature', 'Air temperature', -30, 50, 1, 15, '°C'];
 const powerInputs = input => availableWind(input.speed, input.density, input.diameter / 2);
+const [speedControlMax, densityControlMax, diameterControlMax] = [speed[3], density[3], diameter[3]];
 export const referenceTurbine = { cutIn: 3, ratedSpeed: 12, cutOut: 25, ratedMW: 3 };
 
 export const physicalDemos = {
@@ -22,8 +23,10 @@ export const physicalDemos = {
       const { speed, density, diameter } = input;
       const result = powerInputs(input);
       const atSpeed = v => availableWind(v, density, diameter / 2).windMW;
-      const maxSpeed = Math.max(16, 2 * speed);
-      const axes = axesFor(svg, 0, maxSpeed, atSpeed(maxSpeed) * 1.12, 'Wind speed (m/s)', 'Available power (MW)');
+      // Cover the full slider ranges, including the marker at twice the maximum speed.
+      const maxSpeed = 2 * speedControlMax;
+      const maxPower = availableWind(maxSpeed, densityControlMax, diameterControlMax / 2).windMW;
+      const axes = axesFor(svg, 0, maxSpeed, Math.ceil(maxPower / 50) * 50, 'Wind speed (m/s)', 'Available power (MW)');
       axes.series(sample(0, maxSpeed, atSpeed), c.wind);
       operatingMarker(axes, speed, result.windMW);
       if (speed > 0) axes.dot(2 * speed, atSpeed(2 * speed), c.wind);
@@ -50,7 +53,7 @@ export const physicalDemos = {
       const { windMW } = powerInputs(input);
       const { cp, efficiency } = input;
       const loss = aerodynamicConversion(windMW, cp, efficiency / 100);
-      const axes = axesFor(svg, 0, .64, windMW * 1.13, 'Rotor power coefficient', 'Power (MW)');
+      const axes = axesFor(svg, 0, .64, 50, 'Rotor power coefficient', 'Power (MW)');
       axes.line(axes.x(0), axes.y(windMW), axes.x(.64), axes.y(windMW), c.wind, '6 4');
       axes.line(axes.x(BETZ), axes.y(0), axes.x(BETZ), axes.y(windMW), c.reference, '4 4');
       axes.series([[0, 0], [BETZ, loss.betzMW]], c.rotor);
@@ -113,7 +116,7 @@ export const physicalDemos = {
       const log = z => logLawWind(referenceSpeed, z, referenceHeight, roughness, displacement);
       const hubSpeed = power(hub);
       const logSpeed = log(hub);
-      const axes = axesFor(svg, 10, 160, Math.max(1, 1.12 * Math.max(power(160), log(160))), 'Height above ground (m)', 'Wind speed (m/s)');
+      const axes = axesFor(svg, 10, 160, 65, 'Height above ground (m)', 'Wind speed (m/s)');
       axes.series(sample(10, 160, power), c.wind);
       axes.series(sample(10, 160, log), c.rotor, '6 4');
       axes.dot(referenceHeight, referenceSpeed, c.reference, 5);
@@ -139,8 +142,8 @@ export const physicalDemos = {
       ['second', 'Second interval speed', 0, 20, .1, 8, 'm/s'], ['interval', 'Each interval lasts', 1, 30, 1, 5, 'min']],
     draw(svg, { first, second, interval }) {
       const summary = twoIntervalWind(first, second);
-      const top = Math.max(1, Math.max(first, second) * 1.18);
-      const axes = axesFor(svg, 0, interval * 2, top, 'Elapsed time (min)', 'Wind speed (m/s)');
+      const top = 20;
+      const axes = axesFor(svg, 0, 60, top, 'Elapsed time (min)', 'Wind speed (m/s)');
       axes.series([[0, first], [interval, first], [interval, second], [2 * interval, second]], c.wind);
       axes.line(axes.x(0), axes.y(summary.mean), axes.x(interval * 2), axes.y(summary.mean), c.reference, '5 4');
       const mark = axes.line(axes.x(0), axes.y(0), axes.x(0), axes.y(top), c.electrical, '4 3');
@@ -172,7 +175,7 @@ export const physicalDemos = {
       const { speed, cutIn, ratedSpeed, cutOut, ratedMW } = input;
       const power = value => electricalPower(value, input);
       const output = power(speed);
-      const axes = axesFor(svg, 0, 32, ratedMW * 1.12, 'Wind speed (m/s)', 'Electrical output (MW)');
+      const axes = axesFor(svg, 0, 32, 10, 'Wind speed (m/s)', 'Electrical output (MW)');
       for (const x of [cutIn, ratedSpeed, cutOut]) axes.line(axes.x(x), axes.y(0), axes.x(x), axes.y(ratedMW), c.reference, '3 4');
       axes.series([[0, 0], ...sample(cutIn, ratedSpeed, power), [cutOut, ratedMW]], c.wind);
       axes.series([[cutOut, 0], [32, 0]], c.wind);

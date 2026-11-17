@@ -24,7 +24,7 @@ export const energyDemos = {
       const fraction = share / 100;
       const mean = fraction * first + (1 - fraction) * second;
       const split = hours * fraction;
-      const axes = axesFor(svg, 0, hours, referenceTurbine.ratedMW * 1.12, 'Elapsed sample time (h)', 'Electrical power (MW)');
+      const axes = axesFor(svg, 0, 168, referenceTurbine.ratedMW, 'Elapsed sample time (h)', 'Electrical power (MW)');
       node(svg, 'rect', { x: axes.x(0), y: axes.y(mean), width: axes.x(hours) - axes.x(0),
         height: axes.y(0) - axes.y(mean), fill: c.rotor, 'fill-opacity': .13 });
       const series = fraction === 0 ? [[0, second], [hours, second]] : fraction === 1 ? [[0, first], [hours, first]]
@@ -50,7 +50,7 @@ export const energyDemos = {
     draw(svg, { shape, scale, bins }) {
       const result = weibullPowerBins({ shape, scale, count: bins, maximum: 30, turbine: referenceTurbine });
       const refined = weibullPowerBins({ shape, scale, count: bins * 2, maximum: 30, turbine: referenceTurbine });
-      const axes = axesFor(svg, 0, 30, Math.max(...result.bins.map(bin => bin.contribution)) * 1.13, 'Wind speed bin (m/s)', 'Bin contribution (MW)');
+      const axes = axesFor(svg, 0, 30, referenceTurbine.ratedMW, 'Wind speed bin (m/s)', 'Bin contribution (MW)');
       for (const bin of result.bins) {
         node(svg, 'rect', { x: axes.x(bin.lower) + .3, y: axes.y(bin.contribution),
           width: axes.x(bin.upper) - axes.x(bin.lower) - .6, height: axes.y(0) - axes.y(bin.contribution),
@@ -78,10 +78,10 @@ export const energyDemos = {
     draw(svg, { gross, availability, wake, other, uncertainty }) {
       const { afterAvailability, afterWake, p50, p90, deviation } =
         annualEnergyScenarios(gross, availability / 100, wake / 100, other / 100, uncertainty / 100);
-      const peak = deviation > 0 ? 1 / (deviation * Math.sqrt(2 * Math.PI)) : 1;
-      const delta = Math.max(p50 * .15, 4 * deviation);
-      const axes = axesFor(svg, Math.max(0, p50 - delta), p50 + delta, peak * 1.12, 'Net annual energy (GWh)',
-        deviation > 0 ? 'Probability density (1/GWh)' : 'No spread');
+      const peak = deviation > 0 ? 1 / (deviation * Math.sqrt(2 * Math.PI)) : 0;
+      const delta = 4 * deviation;
+      // Fixed limits cover every slider value, including the smallest nonzero uncertainty.
+      const axes = axesFor(svg, 0, 54, 105, 'Net annual energy (GWh)', 'Probability density (1/GWh)');
       if (deviation > 0) {
         const density = energy => peak * Math.exp(-.5 * ((energy - p50) / deviation) ** 2);
         axes.series(sample(Math.max(0, p50 - delta), p50 + delta, density, 80), c.wind);
@@ -93,7 +93,7 @@ export const energyDemos = {
       return { headline: `P90 = ${gwh(p90)}`, rows: [
         `Gross ${gwh(gross)} → after availability ${gwh(afterAvailability)} → after wake loss ${gwh(afterWake)} → net ${gwh(p50)}`,
         `P50 = ${gwh(p50)} · σ = ${gwh(deviation)} · P90 = <strong>${gwh(p90)}</strong>`,
-        deviation > 0 ? 'P90 = P50 − 1.282σ under the selected normal model.' : 'With zero uncertainty, P90 and P50 coincide.',
+        deviation > 0 ? 'P90 = P50 − 1.282σ under the selected normal model.' : 'With zero uncertainty, P90 and P50 coincide; the point represents a single value rather than a probability density.',
       ] };
     },
   },
