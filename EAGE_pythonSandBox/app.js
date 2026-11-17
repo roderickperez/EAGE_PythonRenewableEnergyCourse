@@ -262,6 +262,10 @@ async function route() {
         anchor: '#how-to-use-the-explorer', id: 'wind-farm-project',
         mount: async host => (await import('./generated/wind-lab/wind-project.js?v=wind-compass-1')).mountWindProject(host),
       },
+      'section8/solar-project.md': {
+        anchor: '#how-to-use-the-explorer', id: 'solar-farm-project',
+        mount: async host => (await import('./generated/solar-lab/solar-project.js?v=solar-project-1')).mountSolarProject(host),
+      },
     }[lesson.id];
     if(lab){
       const content = $('lesson');

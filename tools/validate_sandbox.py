@@ -91,6 +91,9 @@ def validate():
     assert 'id="how-to-use-the-explorer"' in pages[wind_project]['html']
     assert (OUT / 'wind-lab' / 'wind-project.js').is_file()
     assert (OUT / 'wind-lab' / 'project.html').is_file()
+    assert (OUT / 'solar-lab' / 'solar-project.js').is_file()
+    assert (OUT / 'solar-lab' / 'project.html').is_file()
+    assert "'section8/solar-project.md'" in (ROOT / 'EAGE_pythonSandBox' / 'app.js').read_text(encoding='utf-8')
     intro = 'section7/renewableExercises.md'
     assert pages[intro]['title'] == 'Workbook introduction'
     workbook = [path for _, _, path in WORKBOOK_CHAPTERS]

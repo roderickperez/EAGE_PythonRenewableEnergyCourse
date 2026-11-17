@@ -15,7 +15,10 @@ for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'proj
     entryPoints.head = resolve(source, 'head.js');
     entryPoints.balance = resolve(source, 'balance.js');
   }
-  if (lab === 'solar-lab') entryPoints.resource = resolve(source, 'resource.js');
+  if (lab === 'solar-lab') {
+    entryPoints.resource = resolve(source, 'resource.js');
+    entryPoints['solar-project'] = resolve(source, 'project.js');
+  }
   if (lab === 'geothermal-lab') entryPoints.equations = resolve(source, 'equations.js');
   if (lab === 'wind-lab') {
     entryPoints.aerodynamics = resolve(source, 'aerodynamics.js');
@@ -36,7 +39,10 @@ for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'proj
   const html = await readFile(resolve(source, 'index.html'), 'utf8');
   await writeFile(resolve(output, 'index.html'), html);
   if (lab === 'geothermal-lab') await cp(resolve(source, 'equations.html'), resolve(output, 'equations.html'));
-  if (lab === 'solar-lab') await cp(resolve(source, 'resource.html'), resolve(output, 'resource.html'));
+  if (lab === 'solar-lab') {
+    await cp(resolve(source, 'resource.html'), resolve(output, 'resource.html'));
+    await cp(resolve(source, 'project.html'), resolve(output, 'project.html'));
+  }
   if (lab === 'wind-lab') {
     await cp(resolve(source, 'project.html'), resolve(output, 'project.html'));
     const card = await readFile(resolve(root, 'web/solar-lab/resource.html'), 'utf8');

@@ -15,7 +15,7 @@ def main() -> None:
         if lab == "hydro-lab":
             required.update({"fallback.svg", "head.html", "head.js", "balance.html", "balance.js"})
         if lab == "solar-lab":
-            required.update({"resource.html", "resource.js"})
+            required.update({"resource.html", "resource.js", "project.html", "solar-project.js"})
         if lab == "wind-lab":
             required.update({"aerodynamics.html", "aerodynamics.js"})
         missing = sorted(name for name in required if not (source / name).is_file())
