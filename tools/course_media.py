@@ -10,7 +10,7 @@ class Headings(HTMLParser):
         super().__init__()
         self.ids = set()
     def handle_starttag(self, tag, attrs):
-        if tag == 'h2' and dict(attrs).get('id'):
+        if tag in {'h2', 'h3'} and dict(attrs).get('id'):
             self.ids.add(dict(attrs)['id'])
 
 def attach_media(pages, sandbox, languages=('en', 'es')):

@@ -75,7 +75,13 @@ div:has(> iframe:is([src*="solar-lab/index.html"], [src*="wind-lab/index.html"],
   color: #f0f0f0 !important;
   background-color: #1e1e1e !important;
 }
-iframe[src*="hydro-lab"] {
+div:has(> iframe[src*="hydro-lab/head.html"]) {
+  width: 100% !important;
+  height: 575px !important;
+  padding-bottom: 0 !important;
+}
+
+iframe[src*="hydro-lab/index.html"] {
   width: 100%;
   min-height: 1280px;
   border: 0;
@@ -83,18 +89,18 @@ iframe[src*="hydro-lab"] {
   background: #f4f8f6;
 }
 
-div:has(> iframe[src*="hydro-lab"]) {
+div:has(> iframe[src*="hydro-lab/index.html"]) {
   width: 100% !important;
   height: 1280px !important;
   padding-bottom: 0 !important;
 }
 
 @media (max-width: 900px) {
-  iframe[src*="hydro-lab"] { min-height: 2000px; }
-  div:has(> iframe[src*="hydro-lab"]) { height: 2000px !important; }
+  iframe[src*="hydro-lab/index.html"] { min-height: 2000px; }
+  div:has(> iframe[src*="hydro-lab/index.html"]) { height: 2000px !important; }
 }
 
 @media (max-width: 560px) {
-  iframe[src*="hydro-lab"] { min-height: 2200px; }
-  div:has(> iframe[src*="hydro-lab"]) { height: 2200px !important; }
+  iframe[src*="hydro-lab/index.html"] { min-height: 2200px; }
+  div:has(> iframe[src*="hydro-lab/index.html"]) { height: 2200px !important; }
 }

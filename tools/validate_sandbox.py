@@ -23,6 +23,14 @@ def validate():
     assert (OUT / 'hydro-lab' / 'hydro-lab.js').is_file()
     assert (OUT / 'hydro-lab' / 'fallback.svg').is_file()
     assert 'hydro-lab/index.html' not in pages['section6/hydroelectricEnergy.md']['html']
+    hydro = pages['section6/hydroelectricEnergy.md']
+    assert 'id="hydraulic-head-explorer"' in hydro['html']
+    assert 'hydro-lab/head.html' not in hydro['html']
+    for file in ('head.html', 'head.js'):
+        assert (OUT / 'hydro-lab' / file).is_file()
+    assert set(hydro['media']['audio']['en']) == {
+        'what-head-means', 'flow-and-volume-are-different-quantities', 'deriving-the-power-equation',
+    }
     assert (OUT / 'solar-lab' / 'solar-lab.js').is_file()
     solar_page = pages['section6/solarEnergy.md']['html']
     assert 'solar-lab/index.html' not in solar_page

@@ -1,1 +1,11 @@
-{}
+{
+  "section6/hydroelectricEnergy.md": {
+    "audio": {
+      "en": {
+        "what-head-means": "en/hydroelectric/what-head-means.mp3",
+        "flow-and-volume-are-different-quantities": "en/hydroelectric/flow-and-volume-are-different-quantities.mp3",
+        "deriving-the-power-equation": "en/hydroelectric/deriving-the-power-equation.mp3"
+      }
+    }
+  }
+}

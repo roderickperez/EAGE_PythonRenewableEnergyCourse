@@ -61,6 +61,12 @@ $$H=z+\frac{p}{\rho g}+\frac{v^2}{2g}.$$
 
 *Equation basis:* [@jica2011], §8.3 and Chapter 9; [@ifc2015], Chapter 7. The velocity-head expression assumes kinetic-energy correction factor one.
 
+(hydraulic-head-explorer)=
+:::{iframe} ../../hydro-lab/head.html
+:width: 100%
+:title: Hydraulic head explorer
+:::
+
 $z$ is elevation relative to a common datum; $p$ is pressure using a consistent pressure reference; $v$ is mean flow velocity; $\rho$ is water density; and $g$ is gravitational acceleration. A difference in water-surface elevation is a useful approximation to gross head between large upstream and downstream water bodies when their pressure and velocity terms largely cancel. More general installations require the complete hydraulic-head difference. [@jica2011], §8.3 and Chapter 9; [@ifc2015], Chapter 7. The velocity-head expression assumes kinetic-energy correction factor one.
 
 The course uses

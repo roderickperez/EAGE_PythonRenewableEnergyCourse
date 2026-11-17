@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hydraulic head explorer</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;color:#163b38;background:#f6faf8;font:15px/1.4 system-ui,sans-serif}
+  main{padding:14px;border:1px solid #c7dbd4;border-radius:12px;background:#fff}
+  header{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:6px 16px;margin-bottom:10px}
+  h1{margin:0;font:600 clamp(20px,4vw,26px)/1.15 Georgia,serif}
+  #head{font-size:clamp(22px,5vw,32px);font-weight:750;color:#176d86;white-space:nowrap}
+  #scene{height:204px;overflow:hidden;border-radius:8px;background:#e9f3f4}
+  #scene canvas{display:block}
+  #fallback{margin:0;padding:12px}
+  #scene:has(#fallback:not([hidden])){height:auto}
+  .terms{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:9px 0 13px}
+  .term{border-top:3px solid #3e796f;padding:3px 2px;color:#31524f;font-size:.82rem}
+  .term:nth-child(2){border-color:#258db1}
+  .term:nth-child(3){border-color:#ae641d}
+  .term output{display:block;color:#163b38;font-weight:700;font-variant-numeric:tabular-nums}
+  #controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr));gap:8px 12px}
+  .control label{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1px 5px;font-weight:650;font-size:.81rem}
+  .control output{font-weight:500;white-space:nowrap}
+  input{width:100%;margin:3px 0;accent-color:#177c90}
+  .note{margin:7px 0 0;color:#506b67;font-size:.8rem}
+  @media(max-width:430px){main{padding:10px}#scene{height:165px}#controls{grid-template-columns:repeat(2,minmax(0,1fr))}.term{font-size:.74rem}}
+</style>
+<main>
+  <header>
+    <h1>Hydraulic head at a point</h1>
+    <output id="head" aria-label="Total hydraulic head"></output>
+  </header>
+  <div id="scene" role="img" aria-label="Pipe above a reference datum with a pressure column and flow particles">
+    <p id="fallback" hidden>The diagram is unavailable. The head terms below update with the sliders.</p>
+  </div>
+  <div class="terms" aria-label="Contributions to total head, in metres">
+    <div class="term">Elevation · <i>z</i><output id="elevation-head"></output></div>
+    <div class="term">Pressure · <i>p</i>/(ρ<i>g</i>)<output id="pressure-head"></output></div>
+    <div class="term">Velocity · <i>v</i>²/(2<i>g</i>)<output id="velocity-head"></output></div>
+  </div>
+  <div id="controls" role="group" aria-label="Hydraulic head inputs"></div>
+  <p class="note">The pipe height is measured from the datum. The blue column shows pressure head, and particle speed follows flow velocity. Inputs are independent for this demonstration.</p>
+</main>
+<script type="module" src="head.js"></script>
+</html>

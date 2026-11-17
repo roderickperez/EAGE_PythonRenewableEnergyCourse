@@ -3,7 +3,7 @@ from pathlib import Path
 import math
 import re
 import nbformat
-from build_chapter_exercises import notebook_citations
+from build_chapter_exercises import notebook_citations, strip_website_embeds
 
 ROOT=Path(__file__).resolve().parents[1]/'EAGE_PythonRenewableEnergyCourse'
 PATHS={'general':'section0/introRenewableEnergy','solar':'section6/solarEnergy',
@@ -27,7 +27,7 @@ def validate():
         # Worked code inside the theory becomes a separate executable cell.
         # Check every prose segment and every code block instead of requiring
         # the complete mixed Markdown/code source in one Markdown cell.
-        segments=re.split(r'```\{code-cell\} python\n(.*?)```',theory,flags=re.S)
+        segments=re.split(r'```\{code-cell\} python\n(.*?)```',strip_website_embeds(theory),flags=re.S)
         code_sources={c.source.strip() for c in notebook.cells if c.cell_type=='code'}
         for index,segment in enumerate(segments):
             if not segment.strip():

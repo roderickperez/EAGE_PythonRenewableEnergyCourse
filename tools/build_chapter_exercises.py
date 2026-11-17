@@ -1250,11 +1250,16 @@ def workbook_intro():
         text += f'| [{title}]({Path(path).relative_to("section7").as_posix()}) | 20 |\n'
     return text + '\nEach workbook page has a downloadable `.ipynb` notebook. Answers start collapsed in the course; ordinary notebook viewers show the answers below the prompts.\n\n## After practice\n\nUse the **Quizzes** section for chapter quizzes. Complete the [assessment](renewableEnergyTest.md), then the [four-source final project](../section8/projectIntro.md) using the five separate input datasets. Assessment solutions are not published.\n'
 
+def strip_website_embeds(text):
+    pattern = r'^(?:\([\w-]+\)=\n)?:::\{iframe\}[^\n]*\n.*?^:::[ \t]*\n\n?'
+    return re.sub(pattern, '', text, flags=re.M|re.S)
+
+
 def export_notebook(path, prior_code=None):
     """Create a companion .ipynb from this theory or workbook page."""
     text=path.read_text(encoding='utf-8')
     text=re.sub(r'\A---\n.*?\n---\n','',text,flags=re.S)
-    text=re.sub(r'^:::\{iframe\}[^\n]*\n.*?^:::[ \t]*\n\n?', '', text, flags=re.M|re.S)
+    text=strip_website_embeds(text)
     cells=[]; last=0
     for match in re.finditer(r'```\{code-cell\} python\n(.*?)```',text,re.S):
         if text[last:match.start()].strip(): cells.append(nbformat.v4.new_markdown_cell(text[last:match.start()].strip()))

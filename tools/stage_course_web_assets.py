@@ -13,7 +13,7 @@ def main() -> None:
         target = BOOK / "_build" / "html" / lab
         required = {"index.html", f"{lab}.js"}
         if lab == "hydro-lab":
-            required.add("fallback.svg")
+            required.update({"fallback.svg", "head.html", "head.js"})
         missing = sorted(name for name in required if not (source / name).is_file())
         if missing:
             raise SystemExit(f"Build {lab} before staging it: " + ", ".join(missing))

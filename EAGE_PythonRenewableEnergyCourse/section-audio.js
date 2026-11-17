@@ -72,6 +72,7 @@
     }
     if (!pages.test(location.pathname)) return;
     document.querySelectorAll('article.content h2, article.content h3, article.content h4').forEach(heading => {
+      if (heading.id === 'head-flow-and-the-hydraulic-energy-balance') return;
       if (heading.nextElementSibling?.classList.contains('section-audio-control')) return;
       const title = (heading.querySelector('.heading-text')?.textContent || heading.textContent).trim();
       const control = document.createElement('div');

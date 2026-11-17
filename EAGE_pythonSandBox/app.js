@@ -176,6 +176,15 @@ async function route() {
     colabButton.title = notebookPath ? 'Open this lesson in Google Colab' : 'No Google Colab notebook available for this lesson';
     colabButton.onclick = notebookPath ? () => window.open('https://colab.research.google.com/github/roderickperez/EAGE_PythonRenewableEnergyCourse/blob/main/' + notebookPath, '_blank', 'noopener,noreferrer') : null;
     $('lesson').innerHTML=lesson.html;
+    const headAnchor = $('hydraulic-head-explorer');
+    if (headAnchor) {
+      const frame = document.createElement('iframe');
+      frame.className = 'hydraulic-head-explorer';
+      frame.title = 'Hydraulic head explorer';
+      frame.loading = 'lazy';
+      frame.src = 'generated/hydro-lab/head.html';
+      headAnchor.after(frame);
+    }
     const lab = {
       'section6/hydroelectricEnergy.md': {
         anchor: '#physical-description-water-elevation-and-electricity', id: 'hydro-3d-lab',
@@ -252,7 +261,10 @@ $('audio-player').addEventListener('error',()=>{if(audioQueue.length) $('media-s
 function setupMedia(){
   const lang=document.documentElement.lang === 'es' ? 'es' : 'en';
   const configured=lesson.media?.audio || {};
-  const audio=configured.en || configured.es ? (configured[lang] || {}) : (lang === 'en' ? configured : {}); const headings=[...$('lesson').querySelectorAll('h2[id]')];
+  const audio=configured.en || configured.es ? (configured[lang] || {}) : (lang === 'en' ? configured : {});
+  const headings=[...$('lesson').querySelectorAll('h2[id],h3[id]')].filter(heading =>
+    heading.id !== 'head-flow-and-the-hydraulic-energy-balance' &&
+    (heading.tagName === 'H2' || audio[heading.id]));
   const items=[];
   if(audio.intro) items.push({url:audio.intro,title:lesson.title});
   for(const heading of headings){
@@ -262,7 +274,7 @@ function setupMedia(){
     if(url){const item={url,title};items.push(item);button.onclick=()=>playAudio([item]);}
     heading.append(button);
   }
-  const all=$('lesson-audio'); all.disabled=!headings.length || headings.some(h=>!audio[h.id]);
+  const all=$('lesson-audio'); all.disabled=!items.length || headings.some(h=>!audio[h.id]);
   all.onclick=()=>playAudio(items);
   const video=$('lesson-video');const videoUrl=typeof lesson.media?.video === 'string' ? (lang === 'en' ? lesson.media.video : null) : lesson.media?.video?.[lang];video.disabled=!videoUrl;
   video.onclick=()=>{if(!videoUrl)return;stopMedia();$('media-player').hidden=false;$('audio-player').hidden=true;const player=$('video-player');player.hidden=false;player.src=videoUrl;player.play().catch(()=>{$('media-status').textContent='Press play to watch the video.';});};

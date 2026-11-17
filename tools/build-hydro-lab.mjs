@@ -10,9 +10,11 @@ for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'proj
 
   await rm(output, { recursive: true, force: true });
   await mkdir(output, { recursive: true });
+  const entryPoints = { [lab]: resolve(source, 'lab.js') };
+  if (lab === 'hydro-lab') entryPoints.head = resolve(source, 'head.js');
   await build({
-    entryPoints: [resolve(source, 'lab.js')],
-    outfile: resolve(output, lab + '.js'),
+    entryPoints,
+    outdir: output,
     bundle: true,
     format: 'esm',
     platform: 'browser',
@@ -24,6 +26,9 @@ for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'proj
   });
   const html = await readFile(resolve(source, 'index.html'), 'utf8');
   await writeFile(resolve(output, 'index.html'), html);
-  if (lab === 'hydro-lab') await cp(resolve(source, 'fallback.svg'), resolve(output, 'fallback.svg'));
+  if (lab === 'hydro-lab') {
+    await cp(resolve(source, 'fallback.svg'), resolve(output, 'fallback.svg'));
+    await cp(resolve(source, 'head.html'), resolve(output, 'head.html'));
+  }
   console.log(`Built ${lab} in ${output}`);
 }
