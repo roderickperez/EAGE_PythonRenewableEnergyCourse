@@ -77,8 +77,14 @@ div:has(> iframe:is([src*="solar-lab/index.html"], [src*="wind-lab/index.html"],
 }
 div:has(> iframe[src*="hydro-lab/head.html"]) {
   width: 100% !important;
-  height: 575px !important;
+  height: auto !important;
   padding-bottom: 0 !important;
+}
+
+iframe[src*="hydro-lab/head.html"] {
+  position: static !important;
+  display: block;
+  height: var(--hydraulic-head-height, 575px) !important;
 }
 
 iframe[src*="hydro-lab/index.html"] {

@@ -191,7 +191,7 @@ h3 .difficulty-badge{float:right;margin-left:12px}
   min-width:0;
 }
 .lab-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-.hydraulic-head-explorer{display:block;width:100%;height:575px;border:0;margin:12px 0}
+.hydraulic-head-explorer{display:block;width:100%;height:var(--hydraulic-head-height,575px);border:0;margin:12px 0}
 .workspace-mode{display:inline-flex;border:1px solid #c8ddd2;border-radius:8px;overflow:hidden}
 .workspace-mode button{border:0;border-radius:0;padding:6px 9px;background:transparent}
 .workspace-mode button[aria-pressed="true"]{background:#d9eee3;color:#075743;font-weight:700}

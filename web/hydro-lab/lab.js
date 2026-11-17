@@ -4,7 +4,7 @@ import { HydroScene } from './scene.js';
 import { renderConversionChart, renderPowerChart } from './charts.js';
 
 const sliderDefinitions = [
-  ['grossHeadM', 'Water level H_gross', 5, 250, 1, 'm'],
+  ['grossHeadM', 'Gross head H_gross', 5, 250, 1, 'm'],
   ['usableFlowM3s', 'Usable flow Q', 0, 30, 0.1, 'm³/s'],
   ['headLossM', 'Head loss h_loss', 0, 50, 0.5, 'm'],
   ['ratingMW', 'Rating cap P_r', 0.1, 25, 0.1, 'MW'],
@@ -60,11 +60,11 @@ function template(inputs, assetBase, standaloneUrl) {
           <div class="equation" id="eq-cap"></div>
           <div class="equation" id="eq-energy"></div>
         </div>
-        <p class="assumptions">Fixed teaching assumptions: η = ${HYDRO_CONSTANTS.efficiency}, ρ = ${HYDRO_CONSTANTS.densityKgM3} kg/m³, g = ${HYDRO_CONSTANTS.gravityMS2} m/s², Δt = ${HYDRO_CONSTANTS.durationHours} h. Excess usable flow is labelled spill/bypass because routing depends on the real plant.</p>
+        <p class="assumptions">Gross head is the headwater-to-tailwater difference in this schematic. Fixed teaching assumptions: η = ${HYDRO_CONSTANTS.efficiency}, ρ = ${HYDRO_CONSTANTS.densityKgM3} kg/m³, g = ${HYDRO_CONSTANTS.gravityMS2} m/s², Δt = ${HYDRO_CONSTANTS.durationHours} h. Excess usable flow is labelled spill/bypass because routing depends on the real plant.</p>
       </aside>
     </section>
     <section class="charts" aria-label="Hydroelectric plant charts">
-      <div class="chart-card"><h3>Power versus usable flow</h3><p>Current net head; the dashed line is the generator rating.</p><svg id="power-chart" role="img" aria-label="Power versus usable flow chart"></svg></div>
+      <div class="chart-card"><h3>Power versus usable flow</h3><p>Blue shows uncapped potential at the current net head. Green follows the plant output to the dashed rating limit.</p><svg id="power-chart" role="img" aria-label="Uncapped potential and capped plant output versus usable flow"></svg></div>
       <div class="chart-card"><h3>Conversion chain and energy</h3><p>Hydraulic resource, efficiency loss, rating cap, and six-hour production.</p><svg id="conversion-chart" role="img" aria-label="Power conversion and energy chart"></svg></div>
     </section>
     <footer class="lab-foot">Educational steady-state model—not a reservoir-routing, dam-safety, or design tool.${standaloneUrl ? ` <a href="${standaloneUrl}" target="_blank" rel="noopener">Open the lab full page</a>.` : ''}</footer>
@@ -109,8 +109,9 @@ export function mountHydroLab(container, initialInputs = DEFAULT_INPUTS, options
     status.className = `status ${result.clipped ? 'clipped' : 'open'}`;
     status.textContent = result.clipped ? `Clipped at P_r · uncapped ${format(result.uncappedMW, 2)} MW` : 'Within generator rating · not clipped';
     get('eq-head').textContent = `H_net = H_gross − h_loss = ${format(inputs.grossHeadM, 1)} − ${format(inputs.headLossM, 1)} = ${format(result.netHeadM, 1)} m`;
-    get('eq-power').textContent = `P_e = ηρgQH_net = 0.85 × 1000 × 9.81 × ${format(inputs.usableFlowM3s, 1)} × ${format(result.netHeadM, 1)} = ${format(result.uncappedMW, 2)} MW`;
-    get('eq-cap').textContent = `P_plant = min(P_e, P_r) = min(${format(result.uncappedMW, 2)}, ${format(inputs.ratingMW, 2)}) = ${format(result.plantMW, 2)} MW`;
+    const { efficiency, densityKgM3, gravityMS2 } = HYDRO_CONSTANTS;
+    get('eq-power').textContent = `P_uncapped (MW) = ηρgQ_usableH_net ÷ 10⁶ = (${efficiency} × ${densityKgM3} × ${gravityMS2} × ${format(inputs.usableFlowM3s, 1)} × ${format(result.netHeadM, 1)}) ÷ 10⁶ ≈ ${format(result.uncappedMW, 2)} MW`;
+    get('eq-cap').textContent = `P_plant = min(P_uncapped, P_r) = min(${format(result.uncappedMW, 2)}, ${format(inputs.ratingMW, 2)}) MW = ${format(result.plantMW, 2)} MW`;
     get('eq-energy').textContent = `E_6h = P_plant × Δt = ${format(result.plantMW, 2)} × 6 = ${format(result.energy6hMWh, 2)} MWh`;
     for (const id of ['clip-status', 'eq-head', 'eq-power', 'eq-cap', 'eq-energy']) {
       get(id).innerHTML = mathematicalLabel(get(id).textContent);

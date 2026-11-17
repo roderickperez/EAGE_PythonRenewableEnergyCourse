@@ -84,6 +84,7 @@ input[type="range"]:focus-visible { outline: 3px solid #65aee0; outline-offset: 
 .axis-label, .legend, .bar-value { font-weight: 700; }
 .curve { fill: none; stroke-width: 3; }
 .curve.uncapped { stroke: var(--blue); }
+.curve.plant { stroke: var(--green); }
 .curve.cap { stroke: var(--danger); stroke-dasharray: 7 5; }
 .live-point { fill: var(--amber); stroke: #fff; stroke-width: 3; }
 .live-label { fill: var(--ink); font-size: 12px; font-weight: 800; }

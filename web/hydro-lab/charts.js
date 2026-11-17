@@ -1,3 +1,5 @@
+import { HYDRO_CONSTANTS } from './model.js';
+
 const NS = 'http://www.w3.org/2000/svg';
 
 function node(name, attributes = {}, text = '') {
@@ -21,7 +23,10 @@ export function renderPowerChart(svg, result) {
   clear(svg);
   const plot = { left: 58, right: 575, top: 22, bottom: 224 };
   const qMax = 30;
-  const slope = result.netHeadM * 0.85 * 1000 * 9.81 / 1e6;
+  const { efficiency, densityKgM3, gravityMS2 } = HYDRO_CONSTANTS;
+  const slope = result.netHeadM * efficiency * densityKgM3 * gravityMS2 / 1e6;
+  const rating = result.inputs.ratingMW;
+  const breakpoint = slope > 0 ? Math.min(qMax, rating / slope) : qMax;
   const yMax = Math.max(1, result.inputs.ratingMW * 1.18, slope * qMax * 1.05);
   const x = (q) => plot.left + q / qMax * (plot.right - plot.left);
   const y = (mw) => plot.bottom - mw / yMax * (plot.bottom - plot.top);
@@ -38,9 +43,12 @@ export function renderPowerChart(svg, result) {
   horizontalAxis(svg, plot.left, plot.right, plot.bottom, 'Usable flow Q (m³/s)');
   svg.append(node('text', { x: 16, y: plot.top, class: 'axis-label', transform: `rotate(-90 16 ${plot.top})`, 'text-anchor': 'end' }, 'Power (MW)'));
   svg.append(node('path', { d: `M ${x(0)} ${y(0)} L ${x(qMax)} ${y(slope * qMax)}`, class: 'curve uncapped' }));
-  svg.append(node('line', { x1: plot.left, y1: y(result.inputs.ratingMW), x2: plot.right, y2: y(result.inputs.ratingMW), class: 'curve cap' }));
-  svg.append(node('circle', { cx: x(result.inputs.usableFlowM3s), cy: y(result.plantMW), r: 7, class: 'live-point' }));
-  svg.append(node('text', { x: x(result.inputs.usableFlowM3s) + 10, y: y(result.plantMW) - 11, class: 'live-label' }, `${result.plantMW.toFixed(2)} MW`));
+  svg.append(node('path', { d: `M ${x(0)} ${y(0)} L ${x(breakpoint)} ${y(slope * breakpoint)} H ${x(qMax)}`, class: 'curve plant' }));
+  svg.append(node('line', { x1: plot.left, y1: y(rating), x2: plot.right, y2: y(rating), class: 'curve cap' }));
+  const pointX = x(result.inputs.usableFlowM3s);
+  const labelOnLeft = pointX > plot.right - 72;
+  svg.append(node('circle', { cx: pointX, cy: y(result.plantMW), r: 7, class: 'live-point' }));
+  svg.append(node('text', { x: pointX + (labelOnLeft ? -10 : 10), y: y(result.plantMW) - 11, 'text-anchor': labelOnLeft ? 'end' : 'start', class: 'live-label' }, `${result.plantMW.toFixed(2)} MW`));
   svg.append(node('text', { x: plot.left + 8, y: y(result.inputs.ratingMW) - 7, class: 'legend cap-text' }, `Rating cap ${result.inputs.ratingMW.toFixed(1)} MW`));
   svg.append(node('text', { x: plot.right - 6, y: Math.max(plot.top + 13, y(slope * qMax) + 17), class: 'legend', 'text-anchor': 'end' }, 'Uncapped ηρgQHₙₑₜ'));
 }
@@ -49,7 +57,7 @@ export function renderConversionChart(svg, result) {
   clear(svg);
   const values = [
     ['Hydraulic resource', result.hydraulicMW, 'hydraulic'],
-    ['After efficiency', result.uncappedMW, 'uncapped'],
+    ['Uncapped electrical', result.uncappedMW, 'uncapped'],
     ['Plant export', result.plantMW, 'plant'],
   ];
   const maximum = Math.max(1, ...values.map(([, value]) => value));

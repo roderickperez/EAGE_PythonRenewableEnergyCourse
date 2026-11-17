@@ -1,15 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" role="img" aria-labelledby="title desc">
   <title id="title">Hydroelectric plant schematic</title>
-  <desc id="desc">Reservoir water passes through an intake and penstock to a turbine and generator before returning to the tailrace. Excess water follows the spillway.</desc>
+  <desc id="desc">Reservoir water drives a turbine and returns to the tailrace through the draft tube. A mechanical shaft connects the turbine to the generator. A separate low-level outlet bypasses the turbine.</desc>
   <rect width="900" height="520" fill="#eef7f4"/>
   <path d="M0 110h300v340H0z" fill="#4aaed2"/>
   <path d="M260 60h150l100 390H300z" fill="#cfd9d5"/>
-  <path d="M275 220C420 250 430 360 570 375" fill="none" stroke="#376f80" stroke-width="32"/>
-  <circle cx="575" cy="375" r="45" fill="#17a985"/>
-  <rect x="620" y="310" width="125" height="105" rx="10" fill="#f1ae3d"/>
-  <path d="M745 360h95" stroke="#65777a" stroke-width="12"/>
-  <path d="M410 135c45 110 65 180 120 280" fill="none" stroke="#87d9ed" stroke-width="28"/>
   <path d="M520 420h380v100H520z" fill="#4aaed2"/>
+  <path d="M272 271C400 290 396 439 540 450" fill="none" stroke="#87d9ed" stroke-width="20"/>
+  <path d="M275 220C420 250 430 360 570 375" fill="none" stroke="#376f80" stroke-width="32"/>
+  <path d="M577 389q0 50 60 55h92" fill="none" stroke="#376f80" stroke-width="27"/>
+  <path d="M601 362h50" stroke="#30454a" stroke-width="10"/>
+  <circle cx="575" cy="375" r="45" fill="#17a985"/>
+  <rect x="645" y="310" width="125" height="105" rx="10" fill="#f1ae3d"/>
+  <path d="M770 360h70" stroke="#65777a" stroke-width="12"/>
   <g font-family="system-ui,sans-serif" font-size="22" font-weight="700" fill="#173b37">
     <text x="60" y="90">Reservoir</text><text x="325" y="45">Dam</text><text x="520" y="300">Turbine</text><text x="635" y="295">Generator</text><text x="740" y="470">Tailrace</text>
   </g>

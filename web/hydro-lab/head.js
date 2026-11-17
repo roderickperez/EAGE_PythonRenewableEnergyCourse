@@ -42,6 +42,14 @@ function update() {
 fields.forEach(({ input }) => input.addEventListener('input', update));
 update();
 
+if (window.frameElement) {
+  const frame = window.frameElement;
+  const card = document.querySelector('main');
+  new ResizeObserver(() => {
+    frame.style.setProperty('--hydraulic-head-height', `${Math.ceil(card.getBoundingClientRect().height)}px`);
+  }).observe(card);
+}
+
 function createScene(container) {
   const renderer = new T.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -50,7 +58,7 @@ function createScene(container) {
   scene.background = new T.Color('#e9f3f4');
   const camera = new T.OrthographicCamera();
   camera.position.set(7, 7, 13);
-  camera.lookAt(0, 2.5, 0);
+  camera.lookAt(0, 2.1, 0);
   scene.add(new T.HemisphereLight(0xffffff, 0x5c7a79, 2.3));
   const key = new T.DirectionalLight(0xffffff, 2.2);
   key.position.set(-4, 8, 4);
@@ -58,6 +66,7 @@ function createScene(container) {
   const steel = new T.MeshStandardMaterial({ color: '#49666f', roughness: .55 });
   const blue = new T.MeshStandardMaterial({ color: '#247f9d', roughness: .43 });
   const datum = new T.MeshStandardMaterial({ color: '#9cb7ae' });
+  const dimension = new T.MeshBasicMaterial({ color: '#24584e' });
   const glass = new T.MeshStandardMaterial({ color: '#8cccdb', transparent: true, opacity: .28, depthWrite: false });
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
   function mesh(geometry, material, parent, x = 0, y = 0, z = 0) {
@@ -66,7 +75,10 @@ function createScene(container) {
     parent.add(shape);
     return shape;
   }
-  mesh(new T.BoxGeometry(8.4, .12, 3.15), datum, scene, 0, -.06);
+  const datumY = 0;
+  const metresToScene = .058;
+  // The foreground plate marks the fixed reference level without crossing the pipe at z = 0.
+  mesh(new T.BoxGeometry(8.4, .12, 1.85), datum, scene, 0, datumY - .06, 1.57);
   const pipe = new T.Group();
   scene.add(pipe);
   // Open the front of the pipe so flow markers are visible in the cutaway.
@@ -82,9 +94,30 @@ function createScene(container) {
   const tapX = -.4;
   mesh(new T.CylinderGeometry(.15, .15, .47, 16), steel, pipe, tapX, .18);
   const water = mesh(new T.CylinderGeometry(.12, .12, 1, 18), blue, pipe, tapX);
-  const tube = mesh(new T.CylinderGeometry(.152, .152, 2.1, 18, 1, true), glass, pipe, tapX, 1.39);
+  const tube = mesh(new T.CylinderGeometry(.152, .152, 2.35, 18, 1, true), glass, pipe, tapX, 1.175);
   tube.renderOrder = 2;
-  const guide = mesh(new T.BoxGeometry(.065, 1, .065), datum, scene, -3.95);
+  const bracketX = -4.02, bracketZ = .74;
+  const guide = mesh(new T.BoxGeometry(.048, 1, .048), dimension, scene, bracketX, datumY, bracketZ);
+  mesh(new T.BoxGeometry(.28, .048, .048), dimension, scene, bracketX, datumY, bracketZ);
+  const witness = new T.Line(
+    new T.BufferGeometry().setFromPoints([
+      new T.Vector3(bracketX - .14, 0, bracketZ),
+      new T.Vector3(bracketX, 0, bracketZ),
+      new T.Vector3(-3.65, 0, 0),
+    ]),
+    new T.LineBasicMaterial({ color: '#24584e' }),
+  );
+  pipe.add(witness);
+  const datumLabel = document.querySelector('#datum-label');
+  const elevationLabel = document.querySelector('#elevation-label');
+  const datumPoint = new T.Vector3(-1.9, datumY, 2);
+  const elevationPoint = new T.Vector3();
+  const projected = new T.Vector3();
+  function placeLabel(label, point) {
+    projected.copy(point).project(camera);
+    label.style.left = `${(projected.x + 1) * 50}%`;
+    label.style.top = `${(1 - projected.y) * 50}%`;
+  }
   const particleShape = new T.SphereGeometry(.071, 10, 8);
   const particleMaterial = new T.MeshBasicMaterial({ color: '#dcf8ff' });
   const particles = Array.from({ length: 10 }, () => mesh(particleShape, particleMaterial, pipe, 0, -.07, .24));
@@ -111,18 +144,24 @@ function createScene(container) {
     Object.assign(camera, { left: -half * width / height, right: half * width / height, top: half, bottom: -half, near: .1, far: 80 });
     camera.updateProjectionMatrix();
     renderer.setSize(width, height);
+    datumLabel.hidden = false;
+    placeLabel(datumLabel, datumPoint);
+    placeLabel(elevationLabel, elevationPoint);
     render();
   }
   new ResizeObserver(resize).observe(container);
   return (head, velocity) => {
-    const height = head.elevation * .058;
-    const pressureHeight = head.pressure * .058;
-    pipe.position.y = .44 + height;
+    const height = head.elevation * metresToScene;
+    const pressureHeight = head.pressure * metresToScene;
+    pipe.position.y = datumY + height;
     guide.scale.y = height;
-    guide.position.y = height / 2;
+    guide.position.y = datumY + height / 2;
+    elevationPoint.set(bracketX - .35, guide.position.y, bracketZ);
+    elevationLabel.hidden = height === 0;
+    placeLabel(elevationLabel, elevationPoint);
     water.visible = pressureHeight > 0;
     water.scale.y = pressureHeight;
-    water.position.y = .35 + pressureHeight / 2;
+    water.position.y = pressureHeight / 2;
     speed = velocity;
     render();
     if (!motion.matches && speed > 0) {

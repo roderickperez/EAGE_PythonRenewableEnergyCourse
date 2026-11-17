@@ -55,11 +55,11 @@ The penstock conveys pressurized water to the turbine. A surge arrangement may b
 
 ### What “head” means
 
-Head is mechanical energy per unit **weight** of water, expressed in metres. For a steady incompressible flow, the elevation, pressure and velocity terms are [@jica2011], §8.3 and Chapter 9; [@ifc2015], Chapter 7. The velocity-head expression assumes kinetic-energy correction factor one.
+Head is mechanical energy per unit **weight** of water, expressed in metres. At a cross-section of a full pipe in steady incompressible flow, the total head combines elevation, gauge pressure and mean velocity. The velocity-head expression assumes a kinetic-energy correction factor of one.
 
 $$H=z+\frac{p}{\rho g}+\frac{v^2}{2g}.$$
 
-*Equation basis:* [@jica2011], §8.3 and Chapter 9; [@ifc2015], Chapter 7. The velocity-head expression assumes kinetic-energy correction factor one.
+*Equation basis:* [U.S. Bureau of Reclamation, Water Measurement Manual, §2.10 and Figure 2-3a](https://www.usbr.gov/tsc/techreferences/mands/wmm/chap02_10.html).
 
 (hydraulic-head-explorer)=
 :::{iframe} ../../hydro-lab/head.html
@@ -67,13 +67,13 @@ $$H=z+\frac{p}{\rho g}+\frac{v^2}{2g}.$$
 :title: Hydraulic head explorer
 :::
 
-$z$ is elevation relative to a common datum; $p$ is pressure using a consistent pressure reference; $v$ is mean flow velocity; $\rho$ is water density; and $g$ is gravitational acceleration. A difference in water-surface elevation is a useful approximation to gross head between large upstream and downstream water bodies when their pressure and velocity terms largely cancel. More general installations require the complete hydraulic-head difference. [@jica2011], §8.3 and Chapter 9; [@ifc2015], Chapter 7. The velocity-head expression assumes kinetic-energy correction factor one.
+In the pipe diagram, $z$ is the vertical distance from the fixed zero-metre datum to the pipe centreline at the measurement section. The water in the open pressure tube rises to $z+p/(\rho g)$, the hydraulic grade at that point. Adding $v^2/(2g)$ gives total head there. Use a common datum and pressure reference when comparing two sections. Changing the common datum shifts both total heads equally, so their difference stays the same. Between large reservoirs open to the same atmosphere, surface velocities are often negligible, so the water-surface elevation difference approximates the gross head. [@ifc2015], §7.2.4 and Figure 7-7.
 
 The course uses
 
 $$H_{net}=H_{gross}-h_{loss}.$$
 
-*Equation basis:* [@jica2011], §8.3 and Chapter 9; [@ifc2015], Chapter 7. The velocity-head expression assumes kinetic-energy correction factor one.
+*Equation basis:* [@jica2011], §8.3 and Chapter 9, and [@ifc2015], §7.2.4 and Figure 7-7.
 
 The reference points must be specified consistently. Installation geometry and unrecovered outlet kinetic energy may matter as well as pipe friction; the JICA manual discusses effective head for different turbine arrangements. Do not subtract a loss twice if it has already been included in a supplied net-head value (Chapter 8) [@jica2011].
 
@@ -98,6 +98,8 @@ $$P_e=\eta_t\eta_g\rho gQH_{net},$$
 *Equation basis:* Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7.
 
 where $\eta_t$ is turbine efficiency and $\eta_g$ is generator efficiency. A combined efficiency $\eta$ may include other explicitly identified losses. If station auxiliaries are not included in $\eta$, subtract their power separately when calculating net export. A quoted turbine efficiency must not be silently treated as the efficiency of the complete station [@jica2011; @ifc2015].
+
+With SI inputs the product gives watts. Divide by $10^6$ for megawatts. The IFC guide uses overall efficiency in its power equation because it measures electrical output at the transformer. Use an efficiency and rating that match the stated electrical boundary [@ifc2015], §7.2.
 
 | Symbol | Definition | Unit used here |
 |---|---|---|
@@ -300,7 +302,7 @@ The function combines basic Python ideas: arguments, defaults, conditionals, exc
 
 ## Worked time-series example
 
-The following synthetic daily flows are teaching data, not a site assessment. A real study needs measured flow, an environmental-flow rule, a flow-duration curve covering wet and dry years, head-loss estimates, and an equipment-efficiency curve.
+The following synthetic daily flows illustrate power and energy calculations. This example assumes all modelled river flow is available to the turbine before the rating cap. A site assessment needs measured flow, an environmental-flow rule, a flow-duration curve covering wet and dry years, head-loss estimates, and an equipment-efficiency curve.
 
 ```{code-cell} python
 rng = np.random.default_rng(7)
