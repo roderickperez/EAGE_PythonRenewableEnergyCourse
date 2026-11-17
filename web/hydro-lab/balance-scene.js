@@ -6,10 +6,14 @@ import { createOperationScene } from './operation-scene.js';
 const palette = { water: '#288daa', net: '#398470', loss: '#c17932', shaft: '#98744c', electricity: '#e5a124' };
 export { palette };
 
-export function mountBalanceScene(host, kind, motionButton) {
-  const draw = mountDiagramRenderer(host,
+export function mountBalanceRenderer(host, kind) {
+  return mountDiagramRenderer(host,
     kind === 'flow-volume' ? null : () => create3DScene(host, kind),
     () => mountCanvasDiagram(host, kind));
+}
+
+export function mountBalanceScene(host, kind, motionButton) {
+  const draw = mountBalanceRenderer(host, kind);
   motionButton.hidden = kind === 'net-head';
   const rate = kind === 'flow-volume' || kind === 'hydraulic-loss' ? .00015 : .000045;
   return kind === 'net-head'
@@ -30,7 +34,7 @@ function create3DScene(host, kind) {
   scene.add(light);
   const renderer = new T.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-  host.querySelector('#drawing').append(renderer.domElement);
+  (host.querySelector('#drawing') || host).append(renderer.domElement);
   const material = color => new T.MeshStandardMaterial({ color, roughness: .65 });
   const water = material(palette.water);
   const rock = material('#a7bcb2');

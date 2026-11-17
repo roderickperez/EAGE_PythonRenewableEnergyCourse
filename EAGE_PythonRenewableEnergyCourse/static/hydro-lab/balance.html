@@ -20,18 +20,25 @@
   #equations { display: grid; gap: 4px; margin: 0 0 11px }
   #equations > div { padding: 5px 8px; background: #eef6f2; border-left: 3px solid #3e796f; overflow-wrap: anywhere; font-variant-numeric: tabular-nums }
   #controls { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(165px,100%),1fr)); gap: 8px 12px }
+  #controls.turbine-inputs { grid-template-columns: repeat(3,minmax(0,1fr)) }
   .control label { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1px 6px; font-size: .82rem; font-weight: 650 }
   .control output { font-weight: 500; white-space: nowrap }
-  .family-choice { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font-weight: 650 }
-  .family-choice select { color: inherit; font: inherit; background: #f6faf8; border: 1px solid #adc7c1; border-radius: 6px; padding: 4px 8px }
+  #scene.turbine-comparison { display: grid; height: auto; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; background: transparent }
+  #scene .turbine-card { min-width: 0; padding: 8px; border: 1px solid #c7dbd4; border-top: 3px solid var(--family); border-radius: 8px; background: #f8fcfa }
+  .turbine-card h2 { margin: 0; font-size: 1rem }
+  .turbine-card output { color: #176d86; font-size: 1rem; font-weight: 750; font-variant-numeric: tabular-nums }
+  .turbine-card p { margin: 5px 0 0; font-size: .75rem; color: #506b67 }
+  .turbine-viewport { height: clamp(120px, 16vw, 176px); margin-top: 5px; border-radius: 6px; overflow: hidden; background: #e9f3f4 }
+  #motion.comparison-control { position: static; margin-left: auto }
   input { width: 100%; margin: 3px 0; accent-color: #177c90 }
   #note { margin: 7px 0 0; color: #506b67; font-size: .8rem }
-  .pipe-loss-plots { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px,100%), 1fr)); gap: 10px; margin-top: 13px }
-  .pipe-loss-plots figure { min-width: 0; margin: 0; border: 1px solid #c7dbd4; border-radius: 8px; padding: 10px; background: #f8fcfa }
-  .pipe-loss-plots h2 { margin: 0; font-size: .95rem }
-  .pipe-loss-plots svg { display: block; width: 100%; max-height: 248px; margin: auto }
-  .pipe-loss-plots figcaption { color: #506b67; font-size: .79rem }
-  @media (max-width:430px) { main { padding: 10px } #scene { height: 156px } #controls { grid-template-columns: repeat(2,minmax(0,1fr)) } }
+  .comparison-plots { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px,100%), 1fr)); gap: 10px; margin-top: 13px }
+  .comparison-plots figure { min-width: 0; margin: 0; border: 1px solid #c7dbd4; border-radius: 8px; padding: 10px; background: #f8fcfa }
+  .comparison-plots h2 { margin: 0; font-size: .95rem }
+  .comparison-plots svg { display: block; width: 100%; max-height: 248px; margin: auto }
+  .comparison-plots figcaption { color: #506b67; font-size: .79rem }
+  @media (max-width:459px) { #scene.turbine-comparison { grid-template-columns: 1fr } }
+  @media (max-width:430px) { main { padding: 10px } #scene { height: 156px } #controls, #controls.turbine-inputs { grid-template-columns: repeat(2,minmax(0,1fr)) } }
 </style>
 <main>
   <header><h1 id="title"></h1><output id="result"></output></header>
@@ -41,5 +48,5 @@
   <div id="controls" role="group" aria-label="Equation inputs"></div>
   <p id="note"></p>
 </main>
-<script type="module" src="balance.js?v=pressure-taps-6"></script>
+<script type="module" src="balance.js?v=turbine-comparison-7"></script>
 </html>
