@@ -33,9 +33,10 @@ export function mountFarmScene(host, onPick) {
   const wakeMat = new T.MeshBasicMaterial({map:texture, transparent:true, depthWrite:false, side:T.DoubleSide});
   const wakePlane = new T.Mesh(new T.PlaneGeometry(20,20),wakeMat);
   wakePlane.rotation.x=-Math.PI/2;wakePlane.position.y=.035;scene.add(wakePlane);
-  const particleGeometry=new T.BoxGeometry(.035,.035,1), particleMaterial=new T.MeshBasicMaterial({color:'#e6fbff',transparent:true,opacity:1,depthWrite:false});
-  const particleCount=140, particles=new T.InstancedMesh(particleGeometry,particleMaterial,particleCount);
-  const opacityAttribute=new T.InstancedBufferAttribute(new Float32Array(particleCount),1);
+  const particleGeometry=new T.BoxGeometry(.045,.045,1), particleMaterial=new T.MeshBasicMaterial({color:'#e6fbff',transparent:true,opacity:1,depthWrite:false});
+  const particleCount=360, trailSegments=9, instanceCount=particleCount*trailSegments;
+  const particles=new T.InstancedMesh(particleGeometry,particleMaterial,instanceCount);
+  const opacityAttribute=new T.InstancedBufferAttribute(new Float32Array(instanceCount),1);
   particleGeometry.setAttribute('instanceOpacity',opacityAttribute);
   particleMaterial.onBeforeCompile=shader=>{
     shader.vertexShader='attribute float instanceOpacity; varying float windOpacity;\n'+shader.vertexShader;
@@ -44,15 +45,31 @@ export function mountFarmScene(host, onPick) {
     shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\ndiffuseColor.a *= windOpacity;');
   };
   particles.frustumCulled=false; scene.add(particles);
-  const seeds=Array.from({length:particleCount},(_,i)=>({x:((i*7.173)%20)-10,z:((i*11.739+3)%20)-10,h:.7+(i%5)*.18}));
+  const seeds=Array.from({length:particleCount},(_,i)=>({x:((i*7.173)%20)-10,z:((i*11.739+3)%20)-10,h:.7+(i%5)*.18, trail:[], trailTime:0}));
   const dummy=new T.Object3D();let sample=()=>0, windSpeed=0, windDirection=0, fieldBounds={min:0,max:0}, elapsed=0;
   function moveParticles(dt) {
     particles.visible=windSpeed>0;
     for(let i=0;i<seeds.length;i++) {
       const p=seeds[i], local=localParticle(p,windDirection,sample,dt,{freeStream:windSpeed,elapsed,phase:i*1.73});
-      p.x=local.x;p.z=local.z;
-      opacityAttribute.setX(i,local.opacity);
-      dummy.position.set(p.x,p.h,p.z);dummy.rotation.set(0,local.wind.angle,0);dummy.scale.set(1,1,local.wind.length);dummy.updateMatrix();particles.setMatrixAt(i,dummy.matrix);
+      // Never draw a streak across the farm when a particle wraps around an edge.
+      if(Math.abs(local.x-p.x)>10 || Math.abs(local.z-p.z)>10) p.trail=[];
+      p.x=local.x;p.z=local.z;p.trailTime+=dt;
+      if(!p.trail.length || p.trailTime>=.12) {
+        p.trail.unshift({x:p.x,z:p.z});p.trail.length=Math.min(p.trail.length,trailSegments+1);p.trailTime=0;
+      }
+      for(let j=0;j<trailSegments;j++) {
+        const instance=i*trailSegments+j;
+        const a=j===0 ? p : p.trail[j-1], b=p.trail[j];
+        if(!a || !b){dummy.scale.set(0,0,0);opacityAttribute.setX(instance,0);}
+        else {
+          const dx=a.x-b.x,dz=a.z-b.z, length=Math.hypot(dx,dz);
+          dummy.position.set((a.x+b.x)/2,p.h,(a.z+b.z)/2);
+          dummy.rotation.set(0,Math.atan2(dx,dz),0);
+          dummy.scale.set(1,1,length);
+          opacityAttribute.setX(instance,local.opacity*(1-j/trailSegments));
+        }
+        dummy.updateMatrix();particles.setMatrixAt(instance,dummy.matrix);
+      }
     }
     particles.instanceMatrix.needsUpdate=true;opacityAttribute.needsUpdate=true;
   }

@@ -44,8 +44,6 @@ project:
 
     - title: Dataset and Format
       children:
-        - file: section5/mdio-format.md
-        - file: section5/wind-data.md
         - file: section5/databases.md
         - file: section5/sql-basics.md
         - file: section5/sql-python.ipynb
@@ -54,6 +52,8 @@ project:
         - file: section5/download-to-database.md
         - file: section5/world-energy-download.md
         - file: section5/eia-energy-data.md
+        - file: section5/wind-data.md
+        - file: section5/mdio-format.md
 
     - title: Applied Python Workbook
       children:

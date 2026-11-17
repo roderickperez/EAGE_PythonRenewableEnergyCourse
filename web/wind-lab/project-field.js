@@ -51,7 +51,9 @@ export function localParticle(point, direction, sample, dt=0, options={}) {
   const speedAt=p=>sample((p.x+10)*FARM/20,(10-p.z)*FARM/20);
   const before=speedAt(point);
   const wind=particleWind(direction,before), appearance=particleAppearance(before,options.freeStream ?? before);
-  const disturbance=appearance.deficit*.48*Math.sin((options.elapsed ?? 0)*2.5+(options.phase ?? 0));
+  // Illustrative wake eddies: stronger lateral motion with two smoothly varying scales.
+  const phase=(options.elapsed ?? 0)*2.1+(options.phase ?? 0);
+  const disturbance=appearance.deficit*3.0*(.75*Math.sin(phase)+.25*Math.sin(phase*1.9+point.x*.6+point.z*.4));
   const theta=direction*Math.PI/180;
   const next=advanceParticle(point,{x:wind.x-Math.cos(theta)*disturbance,z:wind.z-Math.sin(theta)*disturbance},dt);
   const speed=speedAt(next);

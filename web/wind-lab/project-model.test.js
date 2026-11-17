@@ -81,9 +81,9 @@ test('particle motion and rotor animation respond to local wake speed',()=>{
 
 test('wake particles drift sideways and fade while clear wind remains undisturbed',()=>{
   const sample=windFieldSampler([95],0,12), options={freeStream:12,elapsed:0,phase:Math.PI/2};
-  const inWake=localParticle({x:1,z:-8},0,sample,.5,options);
-  const clear=localParticle({x:5,z:-8},0,sample,.5,options);
-  assert.ok(inWake.x<1 && Math.abs(clear.x-5)<1e-9);
+  const inWake=localParticle({x:1,z:-8},0,sample,.1,options);
+  const clear=localParticle({x:5,z:-8},0,sample,.1,options);
+  assert.ok(inWake.x<.98 && Math.abs(clear.x-5)<1e-9);
   assert.ok(inWake.opacity<clear.opacity);
   assert.equal(particleAppearance(12,12).opacity,.75);
   assert.ok(particleAppearance(0,12).opacity>0);
