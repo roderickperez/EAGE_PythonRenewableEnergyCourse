@@ -101,11 +101,23 @@ A water mass $m$ descending through usable head $H$ has available mechanical ene
 
 $$P_{hyd}=\rho gQH_{net}.$$
 
+(hydraulic-power-explorer)=
+:::{iframe} ../../hydro-lab/balance.html?demo=hydraulic-power
+:width: 100%
+:title: Hydraulic power explorer
+:::
+
 *Equation basis:* Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7.
 
 The electrical conversion chain gives
 
 $$P_e=\eta_t\eta_g\rho gQH_{net},$$
+
+(electrical-power-explorer)=
+:::{iframe} ../../hydro-lab/balance.html?demo=electrical-power
+:width: 100%
+:title: Electrical power explorer
+:::
 
 *Equation basis:* Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7.
 

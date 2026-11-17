@@ -1,10 +1,10 @@
 import * as T from 'three';
 import { flowBalance, MAX_FLOW_M3S, MAX_INTERVAL_MINUTES } from './balance-model.js';
 
-const palette = { water: '#288daa', net: '#398470', loss: '#c17932' };
+const palette = { water: '#288daa', net: '#398470', loss: '#c17932', shaft: '#98744c', electricity: '#e5a124' };
 export { palette };
 
-export function mountBalanceScene(host, kind) {
+export function mountBalanceScene(host, kind, motionButton) {
   const scene = new T.Scene();
   scene.background = new T.Color('#e9f3f4');
   const camera = new T.OrthographicCamera();
@@ -16,7 +16,7 @@ export function mountBalanceScene(host, kind) {
   scene.add(light);
   const renderer = new T.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-  host.append(renderer.domElement);
+  host.querySelector('#drawing').append(renderer.domElement);
   const material = color => new T.MeshStandardMaterial({ color, roughness: .65 });
   const water = material(palette.water);
   const rock = material('#a7bcb2');
@@ -60,7 +60,7 @@ export function mountBalanceScene(host, kind) {
       level(net, usable, lowerLevel);
       level(loss, lossHead * .03, lowerLevel + usable);
     };
-  } else {
+  } else if (kind === 'flow-volume') {
     const capacity = flowBalance(MAX_FLOW_M3S, MAX_INTERVAL_MINUTES, 1000).volume;
     const receiving = tank(2.1, 3.9, 2.9, 2.8);
     const path = new T.CatmullRomCurve3([
@@ -80,25 +80,127 @@ export function mountBalanceScene(host, kind) {
         particle.visible = flow > 0 && particle.position.y > height;
       }
     };
+  } else {
+    const tailwater = .75;
+    const upper = tank(-2.8, 2.6, 3.9, 2.4);
+    const lower = tank(kind === 'electrical-power' ? 1.0 : 3.0, 2.2, .95, 2.4);
+    level(lower, tailwater);
+    const inlet = new T.Vector3(-2.12, 0, .69);
+    const outlet = new T.Vector3(kind === 'electrical-power' ? .95 : 2.42, tailwater - .15, .69);
+    const pipe = mesh(new T.CylinderGeometry(.18, .18, 1, 18), steel, 0, 0, 0);
+    const marker = new T.SphereGeometry(.09, 12, 8);
+    const stream = new T.MeshBasicMaterial({ color: '#8ef2ff' });
+    const particles = Array.from({ length: 12 }, () => mesh(marker, stream, 0, 0, 0));
+    const direction = new T.Vector3();
+    const up = new T.Vector3(0, 1, 0);
+    let runner, pulses;
+    if (kind === 'electrical-power') {
+      const shaft = material(palette.shaft);
+      runner = new T.Group();
+      runner.position.copy(outlet);
+      scene.add(runner);
+      const hub = new T.Mesh(new T.CylinderGeometry(.17, .17, .30, 18), shaft);
+      hub.rotation.z = Math.PI / 2;
+      runner.add(hub);
+      const blade = new T.BoxGeometry(.20, .27, .12);
+      for (let i = 0; i < 6; i++) {
+        const angle = i * Math.PI / 3;
+        const vane = new T.Mesh(blade, shaft);
+        vane.position.set(0, Math.cos(angle) * .28, Math.sin(angle) * .28);
+        vane.rotation.x = angle;
+        runner.add(vane);
+      }
+      const axle = mesh(new T.CylinderGeometry(.085, .085, 1.35, 16), steel, 1.69, outlet.y, outlet.z);
+      axle.rotation.z = Math.PI / 2;
+      const generator = mesh(new T.CylinderGeometry(.5, .5, 1.2, 28), shaft, 2.77, outlet.y, outlet.z);
+      generator.rotation.z = Math.PI / 2;
+      box(1.4, .14, 1.32, rock, 2.77, -.06, outlet.z);
+      box(1.22, .045, .045, steel, 3.91, outlet.y, outlet.z);
+      const glow = new T.MeshBasicMaterial({ color: palette.electricity });
+      pulses = Array.from({ length: 4 }, () => mesh(marker, glow, 0, outlet.y, outlet.z));
+    }
+    draw = ([head, flow, shaftW, electricalW], phase) => {
+      const drop = .03 * head;
+      level(upper, tailwater + drop);
+      inlet.y = outlet.y + drop;
+      direction.subVectors(outlet, inlet);
+      pipe.position.copy(inlet).lerp(outlet, .5);
+      pipe.scale.y = direction.length();
+      pipe.quaternion.setFromUnitVectors(up, direction.normalize());
+      for (const [index, particle] of particles.entries()) {
+        particle.position.copy(inlet).lerp(outlet, (phase + index / particles.length) % 1);
+        particle.position.z += .18;
+        particle.visible = flow > 0;
+      }
+      if (runner) {
+        if (shaftW > 0) runner.rotation.x = phase * Math.PI * 4;
+        for (const [index, pulse] of pulses.entries()) {
+          pulse.position.x = 3.4 + 1.08 * ((2 * phase + index / pulses.length) % 1);
+          pulse.visible = electricalW > 0;
+          pulse.scale.setScalar(.65 + .6 * Math.min(1, electricalW / 3e6));
+        }
+      }
+    };
   }
 
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  const continuous = kind !== 'net-head';
   let current, start, target, startTime, frame, phase = 0, previousTime = 0;
+  let playing = !reducedMotion.matches, onScreen = false;
   function render() {
     if (current) draw(current, phase);
     renderer.render(scene, camera);
   }
-  function tick(time) {
-    frame = undefined;
-    const progress = Math.min(1, (time - startTime) / 500);
-    current = target.map((value, index) => start[index] + (value - start[index]) * (1 - (1 - progress) ** 3));
-    if (kind === 'flow-volume') phase = (phase + (time - previousTime) * current[1] * .00011) % 1;
-    previousTime = time;
-    render();
-    if (progress < 1 || (kind === 'flow-volume' && target[1] > 0 && time - startTime < 2200)) {
+  function schedule() {
+    if (!frame && current && playing && onScreen && !document.hidden &&
+        (start || (continuous && target[1] > 0))) {
       frame = requestAnimationFrame(tick);
     }
   }
+  function tick(time) {
+    frame = undefined;
+    if (start) {
+      const progress = Math.min(1, (time - startTime) / 500);
+      current = target.map((value, index) => start[index] + (value - start[index]) * (1 - (1 - progress) ** 3));
+      if (progress === 1) start = undefined;
+    }
+    if (continuous && previousTime) {
+      const dt = Math.min(45, time - previousTime);
+      phase = (phase + dt * current[1] * (kind === 'flow-volume' ? .00012 : .000045)) % 1;
+    }
+    previousTime = time;
+    render();
+    schedule();
+  }
+  function refreshMotion() {
+    motionButton.textContent = playing ? 'Pause motion' : 'Play motion';
+    if (!playing || !onScreen || document.hidden) {
+      if (frame) cancelAnimationFrame(frame);
+      frame = undefined;
+      previousTime = 0;
+      if (!playing && target) {
+        start = undefined;
+        current = target;
+        render();
+      }
+    }
+    schedule();
+  }
+  motionButton.hidden = !continuous;
+  motionButton.addEventListener('click', () => {
+    playing = !playing;
+    refreshMotion();
+  });
+  reducedMotion.addEventListener('change', () => {
+    playing = !reducedMotion.matches;
+    refreshMotion();
+  });
+  document.addEventListener('visibilitychange', refreshMotion);
+  new IntersectionObserver(([entry]) => {
+    onScreen = entry.isIntersecting;
+    refreshMotion();
+  }).observe(host);
+  refreshMotion();
   new ResizeObserver(() => {
     const { clientWidth: w, clientHeight: h } = host;
     if (!w || !h) return;
@@ -110,15 +212,15 @@ export function mountBalanceScene(host, kind) {
   }).observe(host);
   return values => {
     if (target?.every((value, index) => value === values[index])) return;
-    if (frame) cancelAnimationFrame(frame);
     target = values;
-    if (!current || reducedMotion.matches) {
+    if (!current || !playing || !onScreen) {
+      start = undefined;
       current = values;
       render();
-      return;
+    } else {
+      start = current;
+      startTime = performance.now();
     }
-    start = current;
-    startTime = previousTime = performance.now();
-    frame = requestAnimationFrame(tick);
+    schedule();
   };
 }

@@ -180,6 +180,8 @@ async function route() {
       ['hydraulic-head-explorer', 'head.html', 'Hydraulic head explorer'],
       ['net-head-explorer', 'balance.html?demo=net-head', 'Net head explorer'],
       ['flow-volume-explorer', 'balance.html?demo=flow-volume', 'Flow and volume explorer'],
+      ['hydraulic-power-explorer', 'balance.html?demo=hydraulic-power', 'Hydraulic power explorer'],
+      ['electrical-power-explorer', 'balance.html?demo=electrical-power', 'Electrical power explorer'],
     ]) {
       const spot = $(anchor);
       if (!spot) continue;
