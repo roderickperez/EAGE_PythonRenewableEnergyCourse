@@ -21,3 +21,12 @@ export function createHistory(now=0) {
     reset(time){last=time;elapsed=0;energy={};points=[];current={results:[],freestream:0};return snapshot();},
   };
 }
+
+// A repeating teaching scenario, not a real climate record or forecast.
+export function seasonalWind(seconds) {
+  const yearSeconds=120, phase=((Math.max(0,seconds)%yearSeconds)/yearSeconds)*2*Math.PI;
+  const speed=Math.round((10+3*Math.cos(phase))*2)/2;
+  const direction=(Math.round(35*Math.sin(phase)+15*Math.sin(phase*2))+360)%360;
+  const month=Math.floor((phase/(2*Math.PI))*12);
+  return {speed,direction,month};
+}

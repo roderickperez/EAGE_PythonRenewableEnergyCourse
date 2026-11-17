@@ -4,7 +4,7 @@ Design a small wind farm and explore how the position of a turbine changes the w
 
 ## How to use the explorer
 
-1. Set the wind direction **from** which air arrives and choose a wind speed. North is 0°, east 90°, south 180° and west 270°. The particles move **downwind**, slowing and shortening in wakes. Turbines turn according to their local modeled wind speed. Use the stop/play icon to control the animation.
+1. Choose **Manual** to set the wind direction **from** which air arrives and the wind speed, or choose **Seasonal** for a repeating synthetic annual variation. North is 0°, east 90°, south 180° and west 270°. The particles move **downwind**, slowing and shortening in wakes. Turbines turn according to their local modeled wind speed. Use the stop/play icon to control the animation.
 2. Click a grid cell to place or remove a turbine. Drag the scene to rotate it and scroll to zoom. For keyboard control, focus the grid and use the arrow keys to select a location; press Enter or Space to place or remove a turbine.
 3. Read farm power, no-wake power, wake loss and efficiency. The selected location's wind and turbine power appear below the scene. Gold indicates the selected location; the colorbar inside the scene shows modeled wind speed in the wakes. Uncolored terrain indicates undisturbed wind.
 4. Compare the energy and wind-speed histories as you change the layout and conditions. Remove a turbine by clicking its location again.
@@ -17,11 +17,17 @@ Design a small wind farm and explore how the position of a turbine changes the w
 
 The square site is 2,000 m by 2,000 m; its 10 × 10 grid points are 200 m apart. Easting and northing are illustrative local coordinates. The minimum-spacing slider constrains new placements; if a larger spacing would make an existing layout invalid, remove or move turbines first. Turbines in the illustration are enlarged relative to the farm so they can be seen.
 
+## Manual and seasonal wind
+
+Manual mode lets you set wind speed and direction with sliders. Seasonal mode replaces those sliders with a repeating synthetic scenario: speed varies smoothly between 7 and 13 m/s and direction oscillates around north. Each synthetic year takes 120 seconds of visible session time; the month label and conditions update approximately once per second. Switching back to Manual restores your previous manual settings. Spacing remains adjustable in both modes.
+
+This cycle is an illustration, not measured local climate or a forecast. The month label is a scenario position, not today's date. Changing modes preserves the session history. Energy is still integrated over actual visible-session seconds, **not** over an accelerated year, so it is not an annual-energy estimate.
+
 ## Energy and wind history
 
 The large energy value and the first graph show estimated cumulative energy for the current session in watt-hours (Wh), with one line for the farm total and one for each turbine location. The second graph shows the free-stream and local wind speeds over the same elapsed time. The model assumes each displayed power remains constant until the next change; it integrates power over real elapsed visible-session time. The display pauses while the page is hidden. Reopening the project starts a new history. Stopping the 3D animation does not stop this calculation. Graphs show the most recent 300 samples; totals cover the full session. A removed turbine keeps its accumulated contribution under its location number.
 
-These are illustrative model estimates, not measurements, forecasts, or annual production. Power (kW or MW) is an instantaneous rate; energy (Wh) accumulates over time. The fixed single wind condition and simplified wake model limit the results.
+These are illustrative model estimates, not measurements, forecasts, or annual production. Power (kW or MW) is an instantaneous rate; energy (Wh) accumulates over time. The simplified wake model and illustrative wind conditions limit the results.
 
 ## The model
 

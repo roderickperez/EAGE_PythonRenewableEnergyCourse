@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { gridPoint, powerKw, evaluate, validCandidate, rankCandidates, windFieldSampler } from './project-model.js';
-import { createHistory } from './project-history.js';
+import { createHistory, seasonalWind } from './project-history.js';
 import { wakePixels, wakeRaster, particleWind, advanceParticle, localParticle, particleAppearance, rotorRate, plasma } from './project-field.js';
 
 test('coordinates and the teaching turbine curve are explicit',()=>{
@@ -103,4 +103,14 @@ test('session energy integrates each turbine across model changes and pauses',()
   state=h.tick(30000,false);assert.equal(state.total,2500);assert.equal(state.time,20);
   state=h.tick(35000,true);assert.equal(state.energy[6],2000);assert.equal(state.time,25);
   assert.equal(h.reset(35000).total,0);
+});
+
+
+test('seasonal scenario repeats annually and varies speed and wind direction',()=>{
+  assert.deepEqual(seasonalWind(0),seasonalWind(120));
+  assert.equal(seasonalWind(0).speed,13);assert.equal(seasonalWind(60).speed,7);
+  assert.equal(seasonalWind(30).month,3);assert.notEqual(seasonalWind(30).direction,seasonalWind(0).direction);
+  for(let second=0;second<120;second++){
+    const w=seasonalWind(second);assert.ok(w.speed>=7 && w.speed<=13);assert.ok(w.direction>=0 && w.direction<360);
+  }
 });
