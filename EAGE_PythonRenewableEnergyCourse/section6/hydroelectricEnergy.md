@@ -197,6 +197,89 @@ A duration curve can support a simplified run-of-river energy estimate, but it c
 :title: Hydrograph and flow-duration curve explorer
 :::
 
+### Worked example: run-of-river energy yield
+
+Use the [daily river-flow CSV](run-of-river-daily.csv) to turn a full year of discharge into electrical energy. The file contains one **synthetic daily mean** in m³/s for every day of 2025. The course Python workspace loads it automatically when you run the code cell. To run the example in a notebook, save the CSV as `run-of-river-daily.csv` beside the notebook.
+
+First reserve up to 8 m³/s for the environmental release. If the remaining flow is below the turbine's minimum of 9 m³/s, the turbine stays off. Otherwise, the plant takes up to its design flow of 45 m³/s and the remaining water bypasses the turbine. Interpolate turbine efficiency at the fraction of design flow using the illustrative points in the code. The model uses a constant net head of 45 m and a generator efficiency of 97%. This is a single-unit teaching example based on the energy-yield workflow and part-load curves described in [@ifc2015], §§7.2–7.3 and Figures 7-4 and 7-9.
+
+For each day, calculate electrical power as $P_e=\rho g Q_{turb}H_{net}\eta_t\eta_g$. Convert watts to megawatts, multiply by 24 hours to get MWh per day, then sum and divide by 1,000 for annual GWh. The example uses daily means, so it assumes that the plant can operate at that flow throughout the day. Subdaily variation, outages and station loads can change the energy delivered.
+
+![Daily run-of-river electricity in 2025. The curve reaches a plateau when the turbine is at design flow and drops to zero when the remaining flow is below the minimum.](run-of-river-yield.svg)
+
+The supplied inputs produce **67.30 GWh** over 2025. The high-flow plateau occurs when the turbine reaches its design flow and the remaining water bypasses it. Zero-MWh days occur whenever flow after the environmental release falls below the minimum. A day can also have zero generation and an environmental shortfall if river flow is below the release target.
+
+```{code-cell} python
+from pathlib import Path
+
+import matplotlib.dates as mdates
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+
+filename = "run-of-river-daily.csv"
+paths = (
+    Path(filename),
+    Path("section6") / filename,
+    Path("EAGE_PythonRenewableEnergyCourse/section6") / filename,
+)
+csv_path = next((path for path in paths if path.is_file()), paths[0])
+daily = pd.read_csv(csv_path, parse_dates=["date"]).sort_values("date")
+dates = pd.date_range("2025-01-01", "2025-12-31", freq="D")
+river = daily["river_flow_m3s"].to_numpy(dtype=float)
+if not pd.DatetimeIndex(daily["date"]).equals(dates):
+    raise ValueError("The CSV must contain one observation per day of 2025.")
+if not np.isfinite(river).all() or (river < 0).any():
+    raise ValueError("River flow must be finite and non-negative.")
+
+environmental_target = 8.0  # m³/s
+min_flow, design_flow = 9.0, 45.0  # m³/s
+net_head = 45.0  # m, with hydraulic losses already deducted
+generator_efficiency = 0.97
+
+environmental = np.minimum(river, environmental_target)
+available = river - environmental
+turbine = np.where(available >= min_flow, np.minimum(available, design_flow), 0.0)
+bypass = available - turbine
+part_load = turbine / design_flow
+turbine_efficiency = np.interp(
+    part_load,
+    [0, 0.20, 0.40, 0.65, 0.85, 1.00],
+    [0, 0.65, 0.79, 0.87, 0.91, 0.90],
+)
+
+power_mw = 1000 * 9.81 * turbine * net_head * turbine_efficiency * generator_efficiency / 1e6
+daily_mwh = power_mw * 24
+annual_gwh = daily_mwh.sum() / 1000
+assert np.allclose(river, environmental + turbine + bypass)
+assert np.all((turbine == 0) | ((turbine >= min_flow) & (turbine <= design_flow)))
+assert np.all(daily_mwh[turbine == 0] == 0)
+
+print(f"Annual generation: {annual_gwh:.2f} GWh")
+print(f"Days with environmental-flow shortfall: {(environmental < environmental_target).sum()}")
+print(f"Days without generation: {(turbine == 0).sum()}")
+print(f"Days at design flow: {(turbine == design_flow).sum()}")
+
+fig, ax = plt.subplots(figsize=(6.1, 2.8), layout="constrained")
+fig.patch.set_facecolor("#f8fcfa")
+ax.set_facecolor("#f8fcfa")
+ax.plot(dates, daily_mwh, color="#237f9b", linewidth=1.7)
+ax.set_title(f"Daily electricity generation  ·  {annual_gwh:.2f} GWh in 2025",
+             loc="left", color="#163b38", fontsize=11, fontweight="bold", pad=10)
+ax.set_ylabel("Electrical energy (MWh/day)", color="#365951")
+ax.set_xlim(dates[0], dates[-1])
+ax.set_ylim(bottom=0)
+ax.xaxis.set_major_locator(mdates.MonthLocator(interval=2))
+ax.xaxis.set_major_formatter(mdates.DateFormatter("%b"))
+ax.grid(axis="y", color="#d8e8e1")
+ax.tick_params(axis="both", colors="#365951")
+for spine in ("top", "right"):
+    ax.spines[spine].set_visible(False)
+for spine in ("bottom", "left"):
+    ax.spines[spine].set_color("#829d93")
+plt.show()
+```
+
 ### Reservoir conservation and variable head
 
 For a time step with constant or interval-average flows,
