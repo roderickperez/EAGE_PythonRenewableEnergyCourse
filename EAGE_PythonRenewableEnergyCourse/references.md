@@ -115,6 +115,7 @@ The exercises are original teaching adaptations of these concepts, with syntheti
 - [IEA Global Energy Review 2026](https://www.iea.org/reports/global-energy-review-2026): estimates for **2025**, not completed 2026 statistics [@iea2026].
 - [IRENA Renewable Power Generation Costs in 2025](https://www.irena.org/Publications/2026/Jul/Renewable-Power-Generation-Costs-in-2025): July 2026 edition. Do not substitute global cost averages for a project budget [@irena2026].
 - [Eurostat energy database](https://ec.europa.eu/eurostat/web/energy/database): the course retains August 2024 exports as reproducible historical inputs [@eurostat_energy_database].
+- [SPE Industry Data Repository](https://www.spe.org/en/industry/data-repository/?gad_source=1).
 - [Python tutorial](https://docs.python.org/3/tutorial/) and [built-in functions](https://docs.python.org/3/library/functions.html) [@pythonDocs].
 - [NumPy user guide](https://numpy.org/doc/stable/user/) [@numpyDocs].
 - [pandas indexing and selection](https://pandas.pydata.org/docs/user_guide/indexing.html) [@pandasDocs].
