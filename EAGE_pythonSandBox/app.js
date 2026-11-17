@@ -260,7 +260,7 @@ async function route() {
       },
       'section8/wind-project.md': {
         anchor: '#how-to-use-the-explorer', id: 'wind-farm-project',
-        mount: async host => (await import('./generated/wind-lab/wind-project.js?v=wind-compass-1')).mountWindProject(host),
+        mount: async host => (await import('./generated/wind-lab/wind-project.js?v=wind-title-1')).mountWindProject(host),
       },
       'section8/solar-project.md': {
         anchor: '#how-to-use-the-explorer', id: 'solar-farm-project',
