@@ -4,6 +4,7 @@ import { RAD, beamOnPlane, incidenceCosine, intervalIrradiation, isotropicIrradi
 import { mountResourceScene, solarColors, solarSvgNode } from './resource-scene.js';
 
 import { mountIvEquation, mountIvExplorer } from './iv-explorer.js';
+import { mountPvEquation } from './pv-equations.js';
 import { mountResourceThree } from './resource-three.js';
 
 const $ = id => document.getElementById(id);
@@ -154,6 +155,7 @@ function mountIntervalPlot() {
 const requested = new URLSearchParams(location.search).get('demo');
 if (requested === 'iv') mountIvExplorer();
 else if (requested === 'operating-point' || requested === 'fill-factor') mountIvEquation(requested);
+else if (['dc-temperature', 'cell-temperature', 'inverter-clipping'].includes(requested)) mountPvEquation(requested);
 else mountResourceExplorer(Object.hasOwn(demos, requested) ? requested : 'horizontal');
 
 function mountResourceExplorer(kind) {

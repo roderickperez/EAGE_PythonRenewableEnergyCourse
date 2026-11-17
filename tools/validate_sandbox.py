@@ -47,15 +47,13 @@ def validate():
     solar_page = solar['html']
     assert 'solar-lab/index.html' not in solar_page
     assert 'solar-lab/resource.html' not in solar_page
-    for demo in ('horizontal', 'poa', 'irradiation', 'tilt', 'incidence', 'iv', 'operating-point', 'fill-factor'):
+    for demo in ('horizontal', 'poa', 'irradiation', 'tilt', 'incidence', 'iv', 'operating-point', 'fill-factor',
+                 'dc-temperature', 'cell-temperature', 'inverter-clipping'):
         assert f'id="solar-{demo}-explorer"' in solar_page
     for file in ('resource.html', 'resource.js'):
         assert (OUT / 'solar-lab' / file).is_file()
-    assert set(solar['media']['audio']['en']) == {
-        'from-sunlight-to-delivered-electricity', 'irradiance',
-        'plane-of-array-irradiance', 'a-first-model-for-a-tilted-module', 'the-currentvoltage-characteristic',
-        'time-and-data-quality',
-    }
+    solar_subtitles = BeautifulSoup(solar_page, 'html.parser').select('h3[id], h4[id]')
+    assert {heading['id'] for heading in solar_subtitles} <= set(solar['media']['audio']['en'])
     assert 'id="physical-description-what-solar-energy-systems-do"' in solar_page
     assert (OUT / 'wind-lab' / 'wind-lab.js').is_file()
     wind_page = pages['section6/windEnergy.md']['html']

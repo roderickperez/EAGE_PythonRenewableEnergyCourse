@@ -227,6 +227,12 @@ $$P_{DC}=P_{STC}\frac{G_{POA}}{G_{STC}}
 
 $\gamma_P$ is the fractional power-temperature coefficient in K⁻¹ or °C⁻¹; a datasheet value of −0.4%/°C becomes −0.004/°C in Python. Celsius and kelvin temperature **differences** are equal. Use cell temperature $T_c$, not ambient temperature $T_a$, in the correction. For the negative coefficient assumed here, warmer cells reduce output at fixed irradiance [@foster2010; @pvlibDocs].
 
+(solar-dc-temperature-explorer)=
+:::{iframe} ../../solar-lab/resource.html?demo=dc-temperature
+:width: 100%
+:title: Temperature-corrected solar DC power explorer
+:::
+
 The introductory thermal approximation is
 
 $$T_c=T_a+\frac{G_{POA}}{800\ \mathrm{W/m^2}}
@@ -235,6 +241,12 @@ $$T_c=T_a+\frac{G_{POA}}{800\ \mathrm{W/m^2}}
 *Equation basis:* [@foster2010], §§5.13–5.14; [@pvlibDocs]. Specified simplified NOCT approximation; compare the fuller [Sandia/SAM thermal model](https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/cell-temperature/noct-cell-temperature/).
 
 The nominal operating cell temperature (NOCT) convention refers to 800 W/m² irradiance, 20°C ambient air and 1 m/s wind under specified mounting and open-circuit conditions. Check the module datasheet: newer NMOT ratings use different electrical loading conventions. The equation above is a classroom reduction; the [Sandia/SAM NOCT model](https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/cell-temperature/noct-cell-temperature/) additionally accounts for wind, mounting and electrical efficiency. This simplified equation does not explicitly model wind cooling, mounting geometry, heat capacity or transient behavior. Use appropriate thermal models and datasheet conventions in a detailed study. Flooring a negative extrapolated DC estimate at zero avoids impossible negative generation but does not make the underlying extrapolation physically valid.
+
+(solar-cell-temperature-explorer)=
+:::{iframe} ../../solar-lab/resource.html?demo=cell-temperature
+:width: 100%
+:title: Solar cell temperature and NOCT explorer
+:::
 
 ### Inverter efficiency, clipping and loss accounting
 
@@ -248,6 +260,12 @@ P_{clip}=\max(P_{AC,pot}-P_{AC,r},0).$$
 This assumes a constant inverter efficiency and omits startup thresholds and standby consumption. Inverter conversion loss is $P_{DC}-P_{AC,pot}$, while clipping is discarded potential AC output above the AC limit. They are different quantities. A manufacturer AC power model may already include conversion losses; multiplying by the same efficiency again would double-count them. [@foster2010], Chapter 7; [@wade2003], inverter/system-sizing sections. Constant efficiency and the hard AC cap are course assumptions.
 
 The **DC/AC ratio** is $P_{STC,DC}/P_{AC,r}$. Increasing it can improve use of an inverter at lower irradiance but may increase clipping near peak resource. It is an engineering and economic trade-off, not a guarantee of higher performance ratio. Independent sequential fractional losses $\ell_j$ give a retained fraction $\prod_j(1-\ell_j)$, provided the loss boundaries do not overlap. [@foster2010], Chapter 7; [@wade2003], inverter/system-sizing sections. Constant efficiency and the hard AC cap are course assumptions.
+
+(solar-inverter-clipping-explorer)=
+:::{iframe} ../../solar-lab/resource.html?demo=inverter-clipping
+:width: 100%
+:title: Solar inverter clipping and loss explorer
+:::
 
 ## Energy, yield and performance indicators
 

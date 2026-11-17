@@ -31,6 +31,24 @@ export function intervalIrradiation(intervals) {
   return intervals.reduce((total, { irradiance, hours }) => total + irradiance * hours, 0) / 1000;
 }
 
+export function estimateCellTemperature(irradiance, ambient, noct) {
+  return ambient + irradiance / 800 * (noct - 20);
+}
+
+export function temperatureMultiplier(cellTemperature, coefficient) {
+  return Math.max(0, 1 + coefficient * (cellTemperature - 25));
+}
+
+export function retainedFraction(...losses) {
+  return losses.reduce((fraction, loss) => fraction * (1 - loss), 1);
+}
+
+export function inverterOutput(dcAtInverter, efficiency, rating) {
+  const potential = dcAtInverter * efficiency;
+  const ac = Math.min(potential, rating);
+  return { potential, ac, clip: potential - ac, conversionLoss: dcAtInverter - potential };
+}
+
 // East, up and north components in local solar time (no civil-time offset).
 export function sunDirection(hour, latitude, declination) {
   const lat = latitude * RAD;
@@ -53,15 +71,14 @@ export function solarPower(input, hour = input.hour) {
   const dhi = input.dhi * up;
   const { ghi, incidence, beam, sky, ground, poa } = isotropicIrradiance(dni, dhi, input.albedo, sun, normal);
   const rated = input.area * STC * input.efficiency / 100;
-  const cell = input.ambient + poa / 800 * (input.noct - 20);
-  const tempFactor = Math.max(0, 1 + input.coefficient / 100 * (cell - 25));
+  const cell = estimateCellTemperature(poa, input.ambient, input.noct);
+  const tempFactor = temperatureMultiplier(cell, input.coefficient / 100);
   const areaPower = poa * input.area * input.efficiency / 100;
-  const retained = (1 - input.soiling / 100) * (1 - input.wiring / 100);
+  const retained = retainedFraction(input.soiling / 100, input.wiring / 100);
   const dc = areaPower * tempFactor;
-  const potential = dc * retained * input.inverterEfficiency / 100;
-  const ac = Math.min(potential, input.rating);
+  const inverter = inverterOutput(dc * retained, input.inverterEfficiency / 100, input.rating);
   return { sun, normal, elevation, incidence, dni, dhi, ghi, beam, sky, ground, poa, rated, cell, tempFactor,
-    areaPower, retained, dc, potential, ac, clip: potential - ac, conversionLoss: dc * retained - potential };
+    areaPower, retained, dc, ...inverter };
 }
 
 export function solarDay(input) {

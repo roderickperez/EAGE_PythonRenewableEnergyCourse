@@ -27,11 +27,11 @@ export function addPlot(container, title, caption) {
   return svg;
 }
 
-export function setupPlot(svg, xMax, yMax, xLabel, yLabel, xMin = 0) {
+export function setupPlot(svg, xMax, yMax, xLabel, yLabel, xMin = 0, yMin = 0) {
   svg.replaceChildren();
   const plot = { left: 59, right: 393, top: 14, bottom: 149 };
   const x = value => plot.left + (value - xMin) / (xMax - xMin) * (plot.right - plot.left);
-  const y = value => plot.bottom - value / yMax * (plot.bottom - plot.top);
+  const y = value => plot.bottom - (value - yMin) / (yMax - yMin) * (plot.bottom - plot.top);
   const tick = value => Number(value.toPrecision(3)).toLocaleString('en');
   function line(x1, y1, x2, y2, stroke, dash = '') {
     const element = svgNode('line', { x1, y1, x2, y2, stroke, 'stroke-dasharray': dash });
@@ -44,10 +44,11 @@ export function setupPlot(svg, xMax, yMax, xLabel, yLabel, xMin = 0) {
   for (let i = 0; i <= 4; i++) {
     const xTick = xMin + (xMax - xMin) * i / 4;
     const xx = x(xTick);
-    const yy = y(yMax * i / 4);
+    const yTick = yMin + (yMax - yMin) * i / 4;
+    const yy = y(yTick);
     line(plot.left, yy, plot.right, yy, '#d8e8e1');
     text(tick(xTick), xx, plot.bottom + 15);
-    text(tick(yMax * i / 4), plot.left - 7, yy + 4, 'end');
+    text(tick(yTick), plot.left - 7, yy + 4, 'end');
   }
   line(plot.left, plot.top, plot.left, plot.bottom, '#829d93');
   line(plot.left, plot.bottom, plot.right, plot.bottom, '#829d93');

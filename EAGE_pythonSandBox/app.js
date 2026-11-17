@@ -194,6 +194,9 @@ async function route() {
       ['solar-iv-explorer', 'resource.html?demo=iv', 'Photovoltaic current and power curve explorer', 'solar-lab'],
       ['solar-operating-point-explorer', 'resource.html?demo=operating-point', 'Photovoltaic operating point and DC power explorer', 'solar-lab'],
       ['solar-fill-factor-explorer', 'resource.html?demo=fill-factor', 'Photovoltaic fill factor explorer', 'solar-lab'],
+      ['solar-dc-temperature-explorer', 'resource.html?demo=dc-temperature', 'Temperature-corrected solar DC power explorer', 'solar-lab'],
+      ['solar-cell-temperature-explorer', 'resource.html?demo=cell-temperature', 'Solar cell temperature and NOCT explorer', 'solar-lab'],
+      ['solar-inverter-clipping-explorer', 'resource.html?demo=inverter-clipping', 'Solar inverter clipping and loss explorer', 'solar-lab'],
     ]) {
       const spot = $(anchor);
       if (!spot) continue;

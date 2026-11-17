@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { solarPower, solarDay, batteryDay, lifetime, solarVector, incidenceCosine,
   beamOnPlane, isotropicIrradiance, intervalIrradiation } from './model.js';
 import { moduleCurve } from './iv-model.js';
+import { estimateCellTemperature, temperatureMultiplier, retainedFraction, inverterOutput } from './model.js';
 
 const worked = {
   hour: 12, latitude: 0, declination: 0, tilt: 0, azimuth: 180,
@@ -10,6 +11,22 @@ const worked = {
   area: 50, efficiency: 20, soiling: 0, wiring: 0, inverterEfficiency: 97, rating: 8000,
 };
 const close = (actual, expected) => assert.ok(Math.abs(actual - expected) < 1e-8, `${actual} ≠ ${expected}`);
+
+test('solar temperature and inverter equations preserve their separate loss boundaries', () => {
+  close(estimateCellTemperature(800, 25, 45), 50);
+  close(estimateCellTemperature(0, -10, 60), -10);
+  close(temperatureMultiplier(50, -.004), .9);
+  close(temperatureMultiplier(25, -.004), 1);
+  const retained = retainedFraction(.05, .02);
+  close(retained, .931);
+  const dcAtInverter = 12 * retained;
+  const { potential, ac, clip, conversionLoss } = inverterOutput(dcAtInverter, .97, 8);
+  close(ac, 8);
+  close(clip, potential - 8);
+  close(ac + clip + conversionLoss, dcAtInverter);
+  close(inverterOutput(4, .97, 8).clip, 0);
+  close(inverterOutput(0, .97, 8).ac, 0);
+});
 
 test('single-diode MPP agrees with pvlib’s published 1000 W/m², 55 °C case', () => {
   const { isc, voc, peak, samples } = moduleCurve(1000, 55);

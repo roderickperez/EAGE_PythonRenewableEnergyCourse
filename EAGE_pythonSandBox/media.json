@@ -20,7 +20,16 @@
         "plane-of-array-irradiance": "en/solar/plane-of-array-irradiance.mp3",
         "a-first-model-for-a-tilted-module": "en/solar/a-first-model-for-a-tilted-module.mp3",
         "the-currentvoltage-characteristic": "en/solar/the-current-voltage-characteristic.mp3",
-        "time-and-data-quality": "en/solar/time-and-data-quality.mp3"
+        "time-and-data-quality": "en/solar/time-and-data-quality.mp3",
+        "irradiance-irradiation-and-the-receiving-plane": "en/solar/irradiance-irradiation-and-the-receiving-plane.mp3",
+        "irradiation-over-time": "en/solar/irradiation-over-time.mp3",
+        "stc-nameplate-and-temperature": "en/solar/stc-nameplate-and-temperature.mp3",
+        "inverter-efficiency-clipping-and-loss-accounting": "en/solar/inverter-efficiency-clipping-and-loss-accounting.mp3",
+        "thermal-storage-energy-is-not-power": "en/solar/thermal-storage-energy-is-not-power.mp3",
+        "irradiance-versus-irradiation": "en/solar/irradiance-versus-irradiation.mp3",
+        "from-solar-resource-to-pv-power": "en/solar/from-solar-resource-to-pv-power.mp3",
+        "ac-output-and-energy": "en/solar/ac-output-and-energy.mp3",
+        "why-the-checks-matter": "en/solar/why-the-checks-matter.mp3"
       }
     }
   }

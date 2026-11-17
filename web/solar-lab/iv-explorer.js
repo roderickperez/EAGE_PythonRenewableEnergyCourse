@@ -1,6 +1,7 @@
 import { addPlot, mountPlotGroup, setupPlot } from '../hydro-lab/comparison-plots.js';
 import { moduleCurve } from './iv-model.js';
 import { solarSvgNode } from './resource-scene.js';
+import { mountControls, mountLegend, showInput } from './resource-controls.js';
 
 const $ = id => document.getElementById(id);
 const fixed = (value, unit) => `${value.toFixed(2)} ${unit}`;
@@ -9,33 +10,10 @@ const irradianceControls = [
   ['temperature', 'Cell temperature', -10, 85, 1, 25],
 ];
 
-function mountControls(definitions, update) {
-  $('controls').innerHTML = definitions.map(([id, label, min, max, step, value]) => `
-    <div class="control">
-      <label for="${id}"><span>${label}</span><output for="${id}"></output></label>
-      <input id="${id}" type="range" min="${min}" max="${max}" step="${step}" value="${value}">
-    </div>`).join('');
-  $('controls').addEventListener('input', update);
-}
-
-function showInput(input, text) {
-  input.previousElementSibling.querySelector('output').value = text;
-  input.setAttribute('aria-valuetext', text);
-}
-
 function readConditions() {
   showInput($('irradiance'), `${$('irradiance').value} W/m²`);
   showInput($('temperature'), `${$('temperature').value} °C`);
   return moduleCurve($('irradiance').valueAsNumber, $('temperature').valueAsNumber);
-}
-
-function mountLegend(entries) {
-  for (const [color, label] of entries) {
-    const item = document.createElement('span');
-    item.style.setProperty('--swatch', color);
-    item.textContent = label;
-    $('legend').append(item);
-  }
 }
 
 export function mountIvExplorer() {
