@@ -1,3 +1,5 @@
+import { updateMotionControl } from '../motion-control.js';
+
 export function mountDiagramMotion(host, button, draw, rate = () => 0, transitionMs = 0) {
   let playing = true;
   let visible = true;
@@ -35,8 +37,7 @@ export function mountDiagramMotion(host, button, draw, rate = () => 0, transitio
       displayed = values;
       draw(displayed, phase);
     }
-    button.textContent = playing ? 'Pause motion' : 'Play motion';
-    button.setAttribute('aria-pressed', String(playing));
+    updateMotionControl(button, playing);
     sync();
   }
 

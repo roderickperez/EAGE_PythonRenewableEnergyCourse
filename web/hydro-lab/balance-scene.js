@@ -1,13 +1,14 @@
 import * as T from 'three';
 import { mountCanvasDiagram } from './diagram-canvas.js';
 import { mountDiagramMotion, mountDiagramRenderer } from './diagram-motion.js';
+import { createOperationScene } from './operation-scene.js';
 
 const palette = { water: '#288daa', net: '#398470', loss: '#c17932', shaft: '#98744c', electricity: '#e5a124' };
 export { palette };
 
 export function mountBalanceScene(host, kind, motionButton) {
   const draw = mountDiagramRenderer(host,
-    ['flow-volume', 'hydraulic-loss', 'turbine-operation'].includes(kind) ? null : () => create3DScene(host, kind),
+    kind === 'flow-volume' ? null : () => create3DScene(host, kind),
     () => mountCanvasDiagram(host, kind));
   motionButton.hidden = kind === 'net-head';
   const rate = kind === 'flow-volume' || kind === 'hydraulic-loss' ? .00015 : .000045;
@@ -58,7 +59,9 @@ function create3DScene(host, kind) {
   }
 
   let draw;
-  if (kind === 'net-head') {
+  if (kind === 'hydraulic-loss' || kind === 'turbine-operation') {
+    draw = createOperationScene(kind, { scene, material, mesh, box, tank, level, steel, rock, palette });
+  } else if (kind === 'net-head') {
     const upper = tank(-2.75, 3, 3.75, 2.4);
     const lower = tank(2.75, 3, 1.05, 2.4);
     const lowerLevel = .63;

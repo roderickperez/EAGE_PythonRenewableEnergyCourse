@@ -1,3 +1,4 @@
+import { updateMotionControl } from '../motion-control.js';
 import shared from '../hydro-lab/styles.css';
 import styles from './styles.css';
 import solar from '../../EAGE_PythonRenewableEnergyCourse/section8/data/solar.csv';
@@ -45,7 +46,7 @@ export function mountProjectMap(container) {
     <div class="map-controls" aria-label="Dataset playback">
       <div class="map-time"><strong id="map-date"></strong><span id="map-index"></span></div>
       <div class="map-buttons"><button type="button" id="map-prev">Previous hour</button>
-        <button type="button" id="map-play">Play week</button><button type="button" id="map-next">Next hour</button></div>
+        <button type="button" id="map-play"></button><button type="button" id="map-next">Next hour</button></div>
     </div>
     <figure class="engineering-card">
       <div id="project-scene" aria-label="Isometric map of solar panels, wind turbines, a run-of-river station, geothermal wells and a town connected to one electrical grid"></div>
@@ -78,7 +79,7 @@ export function mountProjectMap(container) {
   function stop(){
     clearInterval(timer);
     timer=undefined;
-    get('map-play').textContent='Play week';
+    updateMotionControl(get('map-play'), false, 'week');
   }
   function step(delta){
     stop();
@@ -87,11 +88,12 @@ export function mountProjectMap(container) {
   }
   get('map-prev').onclick=()=>step(-1);
   get('map-next').onclick=()=>step(1);
+  updateMotionControl(get('map-play'), false, 'week');
   get('map-play').onclick=()=>{
     if(timer)stop();
     else {
       if(hour===rows.length-1)hour=0;
-      get('map-play').textContent='Pause week';
+      updateMotionControl(get('map-play'), true, 'week');
       timer=setInterval(()=>{
         if(document.hidden || !container.isConnected)return;
         hour++;

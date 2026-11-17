@@ -1,3 +1,4 @@
+import { updateMotionControl } from '../motion-control.js';
 import shared from '../hydro-lab/styles.css';
 import layout from '../solar-lab/styles.css';
 import styles from './styles.css';
@@ -178,7 +179,7 @@ export function mountWindLab(container) {
   for (const key of ['heightMode','outputMode']) get(key).onchange = event => { input[key] = event.target.value; render(); };
   const toggle = get('wind-play');
   if (toggle) {
-    const label = () => { toggle.textContent = animate ? 'Pause animation' : 'Play animation'; };
+    const label = () => { updateMotionControl(toggle, animate); };
     label();
     toggle.onclick = () => { animate = !animate; label(); render(); };
   }

@@ -1,3 +1,4 @@
+import { updateMotionControl } from '../motion-control.js';
 import sharedStyles from '../hydro-lab/styles.css';
 import styles from './styles.css';
 import { RAD, STC, solarPower, solarDay, batteryDay, lifetime } from './model.js';
@@ -105,7 +106,7 @@ export function mountSolarLab(container) {
     </div>
     <div class="solar-stage">
       <figure class="engineering-card"><div id="solar-scene" aria-label="Isometric solar module, sun path, inverter and AC output"></div>
-        <button type="button" id="solar-play" class="motion-toggle">Play solar day</button>
+        <button type="button" id="solar-play" class="motion-toggle"></button>
         <figcaption>Drag to orbit. The dashed arc shows the daylight path. Gold rays mark direct light on the panel and gold pulses trace electrical output through the inverter.</figcaption>
       </figure>
       <section class="metrics-card" aria-label="Module output">
@@ -205,6 +206,7 @@ export function mountSolarLab(container) {
       render();
     });
   }
+  updateMotionControl(get('solar-play'), false, 'solar day');
   get('solar-play').onclick = () => {
     if (timer) { clearInterval(timer); timer = undefined; }
     else timer = setInterval(() => {
@@ -213,7 +215,7 @@ export function mountSolarLab(container) {
       input.hour = Number(get('hour').value);
       render();
     }, 110);
-    get('solar-play').textContent = timer ? 'Pause solar day' : 'Play solar day';
+    updateMotionControl(get('solar-play'), Boolean(timer), 'solar day');
     render();
   };
   render();

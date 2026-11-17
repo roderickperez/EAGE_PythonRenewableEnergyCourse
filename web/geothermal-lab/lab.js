@@ -1,3 +1,4 @@
+import { updateMotionControl } from '../motion-control.js';
 import shared from '../hydro-lab/styles.css';
 import layout from '../solar-lab/styles.css';
 import styles from './styles.css';
@@ -173,7 +174,7 @@ export function mountGeothermalLab(container) {
   get('loadMode').onchange=event=>{ input.loadMode=event.target.value; render(); };
   const toggle=get('geo-play');
   if(toggle){
-    const label=()=>{ toggle.textContent=animate?'Pause animation':'Play animation'; };
+    const label=()=>{ updateMotionControl(toggle, animate); };
     label();
     toggle.onclick=()=>{ animate=!animate; label(); render(); };
   }

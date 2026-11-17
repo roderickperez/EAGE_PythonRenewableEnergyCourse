@@ -1,6 +1,7 @@
 import * as T from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { visualState, INTAKE_CENTER_Y, INTAKE_RADIUS } from './visual-state.js';
+import { updateMotionControl } from '../motion-control.js';
 
 /** A single sectional 3D model; units are schematic, animation is illustrative. */
 export class HydroScene {
@@ -32,7 +33,7 @@ export class HydroScene {
     this.observer=new ResizeObserver(()=>this.resize()); this.observer.observe(host);
     this.intersection=new IntersectionObserver(([e])=>{this.visible=e.isIntersecting;}); this.intersection.observe(host);
     this.toggle=document.createElement('button'); this.toggle.className='motion-toggle';
-    const describe=()=>{this.toggle.textContent=this.animate?'Pause animation':'Play animation';this.toggle.setAttribute('aria-pressed',String(this.animate));};
+    const describe=()=>updateMotionControl(this.toggle,this.animate);
     describe(); this.toggle.onclick=()=>{this.animate=!this.animate;describe();}; host.append(this.toggle);
     this.resize(); this.lastTime=0; this.renderer.setAnimationLoop(time=>this.frame(time));
   }
