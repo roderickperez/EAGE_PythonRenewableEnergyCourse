@@ -260,7 +260,7 @@ async function route() {
       },
       'section8/wind-project.md': {
         anchor: '#how-to-use-the-explorer', id: 'wind-farm-project',
-        mount: async host => (await import('./generated/wind-lab/wind-project.js?v=wind-season-only-1')).mountWindProject(host),
+        mount: async host => (await import('./generated/wind-lab/wind-project.js?v=wind-control-position-1')).mountWindProject(host),
       },
     }[lesson.id];
     if(lab){
