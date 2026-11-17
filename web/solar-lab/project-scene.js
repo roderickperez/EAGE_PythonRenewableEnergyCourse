@@ -4,14 +4,15 @@ import { sunDirection, RAD } from './model.js';
 import { SITES } from './project-model.js';
 import land from './natural-earth-land.geojson';
 import { cloudBlockage, cloudDensity } from './project-clouds.js';
+import { daylightFactor } from './project-light.js';
 
 export function mountProjectScene(host, onPick, onSite) {
   const renderer=new T.WebGLRenderer({antialias:true});
   renderer.setPixelRatio(Math.min(devicePixelRatio,2)); host.append(renderer.domElement);
-  const scene=new T.Scene(); scene.background=new T.Color('#e6eff3');
+  const scene=new T.Scene(),daySky=new T.Color('#e6eff3'),nightSky=new T.Color('#26394f'); scene.background=daySky.clone();
   const camera=new T.OrthographicCamera(-12,12,10,-10,.1,120); camera.position.set(20,22,27);
   const orbit=new OrbitControls(camera,renderer.domElement); orbit.enablePan=false; orbit.minZoom=.7; orbit.maxZoom=2.5; orbit.target.set(0,1,0); orbit.update();
-  scene.add(new T.HemisphereLight(0xe8f7ff,0x6c795e,2.5)); const light=new T.DirectionalLight(0xffe3a6,2); light.position.set(-8,18,8); scene.add(light);
+  const sky=new T.HemisphereLight(0xe8f7ff,0x6c795e,2.5);scene.add(sky); const light=new T.DirectionalLight(0xffe3a6,2); light.position.set(-8,18,8); scene.add(light);
   const globe=new T.Group(), farm=new T.Group(); scene.add(globe,farm); farm.visible=false;
   const mat=(color)=>new T.MeshStandardMaterial({color,roughness:.75});
   const mesh=(g,m,p,parent)=>{const o=new T.Mesh(g,m);o.position.set(...p);parent.add(o);return o;};
@@ -87,7 +88,7 @@ export function mountProjectScene(host, onPick, onSite) {
   return {
     setSite(index){markers.forEach((m,i)=>{m.dot.material.color.set(i===index?'#fff5c7':'#ffbd3f');m.group.scale.setScalar(i===index?1.5:1);});},
     start(){globeMode=false;transition=0;farm.visible=true;farm.scale.setScalar(.001);camera.zoom=1;camera.updateProjectionMatrix();orbit.target.set(0,1,0);orbit.update();},
-    showGlobe(){globeMode=true;globe.visible=true;globe.scale.setScalar(1);farm.visible=false;camera.zoom=1.75;camera.updateProjectionMatrix();},
+    showGlobe(){globeMode=true;globe.visible=true;globe.scale.setScalar(1);farm.visible=false;scene.background.copy(daySky);camera.zoom=1.75;camera.updateProjectionMatrix();},
     setPlaying(){},
     update(ids,settings,site,date,hour,dec,selected=0,weather,cloudState,panelResults){
       const nextRackKey=[ids.join(','),settings.tilt,settings.azimuth].join('|');if(nextRackKey!==rackKey){updateRacks(ids,settings.tilt,settings.azimuth);rackKey=nextRackKey;}
@@ -95,7 +96,7 @@ export function mountProjectScene(host, onPick, onSite) {
       const nextPathKey=`${site.lat}|${dec}`;if(pathKey!==nextPathKey){const points=[];for(let i=0;i<=288;i++){const s=sunDirection(i/12,site.lat,dec);if(s[1]>=0)points.push(new T.Vector3(s[0]*12,s[1]*12+.2,-s[2]*12));}path.geometry.dispose();path.geometry=new T.BufferGeometry().setFromPoints(points);path.computeLineDistances();pathKey=nextPathKey;}
       cloudMat.opacity=.95;clouds.children.forEach((cloud,i)=>{cloud.visible=cloudState.active;cloud.position.set(...cloudState.clouds[i].position);});
       for(let y=0;y<shadowSize;y++)for(let x=0;x<shadowSize;x++){const i=(y*shadowSize+x)*4, px=-10+20*x/(shadowSize-1),pz=10-20*y/(shadowSize-1),shade=cloudBlockage(cloudState,px,pz),panelShade=cloudBlockage(cloudState,px,pz,.68);shadowPixels[i]=22;shadowPixels[i+1]=38;shadowPixels[i+2]=45;shadowPixels[i+3]=Math.round(shade*230);panelShadowPixels[i+3]=Math.round(panelShade*255);}shadowTexture.needsUpdate=true;panelShadowTexture.needsUpdate=true;
-      const s=sunDirection(hour,site.lat,dec);sun.visible=s[1]>0;sun.position.set(s[0]*12,s[1]*12+.2,-s[2]*12);light.position.copy(sun.position);light.intensity=s[1]>0?1.5*(1-.65*weather.clouds):0;
+      const s=sunDirection(hour,site.lat,dec),daylight=daylightFactor(s[1]);sun.visible=s[1]>0;sun.position.set(s[0]*12,s[1]*12+.2,-s[2]*12);light.position.copy(sun.position);light.intensity=daylight*1.5*(1-.65*weather.clouds);sky.intensity=.45+2.05*daylight;scene.background.copy(nightSky).lerp(daySky,daylight);
     },
     destroy(){renderer.setAnimationLoop(null);resize.disconnect();orbit.dispose();scene.traverse(o=>{o.geometry?.dispose();if(o.material)o.material.dispose();});for(const texture of labelTextures)texture.dispose();panel.dispose();cell.dispose();tex.dispose();cloudTexture.dispose();shadowTexture.dispose();panelShadowTexture.dispose();renderer.dispose();renderer.domElement.remove();}
   };
