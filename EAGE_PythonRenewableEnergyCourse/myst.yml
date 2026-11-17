@@ -53,7 +53,6 @@ project:
         - file: section5/world-energy-download.md
         - file: section5/eia-energy-data.md
         - file: section5/wind-data.md
-        - file: section5/mdio-format.md
 
     - title: Applied Python Workbook
       children:
@@ -106,6 +105,11 @@ project:
       children:
         - file: references.md
         - file: learningGuide.md
+
+    - title: Extra
+      children:
+        - file: section5/xarray-extra.md
+        - file: section5/mdio-format.md
 
 site:
   options:

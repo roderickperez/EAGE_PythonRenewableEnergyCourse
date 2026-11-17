@@ -14,6 +14,19 @@ An array might have axes `(inline, crossline, sample)` for a seismic volume, or 
 
 **Chunking is a tradeoff.** Long time-series access and map-slice access favor different chunk shapes. Larger chunks reduce the number of storage requests but can fetch unnecessary data. The paper gives 4–8 MB as a cloud-object-store starting point and 1–2 MB for parallel filesystems, not universal optima; benchmark your own data and access patterns. Lossless compression preserves values; lossy compression changes values, so use it only after measuring error against a suitable scientific tolerance. The paper reports approximately 41% storage savings with lossless compression on the authors' seismic datasets; this is not a guarantee for other data.
 
+## MDIO and xarray compared
+
+MDIO and xarray address different parts of a workflow. MDIO defines a chunked storage format and provides tools for energy datasets; xarray is a Python library for working with labeled multidimensional arrays. You can analyze values read from an MDIO store with xarray after supplying the correct dimensions, coordinates and metadata. They are not interchangeable file formats.
+
+| Question | MDIO | xarray |
+|---|---|---|
+| Primary role | Chunked energy-data storage and access | Labeled arrays and analysis in Python |
+| Structure | MDIO schema, metadata and Zarr-backed arrays | `DataArray` or `Dataset` with named dimensions, coordinates and attributes |
+| Typical use | Store and read chunks of large energy datasets, including seismic metadata | Select by coordinate, align variables, aggregate and visualize |
+| File storage | MDIO store with its own layout | Reads and writes compatible NetCDF and Zarr datasets through backends |
+
+Both can use chunked storage, but **an MDIO store is not automatically an xarray-compatible Zarr dataset**. In the [MDIO 0.9.3 documentation](https://mdio-python.readthedocs.io/en/v0.9.3/), a dedicated xarray interface is marked as future work. For a manual bridge, read data with `MDIOReader`, then construct a `DataArray` with validated coordinates and attributes. Do not assume that reading values alone preserves units, timestamps, missing-data masks or the coordinate reference system. See the [xarray lesson](xarray-extra.md) and [xarray I/O guide](https://docs.xarray.dev/en/stable/user-guide/io.html).
+
 ## Python walkthrough: create and inspect a small wind cube
 
 The following standalone example uses **multidimio 0.9.3**, whose API is documented [here](https://mdio-python.readthedocs.io/en/v0.9.3/api_reference.html). Install it in a local Python 3.12 virtual environment; the course's browser Python environment does not include MDIO, so run these examples locally. In a terminal:

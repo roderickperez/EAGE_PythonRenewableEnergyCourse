@@ -81,6 +81,9 @@ def validate():
     assert (OUT / 'project-map' / 'project-map.js').is_file()
     assert 'project-map/index.html' not in pages[PROJECT]['html']
     assert 'id="load-the-separate-input-datasets"' in pages[PROJECT]['html']
+    extra_order = [path for path, page in pages.items() if page['group'] == 'Extra']
+    assert extra_order == ['section5/xarray-extra.md', 'section5/mdio-format.md']
+    assert 'id="mdio-and-xarray-compared"' in pages['section5/mdio-format.md']['html']
     wind_project = 'section8/wind-project.md'
     project_order = [path for path, page in pages.items() if page['group'] == 'Course Projects']
     assert project_order[:5] == ['section8/hydraulic-project.md', 'section8/solar-project.md',
