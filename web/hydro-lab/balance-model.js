@@ -15,3 +15,23 @@ export function powerBalance(flow, head, density, gravity, turbineEfficiency = 1
   const shaftW = hydraulicW * turbineEfficiency;
   return { hydraulicW, shaftW, electricalW: shaftW * generatorEfficiency };
 }
+export function pipeLoss(flow, length, diameter, frictionFactor, fittingK, gravity) {
+  const area = Math.PI * diameter ** 2 / 4;
+  const velocity = flow / area;
+  const velocityHead = velocity ** 2 / (2 * gravity);
+  const friction = frictionFactor * length / diameter * velocityHead;
+  const fittings = fittingK * velocityHead;
+  return { area, velocity, friction, fittings, total: friction + fittings };
+}
+
+export function turbineOperation(flow, head, efficiency, ratingMW, density, gravity) {
+  const wattsPerFlow = efficiency * density * gravity * head;
+  const ratedFlow = wattsPerFlow > 0 ? ratingMW * 1e6 / wattsPerFlow : null;
+  const turbineFlow = ratedFlow === null ? 0 : Math.min(flow, ratedFlow);
+  return {
+    ratedFlow,
+    turbineFlow,
+    bypassFlow: flow - turbineFlow,
+    outputMW: turbineFlow * wattsPerFlow / 1e6,
+  };
+}

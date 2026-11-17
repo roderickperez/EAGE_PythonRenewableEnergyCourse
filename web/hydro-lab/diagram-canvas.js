@@ -93,6 +93,57 @@ export function mountCanvasDiagram(host, kind) {
       ctx.fillStyle = colors.loss;
       ctx.fillRect(228, base - gross, 17, loss);
       line([[221, base], [252, base]], colors.pipe);
+    } else if (kind === 'hydraulic-loss') {
+      const x = 54;
+      const end = 202 + 125 * first / 1000;
+      const y = 106;
+      const width = 10 + third * 6;
+      const path = [[x, y], [end, y], [end + 16, y + 24]];
+      line(path, colors.pipe, width + 5);
+      line(path, colors.water, width * .68);
+      if (flow > 0) particles(14, path, '#c8f8ff', 3.6);
+      const total = fourth + values[4];
+      const height = 112 * Math.log1p(total) / Math.log1p(4000);
+      const frictionHeight = total > 0 ? height * fourth / total : 0;
+      ctx.fillStyle = '#d6e7e1';
+      ctx.fillRect(383, 47, 20, 112);
+      ctx.fillStyle = colors.loss;
+      ctx.fillRect(383, 159 - frictionHeight, 20, frictionHeight);
+      ctx.fillStyle = '#8a645f';
+      ctx.fillRect(383, 159 - height, 20, height - frictionHeight);
+      ctx.fillStyle = '#31524f';
+      ctx.font = 'bold 14px system-ui';
+      ctx.fillText('Loss gauge', 355, 181);
+    } else if (kind === 'turbine-operation') {
+      const center = [218, 118];
+      const routes = [
+        [[59, 96], [165, 96], [211, 96], [221, 148], [353, 171]],
+        [[59, 112], [131, 112], [187, 110], [218, 124], [236, 156], [353, 171]],
+        [[59, 118], [138, 118], [218, 118], [260, 142], [353, 171]],
+      ];
+      const route = routes[first];
+      const bypass = [[58, 74], [132, 51], [322, 51], [384, 65], [384, 171]];
+      tank(357, 190, 62, 41, 18);
+      line(bypass, colors.net, 7);
+      line(route, colors.pipe, 16);
+      dot(center[0] + 5, center[1] + 4, 32, '#49666f');
+      dot(...center, 31, ['#9b7752', '#658b82', '#608a95'][first]);
+      const vanes = [10, 8, 4][first];
+      const angle = flow > 0 ? phase * Math.PI * 4 : 0;
+      for (let i = 0; i < vanes; i++) {
+        const a = angle + 2 * Math.PI * i / vanes;
+        const inner = [22, 11, 5][first];
+        line([[center[0] + inner * Math.cos(a), center[1] + inner * Math.sin(a)],
+              [center[0] + 24 * Math.cos(a + .19), center[1] + 24 * Math.sin(a + .19)]],
+          '#e7d7b6', [7, 4, 8][first]);
+      }
+      if (flow > 0) particles(12, route, '#baf5ff', 3.5);
+      if (third > 0) particles(8, bypass, '#b3f1d9', 3.5);
+      line([[249, 118], [292, 118]], '#67513c', 6);
+      ctx.fillStyle = '#98744c';
+      ctx.fillRect(279, 102, 48, 32);
+      line([[327, 118], [424, 118]], colors.pipe);
+      if (fourth > 0) particles(5, [[328, 118], [424, 118]], colors.electricity, 3.5);
     } else {
       const drop = first * 1.18;
       tank(83, 181, 82, 148, 28 + drop);

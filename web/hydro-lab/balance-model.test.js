@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { flowBalance, netHead, powerBalance } from './balance-model.js';
+import { flowBalance, netHead, pipeLoss, powerBalance, turbineOperation } from './balance-model.js';
 
 test('net head subtracts the loss once and reaches zero at full loss', () => {
   assert.equal(netHead(30, 2), 28);
@@ -26,4 +26,22 @@ test('power stays in watts and each efficiency is applied once', () => {
   assert.equal(powerBalance(10, 28, 1000, 9.81, .85, 0).electricalW, 0);
   assert.equal(powerBalance(10, 28, 1000, 9.81, 0, .95).shaftW, 0);
   assert.equal(powerBalance(0, 28, 1000, 9.81).hydraulicW, 0);
+});
+
+test('Darcy and fitting losses are both quadratic when geometry is fixed', () => {
+  const original = pipeLoss(4, 250, 1.5, .02, 2, 9.81);
+  const doubled = pipeLoss(8, 250, 1.5, .02, 2, 9.81);
+  assert.ok(Math.abs(original.area - 1.7671458676) < 1e-9);
+  assert.equal(doubled.friction, original.friction * 4);
+  assert.equal(doubled.fittings, original.fittings * 4);
+  assert.equal(pipeLoss(0, 250, 1.5, .02, 2, 9.81).total, 0);
+});
+
+test('turbine operation keeps the rating and closes the flow balance', () => {
+  const capped = turbineOperation(10, 28, .85, 2, 1000, 9.81);
+  assert.ok(Math.abs(capped.outputMW - 2) < 1e-12);
+  assert.equal(capped.turbineFlow + capped.bypassFlow, 10);
+  assert.equal(turbineOperation(10, 28, .85, 5, 1000, 9.81).bypassFlow, 0);
+  assert.deepEqual(turbineOperation(10, 0, .85, 2, 1000, 9.81),
+    { ratedFlow: null, turbineFlow: 0, bypassFlow: 10, outputMW: 0 });
 });

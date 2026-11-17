@@ -152,6 +152,12 @@ $f_D$ is the dimensionless **Darcy** friction factor, $L$ and $D$ are pipe lengt
 
 The Python exercises sometimes use a supplied loss value or an illustrative coefficient $h_{loss}=aQ^2$. That coefficient is not a universal property of hydropower. A real estimate needs geometry, roughness, fluid properties and a defensible hydraulic model. [@jica2011], §8.3 and Chapter 10; [@ifc2015], Chapter 3.
 
+(hydraulic-loss-explorer)=
+:::{iframe} ../../hydro-lab/balance.html?demo=hydraulic-loss
+:width: 100%
+:title: Hydraulic losses explorer
+:::
+
 ### Turbine families
 
 **Impulse turbines**, including Pelton machines, extract energy from a high-speed jet acting on the runner. **Reaction turbines**, including Francis and Kaplan/propeller arrangements, operate with pressure changes through the runner. Pelton machines are commonly associated with higher-head, lower-flow applications; Kaplan/propeller machines suit many lower-head, larger-flow settings; Francis machines occupy a broad intermediate range. These are qualitative tendencies, not rigid selection thresholds [@jica2011; @doeHydroTurbines].
@@ -159,6 +165,12 @@ The Python exercises sometimes use a supplied loss value or an illustrative coef
 Selection also depends on flow variation, rotational speed, cavitation, sediment, mechanical constraints and cost. Efficiency changes away from the design operating point. Minimum stable flow and turbine start/stop behavior mean that a constant-efficiency model may overstate output at very low discharge. Cavitation occurs when local pressure permits vapor cavities to form and subsequently collapse; it can damage components and constrain installation and operation. [@jica2011], Chapter 10; [@doeHydroTurbines].
 
 The simple power cap $P=\min(\eta\rho gQH,P_r)$ is adequate for introductory energy calculations. It does not explicitly model gate position, turbine flow or pressure transients. At fixed head and efficiency, a corresponding flow limit is $Q_r=P_r/(\eta\rho gH)$. If water routing matters, allocate no more than that flow to the turbine and route the remainder to a bypass, spillway or storage. [@jica2011], Chapter 10; [@doeHydroTurbines].
+
+(turbine-operation-explorer)=
+:::{iframe} ../../hydro-lab/balance.html?demo=turbine-operation
+:width: 100%
+:title: Turbine families and operation explorer
+:::
 
 ## Water allocation, hydrology and storage
 

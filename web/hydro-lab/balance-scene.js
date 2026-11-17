@@ -7,13 +7,14 @@ export { palette };
 
 export function mountBalanceScene(host, kind, motionButton) {
   const draw = mountDiagramRenderer(host,
-    kind === 'flow-volume' ? null : () => create3DScene(host, kind),
+    ['flow-volume', 'hydraulic-loss', 'turbine-operation'].includes(kind) ? null : () => create3DScene(host, kind),
     () => mountCanvasDiagram(host, kind));
   motionButton.hidden = kind === 'net-head';
-  const rate = kind === 'flow-volume' ? .00015 : .000045;
+  const rate = kind === 'flow-volume' || kind === 'hydraulic-loss' ? .00015 : .000045;
   return kind === 'net-head'
     ? mountDiagramMotion(host, motionButton, draw, undefined, 400)
-    : mountDiagramMotion(host, motionButton, draw, values => values[1] * rate);
+    : mountDiagramMotion(host, motionButton, draw, values =>
+      (kind === 'turbine-operation' ? Math.max(values[1], values[2]) : values[1]) * rate);
 }
 
 function create3DScene(host, kind) {

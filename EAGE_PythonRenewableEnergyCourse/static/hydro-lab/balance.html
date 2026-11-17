@@ -22,6 +22,8 @@
   #controls { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(165px,100%),1fr)); gap: 8px 12px }
   .control label { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1px 6px; font-size: .82rem; font-weight: 650 }
   .control output { font-weight: 500; white-space: nowrap }
+  .family-choice { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font-weight: 650 }
+  .family-choice select { color: inherit; font: inherit; background: #f6faf8; border: 1px solid #adc7c1; border-radius: 6px; padding: 4px 8px }
   input { width: 100%; margin: 3px 0; accent-color: #177c90 }
   #note { margin: 7px 0 0; color: #506b67; font-size: .8rem }
   @media (max-width:430px) { main { padding: 10px } #scene { height: 156px } #controls { grid-template-columns: repeat(2,minmax(0,1fr)) } }
@@ -34,5 +36,5 @@
   <div id="controls" role="group" aria-label="Equation inputs"></div>
   <p id="note"></p>
 </main>
-<script type="module" src="balance.js?v=autoplay-3"></script>
+<script type="module" src="balance.js?v=operation-4"></script>
 </html>
