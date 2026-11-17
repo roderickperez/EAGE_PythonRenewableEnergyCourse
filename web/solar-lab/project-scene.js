@@ -38,24 +38,35 @@ export function mountProjectScene(host, onPick, onSite) {
   const path=new T.Line(new T.BufferGeometry(),new T.LineDashedMaterial({color:'#d49130',dashSize:.18,gapSize:.13}));farm.add(path);
   const clouds=new T.Group(); farm.add(clouds);
   const cloudPixels=new Uint8Array(128*128*4);
-  for(let y=0;y<128;y++)for(let x=0;x<128;x++){const i=(y*128+x)*4, density=cloudDensity((x/127-.5)*10,(.5-y/127)*6);cloudPixels[i]=235;cloudPixels[i+1]=242;cloudPixels[i+2]=244;cloudPixels[i+3]=Math.round(235*density);}
+  for(let y=0;y<128;y++)for(let x=0;x<128;x++){const i=(y*128+x)*4, density=cloudDensity((x/127-.5)*10,(.5-y/127)*6);cloudPixels[i]=250;cloudPixels[i+1]=252;cloudPixels[i+2]=253;cloudPixels[i+3]=Math.min(255,Math.round(420*Math.pow(density,.4)));}
   const cloudTexture=new T.DataTexture(cloudPixels,128,128,T.RGBAFormat);cloudTexture.colorSpace=T.SRGBColorSpace;cloudTexture.magFilter=T.LinearFilter;cloudTexture.minFilter=T.LinearFilter;cloudTexture.needsUpdate=true;
   const cloudMat=new T.MeshBasicMaterial({map:cloudTexture,transparent:true,depthWrite:false,side:T.DoubleSide,opacity:.8});
   const cloudGeo=new T.PlaneGeometry(10,6);
   for(let i=0;i<3;i++){const cloud=mesh(cloudGeo,cloudMat,[0,0,0],clouds);cloud.rotation.x=-Math.PI/2;}
-  const shadowSize=96,shadowPixels=new Uint8Array(shadowSize*shadowSize*4);
+  const shadowSize=64,shadowPixels=new Uint8Array(shadowSize*shadowSize*4);
   const shadowTexture=new T.DataTexture(shadowPixels,shadowSize,shadowSize,T.RGBAFormat);shadowTexture.magFilter=T.LinearFilter;shadowTexture.minFilter=T.LinearFilter;shadowTexture.needsUpdate=true;
+  const panelShadowPixels=new Uint8Array(shadowSize*shadowSize*4);
+  const panelShadowTexture=new T.DataTexture(panelShadowPixels,shadowSize,shadowSize,T.RGBAFormat);panelShadowTexture.magFilter=T.LinearFilter;panelShadowTexture.minFilter=T.LinearFilter;panelShadowTexture.needsUpdate=true;
   const shadowMaterial=new T.MeshBasicMaterial({map:shadowTexture,transparent:true,depthWrite:false,side:T.DoubleSide});
   const shadows=mesh(new T.PlaneGeometry(20,20),shadowMaterial,[0,.025,0],farm);shadows.rotation.x=-Math.PI/2;
   let panelMaterials=new Map(),labelTextures=[];
   const frame=mat('#9daeb4'),panel=mat('#1c4269'),cell=mat('#3975a0'),post=mat('#7d9094');
+  function shadePanel(material){
+    material.onBeforeCompile=shader=>{
+      shader.uniforms.solarCloudShadow={value:panelShadowTexture};
+      shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 solarWorld;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nsolarWorld = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+      shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D solarCloudShadow; varying vec3 solarWorld;').replace('#include <color_fragment>','#include <color_fragment>\nvec2 cloudUV = vec2((solarWorld.x + 10.0) / 20.0, (10.0 - solarWorld.z) / 20.0);\nfloat cloudShade = texture2D(solarCloudShadow, clamp(cloudUV, 0.0, 1.0)).a;\ndiffuseColor.rgb *= 1.0 - 0.75 * cloudShade;');
+    };
+    material.customProgramCacheKey=()=> 'solar-panel-cloud-shadow-v1';
+    return material;
+  }
   function updateRacks(ids,tilt,azimuth){
     racks.traverse(o=>{o.geometry?.dispose();if(o.isSprite)o.material.dispose();});for(const texture of labelTextures)texture.dispose();labelTextures=[];for(const pair of panelMaterials.values())pair.forEach(m=>m.dispose());panelMaterials=new Map();racks.clear();
     for(const id of ids){const x=-9+(id%10)*2,z=9-Math.floor(id/10)*2;
       mesh(new T.CylinderGeometry(.045,.055,.6,8),post,[x,.3,z],racks);
       const rack=new T.Group();rack.position.set(x,.68,z);rack.rotation.y=Math.PI-azimuth*RAD;racks.add(rack);
       const face=new T.Group();face.rotation.x=tilt*RAD;rack.add(face);
-      const panelMat=panel.clone(),cellMat=cell.clone();panelMaterials.set(id,[panelMat,cellMat]);
+      const panelMat=shadePanel(panel.clone()),cellMat=shadePanel(cell.clone());panelMaterials.set(id,[panelMat,cellMat]);
       mesh(new T.BoxGeometry(1.52,.10,1.06),frame,[0,0,0],face);mesh(new T.BoxGeometry(1.44,.025,.98),panelMat,[0,.065,0],face);
       for(let a=0;a<4;a++)for(let b=0;b<3;b++)mesh(new T.BoxGeometry(.33,.015,.29),cellMat,[(a-1.5)*.35,.085,(b-1)*.31],face);
       const label=document.createElement('canvas');label.width=128;label.height=64;const ctx=label.getContext('2d');ctx.fillStyle='#f4faf8';ctx.fillRect(4,4,120,56);ctx.fillStyle='#16384c';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold 36px system-ui';ctx.fillText(String(id+1),64,33);
@@ -82,11 +93,10 @@ export function mountProjectScene(host, onPick, onSite) {
       const nextRackKey=[ids.join(','),settings.tilt,settings.azimuth].join('|');if(nextRackKey!==rackKey){updateRacks(ids,settings.tilt,settings.azimuth);rackKey=nextRackKey;}
       selection.position.set(-9+(selected%10)*2,.09,9-Math.floor(selected/10)*2);
       const nextPathKey=`${site.lat}|${dec}`;if(pathKey!==nextPathKey){const points=[];for(let i=0;i<=288;i++){const s=sunDirection(i/12,site.lat,dec);if(s[1]>=0)points.push(new T.Vector3(s[0]*12,s[1]*12+.2,-s[2]*12));}path.geometry.dispose();path.geometry=new T.BufferGeometry().setFromPoints(points);path.computeLineDistances();pathKey=nextPathKey;}
-      cloudMat.opacity=.6+weather.clouds*.35;clouds.children.forEach((cloud,i)=>{cloud.visible=cloudState.active;cloud.position.set(...cloudState.clouds[i].position);});
-      for(let y=0;y<shadowSize;y++)for(let x=0;x<shadowSize;x++){const i=(y*shadowSize+x)*4, shade=cloudBlockage(cloudState,-10+20*x/(shadowSize-1),10-20*y/(shadowSize-1));shadowPixels[i]=22;shadowPixels[i+1]=38;shadowPixels[i+2]=45;shadowPixels[i+3]=Math.round(shade*230);}shadowTexture.needsUpdate=true;
-      for(const p of panelResults){const mats=panelMaterials.get(p.id);if(!mats)continue;const shade=1-.7*p.blockage;mats[0].color.copy(panel.color).multiplyScalar(shade);mats[1].color.copy(cell.color).multiplyScalar(shade);}
+      cloudMat.opacity=.95;clouds.children.forEach((cloud,i)=>{cloud.visible=cloudState.active;cloud.position.set(...cloudState.clouds[i].position);});
+      for(let y=0;y<shadowSize;y++)for(let x=0;x<shadowSize;x++){const i=(y*shadowSize+x)*4, px=-10+20*x/(shadowSize-1),pz=10-20*y/(shadowSize-1),shade=cloudBlockage(cloudState,px,pz),panelShade=cloudBlockage(cloudState,px,pz,.68);shadowPixels[i]=22;shadowPixels[i+1]=38;shadowPixels[i+2]=45;shadowPixels[i+3]=Math.round(shade*230);panelShadowPixels[i+3]=Math.round(panelShade*255);}shadowTexture.needsUpdate=true;panelShadowTexture.needsUpdate=true;
       const s=sunDirection(hour,site.lat,dec);sun.visible=s[1]>0;sun.position.set(s[0]*12,s[1]*12+.2,-s[2]*12);light.position.copy(sun.position);light.intensity=s[1]>0?1.5*(1-.65*weather.clouds):0;
     },
-    destroy(){renderer.setAnimationLoop(null);resize.disconnect();orbit.dispose();scene.traverse(o=>{o.geometry?.dispose();if(o.material)o.material.dispose();});for(const texture of labelTextures)texture.dispose();panel.dispose();cell.dispose();tex.dispose();cloudTexture.dispose();shadowTexture.dispose();renderer.dispose();renderer.domElement.remove();}
+    destroy(){renderer.setAnimationLoop(null);resize.disconnect();orbit.dispose();scene.traverse(o=>{o.geometry?.dispose();if(o.material)o.material.dispose();});for(const texture of labelTextures)texture.dispose();panel.dispose();cell.dispose();tex.dispose();cloudTexture.dispose();shadowTexture.dispose();panelShadowTexture.dispose();renderer.dispose();renderer.domElement.remove();}
   };
 }

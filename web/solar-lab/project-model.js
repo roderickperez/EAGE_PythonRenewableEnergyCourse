@@ -37,16 +37,16 @@ export function calculate(site, date, hour, settings, weather) {
   return { current:solarPower(input,hour), day:settings.count ? solarDay(input) : { samples:[],energy:0 } };
 }
 
-export function calculateFarm(site,date,hour,settings,weather,cloud,ids) {
+export function calculateFarm(site,date,hour,settings,weather,cloud,ids,includeDay=true) {
   const panels=ids.map(id=>{
     const p=gridPosition(id),blockage=cloudBlockage(cloud,p.x,p.z,.68);
     const input=inputs(site,date,{...settings,count:1},applyCloudShadow(weather,blockage));
-    return {id,blockage,current:solarPower(input,hour),day:solarDay(input)};
+    return {id,blockage,current:solarPower(input,hour),day:includeDay?solarDay(input):null};
   });
   const reference=solarPower(inputs(site,date,{...settings,count:1},weather),hour);
   const current={...reference,ac:panels.reduce((n,p)=>n+p.current.ac,0),
     poa:panels.length?panels.reduce((n,p)=>n+p.current.poa,0)/panels.length:reference.poa};
-  const samples=panels.length?panels[0].day.samples.map((_,i)=>({ac:panels.reduce((sum,p)=>sum+p.day.samples[i].ac,0)})):[];
+  const samples=panels.length&&includeDay?panels[0].day.samples.map((_,i)=>({ac:panels.reduce((sum,p)=>sum+p.day.samples[i].ac,0)})):[];
   return {panels,current,blockage:panels.length?panels.reduce((n,p)=>n+p.blockage,0)/panels.length:0,
-    day:{samples,energy:panels.reduce((n,p)=>n+p.day.energy,0)}};
+    day:includeDay?{samples,energy:panels.reduce((n,p)=>n+p.day.energy,0)}:null};
 }

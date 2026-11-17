@@ -3,6 +3,9 @@ import assert from 'node:assert/strict';
 import { calculate, calculateFarm, conditions, declination, surfaceLoss, SITES } from './project-model.js';
 import { cloudState, cloudBlockage } from './project-clouds.js';
 import { readFileSync } from 'node:fs';
+import { createPowerHistory } from './project-history.js';
+import { chartMarkup, panelColor } from './project-chart.js';
+import { SPEEDS, simulatedHours, nextStep } from './project-timing.js';
 const site={lat:48.208,lon:16.374}, settings={tilt:30,azimuth:180,shading:5,count:2};
 test('sun and seasonal generation respond to latitude and date',()=>{
   const summer=new Date('2025-06-21T12:00:00Z'),winter=new Date('2025-12-21T12:00:00Z');
@@ -52,4 +55,22 @@ test('all chosen coordinates fall on Natural Earth land polygons',()=>{
   const land=JSON.parse(readFileSync(new URL('./natural-earth-land.geojson',import.meta.url)));
   function inside(x,y,ring){let hit=false;for(let i=0,j=ring.length-1;i<ring.length;j=i++){const a=ring[i],b=ring[j];if((a[1]>y)!==(b[1]>y)&&x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0])hit=!hit;}return hit;}
   for(const site of SITES){const match=land.features.some(f=>f.geometry.coordinates.reduce((hit,ring)=>hit!==inside(site.lon,site.lat,ring),false));assert.ok(match,site.name);}
+});
+test('panel history keeps independent curves and gaps and resets on backward time',()=>{
+  const h=createPowerHistory(),panel=(id,ac)=>({id,current:{ac}});
+  h.record(8,[panel(0,100),panel(1,200)]);h.record(9,[panel(1,150)]);h.record(10,[panel(0,80),panel(1,100)]);
+  const svg=chartMarkup(h.points,[0,1],10,[panel(0,80),panel(1,100)]);
+  assert.ok(svg.includes(panelColor(0)));assert.ok(svg.includes(panelColor(1)));
+  const path=svg.match(new RegExp(`<path d="([^"]*)" fill="none" stroke="${panelColor(0)}"`))[1];
+  assert.equal((path.match(/M/g)||[]).length,2);
+  h.record(7,[panel(0,50)]);assert.equal(h.points.length,1);assert.equal(h.points[0].hour,7);
+  h.record(7,[panel(0,60)]);assert.equal(h.points.length,1);assert.equal(h.points[0].values[0],60);
+  h.reset();assert.equal(h.points.length,0);
+});
+test('speed increases simulated time and integration steps respect boundaries',()=>{
+  assert.deepEqual(SPEEDS,[1,5,20,100,500]);
+  assert.equal(simulatedHours(60,1),24);assert.equal(simulatedHours(60,500),12000);
+  assert.ok(Math.abs(nextStep(1,23.9,1)-.1)<1e-9);
+  assert.ok(Math.abs(nextStep(1,12,1.9)-.1)<1e-9);
+  assert.equal(nextStep(50,12,0),.25);
 });

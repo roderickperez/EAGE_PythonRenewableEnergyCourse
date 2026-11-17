@@ -11,7 +11,7 @@ export function cloudDensity(x,z) {
   let transmission=1;
   for(const [cx,cz,rx,rz,opacity] of CLOUD_LOBES){
     const r2=((x-cx)/rx)**2+((z-cz)/rz)**2;
-    transmission*=1-opacity*Math.exp(-2*r2);
+    if(r2<12)transmission*=1-opacity*Math.exp(-2*r2);
   }
   return 1-transmission;
 }
