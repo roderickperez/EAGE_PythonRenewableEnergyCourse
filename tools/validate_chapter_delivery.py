@@ -24,6 +24,7 @@ def validate():
         assert levels==DIFFICULTIES,relative
         solutions=Counter()
         for i,block in enumerate(blocks,1):
+            block=block.split('\n## ',1)[0]
             assert '**Reference:**' in block and ('[@' in block or '](' in block),(relative,i,'reference')
             assert block.count('::::{dropdown} Step-by-step answer')==1 and ':open:' not in block
             cells=re.findall(r'```\{code-cell\} python\n(.*?)```',block,re.S)

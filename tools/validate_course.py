@@ -125,6 +125,7 @@ def execute_energy_code_cells() -> None:
     import asyncio
     import contextlib
     import inspect
+    import importlib.util
     import io
     import tempfile
     from unittest.mock import patch
@@ -158,6 +159,9 @@ def execute_energy_code_cells() -> None:
                 stack.enter_context(contextlib.chdir(stack.enter_context(tempfile.TemporaryDirectory())))
                 stack.enter_context(patch("urllib.request.urlopen", side_effect=fixture_urlopen))
             for number, match in enumerate(marker.finditer(text), start=1):
+                if 'import cartopy' in match.group(1) and importlib.util.find_spec('cartopy') is None:
+                    print(f'Skipped optional Cartopy example: {path.relative_to(ROOT)} cell {number}')
+                    continue
                 try:
                     with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
                         code = compile(match.group(1), str(path), "exec", flags=ast.PyCF_ALLOW_TOP_LEVEL_AWAIT)

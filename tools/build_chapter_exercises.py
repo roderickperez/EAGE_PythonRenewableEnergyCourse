@@ -1299,9 +1299,9 @@ def export_notebook(path, prior_code=None):
             return match.group(1).replace('{','').replace('}','') if match else ''
         details.append(f'<a id="reference-{key}"></a>\n\n- **{key}:** {field("author") or field("editor")}. {field("title")} ({field("year")}). '+field('url'))
     cells.append(nbformat.v4.new_markdown_cell('\n'.join(details)))
-    if previous and len(previous.cells) == len(cells):
+    if previous:
         for cell, old in zip(cells, previous.cells):
-            if cell.cell_type == old.cell_type:
+            if cell.cell_type == old.cell_type and cell.source == old.source:
                 cell.id = old.id
     metadata = previous.metadata if previous else {'kernelspec':{'name':'python3','display_name':'Python 3','language':'python'},'language_info':{'name':'python'}}
     nb=nbformat.v4.new_notebook(cells=cells,metadata=metadata)
@@ -1320,6 +1320,7 @@ def main():
             f'[Review the theory and worked examples](../../{PATHS[topic]}). '
             f'[Download the exercise notebook]({path.stem}.ipynb).\n\n'
             + render(topic)
+            + ((ROOT / 'section7' / 'wind_visualization.inc').read_text(encoding='utf-8') if topic == 'wind' else '')
         )
         path.write_text(text,encoding='utf-8')
         export_notebook(path,prior_code)
