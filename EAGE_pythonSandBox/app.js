@@ -176,6 +176,18 @@ async function route() {
     colabButton.title = notebookPath ? 'Open this lesson in Google Colab' : 'No Google Colab notebook available for this lesson';
     colabButton.onclick = notebookPath ? () => window.open('https://colab.research.google.com/github/roderickperez/EAGE_PythonRenewableEnergyCourse/blob/main/' + notebookPath, '_blank', 'noopener,noreferrer') : null;
     $('lesson').innerHTML=lesson.html;
+    for (const [anchor, page, title, height] of [
+      ['hydro-worked-examples', 'worked-examples.html', 'Interactive hydropower design calculations', '1050px'],
+      ['hydro-reservoir-project', 'project.html', 'Interactive hydroelectric reservoir project', '1200px'],
+    ]) {
+      const spot = $(anchor);
+      if (!spot) continue;
+      const frame = document.createElement('iframe');
+      frame.title = title; frame.loading = 'lazy';
+      frame.src = `generated/hydro-lab/${page}`;
+      frame.style.cssText = `display:block;width:100%;height:${height};border:0;margin:12px 0`;
+      spot.after(frame);
+    }
     for (const [anchor, path, title, labPath = 'hydro-lab'] of [
       ['hydraulic-head-explorer', 'head.html', 'Hydraulic head explorer'],
       ['net-head-explorer', 'balance.html?demo=net-head', 'Net head explorer'],

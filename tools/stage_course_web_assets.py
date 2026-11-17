@@ -13,7 +13,7 @@ def main() -> None:
         target = BOOK / "_build" / "html" / lab
         required = {"index.html", f"{lab}.js"}
         if lab == "hydro-lab":
-            required.update({"fallback.svg", "head.html", "head.js", "balance.html", "balance.js"})
+            required.update({"fallback.svg", "head.html", "head.js", "balance.html", "balance.js", "project.html", "hydro-project.js", "worked-examples.html", "worked-examples.js"})
         if lab == "solar-lab":
             required.update({"resource.html", "resource.js", "project.html", "solar-project.js"})
         if lab == "wind-lab":

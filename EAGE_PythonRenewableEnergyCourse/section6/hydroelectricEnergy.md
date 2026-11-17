@@ -24,6 +24,23 @@ Hydropower converts the gravitational potential energy of water into shaft power
 :title: Interactive three-dimensional hydroelectric plant and engineering dashboard
 :::
 
+## Worked plant-design examples
+
+These interactive examples follow the two numerical exercises shown in the [hydroelectric calculation video](https://youtu.be/ROnupNPkVf4). Move a slider to see the results change; use the default values to reproduce the worked examples. The calculations use a 365-day year and $g=9.81$ m/s², so rounding can differ slightly from the video.
+
+(hydro-worked-examples)=
+:::{iframe} ../../hydro-lab/worked-examples.html
+:width: 100%
+:height: 1050px
+:title: Interactive hydropower design calculations
+:::
+
+For a rectangular channel, $A=by$, wetted perimeter $P_w=b+2y$, and hydraulic radius $R=A/P_w$. Under steady uniform flow, Manning's relation gives $v=R^{2/3}\sqrt{S}/n$ and $Q=Av$. For a full circular pipe $R=D/4$; the same relation can estimate friction slope, $S_f=n^2v^2/R^{4/3}$. Multiply by length for friction head loss, and add the specified local losses. This simplified approach assumes uniform flow and the stated Manning coefficients; it is not a complete penstock design.
+
+The default diversion example has a 12 m wide channel with 4.5 m water depth, slope 0.01%, and $n=0.014$: $A=54$ m², $R\approx2.57$ m, $v\approx1.34$ m/s, and $Q\approx72.4$ m³/s. Channel losses are 1.25 m; two equally loaded penstocks add about 3.1 m, giving roughly 4.35 m total. A 50 MW **electrical** output at 92% turbine and 97% generator efficiency requires about 78.9 m net head. The inferred gross head is about 83.2 m and tailwater elevation about 116.8 m for a 200 m intake. This is a design calculation, not an independently measured tailwater elevation. The mean river flow is 60 m³/s; the higher channel design flow cannot be sustained continuously at that mean without storage or varying inflow.
+
+For the reservoir example, annual runoff is precipitation depth × catchment area × runoff coefficient. With 200 km², 1,200 mm/year and coefficient 0.6, this is 144 hm³/year, or about 4.57 m³/s averaged over a year. The example assumes design flow twice the mean, 10% spill, and subtracts 1 m³/s for ecological release. It uses constant average head and efficiencies for annual energy; these assumptions do not replace chronological reservoir routing. Turbine selection requires manufacturer operating envelopes and minimum-flow data: the video's two-Francis-unit choice is illustrative, not a universal sizing rule.
+
 <!-- expanded-theory:hydro:start -->
 
 ## Physical description: water, elevation and electricity

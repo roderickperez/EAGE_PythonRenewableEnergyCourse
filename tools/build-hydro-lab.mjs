@@ -14,6 +14,8 @@ for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'proj
   if (lab === 'hydro-lab') {
     entryPoints.head = resolve(source, 'head.js');
     entryPoints.balance = resolve(source, 'balance.js');
+    entryPoints['hydro-project'] = resolve(source, 'project.js');
+    entryPoints['worked-examples'] = resolve(source, 'worked-examples.js');
   }
   if (lab === 'solar-lab') {
     entryPoints.resource = resolve(source, 'resource.js');
@@ -62,6 +64,8 @@ for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'proj
     await cp(resolve(source, 'fallback.svg'), resolve(output, 'fallback.svg'));
     await cp(resolve(source, 'head.html'), resolve(output, 'head.html'));
     await cp(resolve(source, 'balance.html'), resolve(output, 'balance.html'));
+    await cp(resolve(source, 'project.html'), resolve(output, 'project.html'));
+    await cp(resolve(source, 'worked-examples.html'), resolve(output, 'worked-examples.html'));
   }
   console.log(`Built ${lab} in ${output}`);
 }

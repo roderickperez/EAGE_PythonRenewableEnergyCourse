@@ -135,9 +135,10 @@ def validate():
         assert all(workspace['id'] in page['legacy_drafts'] for workspace in page['workspaces']),path
         assert all(key.split('::')[0] in PATHS.values() for key in page['legacy_drafts'].values()),path
         answers=soup.select('details.solution')
-        assert len(answers)==20 and all('open' not in a.attrs for a in answers),path
-        assert len(page['workspaces'])==20,path
-        assert len([c for c in page['codes'] if c['solution']])==20,path
+        count = 22 if path == 'section7/workbook/hydroelectric.md' else 20
+        assert len(answers)==count and all('open' not in a.attrs for a in answers),path
+        assert len(page['workspaces'])==count,path
+        assert len([c for c in page['codes'] if c['solution']])==count,path
         assert 'expanded-theory:' not in page['html'],path
         for answer in answers:
             assert answer.select('button[data-code]') and 'Step' in answer.get_text(),path

@@ -19,9 +19,10 @@ def validate():
     for _, _, relative in WORKBOOK_CHAPTERS:
         path=ROOT/relative; text=path.read_text(encoding='utf-8')
         blocks=re.split(r'\n### Exercise \d+ — ',text)[1:]
-        assert len(blocks)==20,relative
+        expected = 22 if relative == 'section7/workbook/hydroelectric.md' else 20
+        assert len(blocks)==expected,relative
         levels=re.findall(r'\*\*Difficulty:\*\* (Basic|Medium|Hard)',text)
-        assert levels==DIFFICULTIES,relative
+        assert levels == DIFFICULTIES + (['Medium', 'Medium'] if expected == 22 else []),relative
         solutions=Counter()
         for i,block in enumerate(blocks,1):
             block=block.split('\n## ',1)[0]
@@ -37,7 +38,7 @@ def validate():
                 exec(compile(cells[-1],f'{relative}:exercise-{i}','exec'),{})
             plt.close('all');count+=1
         nb=nbformat.read(path.with_suffix('.ipynb'),as_version=4);nbformat.validate(nb)
-        assert sum('### Exercise ' in c.source for c in nb.cells if c.cell_type=='markdown')==20
+        assert sum('### Exercise ' in c.source for c in nb.cells if c.cell_type=='markdown')==expected
         notebook_code=Counter(c.source.strip() for c in nb.cells if c.cell_type=='code')
         assert not solutions-notebook_code,(relative,'practice solutions differ in the notebook')
     config=(ROOT/'myst.yml').read_text()
