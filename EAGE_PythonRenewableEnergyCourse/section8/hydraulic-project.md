@@ -4,9 +4,9 @@ Operate a reservoir plant over a synthetic year. Your challenge is to **maximize
 
 ## How to use the explorer
 
-1. Set **X**, the requested turbine discharge in m³/s. The simulation starts immediately; pause to inspect or adjust your policy.
+1. Set **X**, the requested turbine discharge in m³/s. The simulation starts immediately; use the stop/play icon at the upper right of the animation to pause or resume it.
 2. Watch the same animated plant used in the [hydroelectric lesson](../section6/hydroelectricEnergy.md). The blue storage plot shows the changing reservoir; the dashed orange line is the minimum reserve. In the second plot blue is inflow, green is turbine flow, and gold is electrical power.
-3. Adjust X throughout the year as inflow changes. The model prioritizes a 1 m³/s environmental release, then limits generation to water above the 5 hm³ reserve. If the reserve is reached, actual turbine flow may be lower than X. Surplus above 50 hm³ spills. Reset to compare strategies against the same inflow.
+3. Adjust X throughout the year as inflow changes. The model prioritizes a 1 m³/s environmental release, then limits generation to water above the 5 hm³ reserve. If the reserve is reached, actual turbine flow may be lower than X. Surplus above 50 hm³ spills. Use the reset icon at the upper left of the animation to compare strategies against the same inflow.
 4. Record total energy, spill, any environmental shortage and final storage. Compare strategies over the full year; water left in storage has potential value beyond the end of this simulation.
 
 (hydro-reservoir-project)=
