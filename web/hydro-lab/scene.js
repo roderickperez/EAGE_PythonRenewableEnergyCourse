@@ -6,7 +6,7 @@ import { visualState, INTAKE_CENTER_Y, INTAKE_RADIUS } from './visual-state.js';
 export class HydroScene {
   constructor(host) {
     this.host=host; this.parts=[]; this.streams=[]; this.electrical=[]; this.visible=true;
-    this.motion=matchMedia('(prefers-reduced-motion: reduce)'); this.animate=!this.motion.matches;
+    this.animate=true;
     this.scene=new T.Scene(); this.scene.background=new T.Color('#edf1f4');
     this.renderer=new T.WebGLRenderer({antialias:true});
     this.renderer.setPixelRatio(Math.min(devicePixelRatio,2));

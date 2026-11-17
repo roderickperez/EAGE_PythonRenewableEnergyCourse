@@ -1,6 +1,5 @@
 export function mountDiagramMotion(host, button, draw, rate = () => 0, transitionMs = 0) {
-  const preference = matchMedia('(prefers-reduced-motion: reduce)');
-  let playing = !preference.matches;
+  let playing = true;
   let visible = true;
   let values, displayed, from, frame, previous;
   let transitionElapsed = 0;
@@ -42,7 +41,6 @@ export function mountDiagramMotion(host, button, draw, rate = () => 0, transitio
   }
 
   button.onclick = () => setPlaying(!playing);
-  preference.addEventListener('change', () => setPlaying(!preference.matches));
   document.addEventListener('visibilitychange', sync);
   new IntersectionObserver(([entry]) => {
     visible = entry.isIntersecting;
