@@ -266,6 +266,10 @@ async function route() {
         anchor: '#how-to-use-the-explorer', id: 'solar-farm-project',
         mount: async host => (await import('./generated/solar-lab/solar-project.js?v=solar-project-2')).mountSolarProject(host),
       },
+      'section8/geothermal-project.md': {
+        anchor: '#how-to-use-the-explorer', id: 'geothermal-field-project',
+        mount: async host => (await import('./generated/geothermal-lab/geothermal-project.js?v=1')).mountGeothermalProject(host),
+      },
     }[lesson.id];
     if(lab){
       const content = $('lesson');

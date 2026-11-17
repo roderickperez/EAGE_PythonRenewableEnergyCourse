@@ -19,7 +19,10 @@ for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'proj
     entryPoints.resource = resolve(source, 'resource.js');
     entryPoints['solar-project'] = resolve(source, 'project.js');
   }
-  if (lab === 'geothermal-lab') entryPoints.equations = resolve(source, 'equations.js');
+  if (lab === 'geothermal-lab') {
+    entryPoints.equations = resolve(source, 'equations.js');
+    entryPoints['geothermal-project'] = resolve(source, 'project.js');
+  }
   if (lab === 'wind-lab') {
     entryPoints.aerodynamics = resolve(source, 'aerodynamics.js');
     entryPoints['wind-project'] = resolve(source, 'project.js');
@@ -38,7 +41,10 @@ for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'proj
   });
   const html = await readFile(resolve(source, 'index.html'), 'utf8');
   await writeFile(resolve(output, 'index.html'), html);
-  if (lab === 'geothermal-lab') await cp(resolve(source, 'equations.html'), resolve(output, 'equations.html'));
+  if (lab === 'geothermal-lab') {
+    await cp(resolve(source, 'equations.html'), resolve(output, 'equations.html'));
+    await cp(resolve(source, 'project.html'), resolve(output, 'project.html'));
+  }
   if (lab === 'solar-lab') {
     await cp(resolve(source, 'resource.html'), resolve(output, 'resource.html'));
     await cp(resolve(source, 'project.html'), resolve(output, 'project.html'));

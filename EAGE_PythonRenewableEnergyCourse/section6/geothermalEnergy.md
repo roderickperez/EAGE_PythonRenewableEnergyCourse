@@ -25,6 +25,82 @@ Electricity generation requires useful heat plus a way to transport it to the su
 :height: 1350px
 :::
 
+## Closed-loop designs: U-shaped and coaxial
+
+In a **closed-loop geothermal system**, a working fluid circulates inside sealed conduits and exchanges heat with the surrounding formation. In an ideal sealed loop the circulating fluid does not enter the formation; heat transfer through the borehole wall and rock is central. This differs from hydrothermal production and injection, where reservoir fluid flows through the rock. White et al. study both water and supercritical CO₂, a range of geometries and operating conditions, and both direct heat use and electricity production [@white2024closedloop].
+
+![Conceptual comparison of U-shaped and coaxial closed-loop geothermal paths](../images/geothermal-closed-loop-configurations.svg)
+
+*Original teaching schematic, not to scale.* Blue indicates the cooler inlet path and red the warmer outlet path. The coaxial drawing illustrates inlet flow down the annulus and return through the inner tube; other flow directions are possible. The paper's Figure 2 shows its corresponding axisymmetric numerical domains, conductive material and model boundaries. Its segmented rock domains are coupled through the circulating fluid; this schematic does not reproduce their numerical mesh [@white2024closedloop].
+
+| Feature | U-shaped | Coaxial (pipe-in-pipe) |
+|---|---|---|
+| Flow path | Separate descending and ascending legs joined at depth | Inner tube and surrounding annulus provide opposing paths inside a borehole |
+| Heat exchange | Working fluid exchanges heat along the loop; insulation can reduce unwanted heat loss | Heat exchange with the rock competes with thermal short-circuiting between the inner and outer streams |
+| Hydraulic trade-off | Pressure losses depend on length, diameter, fluid and rate | Smaller available flow passages can create large pressure losses at high rates |
+| Design choices | Depth, lateral length, diameter, insulation and possibly multiple laterals | Those choices plus inner/outer diameters, pipe insulation and flow direction |
+
+### Heat transfer, flow area and useful energy
+
+For a homogeneous solid with constant properties and conduction as the only transport process, the transient formation temperature $T$ obeys
+
+$$\rho_r c_r\frac{\partial T}{\partial t}=k_r\nabla^2T, \qquad \alpha=\frac{k_r}{\rho_r c_r}.$$
+
+$k_r$ is rock thermal conductivity in W/(m K), $\rho_r$ is density in kg/m³, $c_r$ is specific heat in J/(kg K), and thermal diffusivity $\alpha$ is in m²/s. In hot dry rock, fluid extraction cools rock near the borehole; heat must conduct from farther away, so outlet temperature can decline rapidly at first and more slowly later. The paper discusses $k_r/\sqrt{\alpha}$, a thermal effusivity in J/(m² K s$^{1/2}$), as a relevant rock property. A real model must couple the fluid, pipe and formation with appropriate geometry and boundaries; this equation alone is not a closed-loop solution [@white2024closedloop].
+
+For concentric tubes, let $D_i$ be the inside diameter of the inner tube, $D_o$ its outside diameter, and $D_b$ the inside diameter of the surrounding flow passage. Then
+
+$$A_{tube}=\frac{\pi D_i^2}{4},\qquad A_{annulus}=\frac{\pi(D_b^2-D_o^2)}{4},\qquad \frac{A_{annulus}}{A_{tube}}=\frac{D_b^2-D_o^2}{D_i^2}.$$
+
+Use consistent diameter definitions and units. For example, $D_i=0.10$ m, $D_o=0.12$ m and $D_b=0.18$ m give an annulus-to-tube area ratio of **1.8**. Smaller passages may increase velocity and pressure losses for a given mass flow; their full evaluation requires fluid properties, roughness, elevation and a hydraulic model.
+
+At the fluid boundary, the paper defines thermal energy and an idealized maximum available work over time as
+
+$$E_{thermal}=\int_0^\tau\dot m(h_{out}-h_{in})\,dt, \qquad E_{available}=\int_0^\tau\dot m[(h_{out}-h_{in})-T_{amb}(s_{out}-s_{in})],dt.$$
+
+Here $h$ is specific enthalpy (J/kg), $s$ is specific entropy (J/(kg K)), $\dot m$ is kg/s and ambient temperature $T_{amb}$ is in kelvin. These expressions use the inlet/outlet states and reference in the paper; actual net generation also depends on the conversion plant and auxiliaries. The constant-$c_p$ expression elsewhere in this lesson is a liquid-water approximation; it must not replace property-based enthalpy and entropy for supercritical CO₂ or phase change [@white2024closedloop].
+
+### What did the paper find?
+
+The attached outlet-temperature plot corresponds to **two U-shaped water cases**, not a U-shaped versus coaxial comparison. Both use a 10 km lateral and the same Utah FORGE-based rock and depth; the curves differ in both mass flow and insulation length: **11.8 kg/s with 1,174 m insulation**, and **38 kg/s with 875 m insulation**. Four modeling approaches show close agreement in Figure 3. Their differences cannot be attributed to flow rate alone [@white2024closedloop].
+
+For an explicit comparison of both geometries, the paper's Table 3 reports the following independently optimized **water** cases over 40 years. Both use 5 km depth, 20 km horizontal extent, 0.4445 m borehole diameter, 0.07 °C/m gradient, 4.5 W/(m K) conductivity, 60 °C inlet, a 7% discount rate and the paper's \$1,000/m drilling cost assumption. The settings describe a hypothetical extreme of the paper's parameter range, not a typical site.
+
+| Reported quantity | U-shaped water | Coaxial water |
+|---|---:|---:|
+| Independently optimized mass flow | 43.0 kg/s | 39.2 kg/s |
+| Average production temperature | 205 °C | 203 °C |
+| Average thermal production | 26.0 MW thermal | 23.8 MW thermal |
+| Average electricity generation | 3.9 MW electric | 3.5 MW electric |
+| Reported LCOE | \$96.6/MWh electric | \$93.5/MWh electric |
+
+These are modeled averages and costs under the study assumptions, not forecasts or measurements. The different flow rates and design details mean this table does **not** isolate geometry at identical operating conditions; nor does it establish a universal winner. For a more representative coaxial example, the authors report 3 W/(m K), a 45 °C/km gradient and approximately 37 kg/s, producing an average 130 °C outlet and 0.922 MW electric under their other stated assumptions. See Table 3 and §3.3.1 for the complete parameter context [@white2024closedloop].
+
+The paper expresses levelized costs using discounted annual costs and discounted annual energy, for example
+
+$$LCOE=\frac{\sum_t(C_t+O_t)/(1+r)^t}{\sum_t E_{e,t}/(1+r)^t}.$$
+
+$C_t$ and $O_t$ are capital and operating costs, $E_{e,t}$ is electrical energy and $r$ is the discount rate. Include an initial $t=0$ investment if it occurs at project start, and include each cost and energy period once. LCOE is not electricity-sale revenue, and its assumptions differ from the Field Designer's simple cumulative game balance. White et al.'s GeoCLUSTER results are accessible through the [Geothermal Data Repository](https://gdr.openei.org/submissions/1473); interpolation and inputs are subject to the paper's stated limitations.
+
+```{code-cell} python
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# White et al. (2024), Table 3: independently optimized water cases.
+comparison = pd.DataFrame({
+    'Configuration': ['U-shaped', 'Coaxial'],
+    'Flow (kg/s)': [43.0, 39.2],
+    'Thermal (MW)': [26.0, 23.8],
+    'Electric (MW)': [3.9, 3.5],
+    'LCOE (USD/MWh)': [96.6, 93.5],
+})
+ax = comparison.plot.bar(x='Configuration', y=['Thermal (MW)', 'Electric (MW)'],
+                         color=['#d46b42', '#2589aa'], rot=0)
+ax.set(ylabel='Average modeled power (MW)', title='Closed-loop water cases: study assumptions')
+plt.tight_layout()
+comparison
+```
+
 <!-- expanded-theory:geothermal:start -->
 
 ## Physical description: useful heat from the subsurface
