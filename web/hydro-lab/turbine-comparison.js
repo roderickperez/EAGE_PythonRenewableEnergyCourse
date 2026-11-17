@@ -36,7 +36,7 @@ export function mountTurbineComparison(scene, motion, anchor, density, gravity) 
   });
   if (cards.some(card => card.draw)) motion.hidden = false;
   const animate = mountDiagramMotion(scene, motion, (results, phase) => {
-    results.forEach(({ turbineFlow, bypassFlow, outputMW, ratedFlow }, index) => {
+    results.forEach(({ turbineFlow, bypassFlow, outputMW }, index) => {
       cards[index].draw?.([index, turbineFlow, bypassFlow, outputMW], phase);
     });
   }, results => Math.max(...results.map(result => Math.max(result.turbineFlow, result.bypassFlow))) * .000045);
@@ -58,7 +58,7 @@ export function mountTurbineComparison(scene, motion, anchor, density, gravity) 
   return ({ flow, head, rating, efficiencies }) => {
     const evaluate = (q, h, eta) => turbineOperation(q, h, eta, rating, density, gravity);
     const results = efficiencies.map(eta => evaluate(flow, head, eta));
-    results.forEach(({ turbineFlow, bypassFlow, outputMW }, index) => {
+    results.forEach(({ turbineFlow, bypassFlow, outputMW, ratedFlow }, index) => {
       cards[index].output.innerHTML = `P<sub>plant</sub> = ${outputMW.toFixed(3)} MW`;
       cards[index].flow.textContent = `Through runner ${turbineFlow.toFixed(2)} · Bypass ${bypassFlow.toFixed(2)} m³/s`;
       cards[index].rating.textContent = ratedFlow === null ? 'Rated flow unavailable at zero head or efficiency' : `Flow at generator rating: ${ratedFlow.toFixed(2)} m³/s`;
