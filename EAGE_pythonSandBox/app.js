@@ -176,7 +176,7 @@ async function route() {
     colabButton.title = notebookPath ? 'Open this lesson in Google Colab' : 'No Google Colab notebook available for this lesson';
     colabButton.onclick = notebookPath ? () => window.open('https://colab.research.google.com/github/roderickperez/EAGE_PythonRenewableEnergyCourse/blob/main/' + notebookPath, '_blank', 'noopener,noreferrer') : null;
     $('lesson').innerHTML=lesson.html;
-    for (const [anchor, path, title] of [
+    for (const [anchor, path, title, labPath = 'hydro-lab'] of [
       ['hydraulic-head-explorer', 'head.html', 'Hydraulic head explorer'],
       ['net-head-explorer', 'balance.html?demo=net-head', 'Net head explorer'],
       ['flow-volume-explorer', 'balance.html?demo=flow-volume', 'Flow and volume explorer'],
@@ -186,14 +186,19 @@ async function route() {
       ['turbine-operation-explorer', 'balance.html?demo=turbine-operation', 'Turbine families and operation explorer'],
       ['pumped-storage-explorer', 'balance.html?demo=pumped-storage', 'Pumped storage explorer'],
       ['flow-duration-explorer', 'balance.html?demo=flow-duration', 'Hydrograph and flow-duration curve explorer'],
+      ['solar-horizontal-explorer', 'resource.html?demo=horizontal', 'Horizontal irradiance explorer', 'solar-lab'],
+      ['solar-poa-explorer', 'resource.html?demo=poa', 'Plane-of-array irradiance explorer', 'solar-lab'],
+      ['solar-irradiation-explorer', 'resource.html?demo=irradiation', 'Interval irradiation explorer', 'solar-lab'],
+      ['solar-tilt-explorer', 'resource.html?demo=tilt', 'Tilted-module irradiance explorer', 'solar-lab'],
+      ['solar-incidence-explorer', 'resource.html?demo=incidence', 'Solar incidence angle explorer', 'solar-lab'],
     ]) {
       const spot = $(anchor);
       if (!spot) continue;
       const frame = document.createElement('iframe');
-      frame.className = 'hydraulic-head-explorer';
+      frame.className = labPath === 'hydro-lab' ? 'hydraulic-head-explorer' : 'solar-resource-explorer';
       frame.title = title;
       frame.loading = 'lazy';
-      frame.src = 'generated/hydro-lab/' + path;
+      frame.src = `generated/${labPath}/${path}`;
       spot.after(frame);
     }
     const lab = {
@@ -273,8 +278,8 @@ function setupMedia(){
   const lang=document.documentElement.lang === 'es' ? 'es' : 'en';
   const configured=lesson.media?.audio || {};
   const audio=configured.en || configured.es ? (configured[lang] || {}) : (lang === 'en' ? configured : {});
-  const headings=[...$('lesson').querySelectorAll('h2[id],h3[id]')].filter(heading =>
-    !['head-flow-and-the-hydraulic-energy-balance', 'water-allocation-hydrology-and-storage'].includes(heading.id) &&
+  const headings=[...$('lesson').querySelectorAll('h2[id],h3[id],h4[id]')].filter(heading =>
+    !['head-flow-and-the-hydraulic-energy-balance', 'water-allocation-hydrology-and-storage', 'solar-resource-and-measurement-definitions'].includes(heading.id) &&
     (heading.tagName === 'H2' || audio[heading.id]));
   const items=[];
   if(audio.intro) items.push({url:audio.intro,title:lesson.title});

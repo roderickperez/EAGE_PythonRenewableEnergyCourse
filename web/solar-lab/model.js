@@ -1,6 +1,36 @@
 export const RAD = Math.PI / 180;
 export const STC = 1000;
 
+// Angles in degrees, with azimuth clockwise from north.
+export function solarVector(angleFromUp, azimuth) {
+  const angle = angleFromUp * RAD;
+  const heading = azimuth * RAD;
+  return [Math.sin(angle) * Math.sin(heading), Math.cos(angle), Math.sin(angle) * Math.cos(heading)];
+}
+
+export function incidenceCosine(sun, normal) {
+  const projection = sun.reduce((dot, component, i) => dot + component * normal[i], 0);
+  return Math.max(-1, Math.min(1, projection));
+}
+
+export function beamOnPlane(dni, cosine) {
+  // Treat a grazing ray as zero despite roundoff in the trigonometry.
+  return cosine > 1e-12 ? dni * cosine : 0;
+}
+
+export function isotropicIrradiance(dni, dhi, albedo, sun, normal) {
+  const ghi = beamOnPlane(dni, sun[1]) + dhi;
+  const incidence = incidenceCosine(sun, normal);
+  const beam = beamOnPlane(dni, incidence);
+  const sky = dhi * (1 + normal[1]) / 2;
+  const ground = albedo * ghi * (1 - normal[1]) / 2;
+  return { ghi, incidence, beam, sky, ground, poa: beam + sky + ground };
+}
+
+export function intervalIrradiation(intervals) {
+  return intervals.reduce((total, { irradiance, hours }) => total + irradiance * hours, 0) / 1000;
+}
+
 // East, up and north components in local solar time (no civil-time offset).
 export function sunDirection(hour, latitude, declination) {
   const lat = latitude * RAD;
@@ -16,19 +46,12 @@ export function sunDirection(hour, latitude, declination) {
 export function solarPower(input, hour = input.hour) {
   const sun = sunDirection(hour, input.latitude, input.declination);
   const elevation = Math.asin(Math.max(-1, Math.min(1, sun[1]))) / RAD;
-  const tilt = input.tilt * RAD;
-  const az = input.azimuth * RAD;
-  const normal = [Math.sin(tilt) * Math.sin(az), Math.cos(tilt), Math.sin(tilt) * Math.cos(az)];
-  const incidence = Math.max(-1, Math.min(1, sun.reduce((dot, component, i) => dot + component * normal[i], 0)));
+  const normal = solarVector(input.tilt, input.azimuth);
   const up = Math.max(0, sun[1]);
   // Synthetic daylight profile. Sliders set the beam and diffuse scales.
   const dni = input.dni * Math.min(1, 4 * up);
   const dhi = input.dhi * up;
-  const ghi = dni * up + dhi;
-  const beam = dni * Math.max(0, incidence);
-  const sky = dhi * (1 + normal[1]) / 2;
-  const ground = input.albedo * ghi * (1 - normal[1]) / 2;
-  const poa = beam + sky + ground;
+  const { ghi, incidence, beam, sky, ground, poa } = isotropicIrradiance(dni, dhi, input.albedo, sun, normal);
   const rated = input.area * STC * input.efficiency / 100;
   const cell = input.ambient + poa / 800 * (input.noct - 20);
   const tempFactor = Math.max(0, 1 + input.coefficient / 100 * (cell - 25));

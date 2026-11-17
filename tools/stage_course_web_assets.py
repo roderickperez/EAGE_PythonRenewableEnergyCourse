@@ -14,6 +14,8 @@ def main() -> None:
         required = {"index.html", f"{lab}.js"}
         if lab == "hydro-lab":
             required.update({"fallback.svg", "head.html", "head.js", "balance.html", "balance.js"})
+        if lab == "solar-lab":
+            required.update({"resource.html", "resource.js"})
         missing = sorted(name for name in required if not (source / name).is_file())
         if missing:
             raise SystemExit(f"Build {lab} before staging it: " + ", ".join(missing))

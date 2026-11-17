@@ -11,5 +11,15 @@
         "reservoir-conservation-and-variable-head": "en/hydroelectric/reservoir-conservation-and-variable-head.mp3"
       }
     }
+  },
+  "section6/solarEnergy.md": {
+    "audio": {
+      "en": {
+        "from-sunlight-to-delivered-electricity": "en/solar/from-sunlight-to-delivered-electricity.mp3",
+        "irradiance": "en/solar/irradiance.mp3",
+        "plane-of-array-irradiance": "en/solar/plane-of-array-irradiance.mp3",
+        "a-first-model-for-a-tilted-module": "en/solar/a-first-model-for-a-tilted-module.mp3"
+      }
+    }
   }
 }

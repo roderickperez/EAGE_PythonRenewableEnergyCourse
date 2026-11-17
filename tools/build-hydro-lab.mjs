@@ -15,6 +15,7 @@ for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'proj
     entryPoints.head = resolve(source, 'head.js');
     entryPoints.balance = resolve(source, 'balance.js');
   }
+  if (lab === 'solar-lab') entryPoints.resource = resolve(source, 'resource.js');
   await build({
     entryPoints,
     outdir: output,
@@ -29,6 +30,7 @@ for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'proj
   });
   const html = await readFile(resolve(source, 'index.html'), 'utf8');
   await writeFile(resolve(output, 'index.html'), html);
+  if (lab === 'solar-lab') await cp(resolve(source, 'resource.html'), resolve(output, 'resource.html'));
   if (lab === 'hydro-lab') {
     await cp(resolve(source, 'fallback.svg'), resolve(output, 'fallback.svg'));
     await cp(resolve(source, 'head.html'), resolve(output, 'head.html'));

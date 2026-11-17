@@ -37,7 +37,7 @@ This chapter develops PV in detail because the Python exercises and final projec
 
 ### From sunlight to delivered electricity
 
-The system sequence is **solar resource → module surface → PV cells → DC wiring → inverter → AC wiring and transformer → meter/load**. Losses and limits can occur at every stage. A grid-connected system usually exports or self-consumes AC electricity. An off-grid system may use a battery and charge controller; then the chosen model must also track stored energy and battery conversion losses. [@wade2003], Chapters 3–5 and 9; [@foster2010], Chapters 5 and 7.
+The system sequence is **solar resource → module surface → PV cells → DC wiring → inverter → AC wiring and transformer → meter/load**. Losses and limits can occur at every stage. A grid-connected system usually exports or self-consumes AC electricity. An off-grid system may use a battery and charge controller; then the chosen model must also track stored energy and battery conversion losses. [@wade2003], Chapters 2–6 and 9; [@foster2010], Chapters 5 and 7.
 
 | Component or term | Meaning and role |
 |---|---|
@@ -58,6 +58,8 @@ Series and parallel connections change voltage and current differently. For iden
 
 ### Irradiance, irradiation and the receiving plane
 
+#### Irradiance
+
 **Irradiance**, denoted here by $G$, is radiant power incident per unit area, in W/m². **Irradiation**, denoted by $H_{POA}$ for a module plane, is incident radiant energy per unit area over a specified period, often kWh/m². The subscripts identify the measurement surface: a horizontal sensor and a tilted module generally receive different irradiance. [@foster2010], Chapter 2, especially pp. 39–40; [Sandia POA irradiance](https://pvpmc.sandia.gov/modeling-guide/1-weather-design-inputs/plane-of-array-poa-irradiance/).
 
 The principal resource components are global horizontal irradiance (GHI), direct normal irradiance (DNI), and diffuse horizontal irradiance (DHI). For a sun above the horizon, consistent measurements approximately satisfy [@foster2010], Chapter 2, especially pp. 39–40; [Sandia POA irradiance](https://pvpmc.sandia.gov/modeling-guide/1-weather-design-inputs/plane-of-array-poa-irradiance/).
@@ -68,6 +70,14 @@ $$GHI=DNI\cos\theta_z+DHI,$$
 
 where $\theta_z$ is solar zenith angle, measured from the vertical. DNI is defined on a plane normal to the direct solar beam. DHI represents sky-diffuse radiation on the horizontal plane. Do not substitute DNI directly into a flat-plate PV model as though it were the total radiation on the modules. [@foster2010], Chapter 2, especially pp. 39–40; [Sandia POA irradiance](https://pvpmc.sandia.gov/modeling-guide/1-weather-design-inputs/plane-of-array-poa-irradiance/).
 
+(solar-horizontal-explorer)=
+:::{iframe} ../../solar-lab/resource.html?demo=horizontal
+:width: 100%
+:title: Horizontal irradiance explorer
+:::
+
+#### Plane-of-array irradiance
+
 **Plane-of-array irradiance** $G_{POA}$ includes the direct beam projected onto the module plane, sky diffuse radiation and ground-reflected radiation. A useful conceptual decomposition is [@foster2010], Chapter 2, especially pp. 39–40; [Sandia POA irradiance](https://pvpmc.sandia.gov/modeling-guide/1-weather-design-inputs/plane-of-array-poa-irradiance/).
 
 $$G_{POA}=DNI\max(\cos\theta_i,0)+G_{sky,POA}+G_{ground,POA},$$
@@ -75,6 +85,14 @@ $$G_{POA}=DNI\max(\cos\theta_i,0)+G_{sky,POA}+G_{ground,POA},$$
 *Equation basis:* [@foster2010], Chapter 2, especially pp. 39–40; [Sandia POA irradiance](https://pvpmc.sandia.gov/modeling-guide/1-weather-design-inputs/plane-of-array-poa-irradiance/).
 
 where $\theta_i$ is the beam incidence angle on the front face. The diffuse and reflected terms require a radiation-transposition model; they are not generally equal to DHI. Module tilt, azimuth, horizon obstruction, trackers and albedo affect the result. The exercise inputs explicitly provide POA irradiance so that a separate solar-position and transposition model is not silently omitted [@foster2010; @duffie2013].
+
+(solar-poa-explorer)=
+:::{iframe} ../../solar-lab/resource.html?demo=poa
+:width: 100%
+:title: Plane-of-array irradiance explorer
+:::
+
+#### Irradiation over time
 
 For interval-average measurements,
 
@@ -84,6 +102,12 @@ $$H_{POA}=\frac{1}{1000}\sum_i G_{POA,i}\Delta t_i,$$
 
 when $G$ is in W/m² and $\Delta t$ is in hours; $H$ is then kWh/m². The factor of 1000 converts Wh to kWh. For instantaneous samples, a chosen numerical integration method, such as a trapezoidal approximation, is needed instead. Always state which type of observation the dataset contains. [@foster2010], Chapter 2, especially pp. 39–40; [Sandia POA irradiance](https://pvpmc.sandia.gov/modeling-guide/1-weather-design-inputs/plane-of-array-poa-irradiance/).
 
+(solar-irradiation-explorer)=
+:::{iframe} ../../solar-lab/resource.html?demo=irradiation
+:width: 100%
+:title: Interval irradiation explorer
+:::
+
 ### A first model for a tilted module
 
 For an unobstructed front surface above uniform ground, an **isotropic-sky** approximation assumes that diffuse sky radiance is the same in every direction. With module tilt $\beta$ measured from horizontal and dimensionless ground albedo $\rho_g$, it gives
@@ -92,6 +116,12 @@ $$G_{POA}=DNI\max(\cos\theta_i,0)
 +DHI\frac{1+\cos\beta}{2}
 +\rho_g GHI\frac{1-\cos\beta}{2}.$$
 
+(solar-tilt-explorer)=
+:::{iframe} ../../solar-lab/resource.html?demo=tilt
+:width: 100%
+:title: Tilted-module irradiance explorer
+:::
+
 All irradiances are in W/m². The two view factors represent the fractions of the sky and ground seen by the tilted front surface. The direct term is zero when the sun is behind that surface. This approximation excludes obstructions, row shading, rear-side collection and anisotropic diffuse radiation; it is an introductory transposition model, not a complete site simulation. [@goswami2015], §2.5.3, pp. 68–69, Eqs. 2.46–2.51; compare §2.6.2 for anisotropic radiation.
 
 The incidence angle is between the sun direction and the module normal. When solar and surface azimuth use the **same origin and positive direction**,
@@ -99,14 +129,21 @@ The incidence angle is between the sun direction and the module normal. When sol
 $$\cos\theta_i=\cos\theta_z\cos\beta+
 \sin\theta_z\sin\beta\cos(\gamma_s-\gamma_p),$$
 
-where $\theta_z$ is solar zenith, $\gamma_s$ solar azimuth and $\gamma_p$ module azimuth. Goswami uses azimuth positive west of south; convert conventions before combining sources. Trigonometric Python functions require radians. The example assumes daylight and independently specifies the incidence angle so that students can inspect each irradiance term. [@goswami2015], §2.5.3, Eq. 2.48 and Figure 2.21; [Python math functions](https://docs.python.org/3/library/math.html#trigonometric-functions).
+where $\theta_z$ is solar zenith, $\gamma_s$ solar azimuth and $\gamma_p$ module azimuth. The interactive diagram uses azimuth clockwise from north. Goswami uses azimuth positive west of south. Convert conventions before combining sources. Trigonometric Python functions require radians. With the sun and module facing the same azimuth, the daylight Python example uses $\theta_i=|\theta_z-\beta|$. [@goswami2015], §2.5.3, Eq. 2.48 and Figure 2.21; [Python math functions](https://docs.python.org/3/library/math.html#trigonometric-functions).
+
+(solar-incidence-explorer)=
+:::{iframe} ../../solar-lab/resource.html?demo=incidence
+:width: 100%
+:title: Solar incidence angle explorer
+:::
 
 ```{code-cell} python
 import math
 
 # Synthetic daylight example: sun and panel face the same azimuth.
 dni_wm2, dhi_wm2 = 800.0, 100.0
-zenith_deg, tilt_deg, incidence_deg = 40.0, 30.0, 10.0
+zenith_deg, tilt_deg = 40.0, 30.0
+incidence_deg = abs(zenith_deg - tilt_deg)
 albedo = 0.2
 ghi_wm2 = dni_wm2 * math.cos(math.radians(zenith_deg)) + dhi_wm2
 cos_tilt = math.cos(math.radians(tilt_deg))

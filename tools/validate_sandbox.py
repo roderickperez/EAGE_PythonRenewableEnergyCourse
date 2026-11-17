@@ -43,8 +43,18 @@ def validate():
         'reservoir-conservation-and-variable-head',
     }
     assert (OUT / 'solar-lab' / 'solar-lab.js').is_file()
-    solar_page = pages['section6/solarEnergy.md']['html']
+    solar = pages['section6/solarEnergy.md']
+    solar_page = solar['html']
     assert 'solar-lab/index.html' not in solar_page
+    assert 'solar-lab/resource.html' not in solar_page
+    for demo in ('horizontal', 'poa', 'irradiation', 'tilt', 'incidence'):
+        assert f'id="solar-{demo}-explorer"' in solar_page
+    for file in ('resource.html', 'resource.js'):
+        assert (OUT / 'solar-lab' / file).is_file()
+    assert set(solar['media']['audio']['en']) == {
+        'from-sunlight-to-delivered-electricity', 'irradiance',
+        'plane-of-array-irradiance', 'a-first-model-for-a-tilted-module',
+    }
     assert 'id="physical-description-what-solar-energy-systems-do"' in solar_page
     assert (OUT / 'wind-lab' / 'wind-lab.js').is_file()
     wind_page = pages['section6/windEnergy.md']['html']

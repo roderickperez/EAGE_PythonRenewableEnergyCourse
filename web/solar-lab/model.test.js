@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { solarPower, solarDay, batteryDay, lifetime } from './model.js';
+import { solarPower, solarDay, batteryDay, lifetime, solarVector, incidenceCosine,
+  beamOnPlane, isotropicIrradiance, intervalIrradiation } from './model.js';
 
 const worked = {
   hour: 12, latitude: 0, declination: 0, tilt: 0, azimuth: 180,
@@ -8,6 +9,27 @@ const worked = {
   area: 50, efficiency: 20, soiling: 0, wiring: 0, inverterEfficiency: 97, rating: 8000,
 };
 const close = (actual, expected) => assert.ok(Math.abs(actual - expected) < 1e-8, `${actual} ≠ ${expected}`);
+
+test('isotropic transposition reproduces the lesson example and horizontal limit', () => {
+  const sun = solarVector(40, 180);
+  const facing = isotropicIrradiance(800, 100, .2, sun, solarVector(30, 180));
+  close(facing.incidence, Math.cos(Math.PI / 18));
+  assert.equal(facing.poa.toFixed(2), '890.70');
+  const horizontal = isotropicIrradiance(800, 100, .8, sun, solarVector(0, 0));
+  close(horizontal.poa, horizontal.ghi);
+  close(horizontal.ground, 0);
+});
+
+test('grazing and back-facing angles receive no beam and azimuth wraps', () => {
+  close(beamOnPlane(800, solarVector(90, 180)[1]), 0);
+  close(beamOnPlane(800, incidenceCosine(solarVector(70, 0), solarVector(60, 180))), 0);
+  close(incidenceCosine(solarVector(40, 0), solarVector(40, 360)), 1);
+});
+
+test('irradiation weights unequal intervals in hours and converts Wh to kWh', () => {
+  close(intervalIrradiation([{ irradiance: 320, hours: 1 }, { irradiance: 740, hours: 1.5 },
+    { irradiance: 460, hours: 2 }]), 2.35);
+});
 
 test('reproduces the lesson’s 10 kW worked example and horizontal POA equals GHI', () => {
   const p = solarPower(worked);
