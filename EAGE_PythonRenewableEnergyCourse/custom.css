@@ -75,13 +75,13 @@ div:has(> iframe:is([src*="solar-lab/index.html"], [src*="wind-lab/index.html"],
   color: #f0f0f0 !important;
   background-color: #1e1e1e !important;
 }
-div:has(> iframe[src*="hydro-lab/head.html"]) {
+div:has(> iframe:is([src*="hydro-lab/head.html"], [src*="hydro-lab/balance.html"])) {
   width: 100% !important;
   height: auto !important;
   padding-bottom: 0 !important;
 }
 
-iframe[src*="hydro-lab/head.html"] {
+iframe:is([src*="hydro-lab/head.html"], [src*="hydro-lab/balance.html"]) {
   position: static !important;
   display: block;
   height: var(--hydraulic-head-height, 575px) !important;

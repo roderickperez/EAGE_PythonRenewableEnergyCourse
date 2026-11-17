@@ -75,6 +75,12 @@ $$H_{net}=H_{gross}-h_{loss}.$$
 
 *Equation basis:* [@jica2011], §8.3 and Chapter 9, and [@ifc2015], §7.2.4 and Figure 7-7.
 
+(net-head-explorer)=
+:::{iframe} ../../hydro-lab/balance.html?demo=net-head
+:width: 100%
+:title: Net head explorer
+:::
+
 The reference points must be specified consistently. Installation geometry and unrecovered outlet kinetic energy may matter as well as pipe friction; the JICA manual discusses effective head for different turbine arrangements. Do not subtract a loss twice if it has already been included in a supplied net-head value (Chapter 8) [@jica2011].
 
 ### Flow and volume are different quantities
@@ -82,6 +88,12 @@ The reference points must be specified consistently. Installation geometry and u
 Volume flow $Q$ is measured in m³/s. Water volume over an interval is $V=Q\Delta t$ for constant or interval-average flow, with time in seconds. Mass flow is $\dot m=\rho Q$ in kg/s. For example, 3 m³/s sustained for two hours moves $3\times7200=21{,}600$ m³; the water volume is not 6 m³. Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7. Unit definitions/conversions: [NIST SP 811, Appendix B](https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors).
 
 The same distinction matters in reservoir routing. Electrical energy may be integrated using MW and hours, while the water balance uses m³/s and seconds. Keeping separate conversion factors in Python prevents a factor-of-3600 error. Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7. Unit definitions/conversions: [NIST SP 811, Appendix B](https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors).
+
+(flow-volume-explorer)=
+:::{iframe} ../../hydro-lab/balance.html?demo=flow-volume
+:width: 100%
+:title: Flow and volume explorer
+:::
 
 ### Deriving the power equation
 

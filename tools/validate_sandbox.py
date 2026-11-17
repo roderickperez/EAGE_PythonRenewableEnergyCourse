@@ -25,8 +25,11 @@ def validate():
     assert 'hydro-lab/index.html' not in pages['section6/hydroelectricEnergy.md']['html']
     hydro = pages['section6/hydroelectricEnergy.md']
     assert 'id="hydraulic-head-explorer"' in hydro['html']
+    assert 'id="net-head-explorer"' in hydro['html']
+    assert 'id="flow-volume-explorer"' in hydro['html']
     assert 'hydro-lab/head.html' not in hydro['html']
-    for file in ('head.html', 'head.js'):
+    assert 'hydro-lab/balance.html' not in hydro['html']
+    for file in ('head.html', 'head.js', 'balance.html', 'balance.js'):
         assert (OUT / 'hydro-lab' / file).is_file()
     assert set(hydro['media']['audio']['en']) == {
         'what-head-means', 'flow-and-volume-are-different-quantities', 'deriving-the-power-equation',

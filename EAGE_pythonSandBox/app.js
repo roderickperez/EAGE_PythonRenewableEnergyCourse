@@ -176,14 +176,19 @@ async function route() {
     colabButton.title = notebookPath ? 'Open this lesson in Google Colab' : 'No Google Colab notebook available for this lesson';
     colabButton.onclick = notebookPath ? () => window.open('https://colab.research.google.com/github/roderickperez/EAGE_PythonRenewableEnergyCourse/blob/main/' + notebookPath, '_blank', 'noopener,noreferrer') : null;
     $('lesson').innerHTML=lesson.html;
-    const headAnchor = $('hydraulic-head-explorer');
-    if (headAnchor) {
+    for (const [anchor, path, title] of [
+      ['hydraulic-head-explorer', 'head.html', 'Hydraulic head explorer'],
+      ['net-head-explorer', 'balance.html?demo=net-head', 'Net head explorer'],
+      ['flow-volume-explorer', 'balance.html?demo=flow-volume', 'Flow and volume explorer'],
+    ]) {
+      const spot = $(anchor);
+      if (!spot) continue;
       const frame = document.createElement('iframe');
       frame.className = 'hydraulic-head-explorer';
-      frame.title = 'Hydraulic head explorer';
+      frame.title = title;
       frame.loading = 'lazy';
-      frame.src = 'generated/hydro-lab/head.html';
-      headAnchor.after(frame);
+      frame.src = 'generated/hydro-lab/' + path;
+      spot.after(frame);
     }
     const lab = {
       'section6/hydroelectricEnergy.md': {
