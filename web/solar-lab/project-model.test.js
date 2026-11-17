@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { calculate, conditions, declination } from './project-model.js';
+import { calculate, conditions, declination, surfaceLoss, SITES } from './project-model.js';
 const site={lat:48.208,lon:16.374}, settings={tilt:30,azimuth:180,shading:5,count:2};
 test('sun and seasonal generation respond to latitude and date',()=>{
   const summer=new Date('2025-06-21T12:00:00Z'),winter=new Date('2025-12-21T12:00:00Z');
@@ -22,4 +22,11 @@ test('polar summer and winter sun remain above and below horizon respectively',(
     const d=new Date(day+'T12:00:00Z'),w=conditions(d,arctic.lat);
     for(const hour of [0,6,12,18]) assert.equal(calculate(arctic,d,hour,settings,w).current.elevation>0,above);
   }
+});
+test('cloud cover changes irradiance and midday output, independently of surface losses',()=>{
+  const d=new Date('2025-06-21T12:00:00Z'), clear=conditions(d,site.lat,-.16), cloudy=conditions(d,site.lat,.16);
+  assert.ok(cloudy.clouds>clear.clouds);assert.ok(cloudy.dni<clear.dni);
+  assert.ok(calculate(site,d,12,settings,cloudy).current.ac<calculate(site,d,12,settings,clear).current.ac);
+  assert.ok(surfaceLoss(.1)>surfaceLoss(-.1));
+  assert.deepEqual(SITES.map(s=>s.region),['North America','South America','Africa','Europe','Asia']);
 });
