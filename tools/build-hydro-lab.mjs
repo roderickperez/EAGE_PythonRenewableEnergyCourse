@@ -17,7 +17,10 @@ for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'proj
   }
   if (lab === 'solar-lab') entryPoints.resource = resolve(source, 'resource.js');
   if (lab === 'geothermal-lab') entryPoints.equations = resolve(source, 'equations.js');
-  if (lab === 'wind-lab') entryPoints.aerodynamics = resolve(source, 'aerodynamics.js');
+  if (lab === 'wind-lab') {
+    entryPoints.aerodynamics = resolve(source, 'aerodynamics.js');
+    entryPoints['wind-project'] = resolve(source, 'project.js');
+  }
   await build({
     entryPoints,
     outdir: output,
@@ -35,6 +38,7 @@ for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'proj
   if (lab === 'geothermal-lab') await cp(resolve(source, 'equations.html'), resolve(output, 'equations.html'));
   if (lab === 'solar-lab') await cp(resolve(source, 'resource.html'), resolve(output, 'resource.html'));
   if (lab === 'wind-lab') {
+    await cp(resolve(source, 'project.html'), resolve(output, 'project.html'));
     const card = await readFile(resolve(root, 'web/solar-lab/resource.html'), 'utf8');
     await writeFile(resolve(output, 'aerodynamics.html'), card
       .replace('<title>Solar radiation explorer</title>', '<title>Wind aerodynamics explorer</title>')

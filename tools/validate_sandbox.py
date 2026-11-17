@@ -81,6 +81,12 @@ def validate():
     assert (OUT / 'project-map' / 'project-map.js').is_file()
     assert 'project-map/index.html' not in pages[PROJECT]['html']
     assert 'id="load-the-separate-input-datasets"' in pages[PROJECT]['html']
+    wind_project = 'section8/wind-project.md'
+    project_order = [path for path, page in pages.items() if page['group'] == 'Course Final Project']
+    assert project_order.index(wind_project) < project_order.index(PROJECT)
+    assert 'id="how-to-use-the-explorer"' in pages[wind_project]['html']
+    assert (OUT / 'wind-lab' / 'wind-project.js').is_file()
+    assert (OUT / 'wind-lab' / 'project.html').is_file()
     intro = 'section7/renewableExercises.md'
     assert pages[intro]['title'] == 'Workbook introduction'
     workbook = [path for _, _, path in WORKBOOK_CHAPTERS]

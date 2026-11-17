@@ -90,6 +90,7 @@ project:
 
     - title: Course Final Project
       children:
+        - file: section8/wind-project.md
         - file: section8/projectIntro.md
 
     - title: Summary and Conclusions
