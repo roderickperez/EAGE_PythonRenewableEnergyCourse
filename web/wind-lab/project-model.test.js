@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { gridPoint, powerKw, evaluate, validCandidate, rankCandidates, windFieldSampler } from './project-model.js';
-import { wakePixels, particleWind, advanceParticle, plasma } from './project-field.js';
+import { wakePixels, wakeRaster, particleWind, advanceParticle, localParticle, particleAppearance, rotorRate, plasma } from './project-field.js';
 
 test('coordinates and the teaching turbine curve are explicit',()=>{
   assert.deepEqual(gridPoint(0),{id:0,x:100,y:100});
@@ -54,4 +54,39 @@ test('particles follow wind direction and grow and move faster at higher speeds'
   assert.ok(east.x<0 && Math.abs(east.z)<1e-9);
   assert.ok(east.length>north.length && Math.abs(east.x)>north.z);
   assert.ok(advanceParticle({x:9.9,z:0},particleWind(270,10),1).x<0);
+});
+
+test('overlapping wakes combine, rescale the colors, and update other wake colors',()=>{
+  const one=windFieldSampler([95],0,12), two=windFieldSampler([95,85],0,12);
+  assert.ok(two(1100,1500)<one(1100,1500));
+  assert.equal(two(1100,1800),one(1100,1800));
+  const a=wakeRaster([95],0,12), b=wakeRaster([95,85],0,12);
+  assert.ok(b.min<a.min && b.max===12);
+  const px=Math.floor(1100/2000*160),py=Math.floor(1800/2000*160),offset=(py*160+px)*4;
+  assert.notDeepEqual([...a.pixels.slice(offset,offset+3)],[...b.pixels.slice(offset,offset+3)]);
+});
+
+test('particle motion and rotor animation respond to local wake speed',()=>{
+  const sample=windFieldSampler([95],0,12);
+  // World x=1 maps to easting 1100 m; z=-8 maps to northing 1800 m.
+  const inWake=localParticle({x:1,z:-8},0,sample,1);
+  const clear=localParticle({x:5,z:-8},0,sample,1);
+  assert.ok(inWake.speed<clear.speed);
+  assert.ok(inWake.z-(-8)<clear.z-(-8));
+  assert.ok(inWake.wind.length<clear.wind.length);
+  assert.ok(rotorRate(inWake.speed)<rotorRate(clear.speed));
+  assert.equal(rotorRate(0),0);assert.equal(rotorRate(26),0);
+  assert.equal(rotorRate(12),rotorRate(20));
+});
+
+test('wake particles drift sideways and fade while clear wind remains undisturbed',()=>{
+  const sample=windFieldSampler([95],0,12), options={freeStream:12,elapsed:0,phase:Math.PI/2};
+  const inWake=localParticle({x:1,z:-8},0,sample,.5,options);
+  const clear=localParticle({x:5,z:-8},0,sample,.5,options);
+  assert.ok(inWake.x<1 && Math.abs(clear.x-5)<1e-9);
+  assert.ok(inWake.opacity<clear.opacity);
+  assert.equal(particleAppearance(12,12).opacity,.75);
+  assert.ok(particleAppearance(0,12).opacity>0);
+  const still=localParticle({x:1,z:-8},0,sample,0,options);
+  assert.equal(still.x,1);assert.equal(still.z,-8);
 });
