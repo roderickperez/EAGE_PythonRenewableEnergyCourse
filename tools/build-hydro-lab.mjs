@@ -37,7 +37,7 @@ for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'proj
     target: ['es2022'],
     minify: true,
     sourcemap: false,
-    loader: { '.css': 'text', '.svg': 'text', '.csv': 'text' },
+    loader: { '.css': 'text', '.svg': 'text', '.csv': 'text', '.geojson': 'json' },
     legalComments: 'inline',
   });
   const html = await readFile(resolve(source, 'index.html'), 'utf8');
