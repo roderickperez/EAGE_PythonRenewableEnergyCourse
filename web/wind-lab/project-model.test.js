@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { gridPoint, powerKw, evaluate, validCandidate, rankCandidates, windFieldSampler } from './project-model.js';
+import { createHistory } from './project-history.js';
 import { wakePixels, wakeRaster, particleWind, advanceParticle, localParticle, particleAppearance, rotorRate, plasma } from './project-field.js';
 
 test('coordinates and the teaching turbine curve are explicit',()=>{
@@ -89,4 +90,17 @@ test('wake particles drift sideways and fade while clear wind remains undisturbe
   assert.ok(particleAppearance(0,12).opacity>0);
   const still=localParticle({x:1,z:-8},0,sample,0,options);
   assert.equal(still.x,1);assert.equal(still.z,-8);
+});
+
+
+test('session energy integrates each turbine across model changes and pauses',()=>{
+  const h=createHistory(0), two={results:[{id:5,power:360,speed:12},{id:6,power:180,speed:9}]};
+  h.setModel(two,12,0);
+  let state=h.tick(10000);
+  assert.equal(state.energy[5],1000);assert.equal(state.energy[6],500);assert.equal(state.total,1500);
+  h.setModel({results:[{id:6,power:360,speed:12}]},12,10000);
+  state=h.tick(20000);assert.equal(state.energy[5],1000);assert.equal(state.energy[6],1500);assert.equal(state.total,2500);
+  state=h.tick(30000,false);assert.equal(state.total,2500);assert.equal(state.time,20);
+  state=h.tick(35000,true);assert.equal(state.energy[6],2000);assert.equal(state.time,25);
+  assert.equal(h.reset(35000).total,0);
 });
