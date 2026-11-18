@@ -54,7 +54,7 @@ export function mountClosedLoopScene(host, kind) {
   wellhead(-4.7);wellhead(4.7);
   const cold=curve([[-2,.55,1],[-3,.42,2.5],[-4.7,.65,2.55],[-4.7,.4,z],[-4.7,-3.7,z],[-4.2,-4,z],[0,-4,z]]);
   const warm=curve([[0,-4,z],[4.2,-4,z],[4.7,-3.7,z],[4.7,.4,z],[4.7,.65,2.55],[3.5,.45,2.35],[2.2,.55,1]]);
-  pipe(cold,.14,cool,'#8ee9ff');pipe(warm,.14,hot,'#ffbd80');
+  pipe(cold,.14,cool,'#8ee9ff',false,.16);pipe(warm,.14,hot,'#ffbd80',false,.16);
  }else{
   wellhead(-4.7);
   const outer=curve([[-4.7,.48,z],[-4.7,-3.65,z],[-4.15,-4,z],[4.8,-4,z]]);

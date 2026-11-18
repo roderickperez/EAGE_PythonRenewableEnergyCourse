@@ -237,7 +237,7 @@ async function route() {
       ['geo-compact-carnot-explorer', 'equations.html?demo=carnot', 'Carnot limit explorer', 'geothermal-lab'],
       ['geo-compact-energy-explorer', 'equations.html?demo=energy', 'Energy and availability explorer', 'geothermal-lab'],
       ['geo-compact-decline-explorer', 'equations.html?demo=decline', 'Annual decline explorer', 'geothermal-lab'],
-      ['geo-closed-systems', 'closed-loop.html?demo=systems&v=2', 'Animated closed-loop systems', 'geothermal-lab'],
+      ['geo-closed-systems', 'closed-loop.html?demo=systems&v=3', 'Animated closed-loop systems', 'geothermal-lab'],
       ['geo-closed-conduction', 'closed-loop.html?demo=conduction', 'Transient rock conduction explorer', 'geothermal-lab'],
       ['geo-closed-area', 'closed-loop.html?demo=area', 'Coaxial tube flow areas explorer', 'geothermal-lab'],
       ['geo-closed-energy', 'closed-loop.html?demo=energy', 'Thermal energy and available work explorer', 'geothermal-lab'],
