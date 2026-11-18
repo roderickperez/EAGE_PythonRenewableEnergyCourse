@@ -1,4 +1,4 @@
-*{box-sizing:border-box}.loop-card{padding:14px;border:1px solid #c7dbd4;border-radius:12px;background:#fff;color:#163b38;font:15px/1.4 system-ui,sans-serif}.loop-card h2{margin:0 0 4px;font:600 clamp(19px,3vw,25px)/1.2 Georgia,serif}.loop-card p{margin:5px 0 10px;color:#506b67}.loop-card small,.loop-note{font-size:.8rem;color:#506b67}.loop-scene{position:relative;background:#e6eff3;border-radius:8px;overflow:hidden}.loop-three{height:360px}.loop-three canvas{display:block;width:100%;height:100%}.loop-names{position:absolute;z-index:1;top:8px;left:0;width:100%;display:grid;grid-template-columns:1fr 1fr;text-align:center;color:#315462;pointer-events:none}.loop-motion{position:absolute;top:8px;left:8px;width:40px;height:40px;border:1px solid #a9c3c0;border-radius:7px;background:#fff;color:#163b38;cursor:pointer}.loop-result{background:#e2f1ed;color:#126278;font-weight:700;border-radius:7px;padding:8px;margin:8px 0;overflow-wrap:anywhere}.loop-plot{background:#f8fcfa;border:1px solid #d9e7ec;border-radius:8px;margin-bottom:10px}.loop-plot svg{display:block;width:100%;max-height:240px}.loop-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(180px,100%),1fr));gap:10px 14px}.loop-controls label{font-size:.8rem;font-weight:650}.loop-controls output{float:right;font-weight:400}.loop-controls small{display:block}.loop-controls input{display:block;width:100%;accent-color:#328baa}.loop-note{margin-bottom:0!important}@media(max-width:500px){.loop-three{height:260px}.loop-controls{grid-template-columns:1fr 1fr}}
+*{box-sizing:border-box}.loop-card{padding:14px;border:1px solid #c7dbd4;border-radius:12px;background:#fff;color:#163b38;font:15px/1.4 system-ui,sans-serif}.loop-card h2{margin:0 0 4px;font:600 clamp(19px,3vw,25px)/1.2 Georgia,serif}.loop-card p{margin:5px 0 10px;color:#506b67}.loop-card small,.loop-note{font-size:.8rem;color:#506b67}.loop-scene{position:relative;background:#e6eff3;border-radius:8px;overflow:hidden}.loop-three{height:360px}.loop-three canvas{display:block;width:100%;height:100%}.loop-names{position:absolute;z-index:1;top:8px;left:0;width:100%;display:grid;grid-template-columns:1fr 1fr;text-align:center;color:#315462;pointer-events:none}.loop-motion{position:absolute;top:8px;left:8px;width:40px;height:40px;border:1px solid #a9c3c0;border-radius:7px;background:#fff;color:#163b38;cursor:pointer}.loop-result{background:#e2f1ed;color:#126278;font-weight:700;border-radius:7px;padding:8px;margin:8px 0;overflow-wrap:anywhere}.loop-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(180px,100%),1fr));gap:10px 14px}.loop-controls label{font-size:.8rem;font-weight:650}.loop-controls output{float:right;font-weight:400}.loop-controls small{display:block}.loop-controls input{display:block;width:100%;accent-color:#328baa}.loop-note{margin-bottom:0!important}@media(max-width:500px){.loop-three{height:260px}.loop-controls{grid-template-columns:1fr 1fr}}
 
 .loop-scenes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.loop-view{border:1px solid #cbdce0;border-radius:9px;overflow:hidden;background:white}.loop-view h3{font:600 16px/1.3 system-ui,sans-serif;margin:0;padding:10px 12px;color:#163b38}.loop-view .loop-scene{border-radius:0}.loop-view .loop-three{height:clamp(230px,29vw,350px)}.loop-caption,.loop-legend{padding:8px 12px;font-size:.76rem;color:#506b67}.loop-legend{display:flex;gap:16px;border-top:1px solid #d9e7e4}.loop-legend span:first-child{color:#247fae}.loop-legend span:last-child{color:#c45634}@media(max-width:850px){.loop-scenes{grid-template-columns:1fr}.loop-view .loop-three{height:clamp(260px,52vw,350px)}}@media(max-width:500px){.loop-view .loop-three{height:260px}}
 
@@ -12,21 +12,31 @@
 .loop-scenes + .loop-legend { border-top: 0; }
 
 
-.loop-equation-grid { display: grid; grid-template-columns: minmax(0,1.55fr) minmax(255px,1fr); align-items: start; gap: 14px; }
+.loop-equation-grid { display: grid; grid-template-columns: minmax(0,1.55fr) minmax(255px,1fr); align-items: stretch; gap: 14px; }
+.loop-equation-visual { display: grid; min-width: 0; }
+[data-equation="area"] .loop-equation-visual { grid-template-rows: minmax(clamp(225px,29vw,360px),1fr) auto auto; }
+[data-equation="energy"] .loop-equation-visual { grid-template-rows: repeat(2,minmax(0,1fr)); gap: 8px; }
 .loop-equation-panel { border: 1px solid #d4e5e1; border-radius: 8px; background: #f7fbfa; padding: 12px; }
 .loop-equation-panel .loop-controls { grid-template-columns: 1fr; }
 .loop-metrics { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 6px; margin: 0 0 12px; }
 .loop-metrics > div { background: #e2f1ed; border-radius: 6px; padding: 7px 8px; }
 .loop-metrics dt { color: #4c6670; font-size: .75rem; }
 .loop-metrics dd { margin: 1px 0 0; color: #126278; font-weight: 750; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
-.loop-pipe-canvas { height: clamp(225px,29vw,360px); overflow: hidden; border-radius: 8px; background: #e6eff3; }
-.loop-pipe-canvas canvas, .loop-pipe-canvas svg { display: block; width: 100%; height: 100%; }
+.loop-pipe-canvas { position: relative; overflow: hidden; border-radius: 8px; background: #e6eff3; }
+.loop-pipe-canvas canvas, .loop-pipe-canvas svg { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
 .loop-pipe-key { display: flex; flex-wrap: wrap; gap: 5px 15px; margin: 6px 0; color: #506b67; font-size: .8rem; }
-.loop-bars { margin: 0 0 8px; padding: 7px 10px; background: #f2f8f8; border: 1px solid #d4e4e7; border-radius: 8px; }
+.loop-bars { display: grid; align-content: center; margin: 0; padding: 7px 10px; background: #f2f8f8; border: 1px solid #d4e4e7; border-radius: 8px; }
 .loop-bars figcaption { font-size: .9rem; font-weight: 650; }
 .loop-bars svg { display: block; width: 100%; max-height: 170px; fill: #315462; font: 13px system-ui,sans-serif; }
 @media(max-width:650px) { .loop-equation-grid { grid-template-columns: 1fr; } }
-[data-equation="conduction"] .loop-plot svg { max-height: 380px; }
+.loop-plot {
+  position: relative;
+  min-height: clamp(170px,23vw,360px);
+  border: 1px solid #d4e4e7;
+  border-radius: 8px;
+  background: #f2f8f8;
+}
+.loop-plot svg { display: block; position: absolute; inset: 0; width: 100%; height: 100%; }
 [data-equation="conduction"] .loop-metrics > :last-child { grid-column: 1 / -1; }
 
 

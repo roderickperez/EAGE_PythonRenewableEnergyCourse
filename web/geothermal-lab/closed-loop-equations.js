@@ -44,22 +44,23 @@ function accumulation(result, years) {
     </svg></figure>`;
 }
 
-function conductionChart(points, input, temperature) {
-  const x = distance => 55 + distance/10*500;
-  const y = value => 180 - (value-input.wall)/(input.far-input.wall)*155;
+function conductionChart(points, input, temperature, width, height) {
+  const left = 48, right = width-28, top = 34, bottom = height-54;
+  const x = distance => left + distance/10*(right-left);
+  const y = value => bottom - (value-input.wall)/(input.far-input.wall)*(bottom-top);
   const ticks = [0,2.5,5,7.5,10].map(distance =>
-    `<path d="M${x(distance)} 25V180" stroke="#e5eff0"/>
-     <text x="${x(distance)}" y="199" text-anchor="middle">${distance}</text>`).join('');
+    `<path d="M${x(distance)} ${top}V${bottom}" stroke="#e5eff0"/>
+     <text x="${x(distance)}" y="${bottom+19}" text-anchor="middle">${distance}</text>`).join('');
   const trace = points.map(([distance,value],index) =>
     `${index ? 'L' : 'M'}${x(distance).toFixed(1)} ${y(value).toFixed(1)}`).join(' ');
-  return `<svg viewBox="0 0 600 235" role="img" aria-label="Rock temperature versus distance from the wall">
-    <g font-size="12" fill="#526b77" font-family="system-ui">
+  return `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Rock temperature versus distance from the wall">
+    <g font-size="13" fill="#526b77" font-family="system-ui">
       ${ticks}
-      <path d="M55 25V180H555" fill="none" stroke="#9db5bb"/>
-      <text x="3" y="32">${input.far}</text>
-      <text x="3" y="182">${input.wall}</text>
-      <text x="300" y="224" text-anchor="middle">Distance from wall (m)</text>
-      <text x="60" y="16">Rock temperature (°C)</text>
+      <path d="M${left} ${top}V${bottom}H${right}" fill="none" stroke="#9db5bb"/>
+      <text x="${left-8}" y="${top+4}" text-anchor="end">${input.far}</text>
+      <text x="${left-8}" y="${bottom+4}" text-anchor="end">${input.wall}</text>
+      <text x="${(left+right)/2}" y="${height-15}" text-anchor="middle">Distance from wall (m)</text>
+      <text x="${left}" y="20">Rock temperature (°C)</text>
       <path d="${trace}" fill="none" stroke="#16879d" stroke-width="3"/>
       <circle cx="${x(input.distance)}" cy="${y(temperature)}" r="5" fill="#c44f3e"/>
     </g>
@@ -78,7 +79,7 @@ export function mountClosedLoopEquation(root, mode, spec, mountCutaway) {
     <div class="loop-equation-grid" data-equation="${mode}">
       <div class="loop-equation-visual">${isArea ? `<div class="loop-pipe-canvas" role="img" aria-label="Three-dimensional cutaway of a concentric geothermal pipe"></div>
         <div class="loop-pipe-key"><span>Blue · annulus</span><span>Gray · pipe wall</span><span>Orange · inner tube</span></div>
-        <small>Drag to orbit and scroll to zoom. All three diameters use the same scale.</small>` : ''}</div>
+        <small>Drag to orbit and scroll to zoom. All three diameters use the same scale.</small>` : mode === 'conduction' ? '<div class="loop-plot"></div>' : ''}</div>
       <section class="loop-equation-panel" aria-label="Inputs and results">
         <dl class="loop-metrics">${metrics.map((metric,i)=>`<div><dt>${metric}</dt><dd data-metric="${i}"></dd></div>`).join('')}</dl>
         <div class="loop-controls">${spec.controls.map(([id,label,min,max,step,value,unit])=>`<label for="loop-${id}">${label}<output for="loop-${id}" data-out="${id}"></output><input id="loop-${id}" type="range" data-id="${id}" min="${min}" max="${max}" step="${step}" value="${value}" aria-label="${label} (${unit})"></label>`).join('')}</div>
@@ -91,7 +92,19 @@ export function mountClosedLoopEquation(root, mode, spec, mountCutaway) {
   const note = root.querySelector('.loop-note');
   const inputs = [...root.querySelectorAll('input')];
   const outputs = [...root.querySelectorAll('[data-metric]')];
-  let pipe;
+  const plot = visual.querySelector('.loop-plot');
+  let pipe, profile;
+  function drawProfile() {
+    if (!profile) return;
+    const { clientWidth: width, clientHeight: height } = plot;
+    if (width && height) {
+      plot.innerHTML = conductionChart(profile.points,profile.data,profile.temperature,width,height);
+    }
+  }
+  if (plot) {
+    const resize = new ResizeObserver(drawProfile);
+    resize.observe(plot);
+  }
   if (isArea) {
     const host = root.querySelector('.loop-pipe-canvas');
     try {
@@ -132,7 +145,8 @@ export function mountClosedLoopEquation(root, mode, spec, mountCutaway) {
         const distance = index/8;
         return [distance,conduction({...data,distance}).temperature];
       });
-      visual.innerHTML = `<div class="loop-plot">${conductionChart(points,data,result.temperature)}</div>`;
+      profile = { points, data, temperature: result.temperature };
+      drawProfile();
       values = [
         `${result.alpha.toExponential(2)} m²/s`,
         `${fmt(result.effusivity,0)} J/(m² K √s)`,
