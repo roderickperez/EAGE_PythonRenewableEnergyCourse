@@ -187,7 +187,7 @@ export function mountEquationScene(host, name) {
   let move = () => {}, storageKey;
   function draw() { renderer.render(scene,camera); }
   function tick(now) {
-    const elapsed = Math.min((now-last)/1000,.05);
+    const elapsed = Math.max(0,Math.min((now-last)/1000,.05));
     last = now;
     time += elapsed;
     if (name==='storage') orbit.update(elapsed);

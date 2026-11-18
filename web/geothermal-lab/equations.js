@@ -58,12 +58,12 @@ function update() {
   $('equations').innerHTML = `<p>${result.equation}</p>`;
   inputs = input;
   values = result.values;
+  if (name==='darcy') renderDarcyPressure(plot,input.pressureGradient);
+  else if (supportsScene) renderEquipmentPlot(name,plot,input,values);
   if (scene) {
     scene.update(input, values);
     describeScene(input, values);
   } else renderEquationVisual(name, drawing, input, values, motion);
-  if (name==='darcy') renderDarcyPressure(plot,input.pressureGradient);
-  else if (supportsScene) renderEquipmentPlot(name,plot,input,values);
 }
 
 button.addEventListener('click', () => {
@@ -82,7 +82,7 @@ if (supportsScene) {
     if (!entry.isIntersecting) return;
     sceneObserver.disconnect();
     try {
-      const { mountEquationScene } = await import('./equation-scenes.js?v=1');
+      const { mountEquationScene } = await import('./equation-scenes.js?v=2');
       scene = mountEquationScene(host, name);
       scene.update(inputs, values);
       scene.setPlaying(motion);

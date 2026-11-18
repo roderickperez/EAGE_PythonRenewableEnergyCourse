@@ -36,7 +36,7 @@ for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'proj
     entryPoints,
     outdir: output,
     bundle: true,
-    external: lab === 'geothermal-lab' ? ['./equation-scenes.js?v=1'] : [],
+    external: lab === 'geothermal-lab' ? ['./equation-scenes.js?v=2'] : [],
     format: 'esm',
     platform: 'browser',
     target: ['es2022'],
