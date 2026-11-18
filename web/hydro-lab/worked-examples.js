@@ -1,24 +1,141 @@
 import { fitFrameToContent } from './fit-frame.js';
-import { channelFigure, reservoirFigure } from './worked-visuals.js';
-const root=document.querySelector('#root');
-root.innerHTML=`<style>body{font:15px/1.5 system-ui;color:#173d4b;background:#f4f8f6}.wrap{padding:16px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}section{background:white;border:1px solid #cedfe3;border-radius:10px;padding:14px}label{display:block;margin:.5em 0}output{float:right;font-weight:bold}input{display:block;width:100%}.results{background:#e9f5f4;padding:10px;border-radius:6px}h2{margin-top:0}small{color:#48636a}</style><div class="wrap"><div class="grid"><section><h2>1 · Diversion plant</h2><p>Manning flow, conveyance losses and required head. Change inputs to see the equations respond.</p><div id="one"></div><div class="results" id="out1"></div></section><section><h2>2 · Reservoir plant</h2><p>Annual runoff and production with the worked example's assumptions.</p><div id="two"></div><div class="results" id="out2"></div></section></div></div>`;
-const one=[['width','Channel width','m',6,18,.1,12],['depth','Water depth','m',1,5,.1,4.5],['slope','Channel slope','%',.002,.05,.001,.01],['flow','Mean river flow','m³/s',10,100,1,60],['precip','Annual precipitation','mm',200,2000,10,600],['runoff','Runoff coefficient','',.1,1,.01,.4]];
-const two=[['area','Catchment area','km²',50,400,5,200],['rain','Annual precipitation','mm',400,2000,10,1200],['coefficient','Runoff coefficient','',.1,1,.01,.6],['meanhead','Mean net head','m',40,100,1,80],['designhead','Design net head','m',80,150,1,100],['eco','Environmental release','m³/s',0,3,.1,1]];
-function controls(id,defs){const el=document.getElementById(id);el.innerHTML=defs.map(([key,label,unit,min,max,step,val])=>`<label>${label} <output id="${key}Out"></output><input id="${key}" type="range" min="${min}" max="${max}" step="${step}" value="${val}" aria-label="${label} ${unit}"></label>`).join('');}
-controls('one',one);controls('two',two);
-const visualStyle=document.createElement('style');
-visualStyle.textContent=`body{font:14px/1.45 Inter,"Segoe UI",system-ui,sans-serif;color:#16384c;background:#f4f8f6}.wrap{box-sizing:border-box}.wrap *{box-sizing:border-box}.grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr))}section{border:1px solid #cbdde4}h2{font-size:1.2em;margin:0 0 6px}section>p{color:#526b77;font-size:.85em;margin:0 0 10px}label{font-size:.85em;font-weight:650;color:#365b65}output{font-weight:500;color:#16384c}input{accent-color:#328baa}.visual{margin:12px 0;padding:9px;border:1px solid #d9e7ec;border-radius:8px;background:#f8fcfc}.visual svg{display:block;width:100%;height:auto;font:11px Inter,"Segoe UI",system-ui,sans-serif;fill:#425c6b}.visual svg .title{font-weight:700;fill:#16384c}.visual svg .wall{fill:none;stroke:#718a92;stroke-width:3}.visual svg .water{fill:#328baa}.visual svg .green{fill:#398470}.visual svg .amber{fill:#d89a35}.visual svg .blue-text{fill:#237591}.visual svg .green-text{fill:#287461}.visual svg .amber-text{fill:#a66a16}.results{font-size:.86em;line-height:1.55}`;
-visualStyle.textContent+=`.visual svg .current{fill:none;stroke:#d9faff;stroke-width:2;stroke-dasharray:10 7;animation:water-flow 1.2s linear infinite}@keyframes water-flow{to{stroke-dashoffset:-17}}@media(prefers-reduced-motion:reduce){.visual svg .current{animation:none}}`;
-document.head.append(visualStyle);
-for(const id of ['out1','out2']){const visual=document.createElement('div');visual.className='visual';visual.id=id+'-visual';document.getElementById(id).before(visual)}
-const get=id=>+document.getElementById(id).value;const fmt=(x,d=2)=>x.toFixed(d);
-function render(){for(const [key,,unit] of [...one,...two]) document.getElementById(key+'Out').textContent=`${get(key)} ${unit}`;
- const b=get('width'),d=get('depth'),s=get('slope')/100,q=get('flow'),a=b*d,r=a/(b+2*d),v=r**(2/3)*Math.sqrt(s)/.014,qc=a*v;
- const pipeArea=qc/5/2,rad=Math.sqrt(pipeArea/Math.PI),rh=rad/2,friction=.012**2*25/rh**(4/3),loss=2500*s+1+500*friction+.5,hn=50e6/(1000*9.81*qc*.92*.97),hb=hn+loss, catchment=q*365*86400/(get('precip')/1000*get('runoff'))/1e6;
- document.getElementById('out1').innerHTML=`Catchment area: <b>${fmt(catchment,0)} km²</b><br>Area ${fmt(a)} m² · hydraulic radius ${fmt(r)} m<br>Manning v = R<sup>2/3</sup> √S / n = <b>${fmt(v)} m/s</b><br>Channel Q = Av = <b>${fmt(qc)} m³/s</b><br>Channel losses: ${fmt(2500*s+1)} m · penstock losses: ${fmt(500*friction+.5)} m<br>Total losses: <b>${fmt(loss)} m</b><br>For 50 MW electrical: net head ${fmt(hn)} m; gross head ${fmt(hb)} m; tailwater elevation ${fmt(200-hb)} m<br><small>Two equal pipes, 5 m/s in each; n = 0.014 (channel), 0.012 (pipe); 1 m intake and 0.5 m transition losses; 200 m intake elevation. Fixed losses are scenario assumptions.</small>`;
- const annual=get('area')*1e6*get('rain')/1000*get('coefficient'),mean=annual/(365*86400),design=2*mean,ecoServed=Math.min(get('eco'),mean*.9),ecoShortfall=get('eco')-ecoServed,used=mean*.9-ecoServed,turb=9.81*design*get('designhead')*.91,gen=turb*.95,trafo=gen*.99,hours=design?8760*used*get('meanhead')/(design*get('designhead')):0, ecoP=9.81*ecoServed*get('designhead')*.91*.95*.99;
- document.getElementById('out2').innerHTML=`Annual runoff: <b>${fmt(annual/1e6)} hm³</b> · mean inflow ${fmt(mean)} m³/s<br>Design flow (2 × mean): ${fmt(design)} m³/s · main usable mean flow: ${fmt(used)} m³/s<br>Design shaft / generator / transformer: <b>${fmt(turb)} / ${fmt(gen)} / ${fmt(trafo)} kW</b><br>Equivalent full-load hours: ${fmt(hours,0)} h/year<br>Generator / transformer / grid energy: ${fmt(gen*hours/1e6,2)} / ${fmt(trafo*hours/1e6,2)} / <b>${fmt(trafo*hours*.985/1e6,2)} GWh</b><br>Ecological flow served / shortfall: ${fmt(ecoServed)} / ${fmt(ecoShortfall)} m³/s<br>Ecological group at design head: ${fmt(ecoP)} kW; at mean head, full-year energy ${fmt(ecoP*get('meanhead')/get('designhead')*8760/1e6,2)} GWh<br><small>10% inflow spilled; ecological flow deducted from main flow; efficiencies 91%, 95%, 99%; linear line loss 0.3%/km over 5 km. Constant annual mean flows are assumed throughout the year; ecological release is limited to water available after spill.</small>`;
- document.getElementById('out1-visual').innerHTML=channelFigure({width:b,depth:d,velocity:v,channelFlow:qc,riverFlow:q,slope:get('slope'),catchment});
- document.getElementById('out2-visual').innerHTML=reservoirFigure({mean,spill:mean*.1,ecological:ecoServed,usable:used,shortfall:ecoShortfall,meanHead:get('meanhead'),designHead:get('designhead'),annual,power:gen});
+import { DiversionScene, ReservoirWorkedScene } from './worked-scenes.js';
+import { diversionCase, diversionSiteHead, reservoirCase } from './worked-model.js';
+import { energyPlot } from './worked-energy.js';
+import styles from './worked-examples.css';
+
+const diversionSliders = [
+  ['width', 'Channel width', 'm', 6, 18, .1, 12],
+  ['depth', 'Water depth', 'm', 1, 5, .1, 4.5],
+  ['slope', 'Channel slope', '%', .002, .05, .001, .01],
+  ['flow', 'Mean river flow', 'm³/s', 10, 100, 1, 60],
+  ['precip', 'Annual precipitation', 'mm', 200, 2000, 10, 600],
+  ['runoff', 'Runoff coefficient', '', .1, 1, .01, .4],
+];
+const reservoirSliders = [
+  ['area', 'Catchment area', 'km²', 50, 400, 5, 200],
+  ['rain', 'Annual precipitation', 'mm', 400, 2000, 10, 1200],
+  ['coefficient', 'Runoff coefficient', '', .1, 1, .01, .6],
+  ['meanhead', 'Mean net head', 'm', 40, 100, 1, 80],
+  ['designhead', 'Design net head', 'm', 80, 150, 1, 100],
+  ['eco', 'Environmental release', 'm³/s', 0, 3, .1, 1],
+];
+
+const fmt = (number, digits = 2) => number.toFixed(digits);
+const root = document.querySelector('#root');
+root.innerHTML = `<style>${styles}</style><div class="wrap grid"></div>`;
+const grid = root.querySelector('.grid');
+
+function makeExample({ title, description, sliders, calculate, Scene, initialAxis, details, results, plotNote, showTotal }) {
+  const section = document.createElement('section');
+  section.className = 'example';
+  section.innerHTML = `<h2>${title}</h2><p class="note">${description}</p>
+    <div class="controls">${sliders.map(([id, label, unit, min, max, step, value]) => `
+      <label for="${id}"><span>${label}<output for="${id}"></output></span>
+      <input id="${id}" type="range" min="${min}" max="${max}" step="${step}" value="${value}" aria-label="${label}${unit ? ` (${unit})` : ''}"></label>`).join('')}</div>
+    <div class="scene" role="group" aria-label="Interactive 3D view of the ${title.toLowerCase()}"></div>
+    <p class="scene-details note"></p>
+    <div class="plot">
+      <div class="plot-title"><h3></h3><output class="energy"></output></div>
+      ${showTotal ? '<div class="plot-key"><span>━ Main plant</span><span>╌ Main + ecological</span></div>' : ''}
+      <canvas role="img"></canvas>
+      <p class="note"></p>
+    </div>
+    <div class="results"></div>`;
+  grid.append(section);
+  const sceneHost = section.querySelector('.scene');
+  let scene;
+  try {
+    scene = new Scene(sceneHost, { reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches });
+  } catch {
+    sceneHost.innerHTML = '<p class="note">The 3D view needs WebGL. The energy plot and calculations are available below.</p>';
+  }
+  const canvas = section.querySelector('.plot canvas');
+  const controls = new Map(sliders.map(definition => [definition[0], definition]));
+  const inputs = Object.fromEntries(sliders.map(([id, , , , , , value]) => [id, value]));
+  const drawPlot = new ResizeObserver(() => renderPlot());
+  let axis = initialAxis;
+
+  function renderPlot() {
+    const activeSlider = controls.get(axis);
+    const selected = calculate(inputs).energy;
+    section.querySelector('.plot h3').textContent = `Annual energy vs. ${activeSlider[1].toLowerCase()}`;
+    section.querySelector('.energy').value = `${fmt(selected)} GWh/year`;
+    section.querySelector('.plot p').textContent = plotNote(axis);
+    const scenario = value => calculate({ ...inputs, [axis]: value });
+    energyPlot(canvas, activeSlider, inputs[axis], value => scenario(value).energy, selected,
+      showTotal ? value => scenario(value).totalEnergy : undefined);
+  }
+
+  function render() {
+    const data = calculate(inputs);
+    for (const [id, , unit] of sliders) {
+      section.querySelector(`output[for="${id}"]`).value = unit ? `${inputs[id]} ${unit}` : String(inputs[id]);
+    }
+    scene?.updateWorked(data);
+    section.querySelector('.scene-details').textContent = details(data);
+    section.querySelector('.results').innerHTML = results(data);
+    renderPlot();
+  }
+
+  const onSlider = event => {
+    axis = event.target.id;
+    inputs[axis] = event.target.valueAsNumber;
+    render();
+  };
+  section.addEventListener('input', onSlider);
+  section.addEventListener('focusin', event => {
+    if (controls.has(event.target.id) && axis !== event.target.id) {
+      axis = event.target.id;
+      renderPlot();
+    }
+  });
+  drawPlot.observe(canvas);
+  render();
 }
-root.addEventListener('input',render);render();fitFrameToContent(root.querySelector('.wrap'));
+
+makeExample({
+  title: 'Diversion plant',
+  description: 'Size a concrete channel and two penstocks for a 50 MW plant.',
+  sliders: diversionSliders,
+  Scene: DiversionScene,
+  calculate: diversionCase,
+  initialAxis: 'flow',
+  details: ({ operatingFlow, area }) => `Through the plant: ${fmt(operatingFlow)} m³/s · Channel speed: ${fmt(operatingFlow / area)} m/s. Drag to rotate the cutaway.`,
+  results: data => `Catchment area: <b>${fmt(data.catchment, 0)} km²</b><br>
+    Channel area: ${fmt(data.area)} m² · Hydraulic radius: ${fmt(data.radius)} m<br>
+    Manning design velocity: ${fmt(data.velocity)} m/s · Channel capacity: <b>${fmt(data.channelFlow)} m³/s</b><br>
+    Channel losses: ${fmt(data.channelLoss)} m · Penstock losses: ${fmt(data.pipeLoss)} m · Total: <b>${fmt(data.channelLoss + data.pipeLoss)} m</b><br>
+    For 50 MW electrical: net head ${fmt(data.netHead)} m · Gross head ${fmt(data.grossHead)} m · Tailwater elevation ${fmt(200 - data.grossHead)} m<br>
+    <small>Two equal pipes at 5 m/s at design flow. Manning n = 0.014 (channel), 0.012 (pipe). Intake and transition losses: 1 m and 0.5 m. Intake elevation: 200 m.</small>`,
+  plotNote: axis => {
+    const assumption = `Uses constant mean conditions, a fixed ${fmt(diversionSiteHead)} m gross head, the selected design losses, and a 50 MW plant limit.`;
+    return axis === 'precip' || axis === 'runoff'
+      ? `This slider changes the inferred catchment. Mean river flow stays fixed, so energy stays flat. ${assumption}`
+      : assumption;
+  },
+});
+
+makeExample({
+  title: 'Reservoir plant',
+  description: 'Allocate mean inflow to the main turbine, environmental release and spill.',
+  sliders: reservoirSliders,
+  Scene: ReservoirWorkedScene,
+  showTotal: true,
+  calculate: reservoirCase,
+  initialAxis: 'eco',
+  details: ({ mean, ecological, spill, usable }) => `Inflow: ${fmt(mean)} m³/s · Main turbine: ${fmt(usable)} · Environmental release: ${fmt(ecological)} · Spill: ${fmt(spill)} m³/s.`,
+  results: data => `Annual runoff: <b>${fmt(data.annual / 1e6)} hm³</b> · Mean inflow: ${fmt(data.mean)} m³/s<br>
+    Design flow: ${fmt(data.designFlow)} m³/s · Main usable mean flow: ${fmt(data.usable)} m³/s<br>
+    Design shaft / generator / transformer: <b>${fmt(data.designShaft)} / ${fmt(data.designGenerator)} / ${fmt(data.designTransformer)} kW</b><br>
+    Equivalent full-load hours: ${fmt(data.hours, 0)} h/year<br>
+    Main generator / transformer / grid energy: ${fmt(data.generatorEnergy)} / ${fmt(data.transformerEnergy)} / <b>${fmt(data.gridEnergy)} GWh</b><br>
+    Environmental flow served / shortfall: ${fmt(data.ecological)} / ${fmt(data.shortfall)} m³/s<br>
+    Ecological group at design head: ${fmt(data.ecologicalPower)} kW · At mean head: ${fmt(data.ecologicalEnergy)} GWh/year at the transformer<br>
+    <small>10% inflow spilled. Efficiencies: 91%, 95%, 99%. Line loss: 0.3%/km over 5 km. Environmental release is limited to water available after spill.</small>`,
+  plotNote: axis => axis === 'designhead'
+    ? 'Design head changes rated power. The annual energy estimate uses mean head, so energy stays flat.'
+    : 'Both lines show grid energy. With the same head and efficiency, environmental release shifts generation between the turbines without changing their combined energy.',
+});
+
+fitFrameToContent(grid);

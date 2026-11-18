@@ -5,9 +5,9 @@ import { updateMotionControl } from '../motion-control.js';
 
 /** A single sectional 3D model; units are schematic, animation is illustrative. */
 export class HydroScene {
-  constructor(host) {
+  constructor(host, { reducedMotion = false } = {}) {
     this.host=host; this.parts=[]; this.streams=[]; this.electrical=[]; this.visible=true;
-    this.animate=true;
+    this.animate=!reducedMotion;
     this.scene=new T.Scene(); this.scene.background=new T.Color('#edf1f4');
     this.renderer=new T.WebGLRenderer({antialias:true});
     this.renderer.setPixelRatio(Math.min(devicePixelRatio,2));
@@ -140,9 +140,13 @@ export class HydroScene {
     Object.assign(this.camera, { left: -half * aspect, right: half * aspect, top: half, bottom: -half });
     this.camera.updateProjectionMatrix();
   }
+  streamMotion(stream, turbineFlow) {
+    const flow = stream.type === 'spill' ? (this.result?.spillFlowM3s ?? 0) : turbineFlow;
+    return Math.min(.5, flow * .025);
+  }
   frame(time){const dt=Math.min((time-this.lastTime)/1000,.05);this.lastTime=time;if(!this.visible)return;const flow=this.result?.turbineFlowM3s??0;
     const r=this.animate?dt*Math.min(7,flow*1.3):0;this.runner.rotation.y+=r;this.rotor.rotation.y+=r;
-    for(const s of this.streams){const q=s.type==='spill'?(this.result?.spillFlowM3s??0):flow;if(this.animate)s.phase=(s.phase+dt*Math.min(.5,q*.025))%1;s.particles.forEach((p,i)=>{p.visible=q>0;p.position.copy(s.curve.getPointAt((i/s.particles.length+s.phase)%1));p.position.z+=s.type==='spill'?.14:.32;});}
+    for(const s of this.streams){const speed=this.streamMotion(s,flow);if(this.animate)s.phase=(s.phase+dt*speed)%1;s.particles.forEach((p,i)=>{p.visible=speed>0;p.position.copy(s.curve.getPointAt((i/s.particles.length+s.phase)%1));p.position.z+=s.offset ?? (s.type==='spill'?.14:.32);});}
     for(const wire of this.electrical){if(this.animate&&this.state?.energized)wire.phase=(wire.phase+dt*(.08+.32*this.state.load))%1;wire.material.emissiveIntensity=.6+2*(this.state?.load??0);wire.particles.forEach((p,i)=>{p.visible=!!this.state?.energized;p.position.copy(wire.curve.getPointAt((i/8+wire.phase)%1));});}
     this.host.dataset.runnerAngle=String(this.runner.rotation.y);this.renderer.render(this.scene,this.camera);
   }
