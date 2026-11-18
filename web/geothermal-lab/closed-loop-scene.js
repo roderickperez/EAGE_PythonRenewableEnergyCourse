@@ -1,9 +1,9 @@
 import * as T from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import {createReservoirFlow} from './reservoir-flow.js';
 
-// Two separate scenes intentionally use the same rock palette and cutaway visual
-// language as the larger geothermal plant, while depicting sealed flow paths.
-export function mountClosedLoopScene(host, kind) {
+// Each comparison view shares the same camera and cutaway style.
+export function mountGeothermalSystemScene(host, kind) {
  const scene=new T.Scene(); scene.background=new T.Color('#e6eff3');
  const renderer=new T.WebGLRenderer({antialias:true}); renderer.setPixelRatio(Math.min(devicePixelRatio,2));
  renderer.shadowMap.enabled=true; renderer.toneMapping=T.ACESFilmicToneMapping; host.append(renderer.domElement);
@@ -23,7 +23,7 @@ export function mountClosedLoopScene(host, kind) {
  box([13,.3,7.2],mat('#738765'),[0,-.13,-.55]);
  box([12.9,.65,7.1],mat('#a48669'),[0,-.6,-.55]);
  box([12.85,2.25,7.03],mat('#8d8073'),[0,-2.03,-.55]);
- box([12.8,1.34,6.98],mat('#587f8c'),[0,-3.79,-.55]);
+ box([12.8,1.34,6.98],mat(kind==='egs' ? '#806a61' : '#587f8c'),[0,-3.79,-.55]);
  box([12.75,.62,6.93],mat('#675b60'),[0,-4.75,-.55]);
  const rock=new T.DodecahedronGeometry(.16,0), rockMats=['#756d65','#aa9984','#71969c','#426875'].map(c=>mat(c));
  let seed=6123;const sample=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/2**32;};
@@ -50,7 +50,16 @@ export function mountClosedLoopScene(host, kind) {
  for(const o of [-.55,0,.55])pipe(curve([[2.9,1,-.2],[3.6,2,-1],[4.6+o,2.9,-1.8],[6,2.6,-2.6]]),.024,dark,'#ffd266',false,0,4);
  const z=3.02;
  function wellhead(x){cyl(.42,.25,concrete,[x,.16,2.55]);cyl(.21,.52,steel,[x,.42,2.55]);}
- if(kind==='u'){
+ let reservoirFlow;
+ if (kind === 'hydrothermal' || kind === 'egs') {
+  wellhead(-4.7);
+  wellhead(4.7);
+  const cold = curve([[-2,.55,1],[-3,.42,2.5],[-4.7,.65,2.55],[-4.7,.4,z],[-4.7,-3.88,z]]);
+  const warm = curve([[4.7,-3.88,z],[4.7,.4,z],[4.7,.65,2.55],[3.5,.45,2.35],[2.2,.55,1]]);
+  pipe(cold,.14,cool,'#8ee9ff',false,.16);
+  pipe(warm,.14,hot,'#ffbd80',false,.16);
+  reservoirFlow = createReservoirFlow(scene, [-4.7,-3.88,z+.06], [4.7,-3.88,z+.06], { fractured: kind === 'egs' });
+ } else if(kind==='u'){
   wellhead(-4.7);wellhead(4.7);
   const cold=curve([[-2,.55,1],[-3,.42,2.5],[-4.7,.65,2.55],[-4.7,.4,z],[-4.7,-3.7,z],[-4.2,-4,z],[0,-4,z]]);
   const warm=curve([[0,-4,z],[4.2,-4,z],[4.7,-3.7,z],[4.7,.4,z],[4.7,.65,2.55],[3.5,.45,2.35],[2.2,.55,1]]);
@@ -64,9 +73,45 @@ export function mountClosedLoopScene(host, kind) {
   pipe(surfaceIn,.14,cool,'#8ee9ff');pipe(outer,.24,annulus,'#8ee9ff',false,.12,10);
   pipe(outer,.105,hot,'#ffbd80',true,.16,10);pipe(surfaceOut,.12,hot,'#ffbd80');
  }
- let visible=true,motion=true,clock=0,last=0;
+ let visible=true,motion=true,connected=true,clock=0,last=0;
  const resize=new ResizeObserver(()=>{const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;const half=Math.max(6.7,8.5*h/w);camera.left=-half*w/h;camera.right=half*w/h;camera.top=half;camera.bottom=-half;camera.updateProjectionMatrix();renderer.setSize(w,h,false);});resize.observe(host);
  const observer=new IntersectionObserver(([e])=>visible=e.isIntersecting);observer.observe(host);
- renderer.setAnimationLoop(t=>{const dt=last?Math.min(.05,(t-last)/1000):0;last=t;if(!visible)return;if(motion)clock+=dt*.09;for(const route of routes)route.pulses.forEach((bead,i)=>{let f=(clock+i/route.pulses.length)%1;if(route.reverse)f=1-f;bead.position.copy(route.path.getPointAt(f));bead.position.z+=route.offset;});renderer.render(scene,camera);});
- return {setMotion(v){motion=v;},destroy(){renderer.setAnimationLoop(null);resize.disconnect();observer.disconnect();orbit.dispose();scene.traverse(o=>{o.geometry?.dispose();if(o.material)for(const m of [].concat(o.material))m.dispose();});renderer.dispose();renderer.domElement.remove();}};
+ renderer.setAnimationLoop(time => {
+  const dt = last ? Math.min(.05,(time-last)/1000) : 0;
+  last = time;
+  if (!visible) return;
+  if (motion && connected) clock += dt*.09;
+  for (const {path,pulses,reverse,offset} of routes) {
+   pulses.forEach((bead,i) => {
+    bead.visible = connected;
+    const phase = (clock+i/pulses.length)%1;
+    path.getPointAt(reverse ? 1-phase : phase, bead.position);
+    bead.position.z += offset;
+   });
+  }
+  reservoirFlow?.draw(clock*12, connected);
+  renderer.render(scene,camera);
+ });
+ return {
+  setMotion(value) { motion = value; },
+  setConnected(value) {
+   connected = value;
+   reservoirFlow?.setConnected(value);
+  },
+  destroy() {
+   renderer.setAnimationLoop(null);
+   resize.disconnect();
+   observer.disconnect();
+   orbit.dispose();
+   const geometries = new Set(), materials = new Set();
+   scene.traverse(item => {
+    if (item.geometry) geometries.add(item.geometry);
+    if (item.material) materials.add(item.material);
+   });
+   geometries.forEach(geometry => geometry.dispose());
+   materials.forEach(material => material.dispose());
+   renderer.dispose();
+   renderer.domElement.remove();
+  },
+ };
 }

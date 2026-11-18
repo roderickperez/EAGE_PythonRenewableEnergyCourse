@@ -1,5 +1,5 @@
 import {conduction,areas,energy} from './closed-loop-model.js';
-import {mountClosedLoopScene} from './closed-loop-scene.js';
+import {mountGeothermalSystemScene} from './closed-loop-scene.js';
 import css from './closed-loop.css';
 
 const root=document.querySelector('#explorer'),style=document.createElement('style');style.textContent=css;document.head.append(style);
@@ -11,16 +11,94 @@ const specs={
  energy:{title:'Thermal energy and available work',intro:'Constant inlet/outlet enthalpy and entropy differences over a selected duration.',controls:[['flow','Mass flow ṁ',0,150,1,50,'kg/s'],['dh','Enthalpy difference Δh',0,700,10,300,'kJ/kg'],['ds','Entropy difference Δs',0,1,.01,.2,'kJ/(kg K)'],['ambient','Ambient temperature',270,330,1,300,'K'],['years','Operating duration',0,40,1,1,'years']]}
 };
 function lineChart(points,xmax,ymin,ymax,xlabel,ylabel,selected){const x=v=>55+v/xmax*500,y=v=>180-(v-ymin)/(ymax-ymin)*155;let grid='';for(let i=0;i<=4;i++){const xx=55+500*i/4;grid+=`<path d="M${xx} 25V180" stroke="#e5eff0"/><text x="${xx}" y="199" text-anchor="middle">${fmt(xmax*i/4,1)}</text>`;}return `<svg viewBox="0 0 600 235" role="img" aria-label="${ylabel} versus ${xlabel}"><g font-size="12" fill="#526b77" font-family="system-ui">${grid}<path d="M55 25V180H555" fill="none" stroke="#9db5bb"/><text x="3" y="32">${fmt(ymax,1)}</text><text x="3" y="182">${fmt(ymin,1)}</text><text x="300" y="224" text-anchor="middle">${xlabel}</text><text x="60" y="16">${ylabel}</text><path d="${points.map((p,i)=>`${i?'L':'M'}${x(p[0]).toFixed(1)} ${y(p[1]).toFixed(1)}`).join(' ')}" fill="none" stroke="#16879d" stroke-width="3"/><circle cx="${x(selected[0])}" cy="${y(selected[1])}" r="5" fill="#c44f3e"/></g></svg>`;}
-if(mode==='systems'){
- root.innerHTML=`<section class="loop-card"><h2>U-shaped and coaxial closed loops</h2><p>Explore each design independently. Drag to orbit and scroll to zoom; blue shows cool inlet flow and red shows warm return flow.</p><div class="loop-scenes">${[['u','U-shaped','Two wells connected by a lateral'],['coax','Coaxial','Down the annulus and back through the inner tube']].map(([id,name,description])=>`<article class="loop-view"><h3>${name}</h3><div class="loop-scene"><div class="loop-three" data-scene="${id}" aria-label="${name} closed-loop geothermal system" role="img"></div><button class="loop-motion" data-button="${id}" aria-label="Pause ${name} animation">■</button></div><div class="loop-caption">${description} · Drag to orbit</div><div class="loop-legend"><span>● Cool inlet</span><span>● Warm return</span></div></article>`).join('')}</div><p class="loop-note">The exposed, enlarged pipes illustrate sealed flow paths. Rock layers and the surface plant are schematic; flow speed and heat transfer are not simulated.</p></section>`;
- const scenes=[];
- for(const [id,name] of [['u','U-shaped'],['coax','Coaxial']]){
-  const target=root.querySelector(`[data-scene="${id}"]`),button=root.querySelector(`[data-button="${id}"]`);let scene,motion=true;
-  try{scene=mountClosedLoopScene(target,id);scenes.push(scene);}catch(e){target.textContent='3D view unavailable.';button.disabled=true;console.warn(e);}
-  button.onclick=()=>{motion=!motion;button.textContent=motion?'■':'▶';button.setAttribute('aria-label',`${motion?'Pause':'Play'} ${name} animation`);scene?.setMotion(motion);};
- }
- window.addEventListener('pagehide',()=>scenes.forEach(scene=>scene.destroy()));
+if (mode === 'systems') {
+ const views = [
+  ['hydrothermal', 'Conventional hydrothermal', 'Brine moves through naturally permeable rock between wells.'],
+  ['egs', 'Enhanced geothermal (EGS)', 'Injected water moves through an engineered fracture network.'],
+  ['u', 'U-shaped', 'A sealed lateral joins the two well legs.'],
+  ['coax', 'Coaxial', 'Fluid goes down the annulus and returns through the inner tube.'],
+ ];
 
+ function view([id, name, description]) {
+  return `<div class="loop-view-panel" data-panel="${id}" ${id === 'coax' ? 'hidden' : ''}>
+    <div class="loop-scene">
+      <div class="loop-three" aria-label="${name} geothermal cutaway" role="img"></div>
+      <button type="button" class="loop-motion" aria-label="Pause ${name} animation">■</button>
+    </div>
+    <div class="loop-caption">${description}</div>
+  </div>`;
+ }
+
+ root.innerHTML = `<section class="loop-card">
+  <h2>Compare geothermal flow paths</h2>
+  <p>Follow the dots underground. Drag each view to orbit and scroll to zoom.</p>
+  <div class="loop-scenes">
+   <article class="loop-view">
+    <h3>Conventional hydrothermal</h3>
+    ${view(views[0])}
+   </article>
+   <article class="loop-view">
+    <h3>Enhanced geothermal (EGS)</h3>
+    ${view(views[1])}
+    <div class="loop-option">
+     <label><input id="egs-connection" type="checkbox" checked> Fractures connect both wells</label>
+     <span id="egs-status" role="status">Water reaches the production well.</span>
+    </div>
+   </article>
+   <article class="loop-view">
+    <h3>Deep closed loop</h3>
+    ${view(views[2])}${view(views[3])}
+    <div class="loop-option">
+     <label for="closed-geometry">Well geometry</label>
+     <select id="closed-geometry"><option value="u">U-shaped</option><option value="coax">Coaxial</option></select>
+    </div>
+   </article>
+  </div>
+  <div class="loop-legend"><span>● Cool inlet</span><span>● Warm return</span></div>
+  <p class="loop-note">Dots and dashed traces show illustrative flow paths. Well trajectories, fracture size and flow speed are schematic.</p>
+ </section>`;
+
+ const scenes = new Map();
+ function mount([id, name]) {
+  if (scenes.has(id)) return;
+  const panel = root.querySelector(`[data-panel="${id}"]`);
+  const target = panel.querySelector('.loop-three');
+  const button = panel.querySelector('.loop-motion');
+  let scene;
+  try {
+   scene = mountGeothermalSystemScene(target, id);
+   scenes.set(id, scene);
+  } catch (error) {
+   target.textContent = '3D view unavailable.';
+   button.disabled = true;
+   console.warn(error);
+   return;
+  }
+  let motion = true;
+  button.addEventListener('click', () => {
+   motion = !motion;
+   button.textContent = motion ? '■' : '▶';
+   button.setAttribute('aria-label', `${motion ? 'Pause' : 'Play'} ${name} animation`);
+   scene.setMotion(motion);
+  });
+ }
+
+ views.slice(0, 3).forEach(mount);
+ root.querySelector('#egs-connection').addEventListener('change', event => {
+  const connected = event.target.checked;
+  scenes.get('egs')?.setConnected(connected);
+  root.querySelector('#egs-status').textContent = connected
+   ? 'Water reaches the production well.'
+   : 'The interrupted paths stop circulation between wells.';
+ });
+ root.querySelector('#closed-geometry').addEventListener('change', event => {
+  const geometry = event.target.value;
+  for (const id of ['u', 'coax']) root.querySelector(`[data-panel="${id}"]`).hidden = id !== geometry;
+  mount(views.find(([id]) => id === geometry));
+ });
+ window.addEventListener('pagehide', () => {
+  for (const scene of scenes.values()) scene.destroy();
+ });
 } else {
  const spec=specs[mode];root.innerHTML=`<section class="loop-card"><h2>${spec.title}</h2><p>${spec.intro}</p><div class="loop-result" aria-live="polite"></div><div class="loop-plot"></div><div class="loop-controls">${spec.controls.map(([id,label,min,max,step,value,unit])=>`<label>${label}<output data-out="${id}"></output><input type="range" data-id="${id}" min="${min}" max="${max}" step="${step}" value="${value}"><small>${unit}</small></label>`).join('')}</div><p class="loop-note"></p></section>`;
  const $=s=>root.querySelector(s),read=()=>Object.fromEntries(spec.controls.map(([id])=>[id,$(`[data-id="${id}"]`).valueAsNumber]));
@@ -31,4 +109,9 @@ if(mode==='systems'){
  }catch(e){$('.loop-result').textContent=e.message;$('.loop-plot').innerHTML='';$('.loop-note').textContent='Adjust the inputs to continue.';}}
  for(const el of root.querySelectorAll('input'))el.addEventListener('input',update);update();
 }
-if(window.frameElement)new ResizeObserver(()=>window.frameElement?.style.setProperty('--geothermal-equation-height',`${Math.ceil(root.getBoundingClientRect().height)+4}px`)).observe(root);
+const frame = window.frameElement;
+if (frame) {
+ new ResizeObserver(() => {
+  frame.style.height = Math.ceil(root.getBoundingClientRect().height + 4) + 'px';
+ }).observe(root);
+}

@@ -237,7 +237,7 @@ async function route() {
       ['geo-compact-carnot-explorer', 'equations.html?demo=carnot', 'Carnot limit explorer', 'geothermal-lab'],
       ['geo-compact-energy-explorer', 'equations.html?demo=energy', 'Energy and availability explorer', 'geothermal-lab'],
       ['geo-compact-decline-explorer', 'equations.html?demo=decline', 'Annual decline explorer', 'geothermal-lab'],
-      ['geo-closed-systems', 'closed-loop.html?demo=systems&v=3', 'Animated closed-loop systems', 'geothermal-lab'],
+      ['geo-closed-systems', 'closed-loop.html?demo=systems&v=4', 'Interactive geothermal system comparison', 'geothermal-lab'],
       ['geo-closed-conduction', 'closed-loop.html?demo=conduction', 'Transient rock conduction explorer', 'geothermal-lab'],
       ['geo-closed-area', 'closed-loop.html?demo=area', 'Coaxial tube flow areas explorer', 'geothermal-lab'],
       ['geo-closed-energy', 'closed-loop.html?demo=energy', 'Thermal energy and available work explorer', 'geothermal-lab'],
@@ -267,8 +267,8 @@ async function route() {
         mount: async host => (await import('./generated/wind-lab/wind-lab.js')).mountWindLab(host),
       },
       'section6/geothermalEnergy.md': {
-        anchor: '#closed-loop-designs-u-shaped-and-coaxial', id: 'geothermal-3d-lab',
-        mount: async host => (await import('./generated/geothermal-lab/geothermal-lab.js?v=hydrothermal-caption')).mountGeothermalLab(host),
+        anchor: '#three-ways-to-extract-geothermal-heat', id: 'geothermal-3d-lab',
+        mount: async host => (await import('./generated/geothermal-lab/geothermal-lab.js?v=reservoir-flow')).mountGeothermalLab(host),
       },
       'section8/projectIntro.md': {
         anchor: '#load-the-separate-input-datasets', id: 'project-3d-map',

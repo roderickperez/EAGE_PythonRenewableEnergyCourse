@@ -20,44 +20,46 @@ After this lesson you should be able to:
 
 Electricity generation requires a heat resource, a way to bring heat to the surface and a plant that can convert part of that heat into electricity. The course compares **three deep heat-extraction approaches**. You can identify each one by following the fluid between the inlet and outlet.
 
-## Three ways to extract geothermal heat
-
-| Subsurface approach | How the fluid travels underground | Key questions for design and modelling |
-|---|---|---|
-| **Conventional hydrothermal** | A production well draws naturally occurring hot water or steam from a permeable formation. Where a reinjection well returns fluid, it releases the fluid into rock pores and fractures. | Is there enough naturally connected permeability to sustain useful flow? How will pressure, chemistry and production temperature respond to extraction and reinjection? |
-| **Enhanced geothermal system (EGS)** | In a typical two-well EGS, stimulation opens or improves connections between fractures in hot rock. Injected fluid travels through that engineered reservoir and returns through a production well. | How well do the fractures connect the wells? How much rock does the fluid contact? Measure injectivity, fluid losses, cooling and induced seismicity. |
-| **Deep closed-loop system** | The working fluid stays inside sealed tubing. Heat crosses the well wall from the formation. A U-shaped loop has two legs joined by a sealed lateral. A coaxial loop uses two concentric passages in one borehole. | How much heat reaches the well over time? Consider thermal conductivity, contact length, spacing, insulation and pumping losses. |
-
-Conventional hydrothermal and EGS both exchange fluid with the formation. The distinction is whether the project relies primarily on naturally productive pathways or engineers the connectivity needed for circulation. A sealed closed loop can operate in low-permeability rock. Permeability can still affect how groundwater carries heat toward the outside of a sealed well. [@grant2011], §§2.2–2.5. [@doeGeothermalLiftoff; @white2024closedloop]
-
-**Read the first animation as a hydrothermal doublet feeding a binary-cycle plant.** Hot brine rises through the red production well, gives up heat in the surface heat exchanger, then returns through the blue reinjection well. The two exposed well pipes end separately because reservoir fluid moves through pores and fractures between wells. The cutaway omits those underground flow paths. Above ground, a separate working fluid takes heat from the brine and drives the turbine. The Field Designer simulates flow through a permeable layer between injectors and producers. [@grant2011], §§2.2.3 and 2.3.3. [@doeGeothermalElectricity]
-
 :::{iframe} ../../geothermal-lab/index.html
 :width: 100%
 :title: Interactive three-dimensional geothermal binary-cycle plant
 :height: 1350px
 :::
 
-## Closed-loop designs: U-shaped and coaxial
+## Three ways to extract geothermal heat
 
-The two animations below show **two closed-loop geometries**. In the **U-shaped** design, the blue downflow and red upflow occupy separate well legs. A continuous sealed lateral joins them at depth. In the **coaxial** design, one borehole houses an outer annulus and an inner pipe. In the configuration shown, fluid goes down the annulus, turns at the toe and returns inside the inner pipe. The sealed passage carries the fluid in both designs, with heat entering through the borehole wall. [@white2024closedloop], Figs. 1–2.
+In the first animation, hot brine rises through the red production well and gives up heat in the plant's heat exchanger. Cooled brine goes down the blue reinjection well. Follow the dots through the permeable reservoir from reinjection toward production. The cutaway projects representative flow paths onto the rock face. At the surface, a separate working fluid takes heat from the brine and drives the binary-cycle turbine. The Field Designer also models flow through a permeable layer between injectors and producers. [@grant2011], §§2.2.3 and 2.3.3. [@doeGeothermalElectricity]
+
+| Subsurface approach | Where the fluid travels underground | What to evaluate |
+|---|---|---|
+| **Conventional hydrothermal** | A well produces naturally occurring hot water or steam. Where the project reinjects fluid, it returns through naturally permeable pores and fractures. | Connected permeability, pressure, fluid chemistry, recharge and cooling from reinjection. |
+| **Enhanced geothermal system (EGS)** | A typical two-well system uses stimulation to improve fracture connectivity in hot rock. Injected water crosses the engineered reservoir to a production well. | Fracture connectivity, contact area, injectivity, fluid losses, cooling and induced seismicity. |
+| **Deep closed-loop system** | A working fluid circulates inside sealed tubing. Heat crosses the well wall from the formation. | Heat transfer through the formation and well, contact length, insulation and pumping losses. |
+
+Hydrothermal and EGS wells both exchange fluid with the formation. The distinction is whether naturally productive pathways already support circulation or the project must engineer connectivity. Sealed closed loops can operate in low-permeability rock. Where groundwater is mobile, it can carry heat toward the outside of a sealed well. [@grant2011], §§2.2–2.5. [@doeGeothermalLiftoff; @doeGeoForge; @white2024closedloop]
+
+## Comparing hydrothermal, EGS and closed-loop flow
+
+Use the three views to follow fluid underground. In the **hydrothermal** view it spreads through permeable rock. In the **EGS** view it follows connected fractures. Switch off **Fractures connect both wells** to see a schematic case where the two wells lack a through-flow path. This control illustrates connectivity after stimulation. [@doeGeoForge]
 
 (geo-closed-systems)=
-:::{iframe} ../../geothermal-lab/closed-loop.html?demo=systems&v=3
+:::{iframe} ../../geothermal-lab/closed-loop.html?demo=systems&v=4
 :width: 100%
 :height: 650px
-:title: Animated U-shaped and coaxial closed-loop geothermal systems
+:title: Interactive geothermal system comparison
 :::
 
-Blue identifies the cooler inlet and red the warmer return. The animation exposes and enlarges the pipes so you can trace the flow. White et al. model these designs using water and supercritical CO₂ for both direct heat and electricity. Their Figure 2 shows how the fluid couples the study's separate formation segments. [@white2024closedloop]
+### Closed-loop designs: U-shaped and coaxial
+
+Use **Well geometry** in the closed-loop view to switch between two ways of keeping the fluid in a sealed circuit. In the U-shaped layout, one or more sealed laterals connect descending and ascending legs. In the coaxial layout, a single borehole contains both the outer annulus and inner tube. The example sends fluid down the annulus and back up the inner tube after it turns at the toe. A coaxial well can be vertical or include a lateral. [@white2024closedloop], Figs. 1–2.
 
 | Design question | U-shaped | Coaxial |
 |---|---|---|
-| Where do the streams meet? | At the connected lateral and bends, which form a continuous path between two surface wellheads. | At the turn near the bottom or toe of the same borehole. |
-| Where is unwanted heat transfer possible? | The return leg can lose heat to cooler strata on its way up. | Heat can pass from the warm return to the cooler inlet through the inner pipe wall. Insulation can limit that transfer. |
-| What limits the flow or heat recovered? | The total drilled path, lateral length and pipe size affect heat transfer and pump demand. Multiple sealed laterals can provide more contact area but introduce flow splitting and thermal interference. | The diameters set the available annular and inner-tube areas. Both affect velocity and pressure losses. Vertical and laterally extended layouts are possible, and the downflow direction may be reversed. |
+| How does fluid reach the return passage? | It follows a sealed lateral to the rising well leg. | It turns at the bottom or toe into the inner tube. |
+| Where can heat be lost along the return path? | The return leg can transfer heat to cooler surrounding strata. | Heat can pass across the inner pipe wall from warm return fluid to cooler inlet fluid. |
+| Which choices affect heat capture and pumping? | Lateral length, pipe diameter and insulation affect heat gain and pressure losses. Parallel laterals add contact area and can thermally interfere with each other. | The diameters set the inner and annular flow areas. Insulation and flow direction influence heat exchange between the two streams. |
 
-The study's two basic arrangements describe how the fluid is routed. A **multilateral U-loop** adds parallel underground paths within the U-shaped family. A **vertical coaxial well** and a **coaxial well with a lateral** both use the same pipe-in-pipe arrangement. For a fair comparison, specify the fluid, geometry, formation and operating conditions along with the performance metric. [@white2024closedloop]
+The following equations and performance examples focus on **sealed closed loops**. White et al. examine both well geometries, two working fluids and two end uses. For comparison with EGS or hydrothermal fields, use the same output metric and state the resource and operating assumptions. The surface choice of dry steam, flash or binary conversion is covered later in the chapter. [@white2024closedloop; @doeGeothermalElectricity]
 
 ### Heat transfer, flow area and useful energy
 
@@ -87,7 +89,7 @@ Use consistent diameter definitions and units. For example, $D_i=0.10$ m, $D_o=0
 :title: Coaxial tube flow areas explorer
 :::
 
-At the fluid boundary, the paper defines thermal energy and an idealized maximum available work over time as
+At the closed-loop fluid boundary, White et al. define thermal energy and idealized available work over time as
 
 $$E_{thermal}=\int_0^\tau\dot m(h_{out}-h_{in})\,dt, \qquad E_{available}=\int_0^\tau\dot m[(h_{out}-h_{in})-T_{amb}(s_{out}-s_{in})]\,dt.$$
 
@@ -209,7 +211,7 @@ where thermal conductivity $k_T$ is W/(m K) and heat flux $\mathbf q$ is W/m². 
 
 ## The surface plant and its energy boundaries
 
-A typical conversion chain is **reservoir → production well → fluid collection/separation or heat exchanger → power cycle → generator → cooling/auxiliaries → reinjection**, with the detailed route depending on fluid state and technology. Pressure losses, pumping work and heat losses occur between reservoir and delivered output. [@doeGeothermalElectricity]; reservoir-to-well limits: [@grant2011], Chapter 2.
+Trace the fluid circuit and the energy conversion separately. In the hydrothermal binary-cycle example, brine goes from the production well to a heat exchanger and then to reinjection. Heat passes into a separate cycle whose vapor turns the turbine, which drives the generator. In a sealed deep loop, the cooled geothermal working fluid returns to the downflow passage. Pumping, cooling and heat losses affect the net electricity delivered. [@doeGeothermalElectricity; @white2024closedloop]
 
 ### Dry-steam, flash and binary conversion
 
@@ -375,7 +377,7 @@ The reservoir-to-fluid heat transfer, pressure losses and detailed power-cycle b
 
 ## Environmental context and the route to Python
 
-Geothermal projects need attention to fluid chemistry, scaling, corrosion, water use, noncondensable gases, injection management, possible subsidence and induced seismicity. The relevance and magnitude of each issue depend on the resource and operating method. Reinjection is not simply waste disposal; it interacts with the hydraulic and thermal behavior of the field [@grant2011].
+In hydrothermal fields, formation-fluid chemistry can cause scaling, corrosion and gas-handling problems. Reinjection placement affects reservoir pressure and cooling. EGS adds the need to characterize stimulation response, water losses and induced seismicity. A sealed loop avoids producing formation brine and still requires sound well construction, fluid containment, pumping and surface heat rejection. Impacts depend on the site and the operating method. [@grant2011; @doeGeothermalLiftoff; @white2024closedloop]
 
 Exercises 1–4 cover the Basic skills, Exercises 5–12 apply the models in Medium tasks, and Exercises 13–20 combine models, data, and validation in Hard tasks. Read Grant and Bixley Chapters 2–3 for the reservoir basis; use the additional DiPippo text to extend from the simplified heat balance toward actual surface conversion cycles [@grant2011; @diPippo2016geothermal].
 

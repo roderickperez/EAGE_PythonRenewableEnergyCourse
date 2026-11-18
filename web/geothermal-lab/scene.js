@@ -1,5 +1,6 @@
 import * as T from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { createReservoirFlow } from './reservoir-flow.js';
 
 export function mountGeothermalScene(host, tooltip) {
   const scene = new T.Scene();
@@ -157,6 +158,8 @@ export function mountGeothermalScene(host, tooltip) {
   pipe([[3.49,.43,.82],[3.49,.49,.15],[3.49,1.11,-.46]],.086,liquid,'#a6ddf4','cycle','Condenser coolant to dry cooler',5);
   pipe([[3.81,1.11,-.46],[3.81,.52,.11],[3.81,.48,.79]],.086,cool,'#8ee9ff','cycle','Coolant return from dry cooler',5);
 
+  const reservoirFlow = createReservoirFlow(scene, [4.58,-3.88,3.08], [-5.1,-3.8,3.08]);
+  let reservoirDistance = 0;
   let state, animate, dirty = true, visible = true, last = 0;
   const ray = new T.Raycaster();
   const cursor = new T.Vector2();
@@ -205,6 +208,8 @@ export function mountGeothermalScene(host, tooltip) {
         }
       });
     }
+    if (animate && state.brine > 0) reservoirDistance += dt * Math.min(4,.5+state.brine);
+    reservoirFlow.draw(reservoirDistance, state.brine > 0);
     renderer.render(scene,camera);
     dirty=false;
   });

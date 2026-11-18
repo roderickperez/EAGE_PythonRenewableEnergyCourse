@@ -72,6 +72,11 @@ def validate():
     assert (OUT / 'geothermal-lab' / 'geothermal-lab.js').is_file()
     geothermal_page = pages['section6/geothermalEnergy.md']['html']
     assert 'geothermal-lab/index.html' not in geothermal_page
+    assert geothermal_page.index('id="three-ways-to-extract-geothermal-heat"') < geothermal_page.index('id="comparing-hydrothermal-egs-and-closed-loop-flow"')
+    assert geothermal_page.index('id="comparing-hydrothermal-egs-and-closed-loop-flow"') < geothermal_page.index('id="closed-loop-designs-u-shaped-and-coaxial"')
+    assert "anchor: '#three-ways-to-extract-geothermal-heat', id: 'geothermal-3d-lab'" in (
+        ROOT / 'EAGE_pythonSandBox' / 'app.js'
+    ).read_text(encoding='utf-8')
     assert 'id="physical-description-useful-heat-from-the-subsurface"' in geothermal_page
     for demo in ('darcy', 'gradient', 'heat', 'carnot', 'conversion', 'pump', 'heatpump', 'storage', 'decline', 'energy', 'worked',
                  'compact-gradient', 'compact-heat', 'compact-carnot', 'compact-efficiency', 'compact-energy', 'compact-decline'):
