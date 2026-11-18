@@ -30,9 +30,9 @@ Electricity generation requires useful heat plus a way to transport it to the su
 In a **closed-loop geothermal system**, a working fluid circulates inside sealed conduits and exchanges heat with the surrounding formation. In an ideal sealed loop the circulating fluid does not enter the formation; heat transfer through the borehole wall and rock is central. This differs from hydrothermal production and injection, where reservoir fluid flows through the rock. White et al. study both water and supercritical CO₂, a range of geometries and operating conditions, and both direct heat use and electricity production [@white2024closedloop].
 
 (geo-closed-systems)=
-:::{iframe} ../../geothermal-lab/closed-loop.html?demo=systems
+:::{iframe} ../../geothermal-lab/closed-loop.html?demo=systems&v=2
 :width: 100%
-:height: 530px
+:height: 650px
 :title: Animated U-shaped and coaxial closed-loop geothermal systems
 :::
 

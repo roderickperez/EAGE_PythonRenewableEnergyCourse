@@ -1,21 +1,72 @@
 import * as T from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 
-export function mountClosedLoopScene(host){
- const scene=new T.Scene();scene.background=new T.Color('#e6eff3');const renderer=new T.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.outputColorSpace=T.SRGBColorSpace;host.append(renderer.domElement);
- const camera=new T.OrthographicCamera(-13,13,8,-8,.1,120);camera.position.set(22,19,30);const orbit=new OrbitControls(camera,renderer.domElement);Object.assign(orbit,{enablePan:false,minZoom:.7,maxZoom:2.8,minPolarAngle:.3,maxPolarAngle:1.4});orbit.target.set(0,-.8,0);orbit.update();
- scene.add(new T.HemisphereLight(0xe6f5ff,0x7f8568,2.2));const sun=new T.DirectionalLight(0xffedcd,2.4);sun.position.set(-7,20,9);scene.add(sun);
- function box(w,h,d,c,x,y,z){const m=new T.Mesh(new T.BoxGeometry(w,h,d),new T.MeshStandardMaterial({color:c,roughness:.8}));m.position.set(x,y,z);scene.add(m);}
- for(const x of [-5.7,5.7]){box(9,.38,6,'#879f7e',x,.1,0);box(9,1.15,6,'#b99b80',x,-.65,0);box(9,1.1,6,'#8f8274',x,-1.75,0);box(9,1.0,6,'#518289',x,-2.8,0);box(9,.35,6,'#685c58',x,-3.48,0);box(2,.5,1.3,'#dce7e6',x, .55,-.8);box(1.3,.8,.85,'#c6d4d8',x,1.18,-.8);}
- const pipeZ=3.12;
- function curve(points){return new T.CatmullRomCurve3(points.map(p=>new T.Vector3(...p)),false,'centripetal');}
- function tube(path,r,col,opacity=1){const mesh=new T.Mesh(new T.TubeGeometry(path,80,r,10,false),new T.MeshStandardMaterial({color:col,transparent:opacity<1,opacity,depthWrite:opacity===1}));scene.add(mesh);}
- const cold=curve([[-8.7,.55,pipeZ],[-8.7,-.8,pipeZ],[-8.7,-2.8,pipeZ],[-8.2,-3.05,pipeZ],[-5.7,-3.05,pipeZ]]);
- const hot=curve([[-5.7,-3.05,pipeZ],[-3.2,-3.05,pipeZ],[-2.7,-2.8,pipeZ],[-2.7,-.8,pipeZ],[-2.7,.55,pipeZ]]);
- const coax=curve([[3.1,.55,pipeZ],[3.1,-.9,pipeZ],[3.1,-2.8,pipeZ],[3.6,-3.05,pipeZ],[8.7,-3.05,pipeZ]]);
- tube(cold,.16,'#258ac0');tube(hot,.16,'#d4553f');tube(coax,.27,'#258ac0',.55);tube(coax,.115,'#d4553f');
- const beads=[];for(const [path,reverse,col,offset] of [[cold,false,'#d7f9ff',0],[hot,false,'#ffdbb5',0],[coax,false,'#d7f9ff',.2],[coax,true,'#ffdbb5',-.12]])for(let i=0;i<7;i++){const m=new T.Mesh(new T.SphereGeometry(.11,10,8),new T.MeshBasicMaterial({color:col}));scene.add(m);beads.push({m,path,reverse,offset,phase:i/7});}
- let visible=true,motion=true,clock=0,last=0;const resize=new ResizeObserver(()=>{const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;const half=Math.max(7.4,11*h/w);camera.left=-half*w/h;camera.right=half*w/h;camera.top=half;camera.bottom=-half;camera.updateProjectionMatrix();renderer.setSize(w,h,false);});resize.observe(host);const observer=new IntersectionObserver(([e])=>visible=e.isIntersecting);observer.observe(host);
- renderer.setAnimationLoop(t=>{const dt=last?Math.min(.05,(t-last)/1000):0;last=t;if(!visible)return;if(motion)clock+=dt*.10;for(const b of beads){let f=(clock+b.phase)%1;if(b.reverse)f=1-f;b.m.position.copy(b.path.getPointAt(f));b.m.position.z+=b.offset;}renderer.render(scene,camera);});
+// Two separate scenes intentionally use the same rock palette and cutaway visual
+// language as the larger geothermal plant, while depicting sealed flow paths.
+export function mountClosedLoopScene(host, kind) {
+ const scene=new T.Scene(); scene.background=new T.Color('#e6eff3');
+ const renderer=new T.WebGLRenderer({antialias:true}); renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+ renderer.shadowMap.enabled=true; renderer.toneMapping=T.ACESFilmicToneMapping; host.append(renderer.domElement);
+ const camera=new T.OrthographicCamera(-10,10,7,-7,.1,90); camera.position.set(8,8,21);
+ const orbit=new OrbitControls(camera,renderer.domElement);
+ Object.assign(orbit,{enablePan:false,minZoom:.8,maxZoom:2.5,minAzimuthAngle:-.55,maxAzimuthAngle:.63,minPolarAngle:.69,maxPolarAngle:1.51});
+ orbit.target.set(0,-.3,0); orbit.update();
+ scene.add(new T.HemisphereLight(0xe3f3ff,0xa18b78,2.3));
+ const sun=new T.DirectionalLight(0xffedcd,3); sun.position.set(-7,15,9); sun.castShadow=true;
+ sun.shadow.mapSize.set(1024,1024); Object.assign(sun.shadow.camera,{left:-12,right:12,top:12,bottom:-12}); sun.shadow.normalBias=.04; scene.add(sun);
+ const mat=(color,metalness=0)=>new T.MeshStandardMaterial({color,roughness:.58,metalness});
+ const concrete=mat('#cbd1ca'),steel=mat('#8396a1',.48),dark=mat('#344954',.45),hot=mat('#c45634'),cool=mat('#247fae'),chrome=mat('#b7c4c8',.4),copper=mat('#b86c47',.38);
+ function mesh(geometry,material,position){const o=new T.Mesh(geometry,material);o.position.set(...position);o.castShadow=o.receiveShadow=true;scene.add(o);return o;}
+ function box(size,material,position){return mesh(new T.BoxGeometry(...size),material,position);}
+ function cyl(r,h,material,position){return mesh(new T.CylinderGeometry(r,r,h,24),material,position);}
+ function bar(a,b,r){const start=new T.Vector3(...a),delta=new T.Vector3(...b).sub(start);const o=cyl(r,delta.length(),dark,start.addScaledVector(delta,.5).toArray());o.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),delta.normalize());}
+ box([13,.3,7.2],mat('#738765'),[0,-.13,-.55]);
+ box([12.9,.65,7.1],mat('#a48669'),[0,-.6,-.55]);
+ box([12.85,2.25,7.03],mat('#8d8073'),[0,-2.03,-.55]);
+ box([12.8,1.34,6.98],mat('#587f8c'),[0,-3.79,-.55]);
+ box([12.75,.62,6.93],mat('#675b60'),[0,-4.75,-.55]);
+ const rock=new T.DodecahedronGeometry(.16,0), rockMats=['#756d65','#aa9984','#71969c','#426875'].map(c=>mat(c));
+ let seed=6123;const sample=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/2**32;};
+ for(let i=0;i<32;i++){const o=mesh(rock,rockMats[i%4],[-6+sample()*12,i%2?-3.25-sample():-1.02-sample()*1.9,2.97]);o.scale.set(.55+sample()*.8,.36+sample()*.6,.37);o.rotation.z=sample()*Math.PI*2;}
+ const bark=mat('#665447'),foliage=[mat('#4d725c'),mat('#638067')],cone=new T.ConeGeometry(.44,.94,10);
+ for(const [x,z,s] of [[-5.7,-2.8,1],[-4.5,-3.2,.8],[-3.4,-3.1,1],[.8,-3.25,.8],[2,-3.3,1],[5.5,-3.2,.8]]){
+  cyl(.09,.8*s,bark,[x,.4*s,z]);for(let j=0;j<3;j++)mesh(cone,foliage[j%2],[x,(.94+.3*j)*s,z]).scale.setScalar(s*(1-j*.13));
+ }
+ // A compact plant and electricity connection echo the main animation.
+ box([6.8,.14,3],concrete,[0,.08,.4]);
+ box([1.3,1.2,1.15],dark,[-2.1,.75,.5]);
+ for(let i=0;i<8;i++)box([1.4,.045,1.22],chrome,[-2.1,.23+i*.15,.5]);
+ box([3.1,.22,1.55],concrete,[.3,.25,.5]);
+ box([3.1,1.5,.16],mat('#c0cecc'),[.3,1,-.3]);
+ const generator=cyl(.52,1.15,copper,[.85,.98,.5]);generator.rotation.z=Math.PI/2;
+ for(let i=0;i<7;i++){const fin=cyl(.55,.04,steel,[.38+i*.15,.98,.5]);fin.rotation.z=Math.PI/2;}
+ box([1.25,.85,1],steel,[2.6,.52,.4]);
+ const pylon=[4.6,-1.8];
+ for(const x of [-1,1])for(const z of [-1,1])bar([pylon[0]+x*.52,.02,pylon[1]+z*.4],[pylon[0]+x*.13,3.5,pylon[1]+z*.1],.033);
+ for(const x of [-1,1])for(let i=0;i<4;i++)bar([pylon[0]-x*(.52-i*.09),i*.8,pylon[1]+.35],[pylon[0]+x*(.45-i*.09),(i+1)*.8,pylon[1]+.3],.025);
+ bar([3.8,3.05,pylon[1]],[5.4,3.05,pylon[1]],.04);
+ const routes=[];function curve(points){return new T.CatmullRomCurve3(points.map(p=>new T.Vector3(...p)),false,'centripetal');}
+ function pipe(path,r,material,color,reverse=false,offset=0,count=8){mesh(new T.TubeGeometry(path,80,r,12,false),material,[0,0,0]);const pulses=[];for(let i=0;i<count;i++){const bead=mesh(new T.SphereGeometry(.075,10,8),new T.MeshBasicMaterial({color}),[0,0,0]);bead.castShadow=false;pulses.push(bead);}routes.push({path,pulses,reverse,offset});}
+ for(const o of [-.55,0,.55])pipe(curve([[2.9,1,-.2],[3.6,2,-1],[4.6+o,2.9,-1.8],[6,2.6,-2.6]]),.024,dark,'#ffd266',false,0,4);
+ const z=3.02;
+ function wellhead(x){cyl(.42,.25,concrete,[x,.16,2.55]);cyl(.21,.52,steel,[x,.42,2.55]);}
+ if(kind==='u'){
+  wellhead(-4.7);wellhead(4.7);
+  const cold=curve([[-2,.55,1],[-3,.42,2.5],[-4.7,.65,2.55],[-4.7,.4,z],[-4.7,-3.7,z],[-4.2,-4,z],[0,-4,z]]);
+  const warm=curve([[0,-4,z],[4.2,-4,z],[4.7,-3.7,z],[4.7,.4,z],[4.7,.65,2.55],[3.5,.45,2.35],[2.2,.55,1]]);
+  pipe(cold,.14,cool,'#8ee9ff');pipe(warm,.14,hot,'#ffbd80');
+ }else{
+  wellhead(-4.7);
+  const outer=curve([[-4.7,.48,z],[-4.7,-3.65,z],[-4.15,-4,z],[4.8,-4,z]]);
+  const surfaceIn=curve([[-2,.55,1],[-3,.42,2.5],[-4.7,.6,2.55],[-4.7,.48,z]]);
+  const surfaceOut=curve([[-4.7,.48,z],[-4.5,.8,2.55],[-3.4,1,1.7],[-2.7,.9,1]]);
+  const annulus=cool.clone();annulus.transparent=true;annulus.opacity=.42;annulus.depthWrite=false;
+  pipe(surfaceIn,.14,cool,'#8ee9ff');pipe(outer,.24,annulus,'#8ee9ff',false,.12,10);
+  pipe(outer,.105,hot,'#ffbd80',true,.16,10);pipe(surfaceOut,.12,hot,'#ffbd80');
+ }
+ let visible=true,motion=true,clock=0,last=0;
+ const resize=new ResizeObserver(()=>{const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;const half=Math.max(6.7,8.5*h/w);camera.left=-half*w/h;camera.right=half*w/h;camera.top=half;camera.bottom=-half;camera.updateProjectionMatrix();renderer.setSize(w,h,false);});resize.observe(host);
+ const observer=new IntersectionObserver(([e])=>visible=e.isIntersecting);observer.observe(host);
+ renderer.setAnimationLoop(t=>{const dt=last?Math.min(.05,(t-last)/1000):0;last=t;if(!visible)return;if(motion)clock+=dt*.09;for(const route of routes)route.pulses.forEach((bead,i)=>{let f=(clock+i/route.pulses.length)%1;if(route.reverse)f=1-f;bead.position.copy(route.path.getPointAt(f));bead.position.z+=route.offset;});renderer.render(scene,camera);});
  return {setMotion(v){motion=v;},destroy(){renderer.setAnimationLoop(null);resize.disconnect();observer.disconnect();orbit.dispose();scene.traverse(o=>{o.geometry?.dispose();if(o.material)for(const m of [].concat(o.material))m.dispose();});renderer.dispose();renderer.domElement.remove();}};
 }
