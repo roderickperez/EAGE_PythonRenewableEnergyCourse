@@ -1,6 +1,8 @@
-import {conduction,areas,energy} from './closed-loop-model.js';
+import {conduction} from './closed-loop-model.js';
 import {mountGeothermalSystemScene} from './closed-loop-scene.js';
 import css from './closed-loop.css';
+import { mountCoaxialCutaway } from './coaxial-cutaway.js';
+import { mountClosedLoopEquation } from './closed-loop-equations.js';
 
 const root=document.querySelector('#explorer'),style=document.createElement('style');style.textContent=css;document.head.append(style);
 const requested=new URLSearchParams(location.search).get('demo'),mode=['systems','conduction','area','energy'].includes(requested)?requested:'systems';
@@ -99,13 +101,13 @@ if (mode === 'systems') {
  window.addEventListener('pagehide', () => {
   for (const scene of scenes.values()) scene.destroy();
  });
+ } else if (mode === 'area' || mode === 'energy') {
+ mountClosedLoopEquation(root, mode, specs[mode], mountCoaxialCutaway);
 } else {
  const spec=specs[mode];root.innerHTML=`<section class="loop-card"><h2>${spec.title}</h2><p>${spec.intro}</p><div class="loop-result" aria-live="polite"></div><div class="loop-plot"></div><div class="loop-controls">${spec.controls.map(([id,label,min,max,step,value,unit])=>`<label>${label}<output data-out="${id}"></output><input type="range" data-id="${id}" min="${min}" max="${max}" step="${step}" value="${value}"><small>${unit}</small></label>`).join('')}</div><p class="loop-note"></p></section>`;
  const $=s=>root.querySelector(s),read=()=>Object.fromEntries(spec.controls.map(([id])=>[id,$(`[data-id="${id}"]`).valueAsNumber]));
  function update(){const p=read();for(const [id] of spec.controls)$(`[data-out="${id}"]`).textContent=fmt(p[id],4);try{
   if(mode==='conduction'){const a=conduction(p),points=Array.from({length:81},(_,i)=>{const d=i/8;return [d,conduction({...p,distance:d}).temperature];});$('.loop-result').textContent=`α = ${a.alpha.toExponential(2)} m²/s · effusivity = ${fmt(a.effusivity,0)} J/(m² K √s) · T(${p.distance} m) = ${fmt(a.temperature,1)} °C`;$('.loop-plot').innerHTML=lineChart(points,10,p.wall,p.far,'Distance from wall (m)','Rock temperature (°C)',[p.distance,a.temperature]);$('.loop-note').textContent='The red point shows the selected distance. The line is the 1D constant-wall-temperature solution; it does not model cylindrical geometry, fluid flow, or a whole geothermal well.';}
-  if(mode==='area'){const a=areas(p),scale=145/p.bore,outer=scale*p.bore/2,pipe=scale*p.outer/2,inner=scale*p.inner/2;$('.loop-result').textContent=`Tube = ${fmt(a.tube,4)} m² · annulus = ${fmt(a.annulus,4)} m² · ratio = ${fmt(a.ratio,2)}`;$('.loop-plot').innerHTML=`<svg viewBox="0 0 600 190" role="img" aria-label="Cross-section showing tube, wall and annular flow"><circle cx="145" cy="95" r="${outer}" fill="#80cfe0" stroke="#258ac0" stroke-width="2"/><circle cx="145" cy="95" r="${pipe}" fill="#8b9a9d"/><circle cx="145" cy="95" r="${inner}" fill="#ed8d70"/><g font-family="system-ui" font-size="14" fill="#315462"><text x="280" y="62">Blue: annular flow area</text><text x="280" y="92">Gray: inner pipe wall</text><text x="280" y="122">Orange: inner tube flow area</text><text x="280" y="152">Diameters are shown to scale.</text></g></svg>`;$('.loop-note').textContent='The areas describe geometry only; pressure drop and heat transfer require additional fluid and pipe properties.';}
-  if(mode==='energy'){const a=energy(p),max=Math.max(Math.abs(a.thermal),Math.abs(a.available),.1)*1.2,scale=v=>275+v/max*220;$('.loop-result').textContent=`Thermal: ${fmt(a.thermal,2)} MW · available work: ${fmt(a.available,2)} MW`;$('.loop-plot').innerHTML=`<svg viewBox="0 0 600 185" role="img" aria-label="Thermal power and ideal available work comparison"><path d="M275 20V145" stroke="#95aeb5"/><rect x="${Math.min(275,scale(a.thermal))}" y="40" width="${Math.abs(scale(a.thermal)-275)}" height="30" fill="#d46b42"/><rect x="${Math.min(275,scale(a.available))}" y="100" width="${Math.abs(scale(a.available)-275)}" height="30" fill="#2589aa"/><g font-family="system-ui" fill="#315462" font-size="14"><text x="8" y="60">Thermal</text><text x="8" y="120">Available work</text><text x="275" y="165" text-anchor="middle">0 MW</text><text x="555" y="165" text-anchor="end">${fmt(max,1)} MW</text></g></svg>`;$('.loop-note').textContent=`Over ${p.years} years at constant rates: ${fmt(a.thermalMWh,0)} MWh thermal and ${fmt(a.availableMWh,0)} MWh ideal available work. Values are signed; independently chosen Δh and Δs need not describe a physically realizable fluid state. This is not net plant generation.`;}
  }catch(e){$('.loop-result').textContent=e.message;$('.loop-plot').innerHTML='';$('.loop-note').textContent='Adjust the inputs to continue.';}}
  for(const el of root.querySelectorAll('input'))el.addEventListener('input',update);update();
 }

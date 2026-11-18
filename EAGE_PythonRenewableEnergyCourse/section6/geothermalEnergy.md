@@ -43,7 +43,7 @@ Hydrothermal and EGS wells both exchange fluid with the formation. The distincti
 Use the three views to follow fluid underground. In the **hydrothermal** view it spreads through permeable rock. In the **EGS** view it follows connected fractures. Switch off **Fractures connect both wells** to see a schematic case where the two wells lack a through-flow path. This control illustrates connectivity after stimulation. [@doeGeoForge]
 
 (geo-closed-systems)=
-:::{iframe} ../../geothermal-lab/closed-loop.html?demo=systems&v=4
+:::{iframe} ../../geothermal-lab/closed-loop.html?demo=systems&v=5
 :width: 100%
 :height: 650px
 :title: Interactive geothermal system comparison
@@ -70,7 +70,7 @@ $$\rho_r c_r\frac{\partial T}{\partial t}=k_r\nabla^2T, \qquad \alpha=\frac{k_r}
 $k_r$ is rock thermal conductivity in W/(m K), $\rho_r$ is density in kg/m³, $c_r$ is specific heat in J/(kg K), and thermal diffusivity $\alpha$ is in m²/s. In a sealed loop in hot dry rock, the circulating fluid draws heat from the rock near the borehole. Heat then conducts from farther away, so the outlet temperature can decline rapidly at first and more slowly later. The paper discusses $k_r/\sqrt{\alpha}$, a thermal effusivity in J/(m² K s$^{1/2}$), as a relevant rock property. A real model must couple the fluid, pipe and formation with appropriate geometry and boundaries; this equation alone is not a closed-loop solution [@white2024closedloop].
 
 (geo-closed-conduction)=
-:::{iframe} ../../geothermal-lab/closed-loop.html?demo=conduction
+:::{iframe} ../../geothermal-lab/closed-loop.html?demo=conduction&v=5
 :width: 100%
 :height: 660px
 :title: Transient rock conduction explorer
@@ -83,7 +83,7 @@ $$A_{tube}=\frac{\pi D_i^2}{4},\qquad A_{annulus}=\frac{\pi(D_b^2-D_o^2)}{4},\qq
 Use consistent diameter definitions and units. For example, $D_i=0.10$ m, $D_o=0.12$ m and $D_b=0.18$ m give an annulus-to-tube area ratio of **1.8**. Smaller passages may increase velocity and pressure losses for a given mass flow; their full evaluation requires fluid properties, roughness, elevation and a hydraulic model.
 
 (geo-closed-area)=
-:::{iframe} ../../geothermal-lab/closed-loop.html?demo=area
+:::{iframe} ../../geothermal-lab/closed-loop.html?demo=area&v=5
 :width: 100%
 :height: 530px
 :title: Coaxial tube flow areas explorer
@@ -96,7 +96,7 @@ $$E_{thermal}=\int_0^\tau\dot m(h_{out}-h_{in})\,dt, \qquad E_{available}=\int_0
 Here $h$ is specific enthalpy (J/kg), $s$ is specific entropy (J/(kg K)), $\dot m$ is kg/s and ambient temperature $T_{amb}$ is in kelvin. These expressions use the inlet/outlet states and reference in the paper; actual net generation also depends on the conversion plant and auxiliaries. The constant-$c_p$ expression elsewhere in this lesson is a liquid-water approximation; it must not replace property-based enthalpy and entropy for supercritical CO₂ or phase change [@white2024closedloop].
 
 (geo-closed-energy)=
-:::{iframe} ../../geothermal-lab/closed-loop.html?demo=energy
+:::{iframe} ../../geothermal-lab/closed-loop.html?demo=energy&v=5
 :width: 100%
 :height: 570px
 :title: Thermal energy and available work explorer
@@ -175,16 +175,16 @@ The end use is a separate decision. **Direct heat** supplies a building, distric
 
 **Reservoir pressure** helps drive fluid toward a producing well, while pressure decline can reduce deliverability or increase pumping requirements. **Production wells** bring fluid to the surface; **injection wells** return fluid or supply circulation. Injection can help manage fluid mass and pressure, but poorly placed or strongly connected injection can cause premature cooling at producers. **Thermal breakthrough** is the arrival of a cooling influence along flow paths, not simply the passage of one calendar year [@grant2011].
 
-A conceptual fluid-flow relationship is Darcy's law. For a one-dimensional horizontal, single-phase flow without a gravity term, [@grant2011], §§2.3–2.5, §3.3.1 and §3.7.
+For steady, horizontal, single-phase flow with uniform properties and negligible gravity along the flow path, Darcy’s law relates flux to the pressure gradient.
 
 $$q_D=-\frac{k_{perm}}{\mu}\frac{dp}{dx}.$$
 
 *Equation basis:* [@grant2011], §§2.3–2.5, §3.3.1 and §3.7.
 
-$q_D$ is Darcy flux in m/s, $k_{perm}$ is intrinsic permeability in m², $\mu$ is dynamic viscosity in Pa s, and $dp/dx$ is pressure gradient in Pa/m. The negative sign represents flow toward decreasing pressure. Actual geothermal flow may involve gravity, temperature-dependent properties, fractures and multiple phases, so this reduced relationship is not a complete well model. It explains why temperature alone cannot establish producible mass flow. [@grant2011], §§2.3–2.5, §3.3.1 and §3.7.
+$q_D$ is Darcy flux in m/s, $k_{perm}$ is intrinsic permeability in m², $\mu$ is dynamic viscosity in Pa s, and $dp/dx$ is pressure gradient in Pa/m. The negative sign represents flow toward decreasing pressure. In the explorer, the upper line shows the pressure drop and the dots mark relative flow through connected pathways. Raise permeability or steepen the pressure gradient to increase flux. Raise viscosity to slow it. Set the pressure gradient to zero to stop the flow. Actual geothermal flow may involve gravity, temperature-dependent properties, fractures and multiple phases, so this reduced relationship is not a complete well model. It explains why temperature alone cannot establish producible mass flow. [@grant2011], §§2.3–2.5, §3.3.1 and §3.7.
 
 (geo-darcy-explorer)=
-:::{iframe} ../../geothermal-lab/equations.html?demo=darcy
+:::{iframe} ../../geothermal-lab/equations.html?demo=darcy&v=2
 :width: 100%
 :title: Darcy flux explorer
 :::
@@ -204,7 +204,7 @@ $$\mathbf q=-k_T\nabla T,$$
 where thermal conductivity $k_T$ is W/(m K) and heat flux $\mathbf q$ is W/m². Thermal conductivity and intrinsic permeability are different physical properties; separate symbols help avoid confusion. If depth $z$ is positive downward and temperature rises downward, the conductive heat-flux vector points upward. For conductivity 2.5 W/(m K) and gradient 30 K/km, the upward heat-flux magnitude is $2.5(30/1000)=0.075$ W/m². A gradient is not itself a heat flux. [@grant2011], §§2.2–2.3 and §4.4.1 (conductive versus convective profiles).
 
 (geo-gradient-explorer)=
-:::{iframe} ../../geothermal-lab/equations.html?demo=gradient
+:::{iframe} ../../geothermal-lab/equations.html?demo=gradient&v=2
 :width: 100%
 :title: Geothermal gradient and heat flux explorer
 :::
@@ -250,7 +250,7 @@ P_{th}=\dot m c_p(T_p-T_r).$$
 A temperature difference of 80°C is also 80 K. Absolute temperature ratios, by contrast, require kelvin. Salinity, temperature and pressure affect fluid properties. In two-phase flow, energy includes latent heat and phase fractions; applying one constant liquid-water heat capacity to a steam/water mixture can substantially misrepresent the heat balance [@grant2011].
 
 (geo-heat-explorer)=
-:::{iframe} ../../geothermal-lab/equations.html?demo=heat
+:::{iframe} ../../geothermal-lab/equations.html?demo=heat&v=2
 :width: 100%
 :title: Thermal power explorer
 :::
@@ -266,7 +266,7 @@ $$\eta_C=1-\frac{T_c}{T_h},$$
 with both absolute temperatures in kelvin. It is an upper bound for that idealized setting, not the efficiency to assign to a plant. A real geothermal stream cools through a temperature range, heat exchangers require finite temperature differences, and real machinery dissipates energy. A full thermodynamic assessment needs the actual cycle and fluid states. Reversible heat-engine limit: [OpenStax, University Physics 2, §4.5, Eq. 4.5](https://openstax.org/books/university-physics-volume-2/pages/4-5-the-carnot-cycle). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 (geo-carnot-explorer)=
-:::{iframe} ../../geothermal-lab/equations.html?demo=carnot
+:::{iframe} ../../geothermal-lab/equations.html?demo=carnot&v=2
 :width: 100%
 :title: Carnot efficiency explorer
 :::
@@ -281,7 +281,7 @@ P_{net}=P_{gross}-P_{pump}-P_{aux}.$$
 If parasitic consumption is represented as a fraction $f_{par}$ of **gross electrical power**, then $P_{net}=P_{gross}(1-f_{par})$. State that denominator explicitly. Ten percent of gross electricity is not ten percent of thermal input. Net exported power is the boundary used for project energy and capacity-factor calculations. Reversible heat-engine limit: [OpenStax, University Physics 2, §4.5, Eq. 4.5](https://openstax.org/books/university-physics-volume-2/pages/4-5-the-carnot-cycle). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 (geo-conversion-explorer)=
-:::{iframe} ../../geothermal-lab/equations.html?demo=conversion
+:::{iframe} ../../geothermal-lab/equations.html?demo=conversion&v=2
 :width: 100%
 :title: Gross and net power explorer
 :::
@@ -295,7 +295,7 @@ $$P_{pump}=\frac{\Delta p\,Q}{\eta_{pump}},$$
 where pressure rise is Pa, liquid volume flow is m³/s and pump efficiency is dimensionless; power is W. Use volume flow here, rather than inserting mass flow without dividing by density. Pressure and flow requirements may change during operation, so a fixed parasitic fraction can hide an important source of declining net output. Reversible heat-engine limit: [OpenStax, University Physics 2, §4.5, Eq. 4.5](https://openstax.org/books/university-physics-volume-2/pages/4-5-the-carnot-cycle). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 (geo-pump-explorer)=
-:::{iframe} ../../geothermal-lab/equations.html?demo=pump
+:::{iframe} ../../geothermal-lab/equations.html?demo=pump&v=2
 :width: 100%
 :title: Pumping power explorer
 :::
@@ -303,7 +303,7 @@ where pressure rise is Pa, liquid volume flow is m³/s and pump efficiency is di
 In direct-use heating, useful thermal output can be delivered without converting it to electricity. The delivery-temperature requirement matters: heat available below the required process temperature is not automatically usable without a heat pump or another upgrade. For a heat pump, heating coefficient of performance is $COP_h=\dot Q_{delivered}/P_{electric}$ and can exceed one because delivered heat includes heat moved from the source as well as electrical input. That does not violate energy conservation and is not an electrical-generation efficiency. Reversible heat-engine limit: [OpenStax, University Physics 2, §4.5, Eq. 4.5](https://openstax.org/books/university-physics-volume-2/pages/4-5-the-carnot-cycle). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 (geo-heatpump-explorer)=
-:::{iframe} ../../geothermal-lab/equations.html?demo=heatpump
+:::{iframe} ../../geothermal-lab/equations.html?demo=heatpump&v=2
 :width: 100%
 :title: Heat pump explorer
 :::
@@ -319,7 +319,7 @@ $$E_{heat}\approx V\left[(1-\phi)\rho_r c_r+\phi\rho_f c_f\right](T-T_{ref}).$$
 $V$ is bulk volume, $\phi$ porosity, and the subscripts $r$ and $f$ refer to rock and fluid. Use coherent SI units to obtain joules. This lumped expression assumes uniform temperature and properties and omits phase change. It is not a recoverable electrical reserve: only some heat may be technically accessible, extraction occurs over time, and electrical conversion incurs further limitations [@grant2011].
 
 (geo-storage-explorer)=
-:::{iframe} ../../geothermal-lab/equations.html?demo=storage
+:::{iframe} ../../geothermal-lab/equations.html?demo=storage&v=2
 :width: 100%
 :title: Reservoir heat inventory explorer
 :::
@@ -337,7 +337,7 @@ The exponent is zero in year 1. If $d=0.02$, each subsequent year retains 98% of
 Fitting $\ln P$ against time requires positive observations and changes the assumed error model. Reserve later observations before fitting, compare against a simple baseline, and report the evaluated period. Intervention, changing flow, outages and reservoir connectivity can invalidate extrapolation. A prescribed or fitted decline curve is not, by itself, a reservoir simulator. [@grant2011], §§3.2 and 3.6 (storage and stored-heat estimates). The compounded/exponential decline equations are stipulated scenarios, not reservoir predictions.
 
 (geo-decline-explorer)=
-:::{iframe} ../../geothermal-lab/equations.html?demo=decline
+:::{iframe} ../../geothermal-lab/equations.html?demo=decline&v=2
 :width: 100%
 :title: Production decline explorer
 :::
@@ -349,7 +349,7 @@ Integrate net power over the actual duration: $E_{net}=\sum_iP_{net,i}\Delta t_i
 Use a fixed defined net nameplate $P_{r,net}$ for $CF=E_{net}/(P_{r,net}T)$. Do not use observed maximum output as a substitute unless that is explicitly the intended metric. If a plant has a net power limit, apply it after the resource-to-net-power calculation under the stated boundary. Negative net electricity can physically occur when auxiliaries consume more power than is generated; a model restricted to positive exported generation should state how such operating periods are handled rather than silently changing their meaning. The power boundary and nameplate rating must be consistent with the reported energy [@eiaCapacityFactor].
 
 (geo-energy-explorer)=
-:::{iframe} ../../geothermal-lab/equations.html?demo=energy
+:::{iframe} ../../geothermal-lab/equations.html?demo=energy&v=2
 :width: 100%
 :title: Energy and capacity factor explorer
 :::
@@ -370,7 +370,7 @@ Suppose a synthetic liquid-water resource produces 50 kg/s at 150°C and returns
 The reservoir-to-fluid heat transfer, pressure losses and detailed power-cycle behavior are not solved by these six steps. Their purpose is to make the assumed conversion boundaries visible before implementing arrays and functions. Original numerical substitution with assumed constant properties and efficiencies; Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 (geo-worked-explorer)=
-:::{iframe} ../../geothermal-lab/equations.html?demo=conversion
+:::{iframe} ../../geothermal-lab/equations.html?demo=worked&v=2
 :width: 100%
 :title: Worked example explorer
 :::
@@ -405,10 +405,7 @@ $$\mathbf{q}=-k\nabla T$$
 The negative sign indicates heat flows toward lower temperature. Gradient (K/m) and heat flux (W/m$^2$) are different quantities. [@grant2011], §§2.2–2.3 and §4.4.1 (conductive versus convective profiles).
 
 (geo-compact-gradient-explorer)=
-:::{iframe} ../../geothermal-lab/equations.html?demo=gradient
-:width: 100%
-:title: Gradient and heat flux explorer
-:::
+Revisit the [temperature-gradient and heat-flux explorer](#geo-gradient-explorer).
 
 ### Thermal power in produced fluid
 
@@ -425,10 +422,7 @@ $$P_{th}=\dot m(h_p-h_r)$$
 *Equation basis:* Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 (geo-compact-heat-explorer)=
-:::{iframe} ../../geothermal-lab/equations.html?demo=heat
-:width: 100%
-:title: Thermal power and enthalpy explorer
-:::
+Revisit the [produced-fluid heat explorer](#geo-heat-explorer).
 
 ### Efficiency, parasitic load, and net power
 
@@ -441,10 +435,7 @@ $$\eta_C=1-\frac{T_c}{T_h}$$
 where both temperatures must be in Kelvin. A plant cannot simply be assigned Carnot efficiency; real conversion efficiency is lower and technology-specific. Reversible heat-engine limit: [OpenStax, University Physics 2, §4.5, Eq. 4.5](https://openstax.org/books/university-physics-volume-2/pages/4-5-the-carnot-cycle). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 (geo-compact-carnot-explorer)=
-:::{iframe} ../../geothermal-lab/equations.html?demo=carnot
-:width: 100%
-:title: Carnot efficiency explorer
-:::
+Revisit the [Carnot limit explorer](#geo-carnot-explorer).
 
 $$P_{gross}=\eta_{conv}P_{th}$$
 
@@ -457,10 +448,7 @@ $$P_{net}=P_{gross}-P_{pumps}-P_{aux}$$
 Net power, not gross generator power, is the relevant exported power. Reversible heat-engine limit: [OpenStax, University Physics 2, §4.5, Eq. 4.5](https://openstax.org/books/university-physics-volume-2/pages/4-5-the-carnot-cycle). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 (geo-compact-efficiency-explorer)=
-:::{iframe} ../../geothermal-lab/equations.html?demo=conversion
-:width: 100%
-:title: Conversion and net power explorer
-:::
+Revisit the [thermal, gross and net power explorer](#geo-conversion-explorer).
 
 ### Energy and decline
 
@@ -471,10 +459,7 @@ $$E_{net}=\sum_iP_{net,i}\Delta t_i$$
 *Equation basis:* Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 (geo-compact-energy-explorer)=
-:::{iframe} ../../geothermal-lab/equations.html?demo=energy
-:width: 100%
-:title: Energy and availability explorer
-:::
+Revisit the [operating time and energy explorer](#geo-energy-explorer).
 
 A simple annual decline scenario is
 
@@ -485,22 +470,19 @@ $$P_y=P_1(1-d)^{y-1}$$
 This is a scenario model, not a reservoir forecast. Sustainable production depends on reservoir response, injection strategy, pressure, thermal breakthrough, and operational constraints. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 (geo-compact-decline-explorer)=
-:::{iframe} ../../geothermal-lab/equations.html?demo=decline
-:width: 100%
-:title: Annual decline explorer
-:::
+Revisit the [annual decline explorer](#geo-decline-explorer).
 
 ## Drilling a geothermal well: fluid and hydraulics
 
 Drilling creates the borehole; its circulation system must remove rock cuttings, cool the bit and drill string, and help manage pressure. In **direct circulation**, pumps send fluid down the drill pipe, through the bit and back up the annulus between pipe and borehole. Surface equipment separates cuttings before the fluid is recirculated. Dayan (2014) describes water-based muds, air and aerated fluids, and explains the trade-offs among hole cleaning, circulation losses, formation damage and well control [@dayan2014drilling].
 
-:::{iframe} ../../geothermal-lab/drilling.html
+:::{iframe} ../../geothermal-lab/drilling.html?v=3
 :width: 100%
 :height: 1000px
 :title: Interactive geothermal drilling fluid explorer
 :::
 
-In the explorer, blue beads illustrate downflow in the pipe and gold beads illustrate cuttings returning in the annulus. A separate two-dimensional plot shows hydrostatic pressure in blue and circulating pressure in red against vertical depth. Select depth, flow, diameters, fluid density and viscosity, and a **prescribed annular friction loss**. Changes to flow do not automatically recalculate that loss: it is a separate illustrative input. The visualization is schematic, not to scale.
+In the explorer, blue beads follow the drilling fluid down the pipe. Gold beads rise when the upward annular velocity exceeds the idealized settling speed and fall when settling dominates. The cuttings animation uses the same Stokes validity limit as the displayed calculation. A separate two-dimensional plot shows hydrostatic pressure in blue and circulating pressure in red against vertical depth. Select depth, flow, diameters, fluid density and viscosity, and a **prescribed annular friction loss**. Changes to flow do not automatically recalculate that loss: it is a separate illustrative input. The visualization is schematic, not to scale.
 
 ### Annular velocity and cuttings
 

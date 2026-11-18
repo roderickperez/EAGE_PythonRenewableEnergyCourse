@@ -10,3 +10,19 @@
 .loop-option input { accent-color: #247fae; vertical-align: middle; }
 .loop-option [role=status] { flex-basis: 100%; min-height: 2.8em; color: #506b67; }
 .loop-scenes + .loop-legend { border-top: 0; }
+
+
+.loop-equation-grid { display: grid; grid-template-columns: minmax(0,1.55fr) minmax(255px,1fr); align-items: start; gap: 14px; }
+.loop-equation-panel { border: 1px solid #d4e5e1; border-radius: 8px; background: #f7fbfa; padding: 12px; }
+.loop-equation-panel .loop-controls { grid-template-columns: 1fr; }
+.loop-metrics { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 6px; margin: 0 0 12px; }
+.loop-metrics > div { background: #e2f1ed; border-radius: 6px; padding: 7px 8px; }
+.loop-metrics dt { color: #4c6670; font-size: .75rem; }
+.loop-metrics dd { margin: 1px 0 0; color: #126278; font-weight: 750; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.loop-pipe-canvas { height: clamp(225px,29vw,360px); overflow: hidden; border-radius: 8px; background: #e6eff3; }
+.loop-pipe-canvas canvas, .loop-pipe-canvas svg { display: block; width: 100%; height: 100%; }
+.loop-pipe-key { display: flex; flex-wrap: wrap; gap: 5px 15px; margin: 6px 0; color: #506b67; font-size: .8rem; }
+.loop-bars { margin: 0 0 8px; padding: 7px 10px; background: #f2f8f8; border: 1px solid #d4e4e7; border-radius: 8px; }
+.loop-bars figcaption { font-size: .9rem; font-weight: 650; }
+.loop-bars svg { display: block; width: 100%; max-height: 170px; fill: #315462; font: 13px system-ui,sans-serif; }
+@media(max-width:650px) { .loop-equation-grid { grid-template-columns: 1fr; } }

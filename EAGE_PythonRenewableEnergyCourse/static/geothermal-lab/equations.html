@@ -5,48 +5,37 @@
 <title>Geothermal equation explorer</title>
 <style>
   * { box-sizing: border-box }
-  body { margin: 0; color: #163b38; background: #f6faf8; font: 15px/1.4 system-ui, sans-serif }
+  body { margin: 0; color: #163b38; font: 15px/1.4 system-ui, sans-serif }
   main { padding: 14px; border: 1px solid #c7dbd4; border-radius: 12px; background: #fff }
-  header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 3px 16px; margin-bottom: 10px }
-  h1 { margin: 0; font: 600 clamp(20px, 4vw, 26px)/1.15 Georgia, serif }
-  #result { color: #176d86; font-size: clamp(20px, 5vw, 29px); font-weight: 750; font-variant-numeric: tabular-nums }
-  #scene { position: relative; height: 210px; border-radius: 8px; overflow: hidden; background: #e9f3f4 }
-  #drawing, #scene canvas { display: block; width: 100%; height: 100% }
-  #drawing[hidden] { display: none }
-  #scene:has(canvas[data-orbit])::after {
-    content: 'Drag to rotate'; position: absolute; right: 7px; bottom: 5px; color: #31524f;
-    background: #ffffffdb; padding: 2px 5px; border-radius: 4px; font-size: .7rem; pointer-events: none;
-  }
-  #motion { position: absolute; inset: 8px auto auto 8px; padding: 5px 8px; color: #163b38; background: #fff; border: 1px solid #adc7c1; border-radius: 6px; font: inherit; font-size: .78rem; cursor: pointer }
-  #legend { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 7px 0 10px; font-size: .79rem; color: #31524f }
-  #legend span::before { content: ''; display: inline-block; width: 10px; height: 10px; margin-right: 5px; border-radius: 2px; background: var(--swatch) }
-  #equations { display: grid; gap: 4px; margin: 0 0 11px }
-  #equations p { margin: 0; padding: 5px 8px; background: #eef6f2; border-left: 3px solid #3e796f; overflow-wrap: anywhere; font-variant-numeric: tabular-nums }
-  #controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(170px, 100%), 1fr)); gap: 8px 12px }
-  .control { min-width: 0 }
+  h1 { margin: 0 0 10px; font: 600 clamp(20px, 4vw, 26px)/1.15 Georgia, serif }
+  .explorer-grid { display: grid; grid-template-columns: minmax(0,1.65fr) minmax(235px,1fr); gap: 14px; align-items: start }
+  figure { margin: 0; position: relative; border-radius: 8px; border: 1px solid #d4e4e7; background: #f1f8f8 }
+  #drawing { display: block; width: 100%; max-height: 390px; min-height: 160px }
+  #motion { position: absolute; inset: 8px auto auto 8px; color: #163b38; background: #fff; border: 1px solid #adc7c1; border-radius: 6px; padding: 0; cursor: pointer }
+  #motion[hidden] { display: none }
+  #result { display: block; margin-bottom: 8px; padding: 8px 10px; border-radius: 6px; background: #e2f1ed; color: #176278; font-weight: 750; font-variant-numeric: tabular-nums }
+  #equations p { margin: 0 0 10px; color: #36545b; font-size: .82rem; overflow-wrap: anywhere; font-variant-numeric: tabular-nums }
+  #controls { display: grid; gap: 7px }
   label { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1px 6px; font-size: .82rem; font-weight: 650 }
   label output { font-weight: 500; white-space: nowrap }
   input { width: 100%; margin: 3px 0; accent-color: #177c90 }
-  #note { margin: 7px 0 0; color: #506b67; font-size: .8rem }
-  .comparison-plots { margin: 10px 0 }
-  .comparison-plots figure { margin: 0; border: 1px solid #c7dbd4; border-radius: 8px; padding: 8px; background: #f8fcfa }
-  .comparison-plots h2 { margin: 0; font-size: .95rem }
-  .comparison-plots svg { display: block; width: 100%; max-height: 190px }
-  .comparison-plots figcaption { color: #506b67; font-size: .79rem }
-  .iv-plots { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 8px }
-  .iv-plots figure { min-width: 0 }
-  @media (max-width: 430px) { main { padding: 10px } #scene { height: 173px } #controls { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
+  #note { margin: 9px 0 0; color: #506b67; font-size: .8rem }
+  @media (max-width: 635px) { .explorer-grid { grid-template-columns: minmax(0,1fr) } }
 </style>
 <main>
-  <header><h1 id="title"></h1><output id="result"></output></header>
-  <div id="scene">
-    <svg id="drawing" viewBox="85 0 370 236" role="img"></svg>
-    <button type="button" id="motion"></button>
+  <h1 id="title"></h1>
+  <div class="explorer-grid">
+    <figure>
+      <svg id="drawing" viewBox="0 0 560 272" role="img" font-family="system-ui, sans-serif"></svg>
+      <button type="button" id="motion"></button>
+    </figure>
+    <section aria-label="Inputs and results">
+      <output id="result"></output>
+      <div id="equations"></div>
+      <div id="controls" role="group" aria-label="Equation inputs"></div>
+    </section>
   </div>
-  <div id="legend"></div>
-  <div id="equations"></div>
-  <div id="controls" role="group" aria-label="Equation inputs"></div>
   <p id="note"></p>
 </main>
-<script type="module" src="equations.js?v=geothermal-equations-1"></script>
+<script type="module" src="equations.js?v=geothermal-equations-2"></script>
 </html>
