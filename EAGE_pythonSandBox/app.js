@@ -220,14 +220,14 @@ async function route() {
       ['wind-weibull-explorer', 'aerodynamics.html?demo=weibull', 'Weibull wind resource and bin integration explorer', 'wind-lab'],
       ['wind-losses-explorer', 'aerodynamics.html?demo=losses', 'Wind energy losses and uncertainty explorer', 'wind-lab'],
       ['wind-direction-explorer', 'aerodynamics.html?demo=direction', 'Circular wind direction explorer', 'wind-lab'],
-      ['geo-darcy-explorer', 'equations.html?demo=darcy&v=2', 'Darcy flux explorer', 'geothermal-lab'],
+      ['geo-darcy-explorer', 'equations.html?demo=darcy&v=4', 'Darcy flux explorer', 'geothermal-lab'],
       ['geo-gradient-explorer', 'equations.html?demo=gradient&v=2', 'Geothermal gradient and heat flux explorer', 'geothermal-lab'],
-      ['geo-heat-explorer', 'equations.html?demo=heat&v=2', 'Thermal power explorer', 'geothermal-lab'],
-      ['geo-carnot-explorer', 'equations.html?demo=carnot&v=2', 'Carnot efficiency explorer', 'geothermal-lab'],
+      ['geo-heat-explorer', 'equations.html?demo=heat&v=4', 'Thermal power explorer', 'geothermal-lab'],
+      ['geo-carnot-explorer', 'equations.html?demo=carnot&v=4', 'Carnot efficiency explorer', 'geothermal-lab'],
       ['geo-conversion-explorer', 'equations.html?demo=conversion&v=2', 'Gross and net power explorer', 'geothermal-lab'],
-      ['geo-pump-explorer', 'equations.html?demo=pump&v=2', 'Pumping power explorer', 'geothermal-lab'],
+      ['geo-pump-explorer', 'equations.html?demo=pump&v=4', 'Pumping power explorer', 'geothermal-lab'],
       ['geo-heatpump-explorer', 'equations.html?demo=heatpump&v=2', 'Heat pump explorer', 'geothermal-lab'],
-      ['geo-storage-explorer', 'equations.html?demo=storage&v=2', 'Reservoir stored heat explorer', 'geothermal-lab'],
+      ['geo-storage-explorer', 'equations.html?demo=storage&v=4', 'Reservoir stored heat explorer', 'geothermal-lab'],
       ['geo-decline-explorer', 'equations.html?demo=decline&v=2', 'Production decline explorer', 'geothermal-lab'],
       ['geo-energy-explorer', 'equations.html?demo=energy&v=2', 'Energy and capacity factor explorer', 'geothermal-lab'],
       ['geo-worked-explorer', 'equations.html?demo=worked&v=2', 'Worked calculation explorer', 'geothermal-lab'],
@@ -235,6 +235,7 @@ async function route() {
       ['geo-closed-conduction', 'closed-loop.html?demo=conduction&v=6', 'Transient rock conduction explorer', 'geothermal-lab'],
       ['geo-closed-area', 'closed-loop.html?demo=area&v=5', 'Coaxial tube flow areas explorer', 'geothermal-lab'],
       ['geo-closed-energy', 'closed-loop.html?demo=energy&v=5', 'Thermal energy and available work explorer', 'geothermal-lab'],
+      ['geo-closed-performance', 'closed-loop.html?demo=performance&v=7', 'Closed-loop performance explorer', 'geothermal-lab'],
     ]) {
       const spot = $(anchor);
       if (!spot) continue;
@@ -262,7 +263,7 @@ async function route() {
       },
       'section6/geothermalEnergy.md': {
         anchor: '#three-ways-to-extract-geothermal-heat', id: 'geothermal-3d-lab',
-        mount: async host => (await import('./generated/geothermal-lab/geothermal-lab.js?v=reservoir-flow')).mountGeothermalLab(host),
+        mount: async host => (await import('./generated/geothermal-lab/geothermal-lab.js?v=reservoir-flow-play')).mountGeothermalLab(host),
       },
       'section8/projectIntro.md': {
         anchor: '#load-the-separate-input-datasets', id: 'project-3d-map',

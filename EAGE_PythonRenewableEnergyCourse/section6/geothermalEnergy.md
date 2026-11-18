@@ -125,6 +125,15 @@ $$LCOE=\frac{\sum_t(C_t+O_t)/(1+r)^t}{\sum_t E_{e,t}/(1+r)^t}.$$
 
 $C_t$ and $O_t$ are capital and operating costs, $E_{e,t}$ is electrical energy and $r$ is the discount rate. Include an initial $t=0$ investment if it occurs at project start, and include each cost and energy period once. LCOE is not electricity-sale revenue, and its assumptions differ from the Field Designer's simple cumulative game balance. White et al.'s GeoCLUSTER results are accessible through the [Geothermal Data Repository](https://gdr.openei.org/submissions/1473); interpolation and inputs are subject to the paper's stated limitations.
 
+The explorer brings the two benchmark traces and the four reported scenarios into one view. In **LCOE calculator**, try increasing the discount rate with upfront capital fixed. Compare the present value of costs and discounted electricity to see how each responds.
+
+(geo-closed-performance)=
+:::{iframe} ../../geothermal-lab/closed-loop.html?demo=performance&v=7
+:width: 100%
+:height: 730px
+:title: Closed-loop performance explorer
+:::
+
 ```{code-cell} python
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -181,10 +190,10 @@ $$q_D=-\frac{k_{perm}}{\mu}\frac{dp}{dx}.$$
 
 *Equation basis:* [@grant2011], §§2.3–2.5, §3.3.1 and §3.7.
 
-$q_D$ is Darcy flux in m/s, $k_{perm}$ is intrinsic permeability in m², $\mu$ is dynamic viscosity in Pa s, and $dp/dx$ is pressure gradient in Pa/m. The negative sign represents flow toward decreasing pressure. In the explorer, the upper line shows the pressure drop and the dots mark relative flow through connected pathways. Raise permeability or steepen the pressure gradient to increase flux. Raise viscosity to slow it. Set the pressure gradient to zero to stop the flow. Actual geothermal flow may involve gravity, temperature-dependent properties, fractures and multiple phases, so this reduced relationship is not a complete well model. It explains why temperature alone cannot establish producible mass flow. [@grant2011], §§2.3–2.5, §3.3.1 and §3.7.
+$q_D$ is Darcy flux in m/s, $k_{perm}$ is intrinsic permeability in m², $\mu$ is dynamic viscosity in Pa s, and $dp/dx$ is pressure gradient in Pa/m. The negative sign represents flow toward decreasing pressure. In the explorer, fluid enters through the blue pipe and exits through the red pipe. The pressure plot shows the drop over a 1 m reference interval. The pore paths narrow as permeability falls. Raise permeability or steepen the pressure gradient to increase flux. Raise viscosity to slow it. Set the pressure gradient to zero to stop the flow. Actual geothermal flow may involve gravity, temperature-dependent properties, fractures and multiple phases, so this reduced relationship is not a complete well model. It explains why temperature alone cannot establish producible mass flow. [@grant2011], §§2.3–2.5, §3.3.1 and §3.7.
 
 (geo-darcy-explorer)=
-:::{iframe} ../../geothermal-lab/equations.html?demo=darcy&v=2
+:::{iframe} ../../geothermal-lab/equations.html?demo=darcy&v=4
 :width: 100%
 :title: Darcy flux explorer
 :::
@@ -250,7 +259,7 @@ P_{th}=\dot m c_p(T_p-T_r).$$
 A temperature difference of 80°C is also 80 K. Absolute temperature ratios, by contrast, require kelvin. Salinity, temperature and pressure affect fluid properties. In two-phase flow, energy includes latent heat and phase fractions; applying one constant liquid-water heat capacity to a steam/water mixture can substantially misrepresent the heat balance [@grant2011].
 
 (geo-heat-explorer)=
-:::{iframe} ../../geothermal-lab/equations.html?demo=heat&v=2
+:::{iframe} ../../geothermal-lab/equations.html?demo=heat&v=4
 :width: 100%
 :title: Thermal power explorer
 :::
@@ -266,7 +275,7 @@ $$\eta_C=1-\frac{T_c}{T_h},$$
 with both absolute temperatures in kelvin. It is an upper bound for that idealized setting, not the efficiency to assign to a plant. A real geothermal stream cools through a temperature range, heat exchangers require finite temperature differences, and real machinery dissipates energy. A full thermodynamic assessment needs the actual cycle and fluid states. Reversible heat-engine limit: [OpenStax, University Physics 2, §4.5, Eq. 4.5](https://openstax.org/books/university-physics-volume-2/pages/4-5-the-carnot-cycle). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 (geo-carnot-explorer)=
-:::{iframe} ../../geothermal-lab/equations.html?demo=carnot&v=2
+:::{iframe} ../../geothermal-lab/equations.html?demo=carnot&v=4
 :width: 100%
 :title: Carnot efficiency explorer
 :::
@@ -295,7 +304,7 @@ $$P_{pump}=\frac{\Delta p\,Q}{\eta_{pump}},$$
 where pressure rise is Pa, liquid volume flow is m³/s and pump efficiency is dimensionless; power is W. Use volume flow here, rather than inserting mass flow without dividing by density. Pressure and flow requirements may change during operation, so a fixed parasitic fraction can hide an important source of declining net output. Reversible heat-engine limit: [OpenStax, University Physics 2, §4.5, Eq. 4.5](https://openstax.org/books/university-physics-volume-2/pages/4-5-the-carnot-cycle). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
 (geo-pump-explorer)=
-:::{iframe} ../../geothermal-lab/equations.html?demo=pump&v=2
+:::{iframe} ../../geothermal-lab/equations.html?demo=pump&v=4
 :width: 100%
 :title: Pumping power explorer
 :::
@@ -319,7 +328,7 @@ $$E_{heat}\approx V\left[(1-\phi)\rho_r c_r+\phi\rho_f c_f\right](T-T_{ref}).$$
 $V$ is bulk volume, $\phi$ porosity, and the subscripts $r$ and $f$ refer to rock and fluid. Use coherent SI units to obtain joules. This lumped expression assumes uniform temperature and properties and omits phase change. It is not a recoverable electrical reserve: only some heat may be technically accessible, extraction occurs over time, and electrical conversion incurs further limitations [@grant2011].
 
 (geo-storage-explorer)=
-:::{iframe} ../../geothermal-lab/equations.html?demo=storage&v=2
+:::{iframe} ../../geothermal-lab/equations.html?demo=storage&v=4
 :width: 100%
 :title: Reservoir heat inventory explorer
 :::

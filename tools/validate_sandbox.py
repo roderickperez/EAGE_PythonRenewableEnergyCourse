@@ -83,7 +83,7 @@ def validate():
         assert f'id="geo-{demo}-explorer"' in geothermal_page
     for file in ('equations.html', 'equations.js'):
         assert (OUT / 'geothermal-lab' / file).is_file()
-    for demo in ('systems', 'conduction', 'area', 'energy'):
+    for demo in ('systems', 'conduction', 'area', 'energy', 'performance'):
         assert f'id="geo-closed-{demo}"' in geothermal_page
     for file in ('closed-loop.html', 'closed-loop.js'):
         assert (OUT / 'geothermal-lab' / file).is_file()

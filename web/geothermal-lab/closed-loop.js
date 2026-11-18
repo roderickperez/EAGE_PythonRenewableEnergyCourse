@@ -2,15 +2,18 @@ import {mountGeothermalSystemScene} from './closed-loop-scene.js';
 import css from './closed-loop.css';
 import { mountCoaxialCutaway } from './coaxial-cutaway.js';
 import { mountClosedLoopEquation } from './closed-loop-equations.js';
+import { mountClosedLoopPerformance } from './closed-loop-performance.js';
 
 const root=document.querySelector('#explorer'),style=document.createElement('style');style.textContent=css;document.head.append(style);
-const requested=new URLSearchParams(location.search).get('demo'),mode=['systems','conduction','area','energy'].includes(requested)?requested:'systems';
+const requested=new URLSearchParams(location.search).get('demo'),mode=['systems','conduction','area','energy','performance'].includes(requested)?requested:'systems';
 const specs={
  conduction:{title:'How rock conducts heat',intro:'One-dimensional, semi-infinite rock with a fixed cool wall and initially uniform far-field temperature.',controls:[['k','Rock conductivity',.5,5,.1,3,'W/(m K)'],['rho','Rock density',1800,3200,50,2750,'kg/m³'],['cp','Rock heat capacity',500,1400,10,790,'J/(kg K)'],['days','Elapsed time',1,3650,1,365,'days'],['wall','Borehole wall temperature',10,90,5,40,'°C'],['far','Initial rock temperature',120,250,5,200,'°C'],['distance','Examine distance',0,10,.1,1,'m']]},
  area:{title:'Inside a coaxial well',intro:'Change the tube and bore diameters to see how their flow areas compare.',controls:[['inner','Inner tube inside diameter Dᵢ',.04,.14,.005,.1,'m'],['outer','Inner tube outside diameter Dₒ',.06,.20,.005,.12,'m'],['bore','Surrounding passage inside diameter Dᵦ',.12,.30,.005,.18,'m']]},
  energy:{title:'Thermal energy and available work',intro:'Constant inlet/outlet enthalpy and entropy differences over a selected duration.',controls:[['flow','Mass flow ṁ',0,150,1,50,'kg/s'],['dh','Enthalpy difference Δh',0,700,10,300,'kJ/kg'],['ds','Entropy difference Δs',0,1,.01,.2,'kJ/(kg K)'],['ambient','Ambient temperature',270,330,1,300,'K'],['years','Operating duration',0,40,1,1,'years']]}
 };
-if (mode === 'systems') {
+if (mode === 'performance') {
+ mountClosedLoopPerformance(root);
+} else if (mode === 'systems') {
  const views = [
   ['hydrothermal', 'Conventional hydrothermal', 'Brine moves through naturally permeable rock between wells.'],
   ['egs', 'Enhanced geothermal (EGS)', 'Injected water moves through an engineered fracture network.'],

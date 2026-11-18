@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { demos } from './equation-demos.js';
-import { renderEquationVisual } from './equation-visuals.js';
+import { renderDarcyPressure, renderEquipmentPlot, renderEquationVisual } from './equation-visuals.js';
 const inputs = demo => Object.fromEntries(demo.controls.map(([key,,,,,value]) => [key,value]));
 test('worked examples match geothermal lesson calculations', () => {
   assert.match(demos.heat.calculate(inputs(demos.heat)).headline, /16\.72 MW/);
@@ -35,4 +35,20 @@ test('each equation diagram responds to every one of its sliders', () => {
       assert.notEqual(draw(name,demo,{...base,[id]:min}), draw(name,demo,{...base,[id]:max}), name + ': ' + id);
     }
   }
+});
+
+test('separate plots handle zero pressure rise, heat extraction, and pore volume', () => {
+  const plot = { setAttribute() {} };
+  renderDarcyPressure(plot,0);
+  assert.match(plot.innerHTML,/M49 185L248 185/);
+  const pump = {...inputs(demos.pump),pressure:0};
+  renderEquipmentPlot('pump',plot,pump,demos.pump.calculate(pump).values);
+  assert.match(plot.innerHTML,/Pump losses = 0 MW/);
+  const storage = {...inputs(demos.storage),porosity:0};
+  renderEquipmentPlot('storage',plot,storage,demos.storage.calculate(storage).values);
+  assert.match(plot.innerHTML,/5 rock \+ 0 water/);
+  const heat = {...inputs(demos.heat),flow:0};
+  renderEquipmentPlot('heat',plot,heat,demos.heat.calculate(heat).values);
+  assert.match(plot.innerHTML,/Temperature drop ΔT = 80 K/);
+  assert.doesNotMatch(plot.innerHTML,/NaN|Infinity/);
 });

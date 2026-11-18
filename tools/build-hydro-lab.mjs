@@ -23,6 +23,7 @@ for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'proj
   }
   if (lab === 'geothermal-lab') {
     entryPoints.equations = resolve(source, 'equations.js');
+    entryPoints['equation-scenes'] = resolve(source, 'equation-scenes.js');
     entryPoints['geothermal-project'] = resolve(source, 'project.js');
     entryPoints.drilling = resolve(source, 'drilling.js');
     entryPoints['closed-loop'] = resolve(source, 'closed-loop.js');
@@ -35,6 +36,7 @@ for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'proj
     entryPoints,
     outdir: output,
     bundle: true,
+    external: lab === 'geothermal-lab' ? ['./equation-scenes.js?v=1'] : [],
     format: 'esm',
     platform: 'browser',
     target: ['es2022'],

@@ -28,3 +28,15 @@
 @media(max-width:650px) { .loop-equation-grid { grid-template-columns: 1fr; } }
 [data-equation="conduction"] .loop-plot svg { max-height: 380px; }
 [data-equation="conduction"] .loop-metrics > :last-child { grid-column: 1 / -1; }
+
+
+.loop-performance-tabs { display: flex; flex-wrap: wrap; gap: 7px; margin: 12px 0; }
+.loop-performance-tabs button { font: 650 .85rem system-ui,sans-serif; padding: 8px 11px; border: 1px solid #b4cfcc; border-radius: 6px; background: #f6fbfa; color: #235852; cursor: pointer; }
+.loop-performance-tabs button[aria-pressed="true"] { color: #fff; background: #246681; border-color: #246681; }
+.loop-performance-tabs button:focus-visible { outline: 2px solid #247fae; outline-offset: 2px; }
+.loop-performance .loop-bars svg { max-height: 360px; }
+.loop-performance .loop-case { grid-column: 1 / -1; }
+.loop-performance .loop-case dt[style]::before { content: ''; display: inline-block; width: 8px; height: 8px; margin-right: 5px; background: var(--series); border-radius: 50%; }
+.loop-performance .loop-metric-select { border-top: 0; padding: 0; }
+.loop-performance-source { display: block; margin-top: 7px; }
+.loop-performance-source a { color: #216b72; }

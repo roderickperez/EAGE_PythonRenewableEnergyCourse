@@ -113,7 +113,7 @@ export function mountGeothermalLab(container) {
   root.replaceChildren(sheet,body);
   const input = { ...defaults };
   const get = id => root.getElementById(id);
-  let animate = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let animate = true;
   let scene;
   try { scene=mountGeothermalScene(get('geo-scene'),get('geo-tooltip')); }
   catch { get('geo-scene').textContent='The 3D view requires WebGL. Controls, equations and charts are available below.'; }
