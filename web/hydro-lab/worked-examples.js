@@ -30,16 +30,20 @@ function makeExample({ title, description, sliders, calculate, Scene, initialAxi
   const section = document.createElement('section');
   section.className = 'example';
   section.innerHTML = `<h2>${title}</h2><p class="note">${description}</p>
-    <div class="controls">${sliders.map(([id, label, unit, min, max, step, value]) => `
-      <label for="${id}"><span>${label}<output for="${id}"></output></span>
-      <input id="${id}" type="range" min="${min}" max="${max}" step="${step}" value="${value}" aria-label="${label}${unit ? ` (${unit})` : ''}"></label>`).join('')}</div>
-    <div class="scene" role="group" aria-label="Interactive 3D view of the ${title.toLowerCase()}"></div>
-    <p class="scene-details note"></p>
-    <div class="plot">
-      <div class="plot-title"><h3></h3><output class="energy"></output></div>
-      ${showTotal ? '<div class="plot-key"><span>━ Main plant</span><span>╌ Main + ecological</span></div>' : ''}
-      <canvas role="img"></canvas>
-      <p class="note"></p>
+    <div class="example-body">
+      <div class="visualization">
+        <div class="scene" role="group" aria-label="Interactive 3D view of the ${title.toLowerCase()}"></div>
+        <p class="scene-details note"></p>
+      </div>
+      <div class="controls">${sliders.map(([id, label, unit, min, max, step, value]) => `
+        <label for="${id}"><span>${label}<output for="${id}"></output></span>
+        <input id="${id}" type="range" min="${min}" max="${max}" step="${step}" value="${value}" aria-label="${label}${unit ? ` (${unit})` : ''}"></label>`).join('')}</div>
+      <div class="plot">
+        <div class="plot-title"><h3></h3><output class="energy"></output></div>
+        ${showTotal ? '<div class="plot-key"><span>━ Main plant</span><span>╌ Main + ecological</span></div>' : ''}
+        <canvas role="img"></canvas>
+        <p class="note"></p>
+      </div>
     </div>
     <div class="results"></div>`;
   grid.append(section);
@@ -48,7 +52,7 @@ function makeExample({ title, description, sliders, calculate, Scene, initialAxi
   try {
     scene = new Scene(sceneHost, { reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches });
   } catch {
-    sceneHost.innerHTML = '<p class="note">The 3D view needs WebGL. The energy plot and calculations are available below.</p>';
+    sceneHost.innerHTML = '<p class="note">The 3D view needs WebGL. The energy plot and calculations are still available.</p>';
   }
   const canvas = section.querySelector('.plot canvas');
   const controls = new Map(sliders.map(definition => [definition[0], definition]));
@@ -101,7 +105,7 @@ makeExample({
   Scene: DiversionScene,
   calculate: diversionCase,
   initialAxis: 'flow',
-  details: ({ operatingFlow, area }) => `Through the plant: ${fmt(operatingFlow)} m³/s · Channel speed: ${fmt(operatingFlow / area)} m/s. Drag to rotate the cutaway.`,
+  details: ({ operatingFlow, riverFlow, area }) => `Channel: ${fmt(operatingFlow)} m³/s at ${fmt(operatingFlow / area)} m/s · Bypass river: ${fmt(riverFlow - operatingFlow)} m³/s. Drag to rotate the valley.`,
   results: data => `Catchment area: <b>${fmt(data.catchment, 0)} km²</b><br>
     Channel area: ${fmt(data.area)} m² · Hydraulic radius: ${fmt(data.radius)} m<br>
     Manning design velocity: ${fmt(data.velocity)} m/s · Channel capacity: <b>${fmt(data.channelFlow)} m³/s</b><br>

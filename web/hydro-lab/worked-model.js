@@ -25,7 +25,7 @@ export function diversionCase(inputs) {
   // Sizing the head afresh to hit 50 MW at each setting would mask sensitivity.
   const operatingHead = Math.max(0, diversionSiteHead - design.channelLoss - design.pipeLoss);
   const plantMW = Math.min(50, 9.81 * operatingFlow * operatingHead * .92 * .97 / 1000);
-  return { ...design, width: inputs.width, depth: inputs.depth, riverFlow: inputs.flow, catchment,
+  return { ...design, width: inputs.width, depth: inputs.depth, riverFlow: inputs.flow, slope: inputs.slope, catchment,
     operatingFlow, plantMW, energy: plantMW * hoursPerYear / 1000 };
 }
 
