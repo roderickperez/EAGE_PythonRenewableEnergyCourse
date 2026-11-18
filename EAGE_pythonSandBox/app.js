@@ -210,7 +210,7 @@ async function route() {
       ['solar-cell-temperature-explorer', 'resource.html?demo=cell-temperature', 'Solar cell temperature and NOCT explorer', 'solar-lab'],
       ['solar-inverter-clipping-explorer', 'resource.html?demo=inverter-clipping', 'Solar inverter clipping and loss explorer', 'solar-lab'],
       ['solar-thermal-collector-explorer', 'resource.html?demo=thermal-collector', 'Solar thermal collector heat-balance explorer', 'solar-lab'],
-      ['wind-cube-law-explorer', 'aerodynamics.html?demo=cube-law', 'Available wind power and the cube law explorer', 'wind-lab'],
+      ['wind-cube-law-explorer', 'aerodynamics.html?demo=cube-law&v=curve-side-1', 'Available wind power and the cube law explorer', 'wind-lab'],
       ['wind-betz-explorer', 'aerodynamics.html?demo=betz', 'Rotor extraction and Betz limit explorer', 'wind-lab'],
       ['wind-air-density-explorer', 'aerodynamics.html?demo=air-density', 'Dry-air density and available wind power explorer', 'wind-lab'],
       ['wind-shear-explorer', 'aerodynamics.html?demo=shear', 'Hub-height wind shear explorer', 'wind-lab'],
@@ -259,7 +259,7 @@ async function route() {
       },
       'section6/windEnergy.md': {
         anchor: '#physical-description-extracting-energy-from-moving-air', id: 'wind-3d-lab',
-        mount: async host => (await import('./generated/wind-lab/wind-lab.js')).mountWindLab(host),
+        mount: async host => (await import('./generated/wind-lab/wind-lab.js?v=curve-side-1')).mountWindLab(host),
       },
       'section6/geothermalEnergy.md': {
         anchor: '#three-ways-to-extract-geothermal-heat', id: 'geothermal-3d-lab',

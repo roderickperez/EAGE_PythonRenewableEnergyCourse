@@ -111,14 +111,16 @@ export function mountWindLab(container) {
         </div>
         <figcaption>Drag to orbit. Hover or tap a part to identify it. Blue streaks show wind direction. Gold pulses trace the electrical route to the grid. Geometry and pulse speed are schematic.</figcaption>
       </figure>
-      <section class="metrics-card" aria-label="Wind turbine output">
-        <div class="power-card"><span class="eyebrow">Electrical power to grid</span><strong id="grid"></strong><span class="status" id="region"></span></div>
-        <div class="metric-list" id="wind-metrics"></div>
-      </section>
+      <div class="wind-output-stack">
+        <section class="metrics-card" aria-label="Wind turbine output">
+          <div class="power-card"><span class="eyebrow">Electrical power to grid</span><strong id="grid"></strong><span class="status" id="region"></span></div>
+          <div class="metric-list" id="wind-metrics"></div>
+        </section>
+        <section class="chart-card"><h3>Electrical power curve</h3><p>The orange dot marks the current hub-height wind speed. At cut-out, the filled point marks zero output.</p>
+          <svg id="wind-chart" viewBox="0 0 535 192" role="img" aria-label="Electrical power versus hub-height wind speed"></svg></section>
+      </div>
     </div>
     <div class="solar-analysis">
-      <section class="chart-card"><h3>Electrical power curve</h3><p>The orange dot marks the current hub-height wind speed. At cut-out, the filled point marks zero output.</p>
-        <svg id="wind-chart" viewBox="0 0 535 192" role="img" aria-label="Electrical power versus hub-height wind speed"></svg></section>
       <details open><summary>Live equations</summary><div id="wind-equations"></div></details>
       <details><summary>${groups[4][0]}</summary><div class="solar-controls">${sliders(groups[4][1])}</div><div id="wind-measurements"></div></details>
       <p class="assumptions">Air density, blade radius, and drivetrain efficiency change electrical output in the fixed-Cₚ model. The course curve uses the specified electrical rating and speed thresholds. Annual energy uses a separate hub-height Weibull distribution and applies availability and site losses once. The rotor stops at cut-out in this teaching model.</p>

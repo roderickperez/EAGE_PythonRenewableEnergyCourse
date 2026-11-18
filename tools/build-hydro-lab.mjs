@@ -62,7 +62,7 @@ for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'proj
     const card = await readFile(resolve(root, 'web/solar-lab/resource.html'), 'utf8');
     await writeFile(resolve(output, 'aerodynamics.html'), card
       .replace('<title>Solar radiation explorer</title>', '<title>Wind aerodynamics explorer</title>')
-      .replace(/src="resource\.js\?[^"]+"/, 'src="aerodynamics.js?v=wind-fixed-axes-3"'));
+      .replace(/src="resource\.js\?[^"]+"/, 'src="aerodynamics.js?v=wind-curve-side-1"'));
   }
   if (lab === 'hydro-lab') {
     await cp(resolve(source, 'fallback.svg'), resolve(output, 'fallback.svg'));

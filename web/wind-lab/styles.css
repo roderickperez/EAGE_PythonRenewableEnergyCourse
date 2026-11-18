@@ -9,3 +9,7 @@
 .wind-selects label, .wind-selects select { display: block; min-width: 0; font: inherit; }
 .wind-selects label { font-weight: 700; }
 .wind-selects select { width: 100%; margin-top: 4px; border: 1px solid var(--line); border-radius: 7px; padding: 7px; color: var(--ink); background: white; }
+
+.wind-output-stack { display: grid; align-content: start; gap: 12px; min-width: 0; }
+.wind-output-stack > * { min-width: 0; max-width: 100%; }
+.wind-output-stack .metrics-card, .wind-output-stack .chart-card { margin-top: 0; }

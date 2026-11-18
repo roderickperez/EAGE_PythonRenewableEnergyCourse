@@ -230,17 +230,21 @@ input[type="range"]:focus-visible { outline: 3px solid #65aee0; outline-offset: 
 @media (max-width: 420px) {
   .solar-control-panel, .solar-analysis, .solar-stage { padding-inline: 10px; }
 }
-`;var Fl=`#wind-scene { position: relative; height: clamp(350px, 46vw, 530px); }
-#wind-scene canvas { display: block; width: 100%; height: 100%; }
-.wind-lab { container-type: inline-size; }
-@container (max-width: 740px) {
-  .wind-lab .solar-stage { grid-template-columns: minmax(0, 1fr); }
-  #wind-scene { height: clamp(285px, 77cqw, 450px); }
-}
-.wind-selects { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,260px),1fr)); gap: 10px; }
-.wind-selects label, .wind-selects select { display: block; min-width: 0; font: inherit; }
-.wind-selects label { font-weight: 700; }
-.wind-selects select { width: 100%; margin-top: 4px; border: 1px solid var(--line); border-radius: 7px; padding: 7px; color: var(--ink); background: white; }
+`;var Fl=`#wind-scene { position: relative; height: clamp(350px, 46vw, 530px); }\r
+#wind-scene canvas { display: block; width: 100%; height: 100%; }\r
+.wind-lab { container-type: inline-size; }\r
+@container (max-width: 740px) {\r
+  .wind-lab .solar-stage { grid-template-columns: minmax(0, 1fr); }\r
+  #wind-scene { height: clamp(285px, 77cqw, 450px); }\r
+}\r
+.wind-selects { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,260px),1fr)); gap: 10px; }\r
+.wind-selects label, .wind-selects select { display: block; min-width: 0; font: inherit; }\r
+.wind-selects label { font-weight: 700; }\r
+.wind-selects select { width: 100%; margin-top: 4px; border: 1px solid var(--line); border-radius: 7px; padding: 7px; color: var(--ink); background: white; }\r
+\r
+.wind-output-stack { display: grid; align-content: start; gap: 12px; min-width: 0; }\r
+.wind-output-stack > * { min-width: 0; max-width: 100%; }\r
+.wind-output-stack .metrics-card, .wind-output-stack .chart-card { margin-top: 0; }\r
 `;var ni=Math.PI/180,$i=8760,Qh=287.05,$a=16/27;function Ol(i,t){return i*1e3/(Qh*(t+273.15))}function tu(i,t,e){let n=Math.PI*e**2,s=t*n*i,r=i**2/2;return{area:n,massFlow:s,specificEnergy:r,windMW:s*r/1e6}}function eu(i,t,e){let n=i*Math.min(t,$a),s=n*e;return{rotorMW:n,electricalMW:s,drivetrainLossMW:n-s,betzMW:i*$a}}function nu(i,{cutIn:t,ratedSpeed:e,cutOut:n,ratedMW:s}){return i<=t||i>=n?0:i>=e?s:s*(i**3-t**3)/(e**3-t**3)}function Ys(i){if(i.outputMode!=="aero")return n=>nu(n,i);let e=.5*Ol(i.pressure,i.temperature)*Math.PI*i.radius**2*Math.min(i.cp,$a)*i.efficiency/1e8;return n=>n<=i.cutIn||n>=i.cutOut?0:Math.min(i.ratedMW,e*n**3)}function Bl(i){let t=i.hub/i.reference,e=Math.log((i.hub-i.displacement)/i.roughness)/Math.log((i.reference-i.displacement)/i.roughness),n=i.heightMode==="power"?t**i.alpha:i.heightMode==="log"?e:1,s=i.speed*n,r=Ol(i.pressure,i.temperature),{area:a,massFlow:o,windMW:l}=tu(s,r,i.radius),{rotorMW:c,electricalMW:h}=eu(l,i.cp,i.efficiency/100),u=Ys(i)(s),d=i.outputMode==="aero"&&h>0?Math.max(i.cutIn,s*Math.cbrt(i.ratedMW/h)):i.ratedSpeed,f=s<=i.cutIn?"Below or at cut-in":s>=i.cutOut?"Cut-out shutdown":u===i.ratedMW?"Rated output":u>0?"Generating":"Zero generation",_=u>0?i.tsr*Math.min(s,d)/i.radius:0;return{speed:s,density:r,area:a,massFlow:o,windMW:l,rotorMW:c,aeroMW:h,gridMW:u,region:f,omega:_,rpm:_*60/(2*Math.PI),tsr:s?_*i.radius/s:null,torque:_?u*1e6/(i.efficiency/100*_):null,frictionVelocity:i.speed*.4/Math.log((i.reference-i.displacement)/i.roughness)}}function zl(i){let t=c=>Math.exp(-((c/i.scale)**i.shape)),e=Ys(i),n=Math.ceil((i.cutOut-i.cutIn)/.05),s=(i.cutOut-i.cutIn)/n,r=0;for(let c=0;c<n;c++){let h=i.cutIn+c*s,u=h+s;r+=e((h+u)/2)*(t(h)-t(u))}let a=$i*r,o=i.availability/100*(1-i.wake/100)*(1-i.loss/100),l=a*o;return{meanMW:r,gross:a,retained:o,net:l,capacityFactor:l/($i*i.ratedMW)}}function kl(i,t){let e=(Math.sin(i*ni)+Math.sin(t*ni))/2,n=(Math.cos(i*ni)+Math.cos(t*ni))/2,s=Math.hypot(e,n);return{length:s,degrees:s<1e-10?null:(Math.atan2(e,n)/ni+360)%360}}/**
  * @license
  * Copyright 2010-2026 Three.js Authors
@@ -4509,14 +4513,16 @@ void main() {
         </div>
         <figcaption>Drag to orbit. Hover or tap a part to identify it. Blue streaks show wind direction. Gold pulses trace the electrical route to the grid. Geometry and pulse speed are schematic.</figcaption>
       </figure>
-      <section class="metrics-card" aria-label="Wind turbine output">
-        <div class="power-card"><span class="eyebrow">Electrical power to grid</span><strong id="grid"></strong><span class="status" id="region"></span></div>
-        <div class="metric-list" id="wind-metrics"></div>
-      </section>
+      <div class="wind-output-stack">
+        <section class="metrics-card" aria-label="Wind turbine output">
+          <div class="power-card"><span class="eyebrow">Electrical power to grid</span><strong id="grid"></strong><span class="status" id="region"></span></div>
+          <div class="metric-list" id="wind-metrics"></div>
+        </section>
+        <section class="chart-card"><h3>Electrical power curve</h3><p>The orange dot marks the current hub-height wind speed. At cut-out, the filled point marks zero output.</p>
+          <svg id="wind-chart" viewBox="0 0 535 192" role="img" aria-label="Electrical power versus hub-height wind speed"></svg></section>
+      </div>
     </div>
     <div class="solar-analysis">
-      <section class="chart-card"><h3>Electrical power curve</h3><p>The orange dot marks the current hub-height wind speed. At cut-out, the filled point marks zero output.</p>
-        <svg id="wind-chart" viewBox="0 0 535 192" role="img" aria-label="Electrical power versus hub-height wind speed"></svg></section>
       <details open><summary>Live equations</summary><div id="wind-equations"></div></details>
       <details><summary>${Ws[4][0]}</summary><div class="solar-controls">${Ml(Ws[4][1])}</div><div id="wind-measurements"></div></details>
       <p class="assumptions">Air density, blade radius, and drivetrain efficiency change electrical output in the fixed-C\u209A model. The course curve uses the specified electrical rating and speed thresholds. Annual energy uses a separate hub-height Weibull distribution and applies availability and site losses once. The rotor stops at cut-out in this teaching model.</p>

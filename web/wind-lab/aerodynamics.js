@@ -16,6 +16,21 @@ $('note').textContent = demo.note;
 mountLegend(demo.legend);
 const plotGroup = mountPlotGroup(hasScene ? $('scene') : document.querySelector('header'), demo.plot);
 const plot = addPlot(plotGroup, demo.plot, demo.caption);
+if (key === 'cube-law') {
+  const layout = document.createElement('div');
+  layout.className = 'wind-scene-plot';
+  $('scene').before(layout);
+  layout.append($('scene'), plotGroup);
+  const style = document.createElement('style');
+  style.textContent = `
+    .wind-scene-plot { display:grid; grid-template-columns:minmax(0, 1.6fr) minmax(0, 1fr); gap:12px; align-items:start; }
+    .wind-scene-plot > * { min-width:0; }
+    .wind-scene-plot .comparison-plots { margin:0; }
+    .wind-scene-plot .comparison-plots svg { max-height:none; }
+    @media (max-width:650px) { .wind-scene-plot { grid-template-columns:minmax(0, 1fr); } }
+  `;
+  document.head.append(style);
+}
 const updateScene = hasScene ? mountSceneCard() : () => {};
 if (!hasScene) $('scene').remove();
 
