@@ -259,7 +259,7 @@ async function route() {
       },
       'section6/windEnergy.md': {
         anchor: '#physical-description-extracting-energy-from-moving-air', id: 'wind-3d-lab',
-        mount: async host => (await import('./generated/wind-lab/wind-lab.js?v=curve-side-1')).mountWindLab(host),
+        mount: async host => (await import('./generated/wind-lab/wind-lab.js?v=three-panel-1')).mountWindLab(host),
       },
       'section6/geothermalEnergy.md': {
         anchor: '#three-ways-to-extract-geothermal-heat', id: 'geothermal-3d-lab',
