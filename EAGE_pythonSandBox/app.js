@@ -254,7 +254,7 @@ async function route() {
     }
     const lab = {
       'section6/hydroelectricEnergy.md': {
-        anchor: '#physical-description-water-elevation-and-electricity', id: 'hydro-3d-lab',
+        anchor: '#worked-plant-design-examples', id: 'hydro-3d-lab',
         mount: async host => (await import('./generated/hydro-lab/hydro-lab.js'))
           .mountHydroLab(host, undefined, { assetBase: 'generated/hydro-lab/', standaloneUrl: '' }),
       },

@@ -1,5 +1,6 @@
 import styles from './styles.css';
 import { HydroScene } from './scene.js';
+import { fitFrameToContent } from './fit-frame.js';
 import { updateMotionControl } from '../motion-control.js';
 import { CAPACITY, DEAD, HORIZON, initialState, step } from './project-model.js';
 
@@ -40,4 +41,4 @@ $('flow').oninput=render;
 $('run').onclick=()=>{running=!running;last=0;syncControls()};
 $('reset').onclick=()=>{state=initialState();history=[{...state,inflow:0,turbineFlow:0,power:0}];running=true;last=0;carry=0;syncControls();render()};
 function tick(t){if(running&&!document.hidden){if(last)carry+=Math.min((t-last)/1000,1);while(carry>=1&&state.day<HORIZON){state=step(state,+$('flow').value);history.push(state);carry--;render()}if(state.day===HORIZON){running=false;syncControls()}}last=t;requestAnimationFrame(tick)}
-window.addEventListener('resize',render);syncControls();render();requestAnimationFrame(tick);
+window.addEventListener('resize',render);syncControls();render();fitFrameToContent(host.querySelector('.project'));requestAnimationFrame(tick);

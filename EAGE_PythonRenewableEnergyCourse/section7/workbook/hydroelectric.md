@@ -744,9 +744,9 @@ Use the sliders in the [hydroelectric lesson](../../section6/hydroelectricEnergy
 
 **Difficulty:** Medium
 
-**Reference:** [Hydroelectric calculation video](https://youtu.be/ROnupNPkVf4) and the interactive worked examples in the hydroelectric lesson.
+**Reference:** [Interactive worked examples](../../section6/hydroelectricEnergy.md#worked-plant-design-examples) in the hydroelectric lesson.
 
-**Task:** A 12 m wide canal contains 4.5 m of water. The channel slope is 0.01%, Manning $n=0.014$ and length 2,500 m. Add 1 m intake loss. Two equal steel penstocks each carry half the channel flow at 5 m/s, with $n=0.012$, length 500 m and a 0.5 m transition loss. For 50 MW electrical output, calculate net and gross head with turbine efficiency 0.92 and generator efficiency 0.97. Take $g=9.81$ m/s². Compare channel flow and losses with the video values 72.4 m³/s and 4.35 m.
+**Task:** A 12 m wide canal contains 4.5 m of water. The channel slope is 0.01%, Manning $n=0.014$ and length 2,500 m. Add 1 m intake loss. Two equal steel penstocks each carry half the channel flow at 5 m/s, with $n=0.012$, length 500 m and a 0.5 m transition loss. For 50 MW electrical output, calculate net and gross head with turbine efficiency 0.92 and generator efficiency 0.97. Take $g=9.81$ m/s². Compare channel flow and losses with the reference values 72.4 m³/s and 4.35 m.
 
 
 
@@ -785,7 +785,7 @@ assert abs(flow - 72.4) < 0.1 and abs(loss - 4.35) < 0.05
 
 **Difficulty:** Medium
 
-**Reference:** [Hydroelectric calculation video](https://youtu.be/ROnupNPkVf4) and the interactive worked examples in the hydroelectric lesson.
+**Reference:** [Interactive worked examples](../../section6/hydroelectricEnergy.md#worked-plant-design-examples) in the hydroelectric lesson.
 
 **Task:** For 200 km², annual precipitation 1,200 mm, runoff coefficient 0.6, calculate annual runoff and mean inflow. Assume 10% spill, 1 m³/s ecological release, design flow twice the mean, design head 100 m and mean head 80 m. Compute design generator power at turbine efficiency 0.91 and generator efficiency 0.95, and annual generator energy using mean usable flow. Compare with 144 hm³/year, 4.57 m³/s and approximately 18.48 GWh.
 
