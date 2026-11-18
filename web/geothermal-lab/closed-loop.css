@@ -26,3 +26,5 @@
 .loop-bars figcaption { font-size: .9rem; font-weight: 650; }
 .loop-bars svg { display: block; width: 100%; max-height: 170px; fill: #315462; font: 13px system-ui,sans-serif; }
 @media(max-width:650px) { .loop-equation-grid { grid-template-columns: 1fr; } }
+[data-equation="conduction"] .loop-plot svg { max-height: 380px; }
+[data-equation="conduction"] .loop-metrics > :last-child { grid-column: 1 / -1; }

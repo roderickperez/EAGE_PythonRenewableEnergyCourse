@@ -50,28 +50,40 @@ export function mountGeothermalSystemScene(host, kind) {
  for(const o of [-.55,0,.55])pipe(curve([[2.9,1,-.2],[3.6,2,-1],[4.6+o,2.9,-1.8],[6,2.6,-2.6]]),.024,dark,'#ffd266',false,0,4);
  const z=3.02;
  function wellhead(x){cyl(.42,.25,concrete,[x,.16,2.55]);cyl(.21,.52,steel,[x,.42,2.55]);}
+ const injectionX = 4.7, productionX = -4.7;
+ const coldApproach = [[2,.55,1],[3,.42,2.5],[injectionX,.65,2.55],[injectionX,.4,z]];
+ const warmExit = [[productionX,.4,z],[productionX,.65,2.55],[-3.5,.45,2.35],[-2.2,.55,1]];
+ const coldPipe = points => pipe(curve(points),.14,cool,'#8ee9ff',false,.16);
+ const warmPipe = points => pipe(curve(points),.14,hot,'#ffbd80',false,.16);
+
  let reservoirFlow;
  if (kind === 'hydrothermal' || kind === 'egs') {
-  wellhead(-4.7);
-  wellhead(4.7);
-  const cold = curve([[-2,.55,1],[-3,.42,2.5],[-4.7,.65,2.55],[-4.7,.4,z],[-4.7,-3.88,z]]);
-  const warm = curve([[4.7,-3.88,z],[4.7,.4,z],[4.7,.65,2.55],[3.5,.45,2.35],[2.2,.55,1]]);
-  pipe(cold,.14,cool,'#8ee9ff',false,.16);
-  pipe(warm,.14,hot,'#ffbd80',false,.16);
-  reservoirFlow = createReservoirFlow(scene, [-4.7,-3.88,z+.06], [4.7,-3.88,z+.06], { fractured: kind === 'egs' });
- } else if(kind==='u'){
-  wellhead(-4.7);wellhead(4.7);
-  const cold=curve([[-2,.55,1],[-3,.42,2.5],[-4.7,.65,2.55],[-4.7,.4,z],[-4.7,-3.7,z],[-4.2,-4,z],[0,-4,z]]);
-  const warm=curve([[0,-4,z],[4.2,-4,z],[4.7,-3.7,z],[4.7,.4,z],[4.7,.65,2.55],[3.5,.45,2.35],[2.2,.55,1]]);
-  pipe(cold,.14,cool,'#8ee9ff',false,.16);pipe(warm,.14,hot,'#ffbd80',false,.16);
- }else{
-  wellhead(-4.7);
-  const outer=curve([[-4.7,.48,z],[-4.7,-3.65,z],[-4.15,-4,z],[4.8,-4,z]]);
-  const surfaceIn=curve([[-2,.55,1],[-3,.42,2.5],[-4.7,.6,2.55],[-4.7,.48,z]]);
-  const surfaceOut=curve([[-4.7,.48,z],[-4.5,.8,2.55],[-3.4,1,1.7],[-2.7,.9,1]]);
-  const annulus=cool.clone();annulus.transparent=true;annulus.opacity=.42;annulus.depthWrite=false;
-  pipe(surfaceIn,.14,cool,'#8ee9ff');pipe(outer,.24,annulus,'#8ee9ff',false,.12,10);
-  pipe(outer,.105,hot,'#ffbd80',true,.16,10);pipe(surfaceOut,.12,hot,'#ffbd80');
+  wellhead(injectionX);
+  wellhead(productionX);
+  coldPipe([...coldApproach,[injectionX,-3.88,z]]);
+  warmPipe([[productionX,-3.88,z],...warmExit]);
+  reservoirFlow = createReservoirFlow(
+   scene, [injectionX,-3.88,z+.06], [productionX,-3.88,z+.06], { fractured: kind === 'egs' }
+  );
+ } else if (kind === 'u') {
+  wellhead(injectionX);
+  wellhead(productionX);
+  coldPipe([...coldApproach,[injectionX,-3.7,z],[4.2,-4,z],[0,-4,z]]);
+  warmPipe([[0,-4,z],[-4.2,-4,z],[productionX,-3.7,z],...warmExit]);
+ } else {
+  wellhead(injectionX);
+  const outer = curve([[injectionX,.4,z],[injectionX,-3.65,z],[4.15,-4,z],[-4.8,-4,z]]);
+  const surfaceOut = [
+   [injectionX,.4,z],[4.5,.86,2.55],[3.45,.95,2.15],[1.15,.85,1.45],[-1.54,.82,.64]
+  ];
+  const annulus = cool.clone();
+  annulus.transparent = true;
+  annulus.opacity = .42;
+  annulus.depthWrite = false;
+  coldPipe(coldApproach);
+  pipe(outer,.24,annulus,'#8ee9ff',false,.12,10);
+  pipe(outer,.105,hot,'#ffbd80',true,.16,10);
+  warmPipe(surfaceOut);
  }
  let visible=true,motion=true,connected=true,clock=0,last=0;
  const resize=new ResizeObserver(()=>{const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;const half=Math.max(6.7,8.5*h/w);camera.left=-half*w/h;camera.right=half*w/h;camera.top=half;camera.bottom=-half;camera.updateProjectionMatrix();renderer.setSize(w,h,false);});resize.observe(host);

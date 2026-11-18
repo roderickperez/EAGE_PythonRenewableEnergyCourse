@@ -1,4 +1,3 @@
-import {conduction} from './closed-loop-model.js';
 import {mountGeothermalSystemScene} from './closed-loop-scene.js';
 import css from './closed-loop.css';
 import { mountCoaxialCutaway } from './coaxial-cutaway.js';
@@ -6,19 +5,17 @@ import { mountClosedLoopEquation } from './closed-loop-equations.js';
 
 const root=document.querySelector('#explorer'),style=document.createElement('style');style.textContent=css;document.head.append(style);
 const requested=new URLSearchParams(location.search).get('demo'),mode=['systems','conduction','area','energy'].includes(requested)?requested:'systems';
-const fmt=(x,n=2)=>Number(x).toLocaleString('en-US',{maximumFractionDigits:n});
 const specs={
  conduction:{title:'How rock conducts heat',intro:'One-dimensional, semi-infinite rock with a fixed cool wall and initially uniform far-field temperature.',controls:[['k','Rock conductivity',.5,5,.1,3,'W/(m K)'],['rho','Rock density',1800,3200,50,2750,'kg/m³'],['cp','Rock heat capacity',500,1400,10,790,'J/(kg K)'],['days','Elapsed time',1,3650,1,365,'days'],['wall','Borehole wall temperature',10,90,5,40,'°C'],['far','Initial rock temperature',120,250,5,200,'°C'],['distance','Examine distance',0,10,.1,1,'m']]},
  area:{title:'Inside a coaxial well',intro:'Change the tube and bore diameters to see how their flow areas compare.',controls:[['inner','Inner tube inside diameter Dᵢ',.04,.14,.005,.1,'m'],['outer','Inner tube outside diameter Dₒ',.06,.20,.005,.12,'m'],['bore','Surrounding passage inside diameter Dᵦ',.12,.30,.005,.18,'m']]},
  energy:{title:'Thermal energy and available work',intro:'Constant inlet/outlet enthalpy and entropy differences over a selected duration.',controls:[['flow','Mass flow ṁ',0,150,1,50,'kg/s'],['dh','Enthalpy difference Δh',0,700,10,300,'kJ/kg'],['ds','Entropy difference Δs',0,1,.01,.2,'kJ/(kg K)'],['ambient','Ambient temperature',270,330,1,300,'K'],['years','Operating duration',0,40,1,1,'years']]}
 };
-function lineChart(points,xmax,ymin,ymax,xlabel,ylabel,selected){const x=v=>55+v/xmax*500,y=v=>180-(v-ymin)/(ymax-ymin)*155;let grid='';for(let i=0;i<=4;i++){const xx=55+500*i/4;grid+=`<path d="M${xx} 25V180" stroke="#e5eff0"/><text x="${xx}" y="199" text-anchor="middle">${fmt(xmax*i/4,1)}</text>`;}return `<svg viewBox="0 0 600 235" role="img" aria-label="${ylabel} versus ${xlabel}"><g font-size="12" fill="#526b77" font-family="system-ui">${grid}<path d="M55 25V180H555" fill="none" stroke="#9db5bb"/><text x="3" y="32">${fmt(ymax,1)}</text><text x="3" y="182">${fmt(ymin,1)}</text><text x="300" y="224" text-anchor="middle">${xlabel}</text><text x="60" y="16">${ylabel}</text><path d="${points.map((p,i)=>`${i?'L':'M'}${x(p[0]).toFixed(1)} ${y(p[1]).toFixed(1)}`).join(' ')}" fill="none" stroke="#16879d" stroke-width="3"/><circle cx="${x(selected[0])}" cy="${y(selected[1])}" r="5" fill="#c44f3e"/></g></svg>`;}
 if (mode === 'systems') {
  const views = [
   ['hydrothermal', 'Conventional hydrothermal', 'Brine moves through naturally permeable rock between wells.'],
   ['egs', 'Enhanced geothermal (EGS)', 'Injected water moves through an engineered fracture network.'],
   ['u', 'U-shaped', 'A sealed lateral joins the two well legs.'],
-  ['coax', 'Coaxial', 'Fluid goes down the annulus and returns through the inner tube.'],
+  ['coax', 'Coaxial', 'Cool fluid descends through the annulus. Warm fluid rises through the inner tube in the same well.'],
  ];
 
  function view([id, name, description]) {
@@ -33,7 +30,7 @@ if (mode === 'systems') {
 
  root.innerHTML = `<section class="loop-card">
   <h2>Compare geothermal flow paths</h2>
-  <p>Follow the dots underground. Drag each view to orbit and scroll to zoom.</p>
+  <p>Follow cool blue flow down on the right. In the two-well views, warm red flow rises on the left. Drag to orbit and scroll to zoom.</p>
   <div class="loop-scenes">
    <article class="loop-view">
     <h3>Conventional hydrothermal</h3>
@@ -101,15 +98,8 @@ if (mode === 'systems') {
  window.addEventListener('pagehide', () => {
   for (const scene of scenes.values()) scene.destroy();
  });
- } else if (mode === 'area' || mode === 'energy') {
+ } else {
  mountClosedLoopEquation(root, mode, specs[mode], mountCoaxialCutaway);
-} else {
- const spec=specs[mode];root.innerHTML=`<section class="loop-card"><h2>${spec.title}</h2><p>${spec.intro}</p><div class="loop-result" aria-live="polite"></div><div class="loop-plot"></div><div class="loop-controls">${spec.controls.map(([id,label,min,max,step,value,unit])=>`<label>${label}<output data-out="${id}"></output><input type="range" data-id="${id}" min="${min}" max="${max}" step="${step}" value="${value}"><small>${unit}</small></label>`).join('')}</div><p class="loop-note"></p></section>`;
- const $=s=>root.querySelector(s),read=()=>Object.fromEntries(spec.controls.map(([id])=>[id,$(`[data-id="${id}"]`).valueAsNumber]));
- function update(){const p=read();for(const [id] of spec.controls)$(`[data-out="${id}"]`).textContent=fmt(p[id],4);try{
-  if(mode==='conduction'){const a=conduction(p),points=Array.from({length:81},(_,i)=>{const d=i/8;return [d,conduction({...p,distance:d}).temperature];});$('.loop-result').textContent=`α = ${a.alpha.toExponential(2)} m²/s · effusivity = ${fmt(a.effusivity,0)} J/(m² K √s) · T(${p.distance} m) = ${fmt(a.temperature,1)} °C`;$('.loop-plot').innerHTML=lineChart(points,10,p.wall,p.far,'Distance from wall (m)','Rock temperature (°C)',[p.distance,a.temperature]);$('.loop-note').textContent='The red point shows the selected distance. The line is the 1D constant-wall-temperature solution; it does not model cylindrical geometry, fluid flow, or a whole geothermal well.';}
- }catch(e){$('.loop-result').textContent=e.message;$('.loop-plot').innerHTML='';$('.loop-note').textContent='Adjust the inputs to continue.';}}
- for(const el of root.querySelectorAll('input'))el.addEventListener('input',update);update();
 }
 const frame = window.frameElement;
 if (frame) {

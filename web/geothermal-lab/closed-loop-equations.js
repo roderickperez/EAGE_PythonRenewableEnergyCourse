@@ -1,4 +1,4 @@
-import { areas, energy } from './closed-loop-model.js';
+import { areas, conduction, energy } from './closed-loop-model.js';
 
 const fmt = (n, digits = 2) => n.toLocaleString('en-US', { maximumFractionDigits: digits });
 
@@ -44,13 +44,38 @@ function accumulation(result, years) {
     </svg></figure>`;
 }
 
+function conductionChart(points, input, temperature) {
+  const x = distance => 55 + distance/10*500;
+  const y = value => 180 - (value-input.wall)/(input.far-input.wall)*155;
+  const ticks = [0,2.5,5,7.5,10].map(distance =>
+    `<path d="M${x(distance)} 25V180" stroke="#e5eff0"/>
+     <text x="${x(distance)}" y="199" text-anchor="middle">${distance}</text>`).join('');
+  const trace = points.map(([distance,value],index) =>
+    `${index ? 'L' : 'M'}${x(distance).toFixed(1)} ${y(value).toFixed(1)}`).join(' ');
+  return `<svg viewBox="0 0 600 235" role="img" aria-label="Rock temperature versus distance from the wall">
+    <g font-size="12" fill="#526b77" font-family="system-ui">
+      ${ticks}
+      <path d="M55 25V180H555" fill="none" stroke="#9db5bb"/>
+      <text x="3" y="32">${input.far}</text>
+      <text x="3" y="182">${input.wall}</text>
+      <text x="300" y="224" text-anchor="middle">Distance from wall (m)</text>
+      <text x="60" y="16">Rock temperature (°C)</text>
+      <path d="${trace}" fill="none" stroke="#16879d" stroke-width="3"/>
+      <circle cx="${x(input.distance)}" cy="${y(temperature)}" r="5" fill="#c44f3e"/>
+    </g>
+  </svg>`;
+}
+
 export function mountClosedLoopEquation(root, mode, spec, mountCutaway) {
   const isArea = mode === 'area';
-  const metrics = isArea ? ['Inner tube area', 'Annular area', 'Annulus / tube']
-    : ['Heat rate', 'Available work rate', 'Thermal energy', 'Available work'];
+  const metrics = {
+    area: ['Inner tube area', 'Annular area', 'Annulus / tube'],
+    conduction: ['Thermal diffusivity α', 'Thermal effusivity', 'Rock temperature at selected distance'],
+    energy: ['Heat rate', 'Available work rate', 'Thermal energy', 'Available work'],
+  }[mode];
   root.innerHTML = `<section class="loop-card">
     <h2>${spec.title}</h2><p>${spec.intro}</p>
-    <div class="loop-equation-grid">
+    <div class="loop-equation-grid" data-equation="${mode}">
       <div class="loop-equation-visual">${isArea ? `<div class="loop-pipe-canvas" role="img" aria-label="Three-dimensional cutaway of a concentric geothermal pipe"></div>
         <div class="loop-pipe-key"><span>Blue · annulus</span><span>Gray · pipe wall</span><span>Orange · inner tube</span></div>
         <small>Drag to orbit and scroll to zoom. All three diameters use the same scale.</small>` : ''}</div>
@@ -101,6 +126,19 @@ export function mountClosedLoopEquation(root, mode, spec, mountCutaway) {
       }
       values = [`${result.tube.toFixed(4)} m²`, `${result.annulus.toFixed(4)} m²`, fmt(result.ratio,2)];
       note.textContent = 'The sliders maintain a positive inner-pipe wall thickness and flow area in both passages. Pressure loss also depends on flow and fluid properties.';
+    } else if (mode === 'conduction') {
+      const result = conduction(data);
+      const points = Array.from({length:81}, (_,index) => {
+        const distance = index/8;
+        return [distance,conduction({...data,distance}).temperature];
+      });
+      visual.innerHTML = `<div class="loop-plot">${conductionChart(points,data,result.temperature)}</div>`;
+      values = [
+        `${result.alpha.toExponential(2)} m²/s`,
+        `${fmt(result.effusivity,0)} J/(m² K √s)`,
+        `${fmt(result.temperature,1)} °C at ${fmt(data.distance,1)} m`,
+      ];
+      note.textContent = 'The red point marks the selected distance on the one-dimensional profile for a fixed wall temperature.';
     } else {
       const result = energy(data);
       const rows = (thermal, available) => [['Thermal',thermal,'#ca6640'],['Available work',available,'#25819b']];

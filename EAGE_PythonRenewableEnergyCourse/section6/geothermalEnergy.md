@@ -43,7 +43,7 @@ Hydrothermal and EGS wells both exchange fluid with the formation. The distincti
 Use the three views to follow fluid underground. In the **hydrothermal** view it spreads through permeable rock. In the **EGS** view it follows connected fractures. Switch off **Fractures connect both wells** to see a schematic case where the two wells lack a through-flow path. This control illustrates connectivity after stimulation. [@doeGeoForge]
 
 (geo-closed-systems)=
-:::{iframe} ../../geothermal-lab/closed-loop.html?demo=systems&v=5
+:::{iframe} ../../geothermal-lab/closed-loop.html?demo=systems&v=6
 :width: 100%
 :height: 650px
 :title: Interactive geothermal system comparison
@@ -70,7 +70,7 @@ $$\rho_r c_r\frac{\partial T}{\partial t}=k_r\nabla^2T, \qquad \alpha=\frac{k_r}
 $k_r$ is rock thermal conductivity in W/(m K), $\rho_r$ is density in kg/m³, $c_r$ is specific heat in J/(kg K), and thermal diffusivity $\alpha$ is in m²/s. In a sealed loop in hot dry rock, the circulating fluid draws heat from the rock near the borehole. Heat then conducts from farther away, so the outlet temperature can decline rapidly at first and more slowly later. The paper discusses $k_r/\sqrt{\alpha}$, a thermal effusivity in J/(m² K s$^{1/2}$), as a relevant rock property. A real model must couple the fluid, pipe and formation with appropriate geometry and boundaries; this equation alone is not a closed-loop solution [@white2024closedloop].
 
 (geo-closed-conduction)=
-:::{iframe} ../../geothermal-lab/closed-loop.html?demo=conduction&v=5
+:::{iframe} ../../geothermal-lab/closed-loop.html?demo=conduction&v=6
 :width: 100%
 :height: 660px
 :title: Transient rock conduction explorer
