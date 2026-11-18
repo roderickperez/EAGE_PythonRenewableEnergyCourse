@@ -1,5 +1,7 @@
 import * as T from 'three';
 import { HydroScene } from './scene.js';
+import { visualState } from './visual-state.js';
+import { CatchmentWeather } from './worked-weather.js';
 
 const riverSource = [
   [-11.9, 3.90, -5.7], [-10.2, 3.66, -6.0], [-8.9, 3.52, -4.9],
@@ -55,6 +57,53 @@ function makeStrip(frames, profile) {
 }
 
 class WorkedScene extends HydroScene {
+  addWeather(options) {
+    this.weather = new CatchmentWeather(this.scene, options);
+    const [x, y, z] = options.clouds[0];
+    this.weatherAnchor = new T.Vector3(x, y - 1.2, z + .8);
+    this.callout = document.createElement('div');
+    this.callout.className = 'scene-callout';
+    this.callout.hidden = true;
+    this.host.append(this.callout);
+  }
+
+  showControl(key, label, value) {
+    this.calloutAnchor = this.controlAnchor(key);
+    this.callout.hidden = !this.calloutAnchor;
+    this.callout.textContent = label + ': ' + value;
+  }
+
+  controlAnchor(key) {
+    return key === 'precip' || key === 'rain' ? this.weatherAnchor : undefined;
+  }
+
+  updateWeather(precipitation) {
+    this.weather.setPrecipitation(precipitation);
+    this.host.dataset.rainDrops = String(this.weather.count);
+  }
+
+  frame(time) {
+    if (this.visible && this.animate) this.weather.step(Math.min((time - this.lastTime) / 1000, .05));
+    super.frame(time);
+    if (!this.visible || !this.calloutAnchor) return;
+    const anchor = this.calloutAnchor.clone().project(this.camera);
+    const width = this.host.clientWidth;
+    const height = this.host.clientHeight;
+    const x = (anchor.x + 1) * width / 2 + 7;
+    const y = (1 - anchor.y) * height / 2 + 6;
+    const left = T.MathUtils.clamp(x, 4, width - this.callout.offsetWidth - 8);
+    const top = T.MathUtils.clamp(y, 8, height - this.callout.offsetHeight - 8);
+    this.callout.style.transform = 'translate(' + Math.round(left) + 'px,' + Math.round(top) + 'px)';
+  }
+
+  padView(scale, lift) {
+    this.camera.left /= scale;
+    this.camera.right /= scale;
+    this.camera.top = this.camera.top / scale + lift;
+    this.camera.bottom = this.camera.bottom / scale + lift;
+    this.camera.updateProjectionMatrix();
+  }
+
   surfaceCurrent(points, type, count = 16) {
     const curve = new T.CatmullRomCurve3(points.map(point => new T.Vector3(...point)));
     const foam = this.mat('#d9fbff', .2);
@@ -80,6 +129,7 @@ export class DiversionScene extends WorkedScene {
     this.controls.target.set(-.15, 1.95, .25);
     this.controls.update();
     this.buildValley();
+    this.addWeather({ clouds: [[-9.4, 6.6, -5.08, .94], [-6.95, 6.38, -5.05, .66]], dropHeight: 2.62 });
 
     const [x, y, z] = riverSource.at(-1);
     const weir = this.box([.28, .51, 1.7], [x + .5, y - .27, z + .43], this.concrete, 'Low diversion weir');
@@ -242,16 +292,12 @@ export class DiversionScene extends WorkedScene {
 
   resize() {
     super.resize();
-    // Frame the full valley, including its raised source and downstream bend.
-    this.camera.left /= .90;
-    this.camera.right /= .90;
-    this.camera.top /= .90;
-    this.camera.bottom /= .90;
-    this.camera.updateProjectionMatrix();
+    this.padView(.83, .88);
   }
 
   updateWorked(values) {
-    const { width, depth, slope, area, channelFlow, riverFlow, operatingFlow, plantMW } = values;
+    const { width, depth, slope, area, channelFlow, riverFlow, operatingFlow, plantMW, precipitation } = values;
+    this.updateWeather(precipitation);
     this.buildChannel(width, depth, slope);
     const bypassFlow = riverFlow - operatingFlow;
     // Scale the design pipe speed by the fraction of design discharge in use.
@@ -264,6 +310,19 @@ export class DiversionScene extends WorkedScene {
   }
 }
 
+const upstreamBank = -9.34;
+const catchmentCenter = new T.Vector2(-11.72, -1.9);
+const catchmentRim = [
+  [-2, -.6], [-1.48, -2.28], [-.52, -2.62], [.98, -2.14],
+  [1.89, -1.2], [2.08, .16], [1.52, 1.73], [.31, 2.27], [-1.28, 1.69],
+];
+const catchmentElevation = (x, z) =>
+  5.82 + .33 * (upstreamBank - x) + .19 * Math.cos(z) + .18 * Math.sin(x * 1.6 + z);
+const headDatum = -.46;
+const schematicSurfaceAtHead = meanHead => visualState({
+  inputs: { grossHeadM: 48 + meanHead * 1.8, ratingMW: 1 }, plantMW: 0,
+}).surfaceY;
+
 export class ReservoirWorkedScene extends WorkedScene {
   pipe(points, radius, label, type) {
     super.pipe(points, radius, type === 'spill' ? 'Spill release outlet' : label, type);
@@ -271,18 +330,157 @@ export class ReservoirWorkedScene extends WorkedScene {
 
   build() {
     super.build();
-    this.pipe([[-4.35, 1.2, -.9], [-2, .83, -.9], [.6, .25, -.9], [2.4, -.29, -1.3], [6.6, -.35, -1.3]],
-      .16, 'Environmental release outlet', 'ecological');
+    this.camera.position.set(5.6, 13.6, 24);
+    this.controls.target.set(-1.75, 2.72, -.15);
+    this.controls.update();
+    this.buildCatchmentTerrain();
+    this.addWeather({ clouds: [[-12.85, 9.9, -2.56, .94], [-10.3, 9.36, -3.22, .72]], dropHeight: 3.35 });
+
+    const catchmentMaterial = new T.LineDashedMaterial({
+      color: '#fff0a6', dashSize: .23, gapSize: .1,
+    });
+    this.catchment = new T.LineLoop(new T.BufferGeometry(), catchmentMaterial);
+    this.catchment.renderOrder = 2;
+    this.scene.add(this.catchment);
+    this.catchmentAnchor = new T.Vector3();
+    this.runoffAnchor = new T.Vector3();
+    this.runoffArrows = [-3.24, -2.10, -.91].map(z => {
+      const x = -11.36;
+      const y = catchmentElevation(x, z) + .22;
+      const slope = (catchmentElevation(x + 1.65, z) - catchmentElevation(x, z)) / 1.65;
+      const direction = new T.Vector3(1, slope, 0).normalize();
+      const arrow = new T.ArrowHelper(direction, new T.Vector3(x, y, z), 1, '#136d80', .32, .28);
+      this.scene.add(arrow);
+      return arrow;
+    });
     this.inflow = this.surfaceCurrent([[-9.2, 3, -1.8], [-7.7, 3, -1.8], [-6.1, 3, -1.8]], 'inflow');
+
+    this.meanMarker = this.makeHeadMarker(-8.95, '#126483');
+    this.designMarker = this.makeHeadMarker(-8.18, '#936019', true);
+    this.ecoAnchor = new T.Vector3(4.8, .62, 2.78);
+    this.buildEcologicalOutlet();
   }
 
-  updateWorked({ mean, spill, ecological, usable, meanHead, operatingMW, ratingMW }) {
+  buildCatchmentTerrain() {
+    const west = -14.16;
+    const north = -5.12;
+    const south = .96;
+    const slope = new T.PlaneGeometry(upstreamBank - west, south - north, 28, 30).rotateX(-Math.PI / 2);
+    const positions = slope.attributes.position;
+    const grass = this.mat('#729686', 1);
+    for (let i = 0; i < positions.count; i++) {
+      const x = positions.getX(i) + (upstreamBank + west) / 2;
+      const z = positions.getZ(i) + (north + south) / 2;
+      positions.setXYZ(i, x, catchmentElevation(x, z), z);
+    }
+    slope.computeVertexNormals();
+    this.mesh(slope, grass, [0, 0, 0], 'Upstream catchment slope');
+    const corners = [[west, north], [upstreamBank, north], [upstreamBank, south], [west, south]];
+    const bank = this.mat('#869b8e', .96);
+    corners.forEach(([x0, z0], i) => {
+      const [x1, z1] = corners[(i + 1) % corners.length];
+      const edge = Array.from({ length: 31 }, (_, step) => {
+        const x = T.MathUtils.lerp(x0, x1, step / 30);
+        const z = T.MathUtils.lerp(z0, z1, step / 30);
+        return { x, y: catchmentElevation(x, z), z, lateral: new T.Vector2() };
+      });
+      this.mesh(makeStrip(edge, ({ y }) => [[0, 0], [0, -.65 - y]]), bank, [0, 0, 0], 'Upstream bank cutaway');
+    });
+  }
+
+  buildEcologicalOutlet() {
+    const green = this.mat('#398e76', .36, .27);
+    const route = [[-4.4, 1.12, 1.96], [-3.85, .96, 2.44], [-2.52, .46, 2.69],
+      [-.7, .27, 2.69], [1.72, .13, 2.69], [3.4, .08, 2.69], [4.7, .07, 2.69],
+      [5.44, -.22, 2.67], [6.72, -.46, 2.16]];
+    this.pipe(route, .17, 'Environmental release through the ecological turbine', 'ecological');
+    const stream = this.streams.at(-1);
+    stream.offset = .1;
+    stream.particles[0].material.color.set('#83f4b5');
+    this.box([1.38, .19, .78], [4.18, -.37, 2.7], this.concrete, 'Ecological turbine foundation');
+    this.cyl(.35, .53, [4.18, .02, 2.7], green, 'Ecological turbine');
+    this.cyl(.23, .45, [4.18, .46, 2.7], this.steel, 'Ecological generator');
+    this.ecoLight = this.mat('#6acb9d', .3);
+    this.ecoLight.emissive.set('#2eab83');
+    this.cyl(.132, .07, [4.18, .71, 2.7], this.ecoLight, 'Ecological release indicator');
+  }
+
+  makeHeadMarker(x, color, dashed = false) {
+    const material = dashed
+      ? new T.LineDashedMaterial({ color, dashSize: .26, gapSize: .16 })
+      : new T.LineBasicMaterial({ color });
+    material.depthTest = false;
+    const geometry = new T.BufferGeometry().setAttribute('position', new T.BufferAttribute(new Float32Array(18), 3));
+    const line = new T.LineSegments(geometry, material);
+    line.frustumCulled = false;
+    line.renderOrder = 2;
+    this.scene.add(line);
+    return { line, anchor: new T.Vector3(x, 0, 2.02) };
+  }
+
+  updateHeadMarker({ line, anchor }, height) {
+    const { x, z } = anchor;
+    const positions = line.geometry.attributes.position;
+    positions.set([x, headDatum, z, x, height, z, x - .19, height, z, x + .19, height, z,
+      x - .19, headDatum, z, x + .19, headDatum, z]);
+    positions.needsUpdate = true;
+    line.computeLineDistances();
+    anchor.y = height;
+  }
+
+  updateCatchment(area, coefficient) {
+    const scale = Math.sqrt(area / 400);
+    if (this.catchmentScale !== scale) {
+      this.catchmentScale = scale;
+      const outline = catchmentRim.map(([dx, dz]) => [
+        catchmentCenter.x + dx * scale, 0, catchmentCenter.y + dz * scale,
+      ]);
+      const rim = pathFrames([...outline, outline[0]], 42);
+      this.catchment.geometry.dispose();
+      this.catchment.geometry = new T.BufferGeometry().setFromPoints(rim.map(({ x, z }) =>
+        new T.Vector3(x, catchmentElevation(x, z) + .12, z)
+      ));
+      this.catchment.computeLineDistances();
+    }
+    this.catchmentAnchor.set(catchmentCenter.x, catchmentElevation(catchmentCenter.x, catchmentCenter.y) + .2, catchmentCenter.y);
+    for (const arrow of this.runoffArrows) {
+      arrow.setLength(.43 + 1.07 * coefficient, .21 + .12 * coefficient, .16 + .14 * coefficient);
+    }
+    this.runoffAnchor.set(-10.7, catchmentElevation(-10.7, -2.1) + .2, -2.1);
+    this.host.dataset.catchmentScale = String(scale);
+    this.host.dataset.runoffCoefficient = String(coefficient);
+  }
+
+  controlAnchor(key) {
+    switch (key) {
+      case 'area': return this.catchmentAnchor;
+      case 'coefficient': return this.runoffAnchor;
+      case 'meanhead': return this.meanMarker.anchor;
+      case 'designhead': return this.designMarker.anchor;
+      case 'eco': return this.ecoAnchor;
+      default: return super.controlAnchor(key);
+    }
+  }
+
+  resize() {
+    super.resize();
+    this.padView(.87, 1.04);
+  }
+
+  updateWorked({ area, precipitation, coefficient, mean, spill, ecological, usable, meanHead, designHead, operatingMW, ratingMW }) {
     super.update({ inputs: { grossHeadM: 48 + meanHead * 1.8, ratingMW },
       turbineFlowM3s: usable, spillFlowM3s: spill, plantMW: operatingMW });
+    this.updateWeather(precipitation);
+    this.updateCatchment(area, coefficient);
+    this.updateHeadMarker(this.meanMarker, this.state.surfaceY);
+    this.updateHeadMarker(this.designMarker, schematicSurfaceAtHead(designHead));
+    this.ecoLight.emissiveIntensity = ecological > 0 ? 1.5 : 0;
     this.inflow.curve.points.forEach(point => { point.y = this.state.surfaceY + .055; });
     this.inflow.curve.updateArcLengths();
     this.speeds = { inflow: .22 * Math.log1p(mean), turbine: .32 * Math.log1p(usable),
       spill: .35 * Math.log1p(spill), ecological: .4 * Math.log1p(ecological) };
     this.host.dataset.mainSpeed = String(this.speeds.turbine);
+    this.host.dataset.ecologicalSpeed = String(this.speeds.ecological);
+    this.host.dataset.designHead = String(designHead);
   }
 }

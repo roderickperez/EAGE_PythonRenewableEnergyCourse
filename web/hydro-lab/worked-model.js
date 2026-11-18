@@ -25,7 +25,8 @@ export function diversionCase(inputs) {
   // Sizing the head afresh to hit 50 MW at each setting would mask sensitivity.
   const operatingHead = Math.max(0, diversionSiteHead - design.channelLoss - design.pipeLoss);
   const plantMW = Math.min(50, 9.81 * operatingFlow * operatingHead * .92 * .97 / 1000);
-  return { ...design, width: inputs.width, depth: inputs.depth, riverFlow: inputs.flow, slope: inputs.slope, catchment,
+  return { ...design, width: inputs.width, depth: inputs.depth, riverFlow: inputs.flow, slope: inputs.slope,
+    precipitation: inputs.precip, catchment,
     operatingFlow, plantMW, energy: plantMW * hoursPerYear / 1000 };
 }
 
@@ -47,7 +48,7 @@ export function reservoirCase({ area, rain, coefficient, meanhead: meanHead, des
   const gridEnergy = transformerEnergy * .985;
   const ecologicalPower = 9.81 * ecological * designHead * efficiency;
   const ecologicalEnergy = 9.81 * ecological * meanHead * efficiency * hoursPerYear / 1e6;
-  return { annual, mean, spill, ecological, shortfall: eco - ecological, usable, designFlow, meanHead, designHead,
+  return { area, precipitation: rain, coefficient, annual, mean, spill, ecological, shortfall: eco - ecological, usable, designFlow, meanHead, designHead,
     designShaft, designGenerator, designTransformer, hours, operatingMW, ratingMW: designTransformer / 1000,
     generatorEnergy, transformerEnergy, gridEnergy, ecologicalPower, ecologicalEnergy,
     energy: gridEnergy, totalEnergy: gridEnergy + ecologicalEnergy * .985 };

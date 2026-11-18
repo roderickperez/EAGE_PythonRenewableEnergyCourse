@@ -82,15 +82,25 @@ function makeExample({ title, description, sliders, calculate, Scene, initialAxi
     renderPlot();
   }
 
-  const onSlider = event => {
+  function showControl(key) {
+    const [, label, unit] = controls.get(key);
+    const suffix = unit ? ' ' + unit : '';
+    scene?.showControl(key, label, inputs[key] + suffix);
+  }
+
+  section.addEventListener('input', event => {
+    if (!controls.has(event.target.id)) return;
     axis = event.target.id;
     inputs[axis] = event.target.valueAsNumber;
     render();
-  };
-  section.addEventListener('input', onSlider);
+    showControl(axis);
+  });
   section.addEventListener('focusin', event => {
-    if (controls.has(event.target.id) && axis !== event.target.id) {
-      axis = event.target.id;
+    const key = event.target.id;
+    if (!controls.has(key)) return;
+    showControl(key);
+    if (axis !== key) {
+      axis = key;
       renderPlot();
     }
   });
@@ -122,7 +132,7 @@ makeExample({
 
 makeExample({
   title: 'Reservoir plant',
-  description: 'Allocate mean inflow to the main turbine, environmental release and spill.',
+  description: 'Follow rain and runoff through the reservoir, turbines and spill outlet. Move a slider to identify its feature in the scene.',
   sliders: reservoirSliders,
   Scene: ReservoirWorkedScene,
   showTotal: true,
@@ -137,9 +147,12 @@ makeExample({
     Environmental flow served / shortfall: ${fmt(data.ecological)} / ${fmt(data.shortfall)} m³/s<br>
     Ecological group at design head: ${fmt(data.ecologicalPower)} kW · At mean head: ${fmt(data.ecologicalEnergy)} GWh/year at the transformer<br>
     <small>10% inflow spilled. Efficiencies: 91%, 95%, 99%. Line loss: 0.3%/km over 5 km. Environmental release is limited to water available after spill.</small>`,
-  plotNote: axis => axis === 'designhead'
-    ? 'Design head changes rated power. The annual energy estimate uses mean head, so energy stays flat.'
-    : 'Both lines show grid energy. With the same head and efficiency, environmental release shifts generation between the turbines without changing their combined energy.',
+  plotNote: axis => {
+    if (axis === 'designhead') return 'Design head changes rated power. The annual energy estimate uses mean head, so energy stays flat.';
+    if (axis === 'meanhead') return 'Mean head changes the energy produced by each cubic metre of water.';
+    if (axis === 'eco') return 'Environmental release shifts generation between the turbines. Both lines show energy delivered to the grid.';
+    return 'Catchment area, rainfall and runoff coefficient determine how much water reaches the reservoir each year.';
+  },
 });
 
 fitFrameToContent(grid);
