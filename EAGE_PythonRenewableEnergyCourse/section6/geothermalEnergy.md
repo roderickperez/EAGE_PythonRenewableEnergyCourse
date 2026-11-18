@@ -10,6 +10,7 @@ kernelspec:
 
 After this lesson you should be able to:
 
+- trace the underground fluid path in conventional hydrothermal, enhanced geothermal and deep closed-loop systems;
 - distinguish geothermal gradient, heat flux, thermal power, gross electrical power, and net electrical power;
 - use Kelvin correctly in thermodynamic efficiency calculations;
 - estimate heat carried by produced fluid;
@@ -17,7 +18,19 @@ After this lesson you should be able to:
 - implement validated Python functions and scenario plots;
 - explain why temperature alone does not establish a viable geothermal resource.
 
-Electricity generation requires useful heat plus a way to transport it to the surface. Conventional hydrothermal systems rely on heat, fluid, and permeability. Enhanced geothermal systems create or improve fluid pathways, while closed-loop systems circulate fluid in sealed wells [@doeGeothermalElectricity; @doeEGS]. Dry steam, flash steam, and binary-cycle plants use different surface processes and operating ranges.
+Electricity generation requires a heat resource, a way to bring heat to the surface and a plant that can convert part of that heat into electricity. The course compares **three deep heat-extraction approaches**. You can identify each one by following the fluid between the inlet and outlet.
+
+## Three ways to extract geothermal heat
+
+| Subsurface approach | How the fluid travels underground | Key questions for design and modelling |
+|---|---|---|
+| **Conventional hydrothermal** | A production well draws naturally occurring hot water or steam from a permeable formation. Where a reinjection well returns fluid, it releases the fluid into rock pores and fractures. | Is there enough naturally connected permeability to sustain useful flow? How will pressure, chemistry and production temperature respond to extraction and reinjection? |
+| **Enhanced geothermal system (EGS)** | In a typical two-well EGS, stimulation opens or improves connections between fractures in hot rock. Injected fluid travels through that engineered reservoir and returns through a production well. | How well do the fractures connect the wells? How much rock does the fluid contact? Measure injectivity, fluid losses, cooling and induced seismicity. |
+| **Deep closed-loop system** | The working fluid stays inside sealed tubing. Heat crosses the well wall from the formation. A U-shaped loop has two legs joined by a sealed lateral. A coaxial loop uses two concentric passages in one borehole. | How much heat reaches the well over time? Consider thermal conductivity, contact length, spacing, insulation and pumping losses. |
+
+Conventional hydrothermal and EGS both exchange fluid with the formation. The distinction is whether the project relies primarily on naturally productive pathways or engineers the connectivity needed for circulation. A sealed closed loop can operate in low-permeability rock. Permeability can still affect how groundwater carries heat toward the outside of a sealed well. [@grant2011], §§2.2–2.5. [@doeGeothermalLiftoff; @white2024closedloop]
+
+**Read the first animation as a hydrothermal doublet feeding a binary-cycle plant.** Hot brine rises through the red production well, gives up heat in the surface heat exchanger, then returns through the blue reinjection well. The two exposed well pipes end separately because reservoir fluid moves through pores and fractures between wells. The cutaway omits those underground flow paths. Above ground, a separate working fluid takes heat from the brine and drives the turbine. The Field Designer simulates flow through a permeable layer between injectors and producers. [@grant2011], §§2.2.3 and 2.3.3. [@doeGeothermalElectricity]
 
 :::{iframe} ../../geothermal-lab/index.html
 :width: 100%
@@ -27,7 +40,7 @@ Electricity generation requires useful heat plus a way to transport it to the su
 
 ## Closed-loop designs: U-shaped and coaxial
 
-In a **closed-loop geothermal system**, a working fluid circulates inside sealed conduits and exchanges heat with the surrounding formation. In an ideal sealed loop the circulating fluid does not enter the formation; heat transfer through the borehole wall and rock is central. This differs from hydrothermal production and injection, where reservoir fluid flows through the rock. White et al. study both water and supercritical CO₂, a range of geometries and operating conditions, and both direct heat use and electricity production [@white2024closedloop].
+The two animations below show **two closed-loop geometries**. In the **U-shaped** design, the blue downflow and red upflow occupy separate well legs. A continuous sealed lateral joins them at depth. In the **coaxial** design, one borehole houses an outer annulus and an inner pipe. In the configuration shown, fluid goes down the annulus, turns at the toe and returns inside the inner pipe. The sealed passage carries the fluid in both designs, with heat entering through the borehole wall. [@white2024closedloop], Figs. 1–2.
 
 (geo-closed-systems)=
 :::{iframe} ../../geothermal-lab/closed-loop.html?demo=systems&v=3
@@ -36,14 +49,15 @@ In a **closed-loop geothermal system**, a working fluid circulates inside sealed
 :title: Animated U-shaped and coaxial closed-loop geothermal systems
 :::
 
-*Original teaching animation, not to scale.* Blue indicates the cooler inlet path and red the warmer outlet path. The coaxial example illustrates inlet flow down the annulus and return through the inner tube; other flow directions are possible. Pipes are shown on the near faces of the blocks for visibility. The paper's Figure 2 shows its corresponding axisymmetric numerical domains, conductive material and model boundaries. Its segmented rock domains are coupled through the circulating fluid; this animation does not reproduce their numerical mesh [@white2024closedloop].
+Blue identifies the cooler inlet and red the warmer return. The animation exposes and enlarges the pipes so you can trace the flow. White et al. model these designs using water and supercritical CO₂ for both direct heat and electricity. Their Figure 2 shows how the fluid couples the study's separate formation segments. [@white2024closedloop]
 
-| Feature | U-shaped | Coaxial (pipe-in-pipe) |
+| Design question | U-shaped | Coaxial |
 |---|---|---|
-| Flow path | Separate descending and ascending legs joined at depth | Inner tube and surrounding annulus provide opposing paths inside a borehole |
-| Heat exchange | Working fluid exchanges heat along the loop; insulation can reduce unwanted heat loss | Heat exchange with the rock competes with thermal short-circuiting between the inner and outer streams |
-| Hydraulic trade-off | Pressure losses depend on length, diameter, fluid and rate | Smaller available flow passages can create large pressure losses at high rates |
-| Design choices | Depth, lateral length, diameter, insulation and possibly multiple laterals | Those choices plus inner/outer diameters, pipe insulation and flow direction |
+| Where do the streams meet? | At the connected lateral and bends, which form a continuous path between two surface wellheads. | At the turn near the bottom or toe of the same borehole. |
+| Where is unwanted heat transfer possible? | The return leg can lose heat to cooler strata on its way up. | Heat can pass from the warm return to the cooler inlet through the inner pipe wall. Insulation can limit that transfer. |
+| What limits the flow or heat recovered? | The total drilled path, lateral length and pipe size affect heat transfer and pump demand. Multiple sealed laterals can provide more contact area but introduce flow splitting and thermal interference. | The diameters set the available annular and inner-tube areas. Both affect velocity and pressure losses. Vertical and laterally extended layouts are possible, and the downflow direction may be reversed. |
+
+The study's two basic arrangements describe how the fluid is routed. A **multilateral U-loop** adds parallel underground paths within the U-shaped family. A **vertical coaxial well** and a **coaxial well with a lateral** both use the same pipe-in-pipe arrangement. For a fair comparison, specify the fluid, geometry, formation and operating conditions along with the performance metric. [@white2024closedloop]
 
 ### Heat transfer, flow area and useful energy
 
@@ -51,7 +65,7 @@ For a homogeneous solid with constant properties and conduction as the only tran
 
 $$\rho_r c_r\frac{\partial T}{\partial t}=k_r\nabla^2T, \qquad \alpha=\frac{k_r}{\rho_r c_r}.$$
 
-$k_r$ is rock thermal conductivity in W/(m K), $\rho_r$ is density in kg/m³, $c_r$ is specific heat in J/(kg K), and thermal diffusivity $\alpha$ is in m²/s. In hot dry rock, fluid extraction cools rock near the borehole; heat must conduct from farther away, so outlet temperature can decline rapidly at first and more slowly later. The paper discusses $k_r/\sqrt{\alpha}$, a thermal effusivity in J/(m² K s$^{1/2}$), as a relevant rock property. A real model must couple the fluid, pipe and formation with appropriate geometry and boundaries; this equation alone is not a closed-loop solution [@white2024closedloop].
+$k_r$ is rock thermal conductivity in W/(m K), $\rho_r$ is density in kg/m³, $c_r$ is specific heat in J/(kg K), and thermal diffusivity $\alpha$ is in m²/s. In a sealed loop in hot dry rock, the circulating fluid draws heat from the rock near the borehole. Heat then conducts from farther away, so the outlet temperature can decline rapidly at first and more slowly later. The paper discusses $k_r/\sqrt{\alpha}$, a thermal effusivity in J/(m² K s$^{1/2}$), as a relevant rock property. A real model must couple the fluid, pipe and formation with appropriate geometry and boundaries; this equation alone is not a closed-loop solution [@white2024closedloop].
 
 (geo-closed-conduction)=
 :::{iframe} ../../geothermal-lab/closed-loop.html?demo=conduction
@@ -88,19 +102,20 @@ Here $h$ is specific enthalpy (J/kg), $s$ is specific entropy (J/(kg K)), $\dot 
 
 ### Comparing closed-loop performance
 
-The attached outlet-temperature plot corresponds to **two U-shaped water cases**, not a U-shaped versus coaxial comparison. Both use a 10 km lateral and the same Utah FORGE-based rock and depth; the curves differ in both mass flow and insulation length: **11.8 kg/s with 1,174 m insulation**, and **38 kg/s with 875 m insulation**. Four modeling approaches show close agreement in Figure 3. Their differences cannot be attributed to flow rate alone [@white2024closedloop].
+Figure 3 in White et al. benchmarks the numerical models using **two U-shaped water cases**. Both use a 10 km lateral and the same Utah FORGE-based rock and depth. One case uses **11.8 kg/s and 1,174 m of insulation**. The other uses **38 kg/s and 875 m of insulation**. Four modeling approaches show close agreement for each case. Both inputs change between cases, so this comparison cannot isolate the effect of flow rate. [@white2024closedloop], Fig. 3.
 
-For an explicit comparison of both geometries, the paper's Table 3 reports the following independently optimized **water** cases over 40 years. Both use 5 km depth, 20 km horizontal extent, 0.4445 m borehole diameter, 0.07 °C/m gradient, 4.5 W/(m K) conductivity, 60 °C inlet, a 7% discount rate and the paper's \$1,000/m drilling cost assumption. The settings describe a hypothetical extreme of the paper's parameter range, not a typical site.
+Table 3 compares **four electricity scenarios** across two geometries and two fluids. The authors searched for low levelized costs over a 40-year project life using 5 km vertical depth, a 0.4445 m borehole, rock conductivity of 4.5 W/(m K), a geothermal gradient of 70 °C/km, a 60 °C inlet, a 7% discount rate and an assumed drilling cost of \$1,000/m. Each column uses its own operating settings. These are hypothetical results at the upper end of the study’s parameter range. [@white2024closedloop], Table 3.
 
-| Reported quantity | U-shaped water | Coaxial water |
-|---|---:|---:|
-| Independently optimized mass flow | 43.0 kg/s | 39.2 kg/s |
-| Average production temperature | 205 °C | 203 °C |
-| Average thermal production | 26.0 MW thermal | 23.8 MW thermal |
-| Average electricity generation | 3.9 MW electric | 3.5 MW electric |
-| Reported LCOE | \$96.6/MWh electric | \$93.5/MWh electric |
+| Reported quantity | U-shaped, water | Coaxial, water | U-shaped, supercritical CO₂ | Coaxial, supercritical CO₂ |
+|---|---:|---:|---:|---:|
+| Selected mass flow (kg/s) | 43.0 | 39.2 | 100 | 69.6 |
+| Horizontal extent (km) | 20 | 20 | 20 | 13 |
+| Average outlet temperature (°C) | 205 | 203 | 190 | 174 |
+| Average thermal output (MW) | 26.0 | 23.8 | 22.2 | 14.1 |
+| Average electrical output (MW) | 3.9 | 3.5 | 5.0 | 2.8 |
+| Levelized cost of electricity (USD/MWh) | 96.6 | 93.5 | 83.0 | 86.9 |
 
-These are modeled averages and costs under the study assumptions, not forecasts or measurements. The different flow rates and design details mean this table does **not** isolate geometry at identical operating conditions; nor does it establish a universal winner. For a more representative coaxial example, the authors report 3 W/(m K), a 45 °C/km gradient and approximately 37 kg/s, producing an average 130 °C outlet and 0.922 MW electric under their other stated assumptions. See Table 3 and §3.3.1 for the complete parameter context [@white2024closedloop].
+For the two water cases, the U-shaped design delivers more heat and electricity while the coaxial design reports a slightly lower electricity cost under the study assumptions. The CO₂ cases use a different surface cycle, and the U-shaped CO₂ case reaches the database's 100 kg/s flow limit. In a separate coaxial water example with a lower conductivity of 3 W/(m K) and a gradient of 45 °C/km, the model gives a 130 °C average outlet and 0.922 MW electric at about 37 kg/s. Compare results within the stated scenario. [@white2024closedloop], Table 3 and §3.3.1.
 
 The paper expresses levelized costs using discounted annual costs and discounted annual energy, for example
 
@@ -112,17 +127,18 @@ $C_t$ and $O_t$ are capital and operating costs, $E_{e,t}$ is electrical energy 
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# White et al. (2024), Table 3: independently optimized water cases.
+# White et al. (2024), Table 3: four electricity scenarios.
 comparison = pd.DataFrame({
-    'Configuration': ['U-shaped', 'Coaxial'],
-    'Flow (kg/s)': [43.0, 39.2],
-    'Thermal (MW)': [26.0, 23.8],
-    'Electric (MW)': [3.9, 3.5],
-    'LCOE (USD/MWh)': [96.6, 93.5],
+    'Configuration': ['U-shaped\nwater', 'Coaxial\nwater',
+                      'U-shaped\nCO₂', 'Coaxial\nCO₂'],
+    'Flow (kg/s)': [43.0, 39.2, 100.0, 69.6],
+    'Thermal (MW)': [26.0, 23.8, 22.2, 14.1],
+    'Electric (MW)': [3.9, 3.5, 5.0, 2.8],
+    'LCOE (USD/MWh)': [96.6, 93.5, 83.0, 86.9],
 })
 ax = comparison.plot.bar(x='Configuration', y=['Thermal (MW)', 'Electric (MW)'],
                          color=['#d46b42', '#2589aa'], rot=0)
-ax.set(ylabel='Average modeled power (MW)', title='Closed-loop water cases: study assumptions')
+ax.set(ylabel='Average modeled power (MW)', title='Closed-loop electricity scenarios from White et al.')
 plt.tight_layout()
 comparison
 ```
@@ -137,18 +153,19 @@ Heat within the Earth includes contributions from its formation and radioactive 
 
 ### Resource and utilization categories
 
-| System or use | Description | Consequence for modelling |
-|---|---|---|
-| Hydrothermal resource | Naturally occurring hot fluid in permeable rock | Need reservoir pressure, temperature, flow pathways and fluid properties |
-| Enhanced geothermal system (EGS) | Improves or creates fluid pathways in hot rock | Hydraulic connectivity, stimulation response and reservoir management become central |
-| Closed-loop subsurface system | Circulates a working fluid through sealed underground conduits | Heat transfer through the well and surrounding formation can constrain output |
-| Direct heat use | Delivers heat to a suitable process, building or heat network | Calculate useful thermal energy at the delivery temperature, not electrical output |
-| Geothermal power generation | Converts a portion of extracted heat into electricity | Include cycle efficiency, cooling and parasitic electricity consumption |
-| Ground-source heat pump | Uses the ground as a heat source or sink with electrical compressor work | Track electricity input and heat delivery; this is not geothermal electricity generation |
+Grant and Bixley group their Chapter 2 discussion into **three sections by reservoir behavior**: conductive settings, liquid-dominated convective systems and vapor-dominated convective systems. In liquid-dominated reservoirs, liquid water is the principal mobile phase, even where some steam is present. In vapor-dominated reservoirs, steam controls the pressure profile, even where substantial liquid remains in the rock. This classification helps explain the natural state and production response. [@grant2011], §§2.2–2.5.
 
-*Source for these definitions/calculations:* [@grant2011], Chapter 2; [@doeEGS; @doeGeothermalElectricity]. Heat-pump accounting: Reversible heat-engine limit: [OpenStax, University Physics 2, §4.5, Eq. 4.5](https://openstax.org/books/university-physics-volume-2/pages/4-5-the-carnot-cycle).
+| Resource setting in the book | What distinguishes it |
+|---|---|
+| Warm groundwater basins and deep sedimentary aquifers | In the settings described by the book, geothermal gradients heat the water hosted by permeable rock. A production and reinjection doublet can supply district heating, as in the Paris Basin example. |
+| Fault-controlled warm springs | Faults or fractures can carry warm water upward where conduction supplies heat from the surrounding rock. A spring indicates a flow path, and further testing is needed to establish a productive reservoir. |
+| Geopressured formations | Deep confined brines can have unusually high pressures and may carry dissolved gas. Fluid chemistry, pressure and any gas handling matter to resource development. |
+| Hot, low-permeability rock | Heat is available in the rock, and access depends on the chosen extraction design. Grant and Bixley describe creating a circulating reservoir by stimulating fractures for EGS. |
+| Liquid- and vapor-dominated convective reservoirs | Natural circulation and phase distribution shape the temperature and pressure field. Production may change where boiling occurs or where a steam zone develops. |
 
-Hydrothermal, EGS and closed-loop describe aspects of the subsurface system; dry-steam, flash and binary describe surface electricity-conversion arrangements. These classifications answer different questions and should not be used interchangeably. The supplied Grant and Bixley book develops reservoir concepts and simplified models; DiPippo is additional reading for power-conversion systems [@grant2011; @diPippo2016geothermal].
+Grant and Bixley discuss deep circulation and magmatic heat together as potential origins of convective resources. A magmatic heat source does not imply that wells circulate fluid through magma. Modern programs also study **superhot rock** as a target for both EGS and sealed closed-loop designs. **Coproduction** describes recovery of heat from water brought to the surface during oil or gas production. It identifies where the hot water comes from. [@grant2011], §§2.3.2 and 2.5. [@arpaSuperhot; @doeGeoCoproduced]
+
+The end use is a separate decision. **Direct heat** supplies a building, district network or process at the required delivery temperature. **Power generation** uses heat to drive a conversion cycle and must account for cooling and auxiliary loads. Projects can also deliver both electricity and useful heat when they have a suitable heat customer. A **ground-source heat pump** normally uses relatively shallow ground or water as a heat source or sink and consumes electricity to move heat. Its circulation choices include horizontal, vertical and pond or lake closed loops, as well as open-loop groundwater systems. [@doeGeothermalLiftoff; @doeGeoCoproduced; @doeGeoHeatPumpGuide]
 
 ## Reservoir terms and transport processes
 
@@ -196,28 +213,28 @@ A typical conversion chain is **reservoir → production well → fluid collecti
 
 ### Dry-steam, flash and binary conversion
 
-**Dry-steam plants** use a suitable steam resource to drive a turbine. **Flash plants** reduce the pressure of sufficiently hot liquid so that part of it vaporizes; a separator supplies steam to a turbine while residual liquid follows its own handling or reinjection path. **Binary plants** transfer geothermal heat through an exchanger to a separate working-fluid cycle. The geothermal fluid and the turbine working fluid therefore need not be the same fluid. [@doeGeothermalElectricity]; [@grant2011], Chapter 2.
+| Surface conversion type | What drives the turbine | What to compare |
+|---|---|---|
+| **Dry steam** | Geothermal steam is routed to the turbine after any required conditioning. | Steam quality, pressure, contaminants and noncondensable gases. |
+| **Flash steam** | Some hot liquid boils when pressure falls. A separator sends steam to the turbine. A double-flash plant recovers additional steam from the remaining liquid at a lower pressure. | Inlet enthalpy, flash pressure, steam fraction, scaling and reinjection conditions. |
+| **Binary cycle** | A heat exchanger vaporizes a separate working fluid, typically in an organic Rankine cycle. The geothermal stream stays on its side of the exchanger. | Heat-exchanger performance, source and sink temperatures, cooling, pumps and usable return temperature. |
 
-The plant type must match the temperature, pressure, phase state and chemistry of the resource. There is no single efficiency that applies to all geothermal plants. Cooling conditions and auxiliary demand also affect exported electricity. The course's constant-efficiency, single-phase calculation is most useful for learning heat-to-electricity accounting; it is not a detailed flash or binary cycle simulation [@grant2011; @doeGeothermalElectricity].
+These **three surface plant families** describe how electricity is generated. A single site can combine conversion stages, for example by recovering heat from flash brine in a binary bottoming cycle. A binary plant can receive heat from a conventional hydrothermal reservoir, an EGS or a deep closed loop. Match the plant to the delivered fluid state, chemistry and temperature. [@doeGeothermalElectricity; @diPippo2016geothermal]
 
 DiPippo's fourth edition is a supplementary textbook covering power-conversion systems and case studies. Its publisher lists a late-2015 release while the copyright/edition page identifies 2016; this course cites the 2016 edition year. Current plant counts should not be inferred from the historical statistics in that edition [@diPippo2016geothermal].
 
 ## Thermal power: mass flow and enthalpy
 
-For a steady heat exchanger with negligible shaft work and changes in kinetic and potential energy, the heat removed from the geothermal stream is [@grant2011], §§3.2 and 3.6; [@foster2010], §3.8.1, applied to the stated steady-flow boundary.
+For a steady heat exchanger with negligible shaft work and changes in kinetic and potential energy, the first law gives the rate of heat removed from the geothermal stream. [@mitSteadyFlow]
 
-$$\dot Q_{extracted}=\dot m(h_p-h_r),$$
+$$\dot Q_{extracted}=\dot m(h_p-h_r).$$
 
-*Equation basis:* [@grant2011], §§3.2 and 3.6; [@foster2010], §3.8.1, applied to the stated steady-flow boundary.
+Here $\dot m$ is mass flow in kg/s, and $h_p$ and $h_r$ are specific enthalpies at the heat exchanger inlet and outlet. With $h$ in J/kg, output is W. With $h$ in kJ/kg, output is kW. When inlet and outlet measurements are made at the wells, using the same expression for heat at the exchanger assumes negligible losses between those points and the exchanger.
 
-where $\dot m$ is mass flow in kg/s, and $h_p$ and $h_r$ are specific enthalpies at the chosen production and return states. With $h$ in J/kg, output is W; with $h$ in kJ/kg, output is kW. This neglects heat leakage between the specified measurement states and the heat exchanger; it is the heat extracted from the stream under the defined boundary, not necessarily all the stored heat in the reservoir. [@grant2011], §§3.2 and 3.6; [@foster2010], §3.8.1, applied to the stated steady-flow boundary.
-
-For a single-phase liquid with approximately constant specific heat, [@grant2011], §§3.2 and 3.6; [@foster2010], §3.8.1, applied to the stated steady-flow boundary.
+For a single-phase liquid with approximately constant specific heat, approximate the enthalpy change from the temperature difference.
 
 $$h_p-h_r\approx c_p(T_p-T_r),\qquad
 P_{th}=\dot m c_p(T_p-T_r).$$
-
-*Equation basis:* [@grant2011], §§3.2 and 3.6; [@foster2010], §3.8.1, applied to the stated steady-flow boundary.
 
 | Symbol | Definition | Unit used in the course |
 |---|---|---|
@@ -227,8 +244,6 @@ P_{th}=\dot m c_p(T_p-T_r).$$
 | $h_p$, $h_r$ | Specific enthalpy at the two stream states | J/kg or kJ/kg, explicitly identified |
 | $P_{th}$ | Thermal power extracted under the chosen boundary | W or MW thermal |
 | $P_{gross}$, $P_{net}$ | Gross generated and net exported electrical power | W or MW electrical |
-
-*Source for these definitions/calculations:* [@grant2011], §§3.2 and 3.6; [@foster2010], §3.8.1, applied to the stated steady-flow boundary.
 
 A temperature difference of 80°C is also 80 K. Absolute temperature ratios, by contrast, require kelvin. Salinity, temperature and pressure affect fluid properties. In two-phase flow, energy includes latent heat and phase fractions; applying one constant liquid-water heat capacity to a steam/water mixture can substantially misrepresent the heat balance [@grant2011].
 
@@ -327,9 +342,9 @@ Fitting $\ln P$ against time requires positive observations and changes the assu
 
 ## Energy, availability and operating limits
 
-Integrate net power over the actual duration: $E_{net}=\sum_iP_{net,i}\Delta t_i$. If an annual model specifies net power **when operating** and a separate availability $a$, $E_y=P_y a T_y$ is an appropriate simplified expression. If measured hourly power already includes downtime, multiplying by availability again would double-count it. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
+Integrate net power over the actual duration: $E_{net}=\sum_iP_{net,i}\Delta t_i$. If an annual model specifies net power **when operating** and a separate availability $a$, $E_y=P_y a T_y$ is an appropriate simplified expression. If measured hourly power already includes downtime, multiplying by availability again would double-count it. The annual model uses assumed availability and decline. See the EIA definition for capacity factor [@eiaCapacityFactor].
 
-Use a fixed defined net nameplate $P_{r,net}$ for $CF=E_{net}/(P_{r,net}T)$. Do not use observed maximum output as a substitute unless that is explicitly the intended metric. If a plant has a net power limit, apply it after the resource-to-net-power calculation under the stated boundary. Negative net electricity can physically occur when auxiliaries consume more power than is generated; a model restricted to positive exported generation should state how such operating periods are handled rather than silently changing their meaning. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units). Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
+Use a fixed defined net nameplate $P_{r,net}$ for $CF=E_{net}/(P_{r,net}T)$. Do not use observed maximum output as a substitute unless that is explicitly the intended metric. If a plant has a net power limit, apply it after the resource-to-net-power calculation under the stated boundary. Negative net electricity can physically occur when auxiliaries consume more power than is generated; a model restricted to positive exported generation should state how such operating periods are handled rather than silently changing their meaning. The power boundary and nameplate rating must be consistent with the reported energy [@eiaCapacityFactor].
 
 (geo-energy-explorer)=
 :::{iframe} ../../geothermal-lab/equations.html?demo=energy

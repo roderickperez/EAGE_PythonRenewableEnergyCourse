@@ -91,7 +91,7 @@ export function mountGeothermalLab(container) {
           <div class="plant-tooltip" id="geo-tooltip" hidden></div>
           <button class="motion-toggle" id="geo-play" type="button"></button>
         </div>
-        <figcaption>Drag to orbit. Hover or tap to identify components.</figcaption>
+        <figcaption>Drag to orbit. Hover or tap to identify components. The two wells exchange fluid through the permeable reservoir, outside the pipes shown in this cutaway.</figcaption>
         <ul class="geo-legend"><li><i class="hot"></i>Hot production brine</li><li><i class="cool"></i>Cooled return brine</li>
           <li><i class="vapor"></i>Working-fluid vapor</li><li><i class="liquid"></i>Condensed working fluid</li>
           <li><i class="power"></i>Electrical output</li></ul>

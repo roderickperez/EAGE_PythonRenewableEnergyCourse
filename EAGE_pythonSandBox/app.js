@@ -268,7 +268,7 @@ async function route() {
       },
       'section6/geothermalEnergy.md': {
         anchor: '#closed-loop-designs-u-shaped-and-coaxial', id: 'geothermal-3d-lab',
-        mount: async host => (await import('./generated/geothermal-lab/geothermal-lab.js')).mountGeothermalLab(host),
+        mount: async host => (await import('./generated/geothermal-lab/geothermal-lab.js?v=hydrothermal-caption')).mountGeothermalLab(host),
       },
       'section8/projectIntro.md': {
         anchor: '#load-the-separate-input-datasets', id: 'project-3d-map',
