@@ -40,10 +40,10 @@ Hydrothermal and EGS wells both exchange fluid with the formation. The distincti
 
 ## Comparing hydrothermal, EGS and closed-loop flow
 
-Use the three views to follow fluid underground. In the **hydrothermal** view it spreads through permeable rock. In the **EGS** view it follows connected fractures. Switch off **Fractures connect both wells** to see a schematic case where the two wells lack a through-flow path. This control illustrates connectivity after stimulation. [@doeGeoForge]
+Use the four views to compare three ways that fluid travels underground, with two geometries shown for the deep closed loop. In the **hydrothermal** view it spreads through permeable rock. In the **EGS** view it follows connected fractures. Switch off **Fractures connect both wells** to see a schematic case where the two wells lack a through-flow path. This control illustrates connectivity after stimulation. [@doeGeoForge]
 
 (geo-closed-systems)=
-:::{iframe} ../../geothermal-lab/closed-loop.html?demo=systems&v=6
+:::{iframe} ../../geothermal-lab/closed-loop.html?demo=systems&v=9
 :width: 100%
 :height: 650px
 :title: Interactive geothermal system comparison
@@ -51,7 +51,7 @@ Use the three views to follow fluid underground. In the **hydrothermal** view it
 
 ### Closed-loop designs: U-shaped and coaxial
 
-Use **Well geometry** in the closed-loop view to switch between two ways of keeping the fluid in a sealed circuit. In the U-shaped layout, one or more sealed laterals connect descending and ascending legs. In the coaxial layout, a single borehole contains both the outer annulus and inner tube. The example sends fluid down the annulus and back up the inner tube after it turns at the toe. A coaxial well can be vertical or include a lateral. [@white2024closedloop], Figs. 1–2.
+Compare the U-shaped and coaxial views above to see two ways of keeping the fluid in a sealed circuit. In the U-shaped layout, one or more sealed laterals connect descending and ascending legs. In the coaxial layout, a single borehole contains both the outer annulus and inner tube. The example sends fluid down the annulus and back up the inner tube after it turns at the toe. A coaxial well can be vertical or include a lateral. [@white2024closedloop], Figs. 1–2.
 
 | Design question | U-shaped | Coaxial |
 |---|---|---|

@@ -17,52 +17,36 @@ if (mode === 'performance') {
  const views = [
   ['hydrothermal', 'Conventional hydrothermal', 'Brine moves through naturally permeable rock between wells.'],
   ['egs', 'Enhanced geothermal (EGS)', 'Injected water moves through an engineered fracture network.'],
-  ['u', 'U-shaped', 'A sealed lateral joins the two well legs.'],
-  ['coax', 'Coaxial', 'Cool fluid descends through the annulus. Warm fluid rises through the inner tube in the same well.'],
+  ['u', 'Deep closed loop | U-Shaped', 'A sealed lateral joins the two well legs.'],
+  ['coax', 'Deep closed loop | Coaxial', 'Cool fluid descends through the annulus. Warm fluid rises through the inner tube in the same well.'],
  ];
 
  function view([id, name, description]) {
-  return `<div class="loop-view-panel" data-panel="${id}" ${id === 'coax' ? 'hidden' : ''}>
+  const options = id === 'egs' ? `<div class="loop-option">
+    <label><input id="egs-connection" type="checkbox" checked> Fractures connect both wells</label>
+    <span id="egs-status" role="status">Water reaches the production well.</span>
+  </div>` : '';
+  return `<article class="loop-view" data-panel="${id}">
+    <h3>${name}</h3>
     <div class="loop-scene">
       <div class="loop-three" aria-label="${name} geothermal cutaway" role="img"></div>
       <button type="button" class="loop-motion" aria-label="Pause ${name} animation">■</button>
     </div>
     <div class="loop-caption">${description}</div>
-  </div>`;
+    ${options}
+  </article>`;
  }
 
  root.innerHTML = `<section class="loop-card">
   <h2>Compare geothermal flow paths</h2>
   <p>Follow cool blue flow down on the right. In the two-well views, warm red flow rises on the left. Drag to orbit and scroll to zoom.</p>
-  <div class="loop-scenes">
-   <article class="loop-view">
-    <h3>Conventional hydrothermal</h3>
-    ${view(views[0])}
-   </article>
-   <article class="loop-view">
-    <h3>Enhanced geothermal (EGS)</h3>
-    ${view(views[1])}
-    <div class="loop-option">
-     <label><input id="egs-connection" type="checkbox" checked> Fractures connect both wells</label>
-     <span id="egs-status" role="status">Water reaches the production well.</span>
-    </div>
-   </article>
-   <article class="loop-view">
-    <h3>Deep closed loop</h3>
-    ${view(views[2])}${view(views[3])}
-    <div class="loop-option">
-     <label for="closed-geometry">Well geometry</label>
-     <select id="closed-geometry"><option value="u">U-shaped</option><option value="coax">Coaxial</option></select>
-    </div>
-   </article>
-  </div>
+  <div class="loop-scenes">${views.map(view).join('')}</div>
   <div class="loop-legend"><span>● Cool inlet</span><span>● Warm return</span></div>
   <p class="loop-note">Dots and dashed traces show illustrative flow paths. Well trajectories, fracture size and flow speed are schematic.</p>
  </section>`;
 
  const scenes = new Map();
  function mount([id, name]) {
-  if (scenes.has(id)) return;
   const panel = root.querySelector(`[data-panel="${id}"]`);
   const target = panel.querySelector('.loop-three');
   const button = panel.querySelector('.loop-motion');
@@ -85,18 +69,13 @@ if (mode === 'performance') {
   });
  }
 
- views.slice(0, 3).forEach(mount);
+ views.forEach(mount);
  root.querySelector('#egs-connection').addEventListener('change', event => {
   const connected = event.target.checked;
   scenes.get('egs')?.setConnected(connected);
   root.querySelector('#egs-status').textContent = connected
    ? 'Water reaches the production well.'
    : 'The interrupted paths stop circulation between wells.';
- });
- root.querySelector('#closed-geometry').addEventListener('change', event => {
-  const geometry = event.target.value;
-  for (const id of ['u', 'coax']) root.querySelector(`[data-panel="${id}"]`).hidden = id !== geometry;
-  mount(views.find(([id]) => id === geometry));
  });
  window.addEventListener('pagehide', () => {
   for (const scene of scenes.values()) scene.destroy();

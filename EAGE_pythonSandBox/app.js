@@ -231,7 +231,7 @@ async function route() {
       ['geo-decline-explorer', 'equations.html?demo=decline&v=6', 'Production decline explorer', 'geothermal-lab'],
       ['geo-energy-explorer', 'equations.html?demo=energy&v=6', 'Energy and capacity factor explorer', 'geothermal-lab'],
       ['geo-worked-explorer', 'equations.html?demo=worked&v=6', 'Worked calculation explorer', 'geothermal-lab'],
-      ['geo-closed-systems', 'closed-loop.html?demo=systems&v=6', 'Interactive geothermal system comparison', 'geothermal-lab'],
+      ['geo-closed-systems', 'closed-loop.html?demo=systems&v=9', 'Interactive geothermal system comparison', 'geothermal-lab'],
       ['geo-closed-conduction', 'closed-loop.html?demo=conduction&v=8', 'Transient rock conduction explorer', 'geothermal-lab'],
       ['geo-closed-area', 'closed-loop.html?demo=area&v=8', 'Coaxial tube flow areas explorer', 'geothermal-lab'],
       ['geo-closed-energy', 'closed-loop.html?demo=energy&v=8', 'Thermal energy and available work explorer', 'geothermal-lab'],
