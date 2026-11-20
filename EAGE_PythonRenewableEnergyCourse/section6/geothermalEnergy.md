@@ -96,7 +96,7 @@ $$E_{thermal}=\int_0^\tau\dot m(h_{out}-h_{in})\,dt, \qquad E_{available}=\int_0
 Here $h$ is specific enthalpy (J/kg), $s$ is specific entropy (J/(kg K)), $\dot m$ is kg/s and ambient temperature $T_{amb}$ is in kelvin. These expressions use the inlet/outlet states and reference in the paper; actual net generation also depends on the conversion plant and auxiliaries. The constant-$c_p$ expression elsewhere in this lesson is a liquid-water approximation; it must not replace property-based enthalpy and entropy for supercritical CO₂ or phase change [@white2024closedloop].
 
 (geo-closed-energy)=
-:::{iframe} ../../geothermal-lab/closed-loop.html?demo=energy&v=8
+:::{iframe} ../../geothermal-lab/closed-loop.html?demo=energy&v=10
 :width: 100%
 :height: 570px
 :title: Thermal energy and available work explorer

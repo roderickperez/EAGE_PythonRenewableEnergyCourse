@@ -234,7 +234,7 @@ async function route() {
       ['geo-closed-systems', 'closed-loop.html?demo=systems&v=9', 'Interactive geothermal system comparison', 'geothermal-lab'],
       ['geo-closed-conduction', 'closed-loop.html?demo=conduction&v=8', 'Transient rock conduction explorer', 'geothermal-lab'],
       ['geo-closed-area', 'closed-loop.html?demo=area&v=8', 'Coaxial tube flow areas explorer', 'geothermal-lab'],
-      ['geo-closed-energy', 'closed-loop.html?demo=energy&v=8', 'Thermal energy and available work explorer', 'geothermal-lab'],
+      ['geo-closed-energy', 'closed-loop.html?demo=energy&v=10', 'Thermal energy and available work explorer', 'geothermal-lab'],
       ['geo-closed-performance', 'closed-loop.html?demo=performance&v=8', 'Closed-loop performance explorer', 'geothermal-lab'],
     ]) {
       const spot = $(anchor);
