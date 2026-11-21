@@ -4,41 +4,13 @@ import { visualState, INTAKE_CENTER_Y, INTAKE_RADIUS } from './visual-state.js';
 import { updateMotionControl } from '../motion-control.js';
 
 /** A single sectional 3D model; units are schematic, animation is illustrative. */
-export class HydroScene {
-  constructor(host, { reducedMotion = false } = {}) {
-    this.host=host; this.parts=[]; this.streams=[]; this.electrical=[]; this.visible=true;
-    this.animate=!reducedMotion;
-    this.scene=new T.Scene(); this.scene.background=new T.Color('#edf1f4');
-    this.renderer=new T.WebGLRenderer({antialias:true});
-    this.renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-    this.renderer.shadowMap.enabled=true; this.renderer.shadowMap.type=T.PCFSoftShadowMap;
-    this.renderer.toneMapping=T.ACESFilmicToneMapping; this.renderer.toneMappingExposure=1.2;
-    host.append(this.renderer.domElement);
-    this.camera=new T.OrthographicCamera(-10,10,8,-8,.1,150);
-    this.camera.position.set(5,9.75,22);
-    this.controls=new OrbitControls(this.camera,this.renderer.domElement);
-    this.controls.target.set(-.4,2.5,0);
-    Object.assign(this.controls,{enablePan:false,minPolarAngle:.65,maxPolarAngle:1.4,minAzimuthAngle:-.65,maxAzimuthAngle:.65,minZoom:.7,maxZoom:1.85});
-    this.controls.update();
-    this.scene.add(new T.HemisphereLight(0xdbeeff,0x74695a,2));
-    const sun=new T.DirectionalLight(0xfff2dd,4); sun.position.set(-6,15,12); sun.castShadow=true;
-    sun.shadow.mapSize.set(2048,2048); Object.assign(sun.shadow.camera,{left:-15,right:15,top:12,bottom:-12}); sun.shadow.normalBias=.035; this.scene.add(sun);
-    const rim=new T.DirectionalLight(0xb5dcff,2); rim.position.set(8,8,-7); this.scene.add(rim);
+export class HydroPlant {
+  constructor(group, animate = true) {
+    this.scene=group; this.animate=animate;
+    this.parts=[]; this.streams=[]; this.electrical=[];
     this.concrete=this.mat('#c9cbc8',.88); this.cut=this.mat('#e4e3dc',.94);
     this.steel=this.mat('#667886',.32,.65); this.dark=this.mat('#263c49',.48,.5);
     this.copper=this.mat('#b97140',.35,.65); this.teal=this.mat('#267b80',.3,.45); this.water=this.mat('#168fb2',.22,.18);
-    this.build();
-    this.tooltip=document.createElement('div'); this.tooltip.className='plant-tooltip'; this.tooltip.hidden=true; this.tooltip.setAttribute('role','status'); host.append(this.tooltip);
-    this.raycaster=new T.Raycaster();
-    this.pointer=e=>{const r=host.getBoundingClientRect(); this.raycaster.setFromCamera(new T.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),this.camera); const hit=this.raycaster.intersectObjects(this.parts,false)[0]; this.tooltip.hidden=!hit; if(hit){this.tooltip.textContent=hit.object.userData.label; this.tooltip.style.left=`${Math.max(8,Math.min(r.width-180,e.clientX-r.left+12))}px`; this.tooltip.style.top=`${Math.max(8,e.clientY-r.top-40)}px`;}};
-    this.leave=()=>{this.tooltip.hidden=true;};
-    host.addEventListener('pointermove',this.pointer); host.addEventListener('pointerdown',this.pointer); host.addEventListener('pointerleave',this.leave);
-    this.observer=new ResizeObserver(()=>this.resize()); this.observer.observe(host);
-    this.intersection=new IntersectionObserver(([e])=>{this.visible=e.isIntersecting;}); this.intersection.observe(host);
-    this.toggle=document.createElement('button'); this.toggle.className='motion-toggle';
-    const describe=()=>updateMotionControl(this.toggle,this.animate);
-    describe(); this.toggle.onclick=()=>{this.animate=!this.animate;describe();}; host.append(this.toggle);
-    this.resize(); this.lastTime=0; this.renderer.setAnimationLoop(time=>this.frame(time));
   }
   mat(color,roughness=.6,metalness=0){return new T.MeshStandardMaterial({color,roughness,metalness,side:T.DoubleSide});}
   mesh(geometry,material,position,label,parent=this.scene){const m=new T.Mesh(geometry,material); m.position.set(...position); m.castShadow=true; m.receiveShadow=true; parent.add(m); if(label){m.userData.label=label; this.parts.push(m);} return m;}
@@ -130,7 +102,52 @@ export class HydroScene {
     for(let i=0;i<8;i++){const p=this.mesh(new T.SphereGeometry(.07,10,8),material,[0,0,0]);p.castShadow=false;particles.push(p);}
     this.electrical.push({curve,particles,material,phase:0});
   }
-  update(result){this.result=result;this.state=visualState(result);const h=this.state.surfaceY+.25;this.reservoir.scale.y=h;this.reservoir.position.y=h/2-.25;this.lamp.emissive.set('#29d6b0');this.lamp.emissiveIntensity=this.state.load;this.host.dataset.turbineFlow=String(result.turbineFlowM3s);this.host.dataset.waterSurface=String(this.state.surfaceY);this.host.dataset.energized=String(this.state.energized);}
+  update(result){this.result=result;this.state=visualState(result);const h=this.state.surfaceY+.25;this.reservoir.scale.y=h;this.reservoir.position.y=h/2-.25;this.lamp.emissive.set('#29d6b0');this.lamp.emissiveIntensity=this.state.load;}
+  streamMotion(stream, turbineFlow) {
+    const flow = stream.type === 'spill' ? (this.result?.spillFlowM3s ?? 0) : turbineFlow;
+    return Math.min(.5, flow * .025);
+  }
+  advance(dt){const flow=this.result?.turbineFlowM3s??0;
+    const r=this.animate?dt*Math.min(7,flow*1.3):0;this.runner.rotation.y+=r;this.rotor.rotation.y+=r;
+    for(const s of this.streams){const speed=this.streamMotion(s,flow);if(this.animate)s.phase=(s.phase+dt*speed)%1;s.particles.forEach((p,i)=>{p.visible=speed>0;p.position.copy(s.curve.getPointAt((i/s.particles.length+s.phase)%1));p.position.z+=s.offset ?? (s.type==='spill'?.14:.32);});}
+    for(const wire of this.electrical){if(this.animate&&this.state?.energized)wire.phase=(wire.phase+dt*(.08+.32*this.state.load))%1;wire.material.emissiveIntensity=.6+2*(this.state?.load??0);wire.particles.forEach((p,i)=>{p.visible=!!this.state?.energized;p.position.copy(wire.curve.getPointAt((i/8+wire.phase)%1));});}
+  }
+}
+
+export class HydroScene extends HydroPlant {
+  constructor(host, { reducedMotion = false } = {}) {
+    super(new T.Scene(), !reducedMotion);
+    this.host=host; this.visible=true;
+    this.scene.background=new T.Color('#edf1f4');
+    this.renderer=new T.WebGLRenderer({antialias:true});
+    this.renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+    this.renderer.shadowMap.enabled=true; this.renderer.shadowMap.type=T.PCFSoftShadowMap;
+    this.renderer.toneMapping=T.ACESFilmicToneMapping; this.renderer.toneMappingExposure=1.2;
+    host.append(this.renderer.domElement);
+    this.camera=new T.OrthographicCamera(-10,10,8,-8,.1,150);
+    this.camera.position.set(5,9.75,22);
+    this.controls=new OrbitControls(this.camera,this.renderer.domElement);
+    this.controls.target.set(-.4,2.5,0);
+    Object.assign(this.controls,{enablePan:false,minPolarAngle:.65,maxPolarAngle:1.4,minAzimuthAngle:-.65,maxAzimuthAngle:.65,minZoom:.7,maxZoom:1.85});
+    this.controls.update();
+    this.scene.add(new T.HemisphereLight(0xdbeeff,0x74695a,2));
+    const sun=new T.DirectionalLight(0xfff2dd,4); sun.position.set(-6,15,12); sun.castShadow=true;
+    sun.shadow.mapSize.set(2048,2048); Object.assign(sun.shadow.camera,{left:-15,right:15,top:12,bottom:-12}); sun.shadow.normalBias=.035; this.scene.add(sun);
+    const rim=new T.DirectionalLight(0xb5dcff,2); rim.position.set(8,8,-7); this.scene.add(rim);
+    this.build();
+    this.tooltip=document.createElement('div'); this.tooltip.className='plant-tooltip'; this.tooltip.hidden=true; this.tooltip.setAttribute('role','status'); host.append(this.tooltip);
+    this.raycaster=new T.Raycaster();
+    this.pointer=e=>{const r=host.getBoundingClientRect(); this.raycaster.setFromCamera(new T.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),this.camera); const hit=this.raycaster.intersectObjects(this.parts,false)[0]; this.tooltip.hidden=!hit; if(hit){this.tooltip.textContent=hit.object.userData.label; this.tooltip.style.left=`${Math.max(8,Math.min(r.width-180,e.clientX-r.left+12))}px`; this.tooltip.style.top=`${Math.max(8,e.clientY-r.top-40)}px`;}};
+    this.leave=()=>{this.tooltip.hidden=true;};
+    host.addEventListener('pointermove',this.pointer); host.addEventListener('pointerdown',this.pointer); host.addEventListener('pointerleave',this.leave);
+    this.observer=new ResizeObserver(()=>this.resize()); this.observer.observe(host);
+    this.intersection=new IntersectionObserver(([e])=>{this.visible=e.isIntersecting;}); this.intersection.observe(host);
+    this.toggle=document.createElement('button'); this.toggle.className='motion-toggle';
+    const describe=()=>updateMotionControl(this.toggle,this.animate);
+    describe(); this.toggle.onclick=()=>{this.animate=!this.animate;describe();}; host.append(this.toggle);
+    this.resize(); this.lastTime=0; this.renderer.setAnimationLoop(time=>this.frame(time));
+  }
+  update(result){super.update(result);this.host.dataset.turbineFlow=String(result.turbineFlowM3s);this.host.dataset.waterSurface=String(this.state.surfaceY);this.host.dataset.energized=String(this.state.energized);}
   resize(){
     const { width, height } = this.host.getBoundingClientRect();
     if (!width || !height) return;
@@ -140,15 +157,13 @@ export class HydroScene {
     Object.assign(this.camera, { left: -half * aspect, right: half * aspect, top: half, bottom: -half });
     this.camera.updateProjectionMatrix();
   }
-  streamMotion(stream, turbineFlow) {
-    const flow = stream.type === 'spill' ? (this.result?.spillFlowM3s ?? 0) : turbineFlow;
-    return Math.min(.5, flow * .025);
-  }
-  frame(time){const dt=Math.min((time-this.lastTime)/1000,.05);this.lastTime=time;if(!this.visible)return;const flow=this.result?.turbineFlowM3s??0;
-    const r=this.animate?dt*Math.min(7,flow*1.3):0;this.runner.rotation.y+=r;this.rotor.rotation.y+=r;
-    for(const s of this.streams){const speed=this.streamMotion(s,flow);if(this.animate)s.phase=(s.phase+dt*speed)%1;s.particles.forEach((p,i)=>{p.visible=speed>0;p.position.copy(s.curve.getPointAt((i/s.particles.length+s.phase)%1));p.position.z+=s.offset ?? (s.type==='spill'?.14:.32);});}
-    for(const wire of this.electrical){if(this.animate&&this.state?.energized)wire.phase=(wire.phase+dt*(.08+.32*this.state.load))%1;wire.material.emissiveIntensity=.6+2*(this.state?.load??0);wire.particles.forEach((p,i)=>{p.visible=!!this.state?.energized;p.position.copy(wire.curve.getPointAt((i/8+wire.phase)%1));});}
-    this.host.dataset.runnerAngle=String(this.runner.rotation.y);this.renderer.render(this.scene,this.camera);
+  frame(time){
+    const dt=Math.min((time-this.lastTime)/1000,.05);
+    this.lastTime=time;
+    if(!this.visible)return;
+    this.advance(dt);
+    this.host.dataset.runnerAngle=String(this.runner.rotation.y);
+    this.renderer.render(this.scene,this.camera);
   }
   destroy(){this.renderer.setAnimationLoop(null);this.controls.dispose();this.observer.disconnect();this.intersection.disconnect();this.host.removeEventListener('pointermove',this.pointer);this.host.removeEventListener('pointerdown',this.pointer);this.host.removeEventListener('pointerleave',this.leave);const gs=new Set(),ms=new Set();this.scene.traverse(o=>{if(o.geometry)gs.add(o.geometry);if(o.material)ms.add(o.material);});gs.forEach(g=>g.dispose());ms.forEach(m=>m.dispose());this.renderer.dispose();this.host.replaceChildren();}
 }

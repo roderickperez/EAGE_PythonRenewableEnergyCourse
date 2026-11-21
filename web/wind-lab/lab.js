@@ -44,7 +44,7 @@ const groups = [
   ]],
 ];
 const fields = groups.flatMap(([, sliders]) => sliders);
-const defaults = Object.fromEntries(fields.map(([key,,,,,initial]) => [key, initial]));
+export const defaults = Object.fromEntries(fields.map(([key,,,,,initial]) => [key, initial]));
 const fixed = (value, digits = 2) => value === null ? 'undefined' : value.toFixed(digits);
 
 function sliders(items) {
