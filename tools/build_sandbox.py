@@ -271,7 +271,7 @@ class Builder:
         # assets from surviving into a later deployment.
         shutil.rmtree(OUT, ignore_errors=True)
         OUT.mkdir(exist_ok=True)
-        for lab in ('hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'project-map'):
+        for lab in ('hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'project-map', 'learning-roadmap'):
             source = BOOK / 'static' / lab
             if not (source / f'{lab}.js').is_file():
                 raise FileNotFoundError(f'Build {lab} first: npm run build')

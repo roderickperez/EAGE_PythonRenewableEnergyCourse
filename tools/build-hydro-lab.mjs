@@ -4,7 +4,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'project-map']) {
+for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'project-map', 'learning-roadmap']) {
   const source = resolve(root, 'web', lab);
   const output = resolve(root, 'EAGE_PythonRenewableEnergyCourse/static', lab);
 
@@ -45,6 +45,9 @@ for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'proj
     loader: { '.css': 'text', '.svg': 'text', '.csv': 'text', '.geojson': 'json' },
     legalComments: 'inline',
   });
+  if (lab === 'learning-roadmap') {
+    for (const file of ['python.svg', 'styles.css']) await cp(resolve(source, file), resolve(output, file));
+  }
   const html = await readFile(resolve(source, 'index.html'), 'utf8');
   await writeFile(resolve(output, 'index.html'), html);
   if (lab === 'geothermal-lab') {
