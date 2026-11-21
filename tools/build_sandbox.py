@@ -311,7 +311,7 @@ if __name__ == '__main__':
     if args.deploy:
         target = BOOK / '_build/html/sandbox'
         target.mkdir(parents=True, exist_ok=True)
-        for name in ['index.html', 'app.js', 'styles.css', 'python-worker.js', 'eagelogo.jpg']:
+        for name in ['index.html', 'app.js', 'styles.css', 'python-worker.js', 'eagelogo.jpg', 'course-session-refresh.js']:
             shutil.copyfile(SANDBOX / name, target / name)
         shutil.copytree(OUT, target / 'generated', dirs_exist_ok=True)
         shutil.copytree(SANDBOX / 'jupyterlite', target / 'jupyterlite', dirs_exist_ok=True)
