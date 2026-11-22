@@ -23,7 +23,6 @@ Wind turbines convert part of the kinetic-energy flux through the rotor area int
 :::{iframe} ../../wind-lab/index.html
 :width: 100%
 :title: Interactive three-dimensional wind turbine lab
-:height: 1350px
 :::
 
 <!-- expanded-theory:wind:start -->
@@ -36,7 +35,7 @@ Most modern large electricity-generating wind turbines use lift-producing blades
 
 ### Components and system boundaries
 
-The conversion sequence is **undisturbed wind → rotor aerodynamic extraction → shaft and drivetrain → generator and power electronics → transformer and network**. A wind farm introduces another level: turbines interact through wakes and share electrical and operational infrastructure. [@manwell2009], Chapters 1 and 3; [@wagner2009], turbine technology.
+The conversion sequence is **undisturbed wind → rotor aerodynamic extraction → shaft and drivetrain → generator and power electronics → transformer and network**. A wind farm introduces another level: turbines interact through wakes and share electrical and operational infrastructure.
 
 | Term or component | Definition and significance |
 |---|---|
@@ -52,7 +51,7 @@ The conversion sequence is **undisturbed wind → rotor aerodynamic extraction �
 
 *Source for these definitions/calculations:* [@manwell2009], Chapters 1 and 3; [@wagner2009], turbine technology.
 
-Onshore and offshore machines use the same fundamental conversion relationships, but access, support structures, environmental loading and maintenance differ. A technology description is not enough to calculate production: the model also needs a resource time series or distribution and a suitable turbine power curve. [@manwell2009], Chapters 1 and 3; [@wagner2009], turbine technology.
+Onshore and offshore machines use the same fundamental conversion relationships, but access, support structures, environmental loading and maintenance differ. A technology description is not enough to calculate production: the model also needs a resource time series or distribution and a suitable turbine power curve.
 
 The supplied *Wind Energy Explained* is the principal reference for the physics and statistical treatment below. Wagner and Mathur offer a shorter introduction. The additional *Wind Energy Handbook* extends the reading to machine design, controls and wind-farm interactions [@manwell2009; @wagner2009; @burton2011wind; @burton2021wind].
 
@@ -60,13 +59,15 @@ The supplied *Wind Energy Explained* is the principal reference for the physics 
 
 ### Why available power contains the cube of wind speed
 
-For air density $\rho$, uniform undisturbed speed $v$ and rotor area $A$, the reference mass flow through that area in the undisturbed wind is $\dot m=\rho Av$ in kg/s. The kinetic energy per unit mass is $v^2/2$. Multiplying the two gives [@manwell2009], §2.5 and §3.2; [@wagner2009], §3.1.
+**Recording transcript:** Available wind power is the kinetic energy carried per second by undisturbed air through an area equal to the rotor swept area. The reference mass flow is air density times swept area times the undisturbed wind speed. Each kilogram carries kinetic energy equal to one half the wind speed squared. Multiplying these gives available wind power equal to one half times air density times swept area times wind speed cubed. A loaded rotor slows the air, so its actual disk-plane mass flow is generally different from this undisturbed reference flux. Available power is not electrical output: the rotor extracts only a fraction, and drivetrain and generator losses reduce the delivered electricity.
+
+For air density $\rho$, uniform undisturbed speed $v$ and rotor area $A$, the reference mass flow through that area in the undisturbed wind is $\dot m=\rho Av$ in kg/s. The kinetic energy per unit mass is $v^2/2$. Multiplying the two gives
 
 $$P_{wind}=\dot m\frac{v^2}{2}=\frac12\rho Av^3.$$
 
-*Equation basis:* [@manwell2009], §2.5 and §3.2.
+*Equation basis:* [@manwell2009], §2.5 and §3.2; [@wagner2009], §3.1.
 
-The cubic dependence combines two effects: faster air carries more kinetic energy per kilogram and more kilograms pass the rotor each second. At fixed density and area, doubling speed gives eight times the **available kinetic-energy flux**. It does not imply eight times electrical output once turbine operating limits are involved. [@manwell2009], §2.5 and §3.2.
+The cubic dependence combines two effects: faster air carries more kinetic energy per kilogram and the undisturbed reference flow through the same area increases. At fixed density and area, doubling speed gives eight times the **available kinetic-energy flux**. It does not imply eight times electrical output once turbine operating limits are involved. [@manwell2009], §2.5 and §3.2.
 
 For a circular rotor, $A=\pi R^2=\pi D^2/4$. Doubling diameter gives four times the swept area, not twice the area. With density in kg/m³, area in m² and speed in m/s, power is watts. The relationship assumes a representative speed across the rotor; real shear, turbulence and spatial variation complicate that approximation [@manwell2009].
 
@@ -82,17 +83,15 @@ The rotor power coefficient is
 
 $$C_p=\frac{P_{rotor}}{\tfrac12\rho Av^3}.$$
 
-*Equation basis:* [@manwell2009], §3.2 (ideal actuator-disc assumptions).
+*Sources and assumptions for this equation group:* [@manwell2009], §3.2 (ideal actuator-disc assumptions).
 
-It is an aerodynamic extraction ratio. A separate drivetrain/generator efficiency gives a simplified electrical relationship, [@manwell2009], §3.2 (ideal actuator-disc assumptions).
+It is an aerodynamic extraction ratio. A separate drivetrain/generator efficiency gives a simplified electrical relationship,
 
 $$P_e=\eta_{drive}C_p\frac12\rho Av^3.$$
 
-*Equation basis:* [@manwell2009], §3.2 (ideal actuator-disc assumptions).
-
 The ideal actuator-disk analysis yields $C_p\le16/27\approx0.593$ under its assumptions of steady, incompressible, unconfined ideal flow. The bound concerns power extracted from the undisturbed kinetic-energy flux. Real rotors incur additional aerodynamic and mechanical losses. [@manwell2009], §3.2; [@wagner2009], §3.3.1.
 
-Both $C_p$ and $\eta_{drive}$ can vary with operating point. If a supplied power curve already represents electrical output, do **not** multiply it by $C_p$ and generator efficiency again. First identify whether the input model describes wind power, rotor power, generator power or exported power. [@manwell2009], §3.2 (ideal actuator-disc assumptions).
+Both $C_p$ and $\eta_{drive}$ can vary with operating point. If a supplied power curve already represents electrical output, do **not** multiply it by $C_p$ and generator efficiency again. First identify whether the input model describes wind power, rotor power, generator power or exported power.
 
 (wind-betz-explorer)=
 :::{iframe} ../../wind-lab/aerodynamics.html?demo=betz
@@ -106,15 +105,13 @@ Rotating-shaft power is
 
 $$P_{shaft}=\tau\Omega,$$
 
-*Equation basis:* [@manwell2009], Chapter 3.
-
-where torque $\tau$ is N m and angular velocity $\Omega$ is radians/s. Convert rotational speed $n$ in revolutions/minute with $\Omega=2\pi n/60$. The tip-speed ratio is [@manwell2009], Chapter 3.
+where torque $\tau$ is N m and angular velocity $\Omega$ is radians/s. Convert rotational speed $n$ in revolutions/minute with $\Omega=2\pi n/60$. The tip-speed ratio is
 
 $$\lambda=\frac{\Omega R}{v}.$$
 
-*Equation basis:* [@manwell2009], Chapter 3.
-
 It compares blade-tip speed with undisturbed wind speed. Aerodynamic performance depends on tip-speed ratio and blade pitch, commonly represented as $C_p(\lambda,\beta)$, where $\beta$ is pitch angle under the chosen convention. Variable-speed control can adjust rotor speed to operate efficiently below rated output; above rated conditions, pitch and other controls constrain power and structural loads. A constant $C_p$ approximation is therefore a learning model, not a complete control model [@manwell2009].
+
+*Sources and assumptions for this equation group:* [@manwell2009], Chapter 3: Eq. 3.53 relates shaft power to torque and angular speed; Eq. 3.26 defines tip-speed ratio using free-stream wind speed.
 
 ## Resource characterization: density, height and variability
 
@@ -126,7 +123,7 @@ $$\rho=\frac{p}{R_dT},\qquad R_d\approx287.05\ \mathrm{J/(kg\,K)}.$$
 
 *Equation basis:* [@manwell2009], Chapter 2; dry-air ideal-gas approximation, not a humidity-corrected model.
 
-Pressure $p$ is in pascals and absolute temperature $T$ is kelvin. Humidity and local conditions modify density; 1.225 kg/m³ is a stated reference assumption, not a universal site value. At fixed speed and swept area, lower density reduces available power. Applying a density adjustment to a manufacturer power curve requires that curve's specified correction procedure, especially near rated output [@manwell2009; @wagner2009].
+Pressure $p$ is absolute local station pressure in pascals and absolute temperature $T$ is kelvin. Humidity and local conditions modify density; 1.225 kg/m³ is a stated reference assumption, not a universal site value. At fixed speed and swept area, lower density reduces available power. Applying a density adjustment to a manufacturer power curve requires that curve's specified correction procedure, especially near rated output [@manwell2009; @wagner2009].
 
 (wind-air-density-explorer)=
 :::{iframe} ../../wind-lab/aerodynamics.html?demo=air-density
@@ -136,21 +133,19 @@ Pressure $p$ is in pascals and absolute temperature $T$ is kelvin. Humidity and 
 
 ### Wind shear and extrapolation to hub height
 
-Surface friction and atmospheric structure produce a vertical wind profile. An often-used empirical approximation is [@manwell2009], §2.3.4.2, pp. 45–46.
+Surface friction and atmospheric structure produce a vertical wind profile. An often-used empirical approximation is
 
 $$v(z)=v(z_r)\left(\frac{z}{z_r}\right)^\alpha.$$
 
 *Equation basis:* [@manwell2009], §2.3.4.2, pp. 45–46.
 
-Both heights must be positive and measured relative to a consistent reference; $\alpha$ is an assumed or fitted shear exponent. It changes with roughness, atmospheric stability and conditions. Treating 0.14 or $1/7$ as an immutable physical constant can introduce resource bias. The final project supplies hub-height wind speed, so applying another height correction there would double-adjust the data. [@manwell2009], §2.3.4.2, pp. 45–46.
+Both heights must be positive and measured relative to a consistent reference; $\alpha$ is an assumed or fitted shear exponent. It changes with roughness, atmospheric stability and conditions. Treating 0.14 or $1/7$ as an immutable physical constant can introduce resource bias. The final project supplies hub-height wind speed, so applying another height correction there would double-adjust the data.
 
 A neutral-atmosphere log-law model is another approximation,
 
 $$v(z)=\frac{u_*}{\kappa}\ln\left(\frac{z-d}{z_0}\right),$$
 
-*Equation basis:* [@manwell2009], §2.3.4.1; [@wagner2009], §3.4.1.
-
-where $u_*$ is friction velocity, $\kappa$ is the von Kármán constant, $z_0$ is roughness length and $d$ is displacement height. The model requires a suitable neutral surface layer and heights with $z-d>z_0$. The beginner calculations use the power law and state its exponent. [@manwell2009], §§2.3.4.1–2.3.4.2; [@wagner2009], §3.4.1.
+where $u_*$ is friction velocity, $\kappa$ is the von Kármán constant, $z_0$ is roughness length and $d$ is displacement height. The model requires a suitable neutral surface layer and heights with $z-d>z_0$. The beginner calculations use the power law and state its exponent. For the displacement-height form, see [USDA NRCS National Engineering Handbook, Chapter 2, Eq. 2–20](https://www.wcc.nrcs.usda.gov/ftpref/wntsc/waterMgt/irrigation/NEH15/ch2.pdf) and [NCAR Earth Observing Laboratory, neutral wind profile with displacement height](https://www.eol.ucar.edu/content/calculation-roughness-length-and-displacement-height); [@manwell2009], §2.3.4.1 and [@wagner2009], §3.4.1 for the zero-displacement forms. The USDA example is for a crop canopy; its roughness and displacement values should not be assumed to apply to a wind-farm site.
 
 (wind-shear-explorer)=
 :::{iframe} ../../wind-lab/aerodynamics.html?demo=shear
@@ -163,6 +158,8 @@ where $u_*$ is friction velocity, $\kappa$ is the von Kármán constant, $z_0$ i
 **Turbulence intensity** for a defined observation window is $TI=\sigma_v/\bar v$ for positive mean speed. State the sampling window, data filtering and standard-deviation convention. It describes variability relative to the mean, not the same quantity as a gust speed. Turbulence influences loads, fatigue and power fluctuations; an energy-only model does not assess structural safety. [@manwell2009], §2.3; the averaging interval and standard-deviation convention must be stated.
 
 For a nonlinear power model, $P(\bar v)$ is generally different from the average $\overline{P(v)}$. With equal-duration speeds of 4 and 8 m/s, the mean cubed speed is $(4^3+8^3)/2=288$, while the cube of the mean is $6^3=216$. Above rated speed or around cut-out, clipping and shutdown create further differences. Use interval data or an explicit probability distribution rather than assuming mean speed fully characterizes the resource. [@manwell2009], §2.3; the averaging interval and standard-deviation convention must be stated.
+
+This example applies an instantaneous cubic relationship before averaging. A measured power curve may instead describe the relationship between compatible **10-minute mean** wind speeds and mean power. Using such a curve with data on its intended averaging and measurement basis is not the same as applying an instantaneous cubic formula to a long-term mean. Check the curve's averaging, density and measurement conventions and account for remaining scatter and uncertainty; see this [wind-turbulence review](https://wes.copernicus.org/articles/11/509/2026/).
 
 (wind-turbulence-explorer)=
 :::{iframe} ../../wind-lab/aerodynamics.html?demo=turbulence
@@ -183,11 +180,11 @@ P_r,&v_r\le v<v_{out},\\
 \end{cases}
 $$
 
-*Equation basis:* Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2. [@doeWindWeather]. The continuous cubic ramp is an original simplified interpolation.
-
 $v_{in}$ is cut-in speed, $v_r$ is rated speed, $v_{out}$ is cut-out speed, and $P_r$ is rated electrical power. These thresholds are turbine-specific. The ramp interpolates continuously between zero and rated power, while the ideal cut-out model has an abrupt shutdown. Actual controllers may use hysteresis, delayed restart, derating or different storm-control behavior. The simple curve teaches conditionals and boundary testing; it does not reproduce every modern controller [@manwell2009; @doeWindWeather].
 
-Testing exactly at the thresholds is important. For the exercise convention, output is zero at cut-in, rated at rated speed, and zero at cut-out. Reject negative or non-finite resource inputs before calculating output. Do not permit an unconstrained cubic equation to predict power above the equipment limit. Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2. [@doeWindWeather]. The continuous cubic ramp is an original simplified interpolation.
+*Equation basis:* Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2. [@doeWindWeather]. The continuous cubic ramp is an original simplified interpolation.
+
+Testing exactly at the thresholds is important. For the exercise convention, output is zero at cut-in, rated at rated speed, and zero at cut-out. Reject negative or non-finite resource inputs before calculating output. Do not permit an unconstrained cubic equation to predict power above the equipment limit.
 
 (wind-electrical-curve-explorer)=
 :::{iframe} ../../wind-lab/aerodynamics.html?demo=electrical-curve
@@ -215,19 +212,19 @@ The integral averages **electrical power**, not wind speed. Use $T=8760$ h for a
 
 ### Weibull resource model and numerical integration
 
-A two-parameter Weibull model for nonnegative speed has cumulative distribution Wind distribution and energy: [@manwell2009], §§2.4–2.5; [SciPy Weibull density](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.weibull_min.html).
+A two-parameter Weibull model for nonnegative speed has cumulative distribution:
 
 $$F(v)=1-\exp[-(v/c)^k],$$
 
-*Equation basis:* Wind distribution and energy: [@manwell2009], §§2.4–2.5; [SciPy Weibull density](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.weibull_min.html).
-
-where $k>0$ is dimensionless shape and $c>0$ is scale in m/s. The probability of a bin $[a_i,b_i]$ is $p_i=F(b_i)-F(a_i)$. A midpoint approximation gives Wind distribution and energy: [@manwell2009], §§2.4–2.5; [SciPy Weibull density](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.weibull_min.html).
+where $k>0$ is dimensionless shape and $c>0$ is scale in m/s. The probability of a bin $[a_i,b_i]$ is $p_i=F(b_i)-F(a_i)$. A midpoint approximation gives:
 
 $$\bar P\approx\sum_i P\!\left(\frac{a_i+b_i}{2}\right)p_i.$$
 
-*Equation basis:* Wind distribution and energy: [@manwell2009], §§2.4–2.5; [SciPy Weibull density](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.weibull_min.html).
-
 Bin probability is dimensionless, while density has inverse-speed units; they cannot be substituted for one another without the bin width. Refine the bins to check numerical convergence and account for the probability beyond the integration range. A Weibull fit is a statistical approximation, not a law that all sites must follow [@manwell2009].
+
+*Sources and assumptions for this equation group:* Wind distribution and energy: [@manwell2009], §§2.4–2.5; [SciPy Weibull density](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.weibull_min.html).
+
+SciPy names its shape parameter `c`, which is **not** this lesson's scale $c$. For this two-parameter distribution, use `weibull_min.cdf(v, c=k, loc=0, scale=c)` after importing `weibull_min` from `scipy.stats`.
 
 (wind-weibull-explorer)=
 :::{iframe} ../../wind-lab/aerodynamics.html?demo=weibull
@@ -239,7 +236,7 @@ Bin probability is dimensionless, while density has inverse-speed units; they ca
 
 A downstream turbine may encounter reduced wind speed and altered turbulence due to an upstream wake. Wake interaction depends on direction, spacing, controls and atmospheric conditions. Other energy reductions include equipment downtime, electrical losses, icing and curtailment. A simple retained-energy factor can summarize explicitly stated assumptions, but it does not represent the detailed physics or hourly coincidence of those effects. [@manwell2009], §§2.5 and 2.6; [@wagner2009], wind-farm operation.
 
-Separate variability from uncertainty. Weather changes from hour to hour and year to year; uncertainty also arises from measurement, long-term adjustment and modelling choices. In common wind-project terminology, an annual-energy **P90** is an energy level expected to be exceeded with 90% probability under the defined uncertainty model—thus a lower quantile than P50. It is not “90% of the mean.” Synthetic bootstrap or Monte Carlo exercises demonstrate methods; they do not create a bankable uncertainty estimate from a few invented observations. [@manwell2009], §§2.5 and 2.6; [@wagner2009], wind-farm operation.
+Separate variability from uncertainty. Weather changes from hour to hour and year to year; uncertainty also arises from measurement, long-term adjustment and modelling choices. In common wind-project terminology, an annual-energy **P90** is an energy level expected to be exceeded with 90% probability under the defined uncertainty model—thus a lower quantile than P50. It is not “90% of the mean.” See [SAM P50/P90 help](https://samrepo.nlr.gov/help/p50p90.html) for the exceedance convention. Synthetic bootstrap or Monte Carlo exercises demonstrate methods; they do not create a bankable uncertainty estimate from a few invented observations. [@manwell2009], §§2.5 and 2.6; [@wagner2009], wind-farm operation.
 
 (wind-losses-explorer)=
 :::{iframe} ../../wind-lab/aerodynamics.html?demo=losses
@@ -249,15 +246,15 @@ Separate variability from uncertainty. Weather changes from hour to hour and yea
 
 ## Wind direction and circular data
 
-Meteorological direction convention normally describes where wind comes **from**, measured clockwise from north. Directions 350° and 10° are close together, even though their ordinary numerical difference is large. Compute an equal-weight circular mean using Circular mean and zero-resultant limitation: [SciPy circmean](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.circmean.html).
+Meteorological direction convention normally describes where wind comes **from**, measured clockwise from north. Directions 350° and 10° are close together, even though their ordinary numerical difference is large. Compute an equal-weight circular mean using
 
 $$\bar\theta=\operatorname{atan2}\!\left(\overline{\sin\theta},\overline{\cos\theta}\right),$$
 
+then express it on the desired 0–360° interval. Convert degrees to radians before using NumPy trigonometric functions. The resultant length $R=\sqrt{\overline{\sin\theta}^{\,2}+\overline{\cos\theta}^{\,2}}$ measures directional concentration. If $R$ is near zero, the mean direction is unstable or undefined; opposing observations must not be assigned a spurious meaningful direction.
+
 *Equation basis:* Circular mean and zero-resultant limitation: [SciPy circmean](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.circmean.html).
 
-then express it on the desired 0–360° interval. Convert degrees to radians before using NumPy trigonometric functions. The resultant length $R=\sqrt{\overline{\sin\theta}^{\,2}+\overline{\cos\theta}^{\,2}}$ measures directional concentration. If $R$ is near zero, the mean direction is unstable or undefined; opposing observations must not be assigned a spurious meaningful direction. Circular mean and zero-resultant limitation: [SciPy circmean](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.circmean.html).
-
-An equal-weight mean direction is not a speed-weighted vector-mean wind. For east/north velocity components under the meteorological “from” convention, $u=-v\sin\theta$ and $w_N=-v\cos\theta$. Distinguish these definitions when combining speed and direction. A wind rose groups directional frequencies, speed ranges or energy contributions; its weighting should be identified. Circular mean and zero-resultant limitation: [SciPy circmean](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.circmean.html).
+An equal-weight mean direction is not a speed-weighted vector-mean wind. For east/north velocity components under the meteorological “from” convention, $u=-v\sin\theta$ and $w_N=-v\cos\theta$. For these meteorological component signs, see [ECMWF wind-component conventions](https://confluence.ecmwf.int/pages/viewpage.action?pageId=212441203). Distinguish these definitions when combining speed and direction. A wind rose groups directional frequencies, speed ranges or energy contributions; its weighting should be identified.
 
 (wind-direction-explorer)=
 :::{iframe} ../../wind-lab/aerodynamics.html?demo=direction
@@ -267,7 +264,7 @@ An equal-weight mean direction is not a speed-weighted vector-mean wind. For eas
 
 ## Worked calculation before coding
 
-Take a synthetic rotor radius of 20 m, density 1.225 kg/m³, undisturbed speed 8 m/s, $C_p=0.40$ and drivetrain efficiency 0.95. Original numerical substitution; Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2.
+Take a synthetic rotor radius of 20 m, density 1.225 kg/m³, undisturbed speed 8 m/s, $C_p=0.40$ and drivetrain efficiency 0.95.
 
 1. Swept area is $\pi20^2\approx1256.64$ m².
 2. Available wind power is $0.5(1.225)(\pi20^2)(8^3)\approx394{,}081$ W. Divide by 1000 to obtain **394.08 kW**.
@@ -277,7 +274,7 @@ Take a synthetic rotor radius of 20 m, density 1.225 kg/m³, undisturbed speed 8
 
 *Source for these definitions/calculations:* Original numerical substitution; Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2.
 
-Check the ordering: electrical power is below rotor power, which is below available wind power. This example uses a fixed coefficient at one operating point; the piecewise electrical curve is a separate alternative model, not another factor to multiply into the same calculation. Original numerical substitution; Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2.
+Check the ordering: electrical power is below rotor power, which is below available wind power. This example uses a fixed coefficient at one operating point; the piecewise electrical curve is a separate alternative model, not another factor to multiply into the same calculation.
 
 ## Environmental context and the route to Python
 
@@ -285,50 +282,43 @@ Wind-energy development must consider land or sea use, wildlife, noise, visual e
 
 Exercises 1–4 cover the Basic skills, Exercises 5–12 apply the models in Medium tasks, and Exercises 13–20 combine models, data, and validation in Hard tasks. Read the supplied *Wind Energy Explained*, especially the wind-resource and aerodynamic discussions, before interpreting those models [@manwell2009; @wagner2009].
 
-
 <!-- expanded-theory:wind:end -->
 
 ## Concepts and equations: compact reference
 
 ### Available wind power
 
-Air moving at speed $v$ through swept area $A$ has available power Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2.
+Air moving at speed $v$ through swept area $A$ has available power:
 
 $$P_{wind}=\frac{1}{2}\rho A v^3,\qquad A=\pi R^2$$
 
-*Equation basis:* Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2.
+*Sources and assumptions for this equation group:* Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2.
 
 Rotor power is
 
 $$P_{rotor}=C_pP_{wind}$$
 
-*Equation basis:* Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2.
-
-where $C_p$ is the power coefficient. The ideal Betz maximum is Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2.
+where $C_p$ is the power coefficient. The ideal Betz maximum is:
 
 $$C_{p,max}=\frac{16}{27}\approx0.593$$
 
-*Equation basis:* Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2.
-
-This is an aerodynamic upper bound, not a typical electrical efficiency. Generator and drivetrain losses occur after aerodynamic extraction. Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2.
+This is an aerodynamic upper bound, not a typical electrical efficiency. Generator and drivetrain losses occur after aerodynamic extraction.
 
 ### Air density and hub height
 
-At the same wind speed, available power scales linearly with air density. A basic pressure-temperature approximation is [@manwell2009], §§2.3–2.5.
+At the same wind speed, available power scales linearly with air density. A basic pressure-temperature approximation is
 
 $$\rho\approx\frac{p}{R_dT}$$
 
-*Equation basis:* [@manwell2009], §§2.3–2.5.
+with dry-air gas constant $R_d=287.05$ J/(kg K), absolute local station pressure in Pa, and absolute temperature in K.
 
-with dry-air gas constant $R_d=287.05$ J/(kg K), pressure in Pa, and temperature in K. [@manwell2009], §§2.3–2.5.
+*Sources and assumptions for this equation group:* [@manwell2009], §§2.3–2.5.
 
-When only a reference-height wind speed is available, the empirical power law is often used: [@manwell2009], §§2.3–2.5.
+When only a reference-height wind speed is available, the empirical power law is often used:
 
 $$v(z)=v(z_r)\left(\frac{z}{z_r}\right)^\alpha$$
 
-*Equation basis:* [@manwell2009], §§2.3–2.5.
-
-The shear exponent $\alpha$ is site- and stability-dependent; it is not universally $1/7$. [@manwell2009], §§2.3–2.5.
+The shear exponent $\alpha$ is site- and stability-dependent; it is not universally $1/7$.
 
 ### Power curve, AEP, and capacity factor
 
@@ -345,15 +335,13 @@ For discrete wind states with probabilities $p_i$:
 
 $$AEP=8760\sum_i P(v_i)p_i$$
 
-*Equation basis:* Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2.
-
 and
 
 $$CF=\frac{AEP}{P_r\,8760}$$
 
-*Equation basis:* Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2.
+Use a manufacturer power curve for real AEP work. A cubic interpolation is a teaching approximation only.
 
-Use a manufacturer power curve for real AEP work. A cubic interpolation is a teaching approximation only. Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2.
+*Sources and assumptions for this equation group:* Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2.
 
 ## Tested Python functions
 
@@ -410,9 +398,9 @@ The Weibull probability density is
 $$f(v)=\frac{k}{c}\left(\frac{v}{c}\right)^{k-1}
 \exp\left[-\left(\frac{v}{c}\right)^k\right]$$
 
-*Equation basis:* Wind distribution and energy: [@manwell2009], §§2.4–2.5; [SciPy Weibull density](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.weibull_min.html).
+where $k$ is shape and $c$ is scale. A fitted distribution compresses information and may miss calm periods, storms, seasonality, and direction-dependent wakes.
 
-where $k$ is shape and $c$ is scale. A fitted distribution compresses information and may miss calm periods, storms, seasonality, and direction-dependent wakes. Wind distribution and energy: [@manwell2009], §§2.4–2.5; [SciPy Weibull density](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.weibull_min.html).
+*Equation basis:* Wind distribution and energy: [@manwell2009], §§2.4–2.5; [SciPy Weibull density](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.weibull_min.html).
 
 ```{code-cell} python
 def weibull_pdf(speed_ms, shape_k, scale_c):
@@ -458,14 +446,14 @@ plt.tight_layout()
 
 ## Wind direction is circular
 
-Meteorological wind direction states where wind comes **from**: 0° is north and 90° is east. Arithmetic means fail near north—for example, 350° and 10° average to 180° arithmetically even though both are northerly. Use vector components: Circular mean and zero-resultant limitation: [SciPy circmean](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.circmean.html).
+Meteorological wind direction states where wind comes **from**: 0° is north and 90° is east. Arithmetic means fail near north—for example, 350° and 10° average to 180° arithmetically even though both are northerly. Use vector components:
 
 $$\bar\theta=\operatorname{atan2}(\overline{\sin\theta},
 \overline{\cos\theta})$$
 
-*Equation basis:* Circular mean and zero-resultant limitation: [SciPy circmean](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.circmean.html).
-
 and wrap the result to $[0,360)$.
+
+*Equation basis:* Circular mean and zero-resultant limitation: [SciPy circmean](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.circmean.html).
 
 ```{code-cell} python
 def circular_mean_degrees(direction_deg):
@@ -493,7 +481,7 @@ assert np.isclose(circular_mean_degrees([350, 10]), 0)
 - Randomly shuffling time-series data before forecasting.
 - Averaging wind directions arithmetically or reversing the meteorological convention.
 
-(chapter-practice-20-python-exercises)=
+(wind-practice)=
 ## Practice
 
 [Open the wind exercises](../section7/workbook/wind.md) in the Applied Python Workbook.

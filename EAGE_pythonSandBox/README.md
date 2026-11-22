@@ -3,7 +3,7 @@
 Public link: <https://roderickperez.github.io/EAGE_PythonRenewableEnergyCourse/sandbox/>
 
 The sandbox uses the Jupyter Book as its curriculum source. It includes the full
-theory, equations, references, Python examples, 100 chapter exercises and all quiz
+theory, equations, references, Python examples, 102 chapter exercises and all quiz
 pages. Practice answers start collapsed. The 25-question assessment and hybrid
 final project contain only questions/requirements, with separate saved coding and
 written-answer workspaces. Instructor answer files are never read by the builder.

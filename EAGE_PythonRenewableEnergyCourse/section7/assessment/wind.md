@@ -38,8 +38,8 @@ Using the shared `generation` schema, write SQL to count wind records and non-nu
 
 ### Question 49 <span class="difficulty-badge difficulty-hard">Hard</span>
 
-Given hourly wind speed data and a specified power curve, write Python to calculate energy while flagging invalid and missing speeds; report coverage separately.
+For hourly wind speeds `[2, 6, 10, None, -1, 26]` m/s, use an illustrative 3 MW curve: zero at or below 3 m/s and at or above 25 m/s; 3 MW from 12 to below 25 m/s; between 3 and 12 m/s use `3 * (v**3 - 3**3) / (12**3 - 3**3)` MW. Treat each valid speed as constant for its one-hour interval. Calculate energy, flag invalid and missing speeds, and report coverage separately.
 
 ### Question 50 <span class="difficulty-badge difficulty-hard">Hard</span>
 
-Describe and implement a comparison of two turbine ratings over the same speed series. Check interval duration, cut-out behavior and missing data, and explain why a short sample cannot establish long-term AEP.
+Compare 3 MW and 4 MW versions of the curve in Question 49 using its same six one-hour speed observations and speed thresholds, scaling the ramp and plateau in proportion to rating. Flag invalid and missing values, check cut-out behavior, and report observed-period energy and coverage. These abstract curves are not tied to a rotor diameter. Explain why the short sample cannot establish long-term annual energy production.

@@ -82,13 +82,14 @@ function ensureWorkspaceVisible() {
   }
 }
 
+let initialLessonReady = false;
 function setWorkspaceMode(notebook) {
   const frame = $('workspace-notebook');
   $('lab').classList.toggle('show-notebook', notebook);
   frame.hidden = !notebook;
   $('workspace-mode-editor').setAttribute('aria-pressed', String(!notebook));
   $('workspace-mode-notebook').setAttribute('aria-pressed', String(notebook));
-  if (notebook && !frame.hasAttribute('src')) {
+  if (notebook && initialLessonReady && !frame.hasAttribute('src')) {
     frame.src = 'jupyterlite/lab/index.html?path=Start%20here.ipynb';
   }
 }
@@ -149,6 +150,35 @@ function renderNav() {
   }));
 }
 function navigate(id) { location.hash = 'lesson='+encodeURIComponent(id); }
+// Late-loading figures and labs can shift a citation after navigation. Keep the
+// target in the reading pane briefly, but stop as soon as the learner interacts.
+let cancelAnchorFollow = () => {};
+function followReadingAnchor(target, pane, content) {
+  cancelAnchorFollow();
+  let active = true;
+  const ensureVisible = () => {
+    if (!active || !target.isConnected) return;
+    const box = pane.getBoundingClientRect(), item = target.getBoundingClientRect();
+    const paneScrollable = pane.scrollHeight > pane.clientHeight && getComputedStyle(pane).overflowY !== 'visible';
+    if (!paneScrollable && (item.top < 0 || item.top >= window.innerHeight)) {
+      target.scrollIntoView({block: 'start', behavior: 'instant'});
+    } else if (paneScrollable && (item.top < box.top || item.top >= box.bottom)) {
+      pane.scrollTo({top: pane.scrollTop + item.top - box.top - 12, behavior: 'instant'});
+    }
+  };
+  const observer = new ResizeObserver(ensureVisible);
+  observer.observe(content);
+  const events = ['wheel', 'touchstart', 'pointerdown', 'keydown'];
+  const stop = () => {
+    if (!active) return;
+    active = false; observer.disconnect(); clearTimeout(timer);
+    for (const event of events) pane.removeEventListener(event, stop);
+  };
+  for (const event of events) pane.addEventListener(event, stop, {once:true, passive:true});
+  const timer = setTimeout(stop, 4000);
+  cancelAnchorFollow = stop;
+  ensureVisible();
+}
 async function route() {
   const params = new URLSearchParams(location.hash.slice(1));
   const next=course.pages.find(p=>p.id===params.get('lesson')) || course.pages[0];
@@ -176,6 +206,18 @@ async function route() {
     colabButton.title = notebookPath ? 'Open this lesson in Google Colab' : 'No Google Colab notebook available for this lesson';
     colabButton.onclick = notebookPath ? () => window.open('https://colab.research.google.com/github/roderickperez/EAGE_PythonRenewableEnergyCourse/blob/main/' + notebookPath, '_blank', 'noopener,noreferrer') : null;
     $('lesson').innerHTML=lesson.html;
+    for (const [anchor, page, title, height] of [
+      ['hydro-worked-examples', 'worked-examples.html', 'Interactive hydropower design calculations', '1050px'],
+      ['hydro-reservoir-project', 'project.html', 'Interactive hydroelectric reservoir project', '1200px'],
+    ]) {
+      const spot = $(anchor);
+      if (!spot) continue;
+      const frame = document.createElement('iframe');
+      frame.title = title; frame.loading = 'lazy';
+      frame.src = `generated/hydro-lab/${page}`;
+      frame.style.cssText = `display:block;width:100%;height:${height};border:0;margin:12px 0`;
+      spot.after(frame);
+    }
     for (const [anchor, path, title, labPath = 'hydro-lab'] of [
       ['hydraulic-head-explorer', 'head.html', 'Hydraulic head explorer'],
       ['net-head-explorer', 'balance.html?demo=net-head', 'Net head explorer'],
@@ -208,6 +250,11 @@ async function route() {
       ['wind-weibull-explorer', 'aerodynamics.html?demo=weibull', 'Weibull wind resource and bin integration explorer', 'wind-lab'],
       ['wind-losses-explorer', 'aerodynamics.html?demo=losses', 'Wind energy losses and uncertainty explorer', 'wind-lab'],
       ['wind-direction-explorer', 'aerodynamics.html?demo=direction', 'Circular wind direction explorer', 'wind-lab'],
+      ['geo-closed-systems', 'closed-loop.html?demo=systems', 'Interactive geothermal system comparison', 'geothermal-lab'],
+      ['geo-closed-conduction', 'closed-loop.html?demo=conduction', 'Transient rock conduction explorer', 'geothermal-lab'],
+      ['geo-closed-area', 'closed-loop.html?demo=area', 'Coaxial tube flow areas explorer', 'geothermal-lab'],
+      ['geo-closed-energy', 'closed-loop.html?demo=energy', 'Thermal energy and available work explorer', 'geothermal-lab'],
+      ['geo-closed-performance', 'closed-loop.html?demo=performance', 'Closed-loop performance explorer', 'geothermal-lab'],
       ['geo-darcy-explorer', 'equations.html?demo=darcy', 'Darcy flux explorer', 'geothermal-lab'],
       ['geo-gradient-explorer', 'equations.html?demo=gradient', 'Geothermal gradient and heat flux explorer', 'geothermal-lab'],
       ['geo-heat-explorer', 'equations.html?demo=heat', 'Thermal power explorer', 'geothermal-lab'],
@@ -248,7 +295,7 @@ async function route() {
       },
       'section6/windEnergy.md': {
         anchor: '#physical-description-extracting-energy-from-moving-air', id: 'wind-3d-lab',
-        mount: async host => (await import('./generated/wind-lab/wind-lab.js')).mountWindLab(host),
+        mount: async host => (await import('./generated/wind-lab/wind-lab.js?v=wind-curve-bound-6')).mountWindLab(host),
       },
       'section6/geothermalEnergy.md': {
         anchor: '#physical-description-useful-heat-from-the-subsurface', id: 'geothermal-3d-lab',
@@ -264,11 +311,11 @@ async function route() {
       },
       'section8/solar-project.md': {
         anchor: '#how-to-use-the-explorer', id: 'solar-farm-project',
-        mount: async host => (await import('./generated/solar-lab/solar-project.js?v=solar-project-3')).mountSolarProject(host),
+        mount: async host => (await import('./generated/solar-lab/solar-project.js?v=solar-project-6')).mountSolarProject(host),
       },
       'section8/geothermal-project.md': {
         anchor: '#how-to-use-the-explorer', id: 'geothermal-field-project',
-        mount: async host => (await import('./generated/geothermal-lab/geothermal-project.js?v=1')).mountGeothermalProject(host),
+        mount: async host => (await import('./generated/geothermal-lab/geothermal-project.js?v=csv-boundaries-4')).mountGeothermalProject(host),
       },
     }[lesson.id];
     if(lab){
@@ -288,6 +335,17 @@ async function route() {
         host.textContent = 'The interactive lab could not load. The lesson equations and examples remain available below.';
         console.error('Course lab failed to load', error);
       });
+    }
+    if (lesson.id === 'section8/geothermal-project.md') {
+      const spot = $('lesson').querySelector('#multi-depth-field-designer');
+      if (spot) {
+        const host = document.createElement('div'); host.id = 'geothermal-multifield'; host.className = 'hydro-3d-lab';
+        spot.after(host);
+        import('./generated/geothermal-lab/geothermal-multifield.js?v=multidepth-finance-export-3').then(mod => mod.mountGeothermalProject(host)).then(instance => {
+          if (host.isConnected) { const previous=lessonLab; lessonLab={destroy(){previous?.destroy();instance.destroy();}}; }
+          else instance.destroy();
+        }).catch(error => {host.className='callout';host.textContent='The multi-depth field designer could not load; the single-layer explorer remains available.';console.error(error);});
+      }
     }
     if (lesson.id === 'section6/geothermalEnergy.md') {
       const spot = $('lesson').querySelector('#drilling-a-geothermal-well-fluid-and-hydraulics');
@@ -317,7 +375,7 @@ async function route() {
     if(window.MathJax?.typesetPromise) await window.MathJax.typesetPromise([$('lesson')]).catch(()=>{});
   }
   renderNav();
-  if(params.get('anchor')) document.getElementById(params.get('anchor'))?.scrollIntoView({block:'start'});
+  if(params.get('anchor')) { const target=document.getElementById(params.get('anchor')); if(target) followReadingAnchor(target,$('reading'),$('lesson')); } else cancelAnchorFollow();
 }
 // Media URLs come only from the validated build manifest. One player owns each queue.
 let audioQueue = [], audioIndex = 0;
@@ -367,7 +425,7 @@ function download(name, data, type='text/plain') {
 function locked(value){busy=value;$('run').disabled=value;$('stop').disabled=!value;}
 function createWorker(){
   worker?.terminate();workerReady=false;
-  worker=new Worker('python-worker.js',{type:'module'});status('Downloading Python…', 'loading');
+  worker=new Worker('python-worker.js?v=optional-import-20261120',{type:'module'});status('Downloading Python…', 'loading');
   worker.onmessage=({data:m})=>{
     if(m.type==='status')status(m.text, /^loading|^downloading/i.test(m.text) ? 'loading' : (workerReady ? 'ready' : 'loading'));
     if(m.type==='ready'){workerReady=true;status('Python ready', 'ready');}
@@ -401,12 +459,13 @@ $('code').onkeydown=e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDef
 for(const id of ['code','notes','stdin']) $(id).oninput=()=>{clearTimeout(draftTimer);draftTimer=setTimeout(persist,250);};
 window.addEventListener('beforeunload',persist);
 $('lesson').onclick=e=>{
-  const b=e.target.closest('button');if(!b || !(b.dataset.workspace || b.dataset.code || b.dataset.setup))return;
+  const b=e.target.closest('button');if(!b || !(b.dataset.workspace || b.dataset.code || b.dataset.setup || b.dataset.setupAnswers))return;
   ensureWorkspaceVisible();
   setWorkspaceMode(false);
   if(b.dataset.workspace)selectWork(b.dataset.workspace);
   if(b.dataset.code)selectWork(b.dataset.code);
   if(b.dataset.setup){const index=lesson.codes.findIndex(c=>c.id===b.dataset.setup);const code=lesson.codes.slice(0,index+1).filter(c=>!c.solution&&c.runnable).map(c=>c.code).join('\n\n');selectWork('setup-'+b.dataset.setup,code);}
+  if(b.dataset.setupAnswers){const index=lesson.codes.findIndex(c=>c.id===b.dataset.setupAnswers);const code=lesson.codes.slice(0,index+1).filter(c=>c.runnable).map(c=>c.code).join('\n\n');selectWork('setup-answers-'+b.dataset.setupAnswers,'# Includes earlier practice answers; review before running.\n\n'+code);}
   if(window.innerWidth<1050)$('code').scrollIntoView({block:'center'});
 };
 $('workspace-select').onchange=e=>selectWork(e.target.value);
@@ -416,7 +475,7 @@ $('help-button').onclick=()=>$('help').showModal();
 $('clear-output').onclick=()=>$('output').replaceChildren();
 $('download-code').onclick=()=>download(active+'.py',$('code').value);
 $('export-work').onclick=()=>{persist();download('eage-participant-work.json',JSON.stringify({format:STORAGE,course:course.source_digest,drafts:saved},null,2),'application/json');};
-$('import-work').onchange=async e=>{try{const data=JSON.parse(await e.target.files[0].text());if(data.format!==STORAGE||!data.drafts)throw Error('Not a sandbox work export');for(const [k,v] of Object.entries(data.drafts)){if(!k.includes('::')||typeof v.code!=='string'||typeof v.notes!=='string')throw Error('Invalid draft');}if(confirm('Import these drafts? Matching saved drafts will be replaced.')){persist();Object.assign(saved,data.drafts);localStorage.setItem(STORAGE,JSON.stringify(saved));const d=saved[key()];if(d){$('code').value=d.code;$('notes').value=d.notes;$('stdin').value=d.stdin||'';}selectWork(active);}}catch(err){appendText('Import failed: '+err.message,'error');}e.target.value='';};
+$('import-work').onchange=async e=>{try{const data=JSON.parse(await e.target.files[0].text());if(data.format!==STORAGE||!data.drafts)throw Error('Not a sandbox work export');for(const [k,v] of Object.entries(data.drafts)){if(!k.includes('::')||typeof v.code!=='string'||typeof v.notes!=='string')throw Error('Invalid draft');}const importedKeys=Object.keys(data.drafts);const existingKeys=new Set([...Object.keys(saved),key()]);const replacements=importedKeys.filter(k=>existingKeys.has(k));const versionNote=typeof data.course!=='string'||!data.course?'Course version is missing from this export.':data.course!==course.source_digest?'This export was created from a different course version.':'Course version matches this course.';const visibleKeys=replacements.slice(0,20);const more=replacements.length>visibleKeys.length?`\n…and ${replacements.length-visibleKeys.length} more.`:'';const message=`Import ${importedKeys.length} draft(s)?\n${versionNote}\n${replacements.length} existing draft(s) will be replaced${visibleKeys.length?':\n'+visibleKeys.join('\n')+more:'.'}`;if(confirm(message)){const current={code:$('code').value,notes:$('notes').value,stdin:$('stdin').value,title:$('workspace-title').textContent};const candidate={...saved,[key()]:current,...data.drafts};localStorage.setItem(STORAGE,JSON.stringify(candidate));saved=candidate;const d=saved[key()];if(d){$('code').value=d.code;$('notes').value=d.notes;$('stdin').value=d.stdin||'';}selectWork(active);}}catch(err){const recovery=err.name==='QuotaExceededError'?' Export your current work before freeing browser storage, then retry the import.':'';appendText('Import failed: '+err.message+recovery,'error');}e.target.value='';};
 $('upload').onchange=async e=>{if(busy){appendText('Stop or finish the run before uploading.','error');return;}if(!worker)createWorker();for(const file of e.target.files){const bytes=await file.arrayBuffer();worker.postMessage({type:'upload',name:file.name,bytes},[bytes]);}e.target.value='';};
 $('download-file').onclick=()=>{if(!worker || busy){appendText('Run Python first and wait for it to finish.','error');return;}worker.postMessage({type:'download',path:$('download-path').value});};
 
@@ -448,6 +507,8 @@ applyLayout();
 setWorkspaceMode(true);
 window.addEventListener('hashchange',()=>route());
 try{if(window.refreshCourseSession)await window.refreshCourseSession();const response=await fetch('generated/course.json',{cache:'no-store'});if(!response.ok)throw Error('Course content could not be loaded. If using the private course, sign in again; for local use, run ./start_sandbox.sh.');course=await response.json();$('book-link').href=course.book_url;await route();}catch(e){$('lesson').textContent=e.message;status('Course loading failed', 'offline');}
+initialLessonReady = true;
+if ($('workspace-mode-notebook').getAttribute('aria-pressed') === 'true') setWorkspaceMode(true);
 
 // Confirm before leaving the course for the main menu.
 $('home-menu').addEventListener('click', () => {

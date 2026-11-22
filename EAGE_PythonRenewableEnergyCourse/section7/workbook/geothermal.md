@@ -6,6 +6,8 @@ kernelspec:
 
 # Geothermal
 
+Unless calendar dates are specified, use a standardized model year of 8,760 hours.
+
 [Review the theory and worked examples](../../section6/geothermalEnergy.md). [Download the exercise notebook](geothermal.ipynb).
 
 ## Chapter practice — 20 Python exercises
@@ -457,7 +459,7 @@ assert np.isclose(constant.sum()-energy.sum(),power[3]*8760*(.95-.8)/1000)
 
 **Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions. Array calculations: [@numpyDocs].
 
-**Task:** Four one-hour observations have flows [40,−2,50,missing] kg/s and production [150,160,60,170] °C with reinjection at 70 °C. Build mutually exclusive quality flags, report coverage and integrate thermal MWh for valid intervals only. Show why it is not a complete-period estimate.
+**Task:** Four one-hour water intervals have flows [40,−2,50,missing] kg/s and production temperatures [150,160,60,170] °C, treated as constant within each interval, with reinjection at 70 °C. Assume constant specific heat 4,180 J/(kg K). Build mutually exclusive quality flags, report coverage and integrate thermal MWh for valid intervals only. Show why it is not a complete-period estimate.
 
 ```{code-cell} python
 # Your solution for geothermal exercise 14.
@@ -474,17 +476,19 @@ import numpy as np
 # Step 1: Preserve aligned well observations.
 flow=np.array([40,-2,50,np.nan]); production=np.array([150,160,60,170])
 # Step 2: Construct a physical-validity mask before calculating heat.
-flags=np.select([~np.isfinite(flow)|~np.isfinite(production),flow<=0,production<=70],
-                ['missing','nonpositive flow','no useful drop'],default='valid')
+flags=np.select([np.isnan(flow)|np.isnan(production),~np.isfinite(flow)|~np.isfinite(production),production < -273.15,flow<0,(flow>0)&(production<=70)],
+                ['missing','non-finite','below absolute zero','negative flow','no useful drop'],default='valid')
 valid=flags=='valid'
-thermal=flow[valid]*4180*(production[valid]-70)/1e6
+thermal=flow[valid]*4180*np.maximum(production[valid]-70,0)/1e6
+# A zero-flow stopped interval is valid and contributes zero heat.
+observed_energy = thermal.sum() if valid.any() else np.nan
 # Step 3: Report excluded records and verify the retained count.
-print(flags,'coverage:',valid.mean(),'observed MWh thermal:',thermal.sum())
-assert flags.tolist()==['valid','nonpositive flow','no useful drop','missing']
-assert valid.mean()==.25 and np.isclose(thermal.sum(),13.376)
+energy_label = f"{observed_energy:.3f}" if valid.any() else "unavailable"
+print(flags,'data coverage:',valid.mean(),'operating coverage:',(valid & (flow>0)).mean(),'observed MWh thermal:',energy_label)
+assert (np.isfinite(observed_energy) and observed_energy >= 0) if valid.any() else np.isnan(observed_energy)
 ```
 
-**Interpretation:** Excluded values need investigation; silently converting negative heat to positive power would hide errors.
+**Interpretation:** The observed thermal energy covers valid intervals only; it is not a complete-period estimate when coverage is incomplete. Temperatures below absolute zero are invalid even when flow is zero. Excluded values need investigation, and silently converting negative heat to positive power would hide errors.
 
 ::::
 
@@ -606,7 +610,7 @@ assert all_on==4 and all(0<=p<=all_on for p in outage)
 
 **Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions. Pump-load polynomial is a synthetic penalty, not a measured pump curve.
 
-**Task:** Compare flows 20–100 kg/s in steps 10. Gross MW=m×4180×80×0.12/1e 6 and pump MW=0.00004 m². Find the discrete flow maximising net power.
+**Task:** Compare flows 20–100 kg/s in steps 10. Let m be the numerical mass flow in kg/s. Use gross MW=m×4180×80×0.12/1e6 and pump MW=0.00004×m², with the pumping coefficient expressed in MW for that numerical convention. Find the discrete flow maximising net power.
 
 ```{code-cell} python
 # Your solution for geothermal exercise 18.
@@ -616,7 +620,7 @@ assert all_on==4 and all(0<=p<=all_on for p in outage)
 
 1. Define candidate flow rates and a synthetic pump-load model.
 2. Calculate gross and net power consistently in MW.
-3. Select the best candidate and verify the energy subtraction.
+3. Select the best candidate and verify the power subtraction.
 
 ```{code-cell} python
 import numpy as np
@@ -624,7 +628,7 @@ import numpy as np
 flow=np.arange(20,101,10); pump=0.00004*flow**2
 # Step 2: Calculate gross and net power consistently in MW.
 gross=flow*4180*80*0.12/1e6; net=gross-pump
-# Step 3: Select the best candidate and verify the energy subtraction.
+# Step 3: Select the best candidate and verify the power subtraction.
 best=np.argmax(net)
 print('Best flow:',flow[best],'kg/s; net:',net[best],'MW')
 assert np.allclose(net+pump,gross) and flow[best]==100

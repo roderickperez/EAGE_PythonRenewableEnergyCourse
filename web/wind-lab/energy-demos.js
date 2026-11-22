@@ -67,7 +67,7 @@ export const energyDemos = {
   losses: {
     title: 'Annual losses and P90 uncertainty',
     plot: 'Illustrative distribution of net annual energy',
-    caption: 'The P90 marker is the 10th percentile on the energy axis. In this model, 90% of annual outcomes are above that value.',
+    caption: 'P90 is the 10th percentile on the energy axis. For a continuous distribution, 90% of outcomes exceed it; at zero uncertainty all outcomes equal P90.',
     note: 'Availability and loss factors are teaching assumptions. The example then applies a symmetric normal uncertainty model to net annual energy. It requires site evidence before use in project estimates.',
     legend: [[c.wind, 'Illustrative distribution'], [c.rotor, 'P50'], [c.electrical, 'P90']],
     controls: [['gross', 'Gross annual energy', 2, 30, .1, 12, 'GWh'],

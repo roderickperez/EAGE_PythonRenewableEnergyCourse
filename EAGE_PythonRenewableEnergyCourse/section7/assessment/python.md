@@ -36,8 +36,8 @@ Explain why duplicate timestamps and mixed time zones can invalidate a join of h
 
 ### Question 09 <span class="difficulty-badge difficulty-hard">Hard</span>
 
-Using Python, align hourly generation and demand by timestamp using an outer join, preserve missing values, and report unmatched timestamps. Describe how you would validate energy totals.
+Using Python, align hourly generation and demand by timestamp using an outer join, preserve missing values, and report unmatched timestamps. Reject or separately report rows with missing timestamps before joining: pandas can match null join keys to one another even though their times are unknown. Check timestamp uniqueness in each input and validate a one-to-one join so duplicate keys cannot silently multiply rows. Describe how you would validate energy totals.
 
 ### Question 10 <span class="difficulty-badge difficulty-hard">Hard</span>
 
-Design and implement a testable function that calculates energy from interval-average power and unequal durations, rejects invalid inputs, and returns both total MWh and coverage. State your missing-data policy and test boundary cases.
+Design and implement a testable function that calculates observed energy from interval-average power and unequal durations, rejects invalid inputs, and returns MWh and duration coverage. Define coverage as valid observed duration divided by total expected duration: a missing power reading contributes to expected duration but not observed energy. Report observed energy as unavailable if every power reading is missing. Test boundary cases and the fixture `[2, None, 0]` MW with durations `[1, 2, 1]` hours; state your input-validation policy.

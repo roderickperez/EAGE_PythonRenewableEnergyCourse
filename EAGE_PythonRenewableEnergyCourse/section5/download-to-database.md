@@ -52,7 +52,7 @@ These steps follow the [Eurostat download guide](https://ec.europa.eu/eurostat/w
 
 - **Sandbox:** choose **Edit this code**, then **Run Python**. Internet access is needed for live mode; the Eurostat API supports browser CORS.
 - **Jupyter/Colab:** install pandas if needed, then run the code cells in order. Top-level `await` is supported by these notebook environments.
-- **Offline practice:** set `USE_LIVE = False`. Use the bundled snapshot; the output records that it is a snapshot, never a new live retrieval.
+- **Offline practice:** set `USE_LIVE = False`. Use the bundled snapshot; the output records that it is a snapshot, never a new live retrieval. Its bytes must match the SHA-256 in the accompanying provenance file. For a detached notebook or Colab, download both `eurostat_at_wind_2023.json` and `eurostat_at_wind_2023.provenance.json` from the Offline inputs links below, create `data/examples` in the kernel’s current working directory, and place both files there before running the cells.
 - **Terminal alternative:** from the repository root run `python tools/download_energy_data.py`. This saves the raw response, CSV and provenance under `outputs/` without replacing the bundled teaching snapshot. The command uses only the standard library.
 
 Sources for the interfaces: [Eurostat CORS/API](https://ec.europa.eu/eurostat/web/user-guides/data-browser/api-data-access/api-getting-started), [Pyodide HTTP](https://pyodide.org/en/stable/usage/api/python-api/http.html), [IPython autoawait](https://ipython.readthedocs.io/en/stable/interactive/autoawait.html), [urllib.request](https://docs.python.org/3/library/urllib.request.html).
@@ -71,7 +71,8 @@ This is an original implementation of the documented formats and APIs: [JSON-sta
 
 ```python
 # Step 1: Explicit request parameters and output folder.
-import sys, json, math, hashlib, itertools, sqlite3
+download_completed = False  # invalidate the prior run before any new work
+import sys, json, math, hashlib, itertools, sqlite3, uuid
 from pathlib import Path
 from datetime import datetime, timezone
 from urllib.parse import urlencode
@@ -84,10 +85,13 @@ SOURCE = "RA300"  # wind; RA420 = photovoltaic generation
 params = dict(lang="en", freq="M", geo=GEO, siec=SOURCE, unit="GWH",
               sinceTimePeriod=f"{YEAR}-01", untilTimePeriod=f"{YEAR}-12")
 url = "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nrg_cb_pem?" + urlencode(params)
-output = Path("outputs") / f"eurostat_{GEO}_{SOURCE}_{YEAR}"
-output.mkdir(parents=True, exist_ok=True)
+output_root = Path("outputs")
+folder_name = f"eurostat_{GEO}_{SOURCE}_{YEAR}_{uuid.uuid4().hex}"
+output = output_root / (folder_name + ".incomplete")
+output.mkdir(parents=True, exist_ok=False)
 
 # Step 2: Read bytes, then parse JSON. Never silently replace a failed live request.
+download_completed = False
 if USE_LIVE:
     if sys.platform == "emscripten":
         from pyodide.http import pyfetch
@@ -108,12 +112,19 @@ else:
     snapshot = next((p/"data/examples/eurostat_at_wind_2023.json" for p in candidates
                      if (p/"data/examples/eurostat_at_wind_2023.json").exists()), None)
     if snapshot is None:
-        raise FileNotFoundError("Place the supplied snapshot under data/examples, or use live mode")
+        raise FileNotFoundError("Place eurostat_at_wind_2023.json and eurostat_at_wind_2023.provenance.json under data/examples in the current working directory, or use live mode")
     raw = snapshot.read_bytes()
-    retrieved = json.loads(snapshot.with_suffix(".provenance.json").read_text())["retrieved_utc"]
+    provenance_path = snapshot.with_suffix(".provenance.json")
+    if not provenance_path.is_file():
+        raise FileNotFoundError(f"Place eurostat_at_wind_2023.provenance.json beside the snapshot at {snapshot.parent}, or use live mode")
+    snapshot_record = json.loads(provenance_path.read_text())
+    if snapshot_record.get("sha256") != hashlib.sha256(raw).hexdigest():
+        raise ValueError("Offline snapshot does not match its provenance hash; restore both supplied files")
+    retrieved = snapshot_record["retrieved_utc"]
 payload = json.loads(raw)
 
 # Step 3: Decode JSON-stat dimension indices and sparse values.
+download_completed = False
 def decode_series(payload):
     """Decode JSON-stat positional values without assuming time is the last axis."""
     if payload.get("class") != "dataset" or "error" in payload:
@@ -122,16 +133,48 @@ def decode_series(payload):
     required = {"freq", "siec", "unit", "geo", "time"}
     if len(ids) != len(required) or len(ids) != len(sizes) or set(ids) != required:
         raise ValueError(f"Unexpected dimensions: {ids}")
+    if any(type(size) not in (int, float) or not math.isfinite(size) or size < 0 or int(size) != size for size in sizes):
+        raise ValueError("Dimension sizes must be non-negative integers")
+    sizes = [int(size) for size in sizes]
     axes = []
     for name, size in zip(ids, sizes):
-        index = payload["dimension"][name]["category"]["index"]
-        if isinstance(index, dict) and sorted(index.values()) != list(range(size)):
+        category = payload["dimension"][name]["category"]
+        index = category.get("index")
+        if index is None:
+            labels = category.get("label", {})
+            if size != 1 or len(labels) != 1:
+                raise ValueError(f"Missing category index: {name}")
+            index = list(labels)
+        if not isinstance(index, (dict, list)):
+            raise ValueError(f"Invalid category index: {name}")
+        if isinstance(index, dict) and (any(type(position) not in (int, float) or not math.isfinite(position)
+                                            or int(position) != position for position in index.values())
+                                        or sorted(index.values()) != list(range(size))):
             raise ValueError(f"Invalid category positions: {name}")
+        if isinstance(index, list) and (any(not isinstance(label, str) for label in index)
+                                        or len(set(index)) != len(index)):
+            raise ValueError(f"Invalid category labels: {name}")
         labels = index if isinstance(index, list) else [k for k, _ in sorted(index.items(), key=lambda x: x[1])]
         if len(labels) != size:
             raise ValueError(f"Dimension length mismatch: {name}")
         axes.append(labels)
+    total_positions = math.prod(sizes)
+    for field in ("value", "status"):
+        container = payload.get(field, {})
+        if isinstance(container, list):
+            if len(container) != total_positions:
+                raise ValueError(f"Dense {field} length does not match dimensions")
+        elif field == "status" and isinstance(container, str):
+            pass  # A dataset-wide status applies to every observation.
+        elif isinstance(container, dict):
+            if any(not isinstance(k, str) or not k.isascii() or not k.isdecimal()
+                   or str(int(k)) != k or int(k) >= total_positions for k in container):
+                raise ValueError(f"Invalid sparse {field} position")
+        else:
+            raise ValueError(f"Invalid {field} container")
     def get_at(container, i, default=None):
+        if isinstance(container, str):
+            return container
         return container.get(str(i), default) if isinstance(container, dict) else (container[i] if i < len(container) else default)
     rows = []
     for i, labels in enumerate(itertools.product(*axes)):
@@ -139,9 +182,12 @@ def decode_series(payload):
         value = get_at(payload.get("value", {}), i)
         if value is not None and (isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value)):
             raise ValueError("Non-finite or non-numeric generation")
+        status = get_at(payload.get("status", {}), i, "")
+        if status is not None and not isinstance(status, str):
+            raise ValueError("Observation status must be text or null")
         rows.append({"geo": row["geo"], "source": row["siec"], "month": row["time"],
             "unit": row["unit"], "freq": row["freq"], "generation_gwh": value,
-            "status_flag": get_at(payload.get("status", {}), i, "") or ""})
+            "status_flag": status or ""})
     if any(r["unit"] != "GWH" or r["freq"] != "M" for r in rows):
         raise ValueError("Expected monthly GWh")
     keys = [(r["geo"], r["source"], r["month"]) for r in rows]
@@ -153,13 +199,21 @@ frame = pd.DataFrame(decode_series(payload))
 if frame.empty:
     raise ValueError("No rows returned for this selection. Check country/product/year or use the global lesson.")
 
-# Step 4: Validate the requested slice and coverage.
-assert len(frame) == 12
-assert set(frame.month) == {f"{YEAR}-{m:02}" for m in range(1, 13)}
-assert frame.geo.eq(GEO).all() and frame.source.eq(SOURCE).all()
-assert frame.unit.eq("GWH").all() and frame.freq.eq("M").all()
-assert not frame.duplicated(["geo", "source", "month"]).any()
+# Step 4: Validate the requested slice and make absent months visible.
+download_completed = False
+expected_months = [f"{YEAR}-{m:02}" for m in range(1, 13)]
+if (not frame.geo.eq(GEO).all() or not frame.source.eq(SOURCE).all()
+        or not frame.unit.eq("GWH").all() or not frame.freq.eq("M").all()
+        or frame.duplicated(["geo", "source", "month"]).any()
+        or not set(frame.month).issubset(expected_months)):
+    raise ValueError("Response does not match the requested unique monthly slice")
+returned_months = sorted(frame.month.tolist())
+frame = frame.set_index("month").reindex(expected_months).rename_axis("month").reset_index()
+for column, value in [("geo", GEO), ("source", SOURCE), ("unit", "GWH"), ("freq", "M")]:
+    frame[column] = frame[column].fillna(value)
+frame["status_flag"] = frame.status_flag.fillna("")
 observed = frame.generation_gwh.notna().sum()
+print(f"Provider returned {len(returned_months)}/12 month categories; absent categories remain missing")
 print(payload["label"])
 print(f"Country: {payload['dimension']['geo']['category']['label'][GEO]} ({GEO})")
 print(payload["dimension"]["siec"]["category"]["label"][SOURCE])
@@ -167,15 +221,21 @@ print(frame.to_string(index=False))
 print(f"Coverage: {observed}/12 monthly observations; missing values stay missing")
 
 # Step 5: Persist both the provider response and the normalized data.
+download_completed = False
+if not output.name.endswith(".incomplete"):
+    raise RuntimeError("Start a new run at Step 1 before writing another export")
 (output/"raw.json").write_bytes(raw)
 frame.to_csv(output/"generation.csv", index=False)
 provenance = dict(provider="Eurostat", dataset="nrg_cb_pem", url=url,
     mode="live" if USE_LIVE else "bundled snapshot", retrieved_utc=retrieved,
     provider_updated=payload.get("updated"), sha256=hashlib.sha256(raw).hexdigest(),
-    unit="GWH", grain="country-source-month", status_labels=payload.get("extension", {}).get("status", {}))
+    unit="GWH", grain="country-source-month", returned_months=returned_months, status_labels=payload.get("extension", {}).get("status", {}))
 (output/"provenance.json").write_text(json.dumps(provenance, indent=2), encoding="utf-8")
 
 # Step 6: Create this tutorial's own database and enforce its keys.
+download_completed = False
+if not output.name.endswith(".incomplete"):
+    raise RuntimeError("Start a new run at Step 1 before writing another export")
 connection = sqlite3.connect(output/"generation.sqlite")
 try:
     connection.execute("PRAGMA foreign_keys = ON")
@@ -196,18 +256,31 @@ try:
     connection.executemany("INSERT INTO generation VALUES (?, ?, ?, ?, ?)", rows)
     connection.commit()
 
-    # Step 7: Reconcile independent aggregations and integrity checks.
+    # Step 7: Reconcile aggregations using 1e-9 GWh absolute tolerance for near-zero rounding, and check integrity.
     total, count = connection.execute(
         "SELECT SUM(generation_gwh), COUNT(generation_gwh) FROM generation WHERE geo=? AND source=?",
         (GEO, SOURCE)).fetchone()
     expected = frame.generation_gwh.sum(min_count=1)
-    assert count == observed
-    assert (total is None and pd.isna(expected)) or math.isclose(total, expected, rel_tol=1e-12)
-    assert connection.execute("PRAGMA integrity_check").fetchone()[0] == "ok"
-    assert connection.execute("PRAGMA foreign_key_check").fetchall() == []
+    if count != observed or not ((total is None and pd.isna(expected)) or
+                                 (total is not None and math.isclose(total, expected, rel_tol=1e-12, abs_tol=1e-9))):
+        raise ValueError("SQL and pandas coverage or totals disagree")
+    if connection.execute("PRAGMA integrity_check").fetchone()[0] != "ok":
+        raise ValueError("SQLite integrity check failed")
+    if connection.execute("PRAGMA foreign_key_check").fetchall():
+        raise ValueError("SQLite foreign-key check failed")
     print("SQL/pandas observed total:", total, "GWh; reported months:", count)
+    returned = frame.loc[frame.month.isin(returned_months)]
+    flag_counts = returned.status_flag.astype(str).str.strip().replace("", "unflagged").value_counts()
+    print("Status flags for returned month categories (including unflagged):", flag_counts.to_dict())
+    print("Absent month categories have no provider status:", len(frame) - len(returned))
+    print("Totals reflect reported precision; flagged or unflagged records do not establish complete generation coverage.")
 finally:
     connection.close()
+# Publish only a fully written and reconciled set; preserve earlier runs.
+completed_output = output_root / folder_name
+output.rename(completed_output)
+output = completed_output
+download_completed = True
 print("Saved files in:", output.resolve())
 print("CSV path:", (output/"generation.csv").resolve())
 
@@ -215,16 +288,27 @@ print("CSV path:", (output/"generation.csv").resolve())
 
 ## 4. Read the saved CSV again
 
-The normalized CSV columns are `geo, source, month, unit, freq, generation_gwh, status_flag`. The bundled checked snapshot contains twelve reported months and totals **7971.360 GWh**. Live provider revisions may change values; validate the current metadata and reconcile totals rather than hard-coding that total as a permanent truth. January's bundled value is 836.110 GWh. The original bytes and retrieval record are linked below.
+The normalized CSV columns are `geo, source, month, unit, freq, generation_gwh, status_flag`. Run this cell only after the working example completes successfully; after an error, rerun the entire example and check the printed folder and provenance. A syntax error can prevent even the completion flag from resetting. Absent month categories have empty status fields in the CSV; use `returned_months` in the accompanying provenance to distinguish them from returned categories with no flag. The bundled checked snapshot contains twelve reported months and totals **7971.360 GWh**. Live provider revisions may change values; validate the current metadata and reconcile totals rather than hard-coding that total as a permanent truth. January's bundled value is 836.110 GWh. The original bytes and retrieval record are linked below.
 
 ```python
-# Run after the working example; or replace with your downloaded/uploaded CSV path.
+# For a separate downloaded/uploaded CSV, remove this guard and set its explicit path.
+# Set GEO, SOURCE and YEAR to match that file before validating it.
+if not globals().get("download_completed", False):
+    raise RuntimeError("The working example did not complete; rerun it before reading its CSV")
 csv_path = output / "generation.csv"
 check = pd.read_csv(csv_path, dtype={"geo": str, "source": str, "month": str},
                     keep_default_na=False, na_values={"generation_gwh": [""]})
-assert len(check) == 12
-assert check.unit.eq("GWH").all()
-assert not check.duplicated(["geo", "source", "month"]).any()
+required_columns = {"geo", "source", "month", "unit", "freq", "generation_gwh", "status_flag"}
+if not required_columns.issubset(check.columns):
+    raise ValueError("CSV is missing required columns; inspect the file")
+if (len(check) != 12 or not check.geo.eq(GEO).all() or not check.source.eq(SOURCE).all()
+        or not check.unit.eq("GWH").all() or not check.freq.eq("M").all()
+        or check.duplicated(["geo", "source", "month"]).any()
+        or set(check.month) != {f"{YEAR}-{m:02}" for m in range(1, 13)}):
+    raise ValueError("CSV does not match the requested unique monthly slice")
+check["generation_gwh"] = pd.to_numeric(check["generation_gwh"], errors="raise")
+if not check.generation_gwh.dropna().map(math.isfinite).all():
+    raise ValueError("CSV generation values must be finite or missing")
 print(check.head(3).to_string(index=False))
 print("CSV observed sum:", check.generation_gwh.sum(min_count=1), "GWh")
 ```
@@ -261,11 +345,17 @@ Run the exact request above. List the dataset code, country, source, frequency, 
 
 ### Exercise 2 — Medium: choose another country
 
-Choose **any reporting European country** from the dataset selector (for example Germany `DE`, Spain `ES` or Norway `NO`). Set `USE_LIVE=True` and change only `GEO`, keeping source/year/unit fixed. Rerun the complete example; it creates a different output folder. Download its CSV and provenance file. Check the returned country label, month coverage, flags and CSV. If observations are missing, report the partial sum and count. Do not reuse Austria's snapshot or expected total. Compare with Austria only after checking both selections have comparable coverage.
+Choose **any reporting European country** from the dataset selector (for example Germany `DE`, Spain `ES` or Norway `NO`). Set `USE_LIVE=True` and change only `GEO`, keeping source/year/unit fixed. Rerun the complete example; each successful run creates a new output folder; folders ending in `.incomplete` are failed attempts and must not be used. Download its CSV and provenance file. Check the returned country label, month coverage, flags and CSV. If observations are missing, report the partial sum and count. Do not reuse Austria's snapshot or expected total. Compare with Austria only after checking both selections have comparable coverage.
 
 ### Exercise 3 — Medium: compare two sources without double-counting
 
 Keep your selected `GEO` from Exercise 2 and use live mode. Download wind with `SOURCE="RA300"`, then photovoltaic generation with `SOURCE="RA420"`. (`RA410` means solar thermal, a different technology.) Check the source label in the provider response. Download separately, validate both files, then join by country and month with a one-to-one check. Explain why a wind-plus-PV sum is not total renewable generation. [Eurostat energy metadata](https://ec.europa.eu/eurostat/web/energy/methodology)
+
+**Coverage and precision:** Twelve non-null monthly records establish reported-row coverage, not coverage of every generator. In a 19 November 2026 check, Austria and Norway had twelve zero monthly PV values for 2023 while separate annual gross PV series were positive. Gross and net series, revisions and reporting boundaries differ, so this comparison identifies a discrepancy to investigate, not a correction to either dataset. Examine status flags and metadata; a zero with the `n` flag means below the displayed precision, while an unflagged zero alone does not prove complete coverage. Report your sum at the supplied precision and record the retrieval date. [Eurostat symbol guidance](https://ec.europa.eu/eurostat/statistics-explained/SEPDF/cache/5267.pdf).
+
+For a cross-check, inspect [Eurostat's annual electricity production dataset](https://ec.europa.eu/eurostat/databrowser/view/nrg_bal_peh/default/table?lang=en), select gross electricity production and solar photovoltaic, and compare the country and year while recording the different gross/net boundary. The [IEA's September 2026 monthly electricity documentation, Austria country note](https://www.iea.org/files/871a6316-8470-4f6f-840e-f004cbd953fd/Monthly_electricity_statistics_Documentation_Sep_2026.pdf#page=17) reports a separate Austrian monthly solar and geothermal reporting limitation and describes how the IEA estimates those values. That note does not establish why Eurostat's monthly values are zero or explain Norway's reporting; investigate each country separately. Do not replace the provider's values with estimates without documenting your method.
+
+To reproduce the 2023 annual gross PV lookup, open the Eurostat API response for [Austria](https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nrg_bal_peh?lang=en&freq=A&nrg_bal=GEP&siec=RA420&unit=GWH&geo=AT&time=2023) or [Norway](https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nrg_bal_peh?lang=en&freq=A&nrg_bal=GEP&siec=RA420&unit=GWH&geo=NO&time=2023). These links return JSON-stat data, and the provider may revise its values.
 
 ### Exercise 4 — Challenge: missing data and revisions
 

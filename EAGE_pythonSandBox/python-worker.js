@@ -34,7 +34,10 @@ async function boot(message){
   py.FS.symlink('/course','/course/EAGE_PythonRenewableEnergyCourse');
   await fetchAsset(assets.find(a=>a.path==='myst.yml'));
   await setContext(message.path);
-  await py.runPythonAsync("import os, builtins\nos.environ['MPLBACKEND']='Agg'");
+  const inspectorResponse = await fetch(new URL('source_inspection.py?v=20261120', self.location.href));
+  if (!inspectorResponse.ok) throw Error('Cannot load Python source inspection helper');
+  py.FS.writeFile('/course/source_inspection.py', await inspectorResponse.text());
+  await py.runPythonAsync("import os, builtins, sys\nos.environ['MPLBACKEND']='Agg'\nsys.path.insert(0, '/course')\nimport source_inspection");
   send('ready');
 }
 const DISPLAY_SETUP = `
@@ -72,7 +75,14 @@ async function run(message){
     outputCharacters=0;
     if(message.fresh)context='';
     await setContext(message.path);
-    if(/^\s*[%!]/m.test(message.code))throw Error('This cell contains Jupyter magic or a terminal command. Use the book’s local/Colab environment, or remove the installation line before running ordinary Python here.');
+    py.globals.set('_sandbox_source_for_inspection', message.code);
+    let inspection;
+    try {
+      inspection = JSON.parse(py.runPython("__import__('json').dumps(source_inspection.inspect_source(_sandbox_source_for_inspection))"));
+    } finally {
+      py.globals.delete('_sandbox_source_for_inspection');
+    }
+    if(inspection.magic)throw Error('This cell contains Jupyter magic or a terminal command. Use the book’s local/Colab environment, or remove the installation line before running ordinary Python here.');
     send('status',{text:'Loading course data…'});
     // Small public teaching datasets; lazy-load larger spreadsheets only when the
     // relevant lesson needs them. No instructor directory is in this manifest.
@@ -88,13 +98,13 @@ async function run(message){
     if(/xarray|to_netcdf|open_dataset/.test(source))await py.loadPackage('scipy');
     // A few pure-Python packages are outside the core distribution.
     const extras=[['plotly','plotly==6.3.0'],['folium','folium==0.20.0'],['openpyxl','openpyxl==3.1.5'],['seaborn','seaborn==0.13.2']];
-    for(const [module,spec] of extras)if(new RegExp('(?:import|from)\\s+'+module+'\\b').test(source) || (module==='openpyxl' && /read_excel|ExcelFile/.test(source))){
+    for(const [module,spec] of extras)if(inspection.imports.includes(module) || (module==='openpyxl' && /read_excel|ExcelFile/.test(source))){
       await py.loadPackage('micropip');const pip=py.pyimport('micropip');try{await pip.install(spec);}finally{pip.destroy();}
     }
-    if(/matplotlib|seaborn/.test(source)){
+    if(inspection.imports.includes('matplotlib') || inspection.imports.includes('seaborn')){
       await py.loadPackage('matplotlib');await py.runPythonAsync("import matplotlib\nmatplotlib.use('Agg')\nimport matplotlib.pyplot");
     }
-    if(/plotly/.test(source))await py.runPythonAsync('import plotly.io');
+    if(inspection.imports.includes('plotly'))await py.runPythonAsync('import plotly.io');
     await py.runPythonAsync(DISPLAY_SETUP,{globals});
     const inputs=message.stdin.split('\n');let at=0;
     py.setStdin({stdin:()=>at<inputs.length?inputs[at++]:null});

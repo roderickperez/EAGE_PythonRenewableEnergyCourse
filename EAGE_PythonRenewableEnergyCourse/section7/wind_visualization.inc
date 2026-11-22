@@ -1,9 +1,11 @@
 
 ## Python Visualization: Wind Direction
 
-These original examples use **synthetic data** and are inspired by the saved videos [How to make a wind rose with Python](https://youtu.be/UdMCWf6WuK4), [How to make a wind rose plot with Python](https://youtu.be/g-MmDTbx8kI), and [Overlay Wind Barbs and Wind Vectors on a Map](https://youtu.be/1Nr9KW89lCc). They illustrate the topics rather than reproduce the videos' code or data. The wind-rose examples use NumPy and Matplotlib and can run in this course's browser workspace. The map example requires local Cartopy, as explained below.
+These original examples use **synthetic data** and are inspired by the saved videos [How to make a wind rose with Python](https://youtu.be/UdMCWf6WuK4), [How to make a wind rose plot with Python](https://youtu.be/g-MmDTbx8kI), and [Overlay Wind Barbs and Wind Vectors on a Map](https://youtu.be/1Nr9KW89lCc). They illustrate the topics rather than reproduce the videos' code or data. The wind-rose examples use NumPy and Matplotlib and can run in this course's browser workspace. The map example also uses Cartopy, which is available in the tested browser runtime; package or map asset availability may change.
 
 **Direction convention:** meteorological direction is the direction the wind comes **from**, clockwise from north: N = 0°, E = 90°, S = 180°, W = 270°. Arrows in a vector map instead point **toward** the direction of airflow. Exclude or separately report calm winds, for which direction is undefined. [ECMWF wind conventions](https://confluence.ecmwf.int/pages/viewpage.action?pageId=212441203).
+
+When transferring formulas between NumPy and a spreadsheet, check `atan2` argument order and test cardinal directions. Excel takes x before y; NumPy takes y before x. The current ECMWF page checked on 19 November 2026 differed from the linked 2021 spreadsheet expression, so verify the target formula rather than copying it untested.
 
 ### 1. A simple frequency wind rose
 
@@ -35,7 +37,7 @@ plt.show()
 
 ### 2. Wind rose with speed categories
 
-Stack speed ranges within each directional sector. The example uses the same directions and eight measured speeds. Each colored segment is a percentage of **all valid observations**, so the heights of all segments together sum to 100%.
+Stack speed ranges within each directional sector. The example uses the same directions and eight synthetic speeds. Each colored segment is a percentage of **all valid observations**, so the heights of all segments together sum to 100%.
 
 ```{code-cell} python
 import numpy as np
@@ -72,9 +74,9 @@ plt.show()
 
 ### 3. Wind vectors and barbs on a map
 
-This local Python example plots a small **synthetic** Europe-region grid on Cartopy's bundled low-resolution background. `u` is eastward and `v` northward, in m/s. Arrows show where air is going; barbs use **knots** here (1 m/s ≈ 1.94384 knots). A full barb denotes 10 knots and a half barb 5 knots, rounded to the nearest 5 by the plotting convention. The background is a visual reference, not a site survey.
+This Python example plots a small **synthetic** Europe-region grid on Cartopy's bundled low-resolution background. `u` is eastward and `v` northward, in m/s. Arrows show where air is going; barbs use **knots** here (1 m/s ≈ 1.94384 knots). A full barb denotes 10 knots and a half barb 5 knots, rounded to the nearest 5 by the plotting convention. The background is a visual reference, not a site survey.
 
-In a local environment, install `numpy matplotlib cartopy`; Cartopy is not available in the course's browser Python workspace. The pre-rendered result below lets you inspect the output without installing it. Use `transform=ccrs.PlateCarree()` because the input positions are longitude and latitude. For real gridded data, check the coordinate system and whether vector components must be rotated into east/north.
+In a local environment, install `numpy matplotlib cartopy`. The tested browser workspace can load Cartopy; its availability and map assets depend on the runtime and network. The pre-rendered result below provides a reference. Use `transform=ccrs.PlateCarree()` because the input positions are longitude and latitude. For real gridded data, check the coordinate system and whether vector components must be rotated into east/north.
 
 ```{code-cell} python
 import numpy as np

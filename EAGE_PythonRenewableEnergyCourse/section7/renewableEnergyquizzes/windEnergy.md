@@ -6,9 +6,11 @@ kernelspec:
 
 # Wind Energy Quiz
 
-Complete these eight cumulative questions before opening the solutions.
+Complete these 20 cumulative questions before opening the solutions.
 
-**4 Easy · 8 Medium · 8 Hard.** Try each question before opening its solution. Where a prompt refers to an earlier answer, run that code first.
+**4 Easy · 8 Medium · 8 Hard.** Try each question before opening its solution. The code examples build on a shared Python session: run the preceding setup and solution code in order, or provide equivalent imports, data and functions yourself. In the sandbox, **Include preceding examples** does not run answers hidden in solution dropdowns.
+
+In the sandbox, after opening a code answer, **Include preceding practice answers** loads the earlier runnable examples and answers plus that answer into the editor. Review the code and select **Run Python**; loading it does not run it automatically.
 
 :::{admonition} Quiz 1 — Power concepts
 :class: note
@@ -76,6 +78,7 @@ There are 1,000 metres per kilometre and 3,600 seconds per hour.
 def kmh_to_ms(speed):
     return speed/3.6
 
+print('36 km/h:', kmh_to_ms(36), 'm/s')
 assert kmh_to_ms(36)==10
 ```
 :::
@@ -101,6 +104,7 @@ from math import pi,isclose
 def rpm_to_rad_s(rpm):
     return rpm*2*pi/60
 
+print('15 rpm:', rpm_to_rad_s(15), 'rad/s')
 assert isclose(rpm_to_rad_s(15),pi/2)
 ```
 :::
@@ -134,6 +138,7 @@ def turbine_power_mw(speed, rated_mw=4, cut_in=3, rated_speed=12, cut_out=25):
     power[(speed >= rated_speed) & (speed < cut_out)] = rated_mw
     return float(power) if power.ndim == 0 else power
 
+print('Boundary speeds 3, 12, 24.9 and 25 m/s: power (MW)', turbine_power_mw([3, 12, 24.9, 25]))
 assert turbine_power_mw(3) == 0
 assert turbine_power_mw(12) == 4
 assert turbine_power_mw(24.9) == 4
@@ -181,7 +186,7 @@ plt.tight_layout()
 
 **Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
-Wind speed is 6.5 m/s at 10 m. Estimate speed at 100 m for shear exponents 0.10, 0.14, and 0.25. Calculate air density at 90 kPa and 5 °C. Plot the vertical profiles.
+Wind speed is 6.5 m/s at 10 m. Estimate speed at 100 m for shear exponents 0.10, 0.14, and 0.25. Estimate air density at 90 kPa absolute station pressure and 5 °C using a dry ideal-air approximation. Plot the vertical profiles.
 
 :::
 
@@ -235,6 +240,7 @@ def swept_area(diameter):
         raise ValueError('Diameter must be positive')
     return pi*(diameter/2)**2
 
+print('Swept areas (m²):', swept_area(60), swept_area(90), '; ratio:', swept_area(90)/swept_area(60))
 assert isclose(swept_area(90)/swept_area(60),2.25)
 ```
 :::
@@ -263,6 +269,7 @@ def tip_ratio(rpm,radius,wind):
     return 2*pi*rpm/60*radius/wind
 
 ratios=[tip_ratio(9,45,v) for v in [6,9,12]]
+print('Tip-speed ratios:', ratios)
 assert ratios[0]>ratios[1]>ratios[2] and abs(ratios[1]-1.5*pi)<1e-9
 ```
 :::
@@ -289,6 +296,7 @@ def available_kw(density,diameter,speed):
     return .5*density*pi*(diameter/2)**2*speed**3/1000
 
 loss=1-available_kw(1.15,60,8)/available_kw(1.25,60,8)
+print('Available power at densities 1.15 and 1.25 kg/m³ (kW):', available_kw(1.15,60,8), available_kw(1.25,60,8), '; fractional reduction:', loss)
 assert isclose(loss,.08)
 ```
 :::
@@ -312,9 +320,15 @@ Equal mean wind speeds can have different variability.
 ```{code-cell} python
 import numpy as np
 def turbulence(values):
-    mean=np.mean(values)
-    return np.std(values,ddof=0)/mean if mean>0 else None
+    speeds = np.asarray(values, dtype=float)
+    if speeds.ndim != 1 or speeds.size == 0 or not np.isfinite(speeds).all() or np.any(speeds < 0):
+        raise ValueError('Provide a non-empty series of finite, non-negative wind speeds')
+    mean = speeds.mean()
+    return np.std(speeds, ddof=0) / mean if mean > 0 else None
 
+first, second, zero_mean = turbulence([5,7,9]), turbulence([6,7,8]), turbulence([0,0])
+print('Population turbulence intensity:', first, second)
+print('Zero-mean intensity:', 'undefined (mean wind speed is zero)' if zero_mean is None else zero_mean)
 assert turbulence([5,7,9])>turbulence([6,7,8]) and turbulence([0,0]) is None
 ```
 :::
@@ -345,6 +359,7 @@ def state(v):
         return 'rated'
     return 'cut-out'
 
+print('States:', [state(v) for v in [2,3,8,12,24,25]])
 assert [state(v) for v in [2,3,8,12,24,25]]==['below cut-in','ramp','ramp','rated','rated','cut-out']
 ```
 :::
@@ -377,7 +392,7 @@ assert probability.sum() <= 1 and 0 <= capacity_factor <= 1
 ```
 :::
 
-:::{admonition} Quiz 14 — Compare $P(\bar v)$ with $\overline{P(v)}$
+:::{admonition} Quiz 14 — Power at mean speed versus mean power
 :class: note
 
 <span class="difficulty-badge difficulty-hard">Hard</span>
@@ -418,7 +433,7 @@ The nonlinear and clipped power curve means a mean input does not preserve mean 
 
 **Reference:** Manwell et al., Sections 2.3–2.5 and 3.2 [@manwell2009].
 
-Starting with gross AEP, apply wake 8%, availability 4%, electrical 3%, and curtailment 2% sequentially. Write a function, calculate net AEP, and plot each stage. Explain why summing the percentages is only an approximation.
+Starting with the gross AEP `aep_mwh` calculated in Quiz 13, apply wake loss 8%, availability loss 4% (96% available), electrical loss 3%, and curtailment loss 2% sequentially. Write a function, calculate net AEP, and plot each stage. Explain why summing the percentages is only an approximation.
 
 :::
 
@@ -437,9 +452,11 @@ def apply_sequential_losses(gross_energy, losses):
     return stages
 
 stages = apply_sequential_losses(aep_mwh, {
-    "wake": 0.08, "availability": 0.04,
-    "electrical": 0.03, "curtailment": 0.02,
+    "wake loss": 0.08, "availability loss": 0.04,
+    "electrical loss": 0.03, "curtailment loss": 0.02,
 })
+print("Sequential AEP stages (MWh):", stages)
+print(f"Net AEP: {list(stages.values())[-1]:.3f} MWh")
 plt.figure(figsize=(9, 4))
 plt.bar(stages.keys(), np.array(list(stages.values())) / 1000, color="slateblue")
 plt.xticks(rotation=25, ha="right")
@@ -459,7 +476,7 @@ Each percentage acts on the energy remaining after prior losses, so the combined
 
 **Reference:** [@manwell2009].
 
-A month has speed bins represented by [2,8,13,27] m/s and counts [20,40,35,5] one-hour samples. Use the earlier 4 MW curve and class-specific availability [1,.8,.95,1]. Verify gross and net energy and compare with applying one average availability.
+A 100-hour sample within a month has speed bins represented by [2,8,13,27] m/s and counts [20,40,35,5] one-hour samples. Treat each representative speed as constant for its one-hour sample; its sample energy is not the complete monthly energy. Use the earlier 4 MW curve and class-specific availability [1,.8,.95,1]. Verify gross and net energy and compare with applying one average availability.
 
 :::
 
@@ -475,6 +492,8 @@ power=turbine_power_mw([2,8,13,27])
 gross=power@hours
 net=power@(hours*availability)
 uniform=gross*np.average(availability,weights=hours)
+print(f"100-hour sample: gross {gross:.3f}, class-specific net {net:.3f}, uniform-availability net {uniform:.3f} MWh")
+assert np.allclose([gross, net, uniform], [185.620223, 169.496178, 167.522254], atol=0.001)
 assert 0<net<gross and not np.isclose(net,uniform)
 ```
 :::
@@ -486,7 +505,7 @@ assert 0<net<gross and not np.isclose(net,uniform)
 
 **Reference:** [@manwell2009].
 
-With 50 m speeds [6,11,16,23] m/s and durations [1,2,2,3] h, compare 50 m and 100 m using exponent 0.2 and the 4 MW curve. Show at least one interval affected by cut-out and which tower makes more energy.
+With 50 m speeds [6,11,16,23] m/s held constant over durations [1,2,2,3] h, compare 50 m and 100 m using exponent 0.2 and the 4 MW curve. Show at least one interval affected by cut-out and which tower makes more energy.
 
 :::
 
@@ -499,6 +518,7 @@ Raising the hub can increase winds past the shutdown threshold.
 import numpy as np
 speeds=np.array([6,11,16,23]); dt=np.array([1,2,2,3])
 low=turbine_power_mw(speeds); high=turbine_power_mw(speeds*2**.2)
+print(f"50 m: {low@dt:.3f} MWh; 100 m: {high@dt:.3f} MWh; last-interval powers {low[-1]:.1f} and {high[-1]:.1f} MW")
 assert low[-1]==4 and high[-1]==0 and low@dt>high@dt
 ```
 :::
@@ -510,21 +530,22 @@ assert low[-1]==4 and high[-1]==0 and low@dt>high@dt
 
 **Reference:** [@manwell2009].
 
-Compare a constant coefficient estimate with the 4 MW electrical curve at [2,8,12,26] m/s for a 60 m rotor, air density 1.22, rotor coefficient .42 and drivetrain efficiency .92. Calculate MW, flag where the uncapped estimate exceeds electrical output, and explain the shutdown discrepancy.
+Compare a constant coefficient estimate with the 4 MW electrical curve at [2,8,12,26] m/s for a 120 m diameter rotor, air density 1.22 kg/m³, dimensionless rotor coefficient .42 and drivetrain efficiency .92. Calculate MW, flag where the uncapped estimate exceeds electrical output, and explain the shutdown discrepancy.
 
 :::
 
 :::{admonition} Solution
 :class: tip, dropdown
 
-A resource-based estimate ignores the electrical curve's operating boundaries.
+A resource-based estimate ignores the electrical curve's operating boundaries. At 12 m/s the 120 m rotor has about 11.92 MW of undisturbed reference wind power. The ideal Betz rotor limit is about 7.06 MW mechanical, or 6.50 MW electrical after the assumed 92% drivetrain efficiency, so the illustrative 4 MW electrical output is below that upper bound. Satisfying an ideal bound does not establish that a real turbine achieves this curve; it is not a manufacturer specification.
 
 ```{code-cell} python
 import numpy as np
 v=np.array([2,8,12,26])
-estimate=.5*1.22*np.pi*30**2*v**3*.42*.92/1e6
+estimate=.5*1.22*np.pi*60**2*v**3*.42*.92/1e6
 curve=turbine_power_mw(v)
 assert np.all(estimate[[0,3]]>0) and np.all(curve[[0,3]]==0)
+print('Speed (m/s), fixed-coefficient MW, electrical-curve MW:', list(zip(v,estimate,curve)))
 print(v[estimate>curve],'m/s where fixed coefficient exceeds electrical curve')
 ```
 :::
@@ -536,7 +557,7 @@ print(v[estimate>curve],'m/s where fixed coefficient exceeds electrical curve')
 
 **Reference:** [@manwell2009].
 
-At heights [20,40,80] m a simultaneous profile is [5,6,7.2] m/s. Fit a power-law shear exponent using log-linear regression, predict 120 m wind, and use the 4 MW curve to estimate six-hour MWh. Compare against reusing the 80 m speed.
+At heights [20,40,80] m a simultaneous profile is [5,6,7.2] m/s. Fit a power-law shear exponent using log-linear regression, predict 120 m wind, and use the 4 MW curve to estimate MWh assuming that profile persists for six hours. Compare against reusing the 80 m speed.
 
 :::
 
@@ -552,6 +573,7 @@ alpha, intercept=np.polyfit(np.log(height/20),np.log(speed),1)
 prediction=np.exp(intercept)*(120/20)**alpha
 adjusted=turbine_power_mw(prediction)*6
 unadjusted=turbine_power_mw(7.2)*6
+print(f"Shear exponent {alpha:.3f}, 120 m speed {prediction:.3f} m/s; adjusted {adjusted:.3f} MWh, unadjusted {unadjusted:.3f} MWh")
 assert np.isclose(alpha,np.log(1.2)/np.log(2)) and adjusted>unadjusted
 ```
 :::
@@ -583,6 +605,9 @@ def waterfall(gross, losses):
 
 rates=[.08,.05,.02,.03]
 net, lost=waterfall(120,rates)
-assert abs(net+sum(lost)-120)<1e-9 and net>120*(1-sum(rates))
+print('Losses by stage (GWh):', dict(zip(['wake','downtime','electrical','curtailment'],lost)))
+gross_based = 120*(1-sum(rates))
+print(f"Net {net:.3f} GWh; gross-based approximation {gross_based:.3f} GWh; gap {net-gross_based:.3f} GWh")
+assert abs(net+sum(lost)-120)<1e-9 and net>gross_based
 ```
 :::

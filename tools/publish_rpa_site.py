@@ -19,7 +19,7 @@ import urllib.request
 
 COURSES = {"python-renewable", "eage-python-course", "fault-segmentation", "energy-decision-ai"}
 ROOT_FILES = {
-    "index.html", "app.js", "styles.css", "python-worker.js", "eagelogo.jpg", "course-session-refresh.js",
+    "index.html", "app.js", "styles.css", "python-worker.js", "source_inspection.py", "eagelogo.jpg", "course-session-refresh.js",
     "flag-es.svg", "flag-uk.svg", "explorer-python.js", "explorers.css",
     "explorers.html", "explorers.js", "decision-lab.css", "decision-lab.html",
     "decision-lab.js", "guide.html",

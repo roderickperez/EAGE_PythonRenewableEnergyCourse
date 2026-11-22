@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EAGE · Renewable Energy Python Sandbox</title>
-<meta name="description" content="Study the EAGE renewable-energy course and write Python in your browser. Includes 100 exercises, quizzes, assessment and a hybrid-energy project.">
+<meta name="description" content="Study the EAGE renewable-energy course and write Python in your browser. Includes 102 exercises, quizzes, assessment and a hybrid-energy project.">
 <link rel="icon" href="eagelogo.jpg">
 <link rel="stylesheet" href="styles.css?v=wind-aerodynamics-20261117">
 <script>window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};</script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
 <script defer src="course-session-refresh.js?v=20261116"></script>
-<script type="module" src="app.js?v=wind-title-20261117"></script>
+<script type="module" src="app.js?v=import-recovery-20261120"></script>
 </head>
 <body>
 <header class="topbar">
@@ -47,9 +47,10 @@
       <label for="search">Find a lesson</label>
     </div>
     <input id="search" type="search" placeholder="Solar, pandas, assessment…">
+    <section aria-label="Learning RoadMap"><a href="generated/learning-roadmap/index.html">Learning RoadMap →</a></section>
     <div class="quick-links"><button data-jump="section7/renewableEnergyTest.md">Assessment</button><button data-jump="section8/projectIntro.md">Final project</button></div>
     <nav id="lessons"><p>Loading course…</p></nav>
-    <p class="nav-note">100 energy exercises · 5 chapters<br>Questions-only assessment & project</p>
+    <p class="nav-note">102 energy exercises · 5 chapters<br>Questions-only assessment & project</p>
   </aside>
   <main class="reading" id="reading">
     <div class="lesson-bar">
@@ -77,7 +78,7 @@
         <span id="saved" role="status">Saved on this browser</span>
       </div>
     </div>
-    <iframe id="workspace-notebook" title="Jupyter notebook" hidden></iframe>
+    <iframe id="workspace-notebook" title="Jupyter notebook" loading="lazy" hidden></iframe>
     <label for="workspace-select">Saved work in this lesson</label><select id="workspace-select"></select>
     <p class="lab-note" id="workspace-note">Edit a lesson example or write your own code. Runs share variables within this lesson.</p>
     <label for="code">Python code</label><textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Python code"></textarea>

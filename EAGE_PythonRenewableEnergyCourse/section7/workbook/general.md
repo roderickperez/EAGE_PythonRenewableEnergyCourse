@@ -263,7 +263,7 @@ assert total == 40
 
 **Reference:** Data handling: [pandas user guide](https://pandas.pydata.org/docs/user_guide/index.html).
 
-**Task:** For [1, missing,3,2] hourly MW readings, report coverage and observed energy, but do not invent a four-hour total.
+**Task:** For [1, missing,3,2] MW readings, each an average over a distinct one-hour interval, report coverage and observed energy, but do not invent a four-hour total.
 
 ```{code-cell} python
 # Your solution for general exercise 08.
@@ -297,7 +297,7 @@ assert coverage == 0.75 and observed_mwh == 6
 
 **Reference:** Data handling: [pandas user guide](https://pandas.pydata.org/docs/user_guide/index.html).
 
-**Task:** Times [00,01,01,02] have MW [1,2,2,3]. Remove only exact timestamp/value duplicates and check uniqueness.
+**Task:** Times [00,01,01,02] have MW [1,2,2,3], each the average power over the one-hour interval starting at its timestamp. Remove only exact timestamp/value duplicates, check uniqueness, and report the retained interval energy.
 
 ```{code-cell} python
 # Your solution for general exercise 09.
@@ -315,7 +315,8 @@ import pandas as pd
 df = pd.DataFrame({'time': pd.to_datetime(['2025-01-01 00:00', '2025-01-01 01:00', '2025-01-01 01:00', '2025-01-01 02:00'], utc=True), 'mw': [1,2,2,3]})
 # Step 2: Remove exact repeated records, then check for conflicting times.
 clean = df.drop_duplicates()
-assert clean.time.is_unique
+if not clean.time.is_unique:
+    raise ValueError('Conflicting measurements share a timestamp; investigate before summing')
 # Step 3: Sum the remaining hourly mean powers.
 print(clean.to_string(index=False)); print(clean.mw.sum(), 'MWh')
 assert len(clean) == 3 and clean.mw.sum() == 6
@@ -332,7 +333,7 @@ assert len(clean) == 3 and clean.mw.sum() == 6
 
 **Reference:** Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units). Original no-storage balance.
 
-**Task:** Hourly renewable supply is [1,5,2] MW and demand [3,3,3] MW. Calculate served, curtailed and unmet energy.
+**Task:** Hourly renewable supply is [1,5,2] MW and demand [3,3,3] MW. Treat each power as constant within its one-hour interval; calculate served, curtailed and unmet energy.
 
 ```{code-cell} python
 # Your solution for general exercise 10.
@@ -440,7 +441,7 @@ assert np.isclose(fleet, np.average(individual, weights=capacity))
 
 **Reference:** Data handling: [pandas user guide](https://pandas.pydata.org/docs/user_guide/index.html). [@sqliteDocs].
 
-**Task:** Solar delivers 10 MWh and 12,000 kWh; wind delivers 20 MWh and 18,000 kWh. Normalise mixed units, reject unsupported units and reconcile separate SQL and pandas totals by source.
+**Task:** Solar delivers 10 MWh and 12,000 kWh; wind delivers 20 MWh and 18,000 kWh. Normalise mixed units, reject unsupported units and reconcile separate SQL and pandas totals by source. When pairing labelled readings and units, require the same unique, nonmissing index in the same order.
 
 ```{code-cell} python
 # Your solution for general exercise 13.
@@ -461,10 +462,21 @@ df = pd.DataFrame({'source': ['solar','solar','wind','wind'],
                    'energy': [10,12000,20,18000], 'unit': ['MWh','kWh','MWh','kWh']})
 # Step 2: Convert each reading to MWh and reject unknown units.
 def to_mwh(values, units):
+    import numpy as np
+    if (not isinstance(values, pd.Series) or not isinstance(units, pd.Series)
+            or not values.index.is_unique or not values.index.equals(units.index)):
+        raise ValueError('Provide Series with the same unique index in the same order')
+    names = list(range(values.index.nlevels)) if values.index.nlevels > 1 else 0
+    if values.index.to_frame(index=False, name=names).isna().to_numpy().any():
+        raise ValueError('Index labels must not be missing')
+    try:
+        numeric = pd.to_numeric(values, errors='raise').astype(float)
+    except (ValueError, TypeError) as exc:
+        raise ValueError('Energy readings must be numeric') from exc
     scale = units.map({'MWh': 1, 'kWh': .001})
-    if scale.isna().any() or values.isna().any() or values.lt(0).any():
-        raise ValueError('Need non-negative readings with known units')
-    return values * scale
+    if scale.isna().any() or not np.isfinite(numeric).all() or numeric.lt(0).any():
+        raise ValueError('Need finite non-negative readings with known units')
+    return numeric * scale
 
 df['mwh'] = to_mwh(df.energy, df.unit)
 # Step 3: Aggregate independently using SQL and pandas.
@@ -526,7 +538,7 @@ assert mae == {'fixed last':1, 'training mean':3, 'walk-forward':1.5}
 
 **Reference:** Plotting: [@matplotlibDocs]. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
 
-**Task:** For two one-hour intervals, use solar [0,20], hydro [15,20], wind [20,10], geothermal [7,8] and demand [50,45], all in MW. Plot stacked source output and demand. Reconcile interval and total energy, and explain how surplus and shortfall coexist.
+**Task:** For two one-hour intervals, use solar [0,20], hydro [15,20], wind [20,10], geothermal [7,8] and demand [50,45], all in MW and each held constant within its interval. Plot stacked source output and demand. Reconcile interval and total energy, and explain how surplus and shortfall coexist.
 
 ```{code-cell} python
 # Your solution for general exercise 15.
@@ -557,7 +569,9 @@ served = np.minimum(bottom,demand)
 surplus = bottom-served; shortfall = demand-served
 assert np.allclose(served+surplus,bottom) and np.allclose(served+shortfall,demand)
 assert (bottom.sum(),served.sum(),surplus.sum(),shortfall.sum()) == (100,87,13,8)
-print('MWh available, served, surplus, shortfall:',100,87,13,8)
+for hour, values in enumerate(zip(bottom,served,surplus,shortfall), 1):
+    print(f'Hour {hour} MWh available, served, surplus, shortfall:', *values)
+print('Total MWh available, served, surplus, shortfall:', bottom.sum(),served.sum(),surplus.sum(),shortfall.sum())
 ```
 
 **Interpretation:** The second-hour surplus cannot cover the earlier shortfall without storage or another balancing source.
@@ -571,7 +585,7 @@ print('MWh available, served, surplus, shortfall:',100,87,13,8)
 
 **Reference:** Storage losses: [@wade2003], Chapter 5; [@manwell2009], §10.7. The dispatch policy is an original course assumption.
 
-**Task:** Supply [0,4,4,0] MW meets constant 2 MW demand. Start empty with 3 MWh usable storage, 2 MW charge/discharge limits and 90% efficiency each way. Route four hours and prove energy balance.
+**Task:** Supply [0,4,4,0] MW meets constant 2 MW demand over four one-hour intervals; treat the power as constant within each interval. Start empty with 3 MWh usable storage, 2 MW charge and discharge limits measured at the supply–demand bus, and 90% efficiency in each direction. Route the intervals and prove energy balance.
 
 ```{code-cell} python
 # Your solution for general exercise 16.
@@ -615,7 +629,7 @@ assert np.isclose(sum(r[2] for r in rows), 2)
 
 **Difficulty:** Hard
 
-**Reference:** Discounted cost and energy: [@ifc2015], §13.2.5 and Chapter 14; [@goswami2015], §1.4.3, Eq. 1.6; [@irena2026], methodology annex.
+**Reference:** Discounted cost and energy: [@ifc2015], §13.2.5 and Chapter 14; [@goswami2015], §1.4.3, Eq. 1.6. Historical cost context: [@irena2026].
 
 **Task:** For €1000 initial cost, €20 annual O&M and 100 MWh/year over 10 years, calculate LCOE at real rates 0%,5%,10%, with year-end flows.
 
@@ -654,7 +668,7 @@ assert np.isclose(results[0], 1.2) and np.all(np.diff(results)>0)
 
 **Reference:** Data handling: [pandas user guide](https://pandas.pydata.org/docs/user_guide/index.html).
 
-**Task:** Join two CSV-like tables with hourly UTC times: solar [0,1,2] and wind [2,1,0]. Reject duplicate times or mismatched coverage before calculating their sum.
+**Task:** Join two CSV-like tables against the expected hourly UTC schedule from 00:00 through 02:00 on 1 January 2025: solar [0,1,2] MW and wind [2,1,0] MW in reverse timestamp order. Reject duplicate or non-UTC timestamps, missing expected hours, mismatched source coverage, and missing/non-finite values before calculating their sum.
 
 ```{code-cell} python
 # Your solution for general exercise 18.
@@ -674,15 +688,27 @@ time = pd.date_range('2025-01-01', periods=3, freq='h', tz='UTC')
 solar = pd.DataFrame({'time':time, 'solar_mw':[0,1,2]})
 wind = pd.DataFrame({'time':time[::-1], 'wind_mw':[0,1,2]})
 # Step 2: Validate matching coverage and perform a one-to-one join.
-def align(solar, wind):
-    for table in (solar, wind):
-        if table.time.isna().any() or not table.time.is_unique:
-            raise ValueError('Each source must have valid, unique timestamps.')
-    if set(solar.time) != set(wind.time):
-        raise ValueError('Sources must cover the same timestamps.')
-    return solar.merge(wind, on='time', validate='one_to_one', sort=True)
+def align(solar, wind, expected):
+    if (not isinstance(expected, pd.DatetimeIndex) or expected.empty or expected.hasnans
+            or str(expected.tz) != 'UTC' or not expected.is_unique
+            or not expected.equals(pd.date_range(expected[0], expected[-1], freq='h', tz='UTC'))):
+        raise ValueError('Provide a complete, ordered hourly UTC schedule.')
+    normalized = []
+    for table, column in ((solar, 'solar_mw'), (wind, 'wind_mw')):
+        times = pd.DatetimeIndex(table.time)
+        if (times.hasnans or not times.is_unique or str(times.tz) != 'UTC'
+                or not times.sort_values().equals(expected)):
+            raise ValueError('Each source must match the expected UTC schedule exactly.')
+        values = pd.to_numeric(table[column], errors='raise').astype(float)
+        if not np.isfinite(values.to_numpy()).all():
+            raise ValueError('Complete, finite power observations are required at each timestamp.')
+        copy = table.copy()
+        copy['time'] = times
+        copy[column] = values
+        normalized.append(copy)
+    return normalized[0].merge(normalized[1], on='time', validate='one_to_one', sort=True)
 
-joined = align(solar, wind)
+joined = align(solar, wind, time)
 joined['total_mw'] = joined.solar_mw + joined.wind_mw
 # Step 3: Test both completeness and the known sum.
 assert len(joined)==3 and np.allclose(joined.total_mw, 2)
@@ -690,18 +716,18 @@ assert joined.time.is_monotonic_increasing
 print(joined.to_string(index=False))
 ```
 
-**Interpretation:** An inner join alone can silently discard unmatched times; coverage must be checked first.
+**Interpretation:** An inner join alone can silently discard unmatched times. Matching source timestamps also cannot reveal an hour missing from both files; compare each source with an independently specified schedule. Timestamps and numeric strings are converted on copies before joining and addition, so equivalent UTC representations align, numeric values cannot be concatenated, and the input tables remain unchanged.
 
 ::::
 
 (general-exercise-19)=
-### Exercise 19 — Capacity search under a reliability target
+### Exercise 19 — Capacity search under an energy-coverage target
 
 **Difficulty:** Hard
 
 **Reference:** Original discrete design search under the stated shortfall target; Array calculations: [@numpyDocs].
 
-**Task:** Wind produces [0,1,2,1] MW per unit; firm geothermal supplies 1 MW and demand is 2 MW each hour. Search 0–4 wind units for coverage at least 80%. Report the smallest feasible count, unmet and curtailed MWh.
+**Task:** Wind produces [0,1,2,1] MW per unit; firm geothermal supplies 1 MW and demand is 2 MW. Treat each value as constant within its one-hour interval. Search 0–4 wind units for served energy divided by demand energy of at least 80%; this is not the fraction of hours with fully met demand. Report the smallest feasible count, unmet and curtailed MWh.
 
 ```{code-cell} python
 # Your solution for general exercise 19.

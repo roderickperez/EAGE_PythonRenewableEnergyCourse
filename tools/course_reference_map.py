@@ -7,11 +7,11 @@ UNITS = 'Unit definitions/conversions: [NIST SP 811, Appendix B](https://www.nis
 ENERGY = 'Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).'
 HYDRO = 'Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7.'
 WIND = 'Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2.'
-PV = 'PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2.'
+PV = 'PV devices and systems: [@foster2010], Chapter 5 and §§6.3, 6.5.3 and 7.5.2; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2.'
 GEO = 'Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.'
 PANDAS = 'Data handling: [pandas user guide](https://pandas.pydata.org/docs/user_guide/index.html).'
 NUMPY = 'Array calculations: [@numpyDocs].'
-LCOE = 'Discounted cost and energy: [@ifc2015], §13.2.5 and Chapter 14; [@goswami2015], §1.4.3, Eq. 1.6; [@irena2026], methodology annex.'
+LCOE = 'Discounted cost and energy: [@ifc2015], §13.2.5 and Chapter 14; [@goswami2015], §1.4.3, Eq. 1.6. Historical cost context: [@irena2026].'
 CARNOT = 'Reversible heat-engine limit: [OpenStax, University Physics 2, §4.5, Eq. 4.5](https://openstax.org/books/university-physics-volume-2/pages/4-5-the-carnot-cycle).'
 CIRCULAR = 'Circular mean and zero-resultant limitation: [SciPy circmean](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.circmean.html).'
 WEIBULL = 'Wind distribution and energy: [@manwell2009], §§2.4–2.5; [SciPy Weibull density](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.weibull_min.html).'
@@ -45,7 +45,7 @@ EXERCISE_REFERENCES = {
           'Direction-sector convention specified in this exercise; [@manwell2009], Chapter 2; '+NUMPY,WIND,ENERGY,
           'Wind statistics: [@manwell2009], §2.4; [@matplotlibDocs].',WEIBULL,CIRCULAR,
           'Power-law shear: [@manwell2009], §2.3.4.2; logarithmic least squares is the stated estimator.',WIND,
-          'Bootstrap sampling: [SciPy bootstrap](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.bootstrap.html). Independence is assumed here; serial wind data may require block resampling.'],
+          'Bootstrap sampling: [SciPy bootstrap](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.bootstrap.html). If using SciPy, select `method="percentile"`; its default is BCa. Different random draws or implementations can produce different endpoints. Independence is assumed here; serial wind data may require block resampling.'],
  'geothermal': [GEO,GEO,GEO,ENERGY+' '+GEO,UNITS,GEO,GEO,GEO,GEO,GEO,CARNOT,GEO,
                 'Original compounded-decline scenario; '+GEO,GEO+' '+NUMPY,GEO+' Plotting: [@matplotlibDocs].',
                 'Original exponential decline fit with a chronological holdout; '+NUMPY,GEO+' The shared plant limit is assumed.',

@@ -1,0 +1,18 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path'),{spawn,spawnSync}=require('node:child_process');
+const delay=ms=>new Promise(r=>setTimeout(r,ms));
+(async()=>{assert.ok(process.env.EAGE_TEST_WSL_PYTHON,'Set EAGE_TEST_WSL_PYTHON to a WSL Python with pandas and NumPy');const temp=fs.mkdtempSync(path.join(os.tmpdir(),'eage-single-export-')),profile=path.join(temp,'profile'),downloads=path.join(temp,'downloads');fs.mkdirSync(downloads);const browser=spawn(process.env.EAGE_TEST_EDGE||'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',['--headless=new','--disable-gpu','--no-first-run','--remote-debugging-port=0','--user-data-dir='+profile,'about:blank'],{stdio:'ignore',windowsHide:true});try{
+ const f=path.join(profile,'DevToolsActivePort');for(let i=0;i<100&&!fs.existsSync(f);i++)await delay(100);assert.ok(fs.existsSync(f));const port=Number(fs.readFileSync(f,'utf8').split('\n')[0]);const target=await(await fetch(`http://127.0.0.1:${port}/json/new?about:blank`,{method:'PUT'})).json();const socket=new WebSocket(target.webSocketDebuggerUrl);await new Promise((resolve,reject)=>{socket.onopen=resolve;socket.onerror=reject});let serial=0,pending=new Map();socket.onmessage=e=>{let m=JSON.parse(e.data);if(pending.has(m.id)){let {resolve,reject}=pending.get(m.id);pending.delete(m.id);m.error?reject(Error(m.error.message)):resolve(m.result)}};const send=(method,params={})=>new Promise((resolve,reject)=>{let id=++serial;pending.set(id,{resolve,reject});socket.send(JSON.stringify({id,method,params}))});
+ await send('Browser.setDownloadBehavior',{behavior:'allow',downloadPath:downloads});await send('Page.navigate',{url:'http://127.0.0.1:18343/generated/geothermal-lab/project.html'});
+ let ready=false;for(let i=0;i<150;i++){let q=await send('Runtime.evaluate',{returnByValue:true,expression:`!!document.querySelector('[data-action="download"]')`});if(q.result.value){ready=true;break}await delay(100)}assert.ok(ready,'single-pair simulator loaded');await delay(1500);await send('Runtime.evaluate',{expression:`document.querySelector('[data-action="download"]').click()`});const csvFile=path.join(downloads,'geothermal-field-results.csv');for(let i=0;i<150&&!fs.existsSync(csvFile);i++)await delay(100);assert.ok(fs.existsSync(csvFile),'simulator exported CSV');
+ const check=`import io,json,sys
+import numpy as np,pandas as pd
+payload=json.load(sys.stdin)
+cell=next(''.join(c['source']) for c in payload['notebook']['cells'] if c['cell_type']=='code' and 'def compare_single_pair_csv' in ''.join(c['source']))
+state={'np':np,'pd':pd};exec(cell,state)
+exported=pd.read_csv(io.StringIO(payload['csv']))
+assert len(exported)>=2 and exported.energy_MWh.max()>0, 'Expected a progressed simulation'
+result=state['compare_single_pair_csv'](io.StringIO(payload['csv']))
+assert result.max()<1e-6,result.to_string()
+print('SINGLE_EXPORT_MATCH')`;
+ const notebook=JSON.parse(fs.readFileSync('EAGE_PythonRenewableEnergyCourse/section8/geothermal-field-designer.ipynb','utf8'));const result=spawnSync('wsl.exe',['-d',process.env.EAGE_TEST_WSL_DISTRO||'Ubuntu-24.04','--',process.env.EAGE_TEST_WSL_PYTHON,'-c',check],{input:JSON.stringify({notebook,csv:fs.readFileSync(csvFile,'utf8')}),encoding:'utf8',timeout:30000});assert.equal(result.status,0,result.stderr||String(result.error));assert.match(result.stdout,/SINGLE_EXPORT_MATCH/);console.log('Actual single-pair browser export passes the downloadable notebook comparison.');socket.close();
+ }finally{browser.kill()}})().catch(e=>{console.error(e);process.exitCode=1});

@@ -32,14 +32,17 @@ export const demos = {
     calculate(a) {const eta=1-(a.sink+273.15)/(a.reservoir+273.15);return out(`ηC = ${fmt(eta*100,1)}%`, `1 − (${fmt(a.sink+273.15,2)} K / ${fmt(a.reservoir+273.15,2)} K) = ${fmt(eta*100,1)}%`,a,eta);}
   },
   conversion: {
-    title:'Thermal, gross and net power', note:'Teaching model with a specified conversion efficiency and parasitic load as a share of gross electricity.',
-    controls:[flow,hot,cold,c('efficiency','Conversion efficiency',0,20,.5,12,'%'),c('parasitic','Parasitic share of gross',0,50,1,10,'%')],
+    title:'Thermal, gross and net power', note:'Teaching model with a specified conversion efficiency and parasitic load as a share of gross electricity. The fixed-reservoir Carnot bound is an upper limit; cooling a finite fluid stream generally imposes a stricter limit.' ,
+    controls:[flow,hot,cold,c('sink','Heat-sink temperature',5,45,1,25,'°C'),c('efficiency','Conversion efficiency',0,20,.5,12,'%'),c('parasitic','Parasitic share of gross',0,50,1,10,'%')],
     calculate(a) {const p=a.flow*4180*(a.reservoir-a.reinjection)/1e6, gross=p*a.efficiency/100, load=gross*a.parasitic/100;
-      return out(`Pₙₑₜ = ${fmt(gross-load)} MW`, `Pₜₕ = ${fmt(p)} MW · Pgross = ηPₜₕ = ${fmt(gross)} MW · Pnet = ${fmt(gross)} − ${fmt(load)} = ${fmt(gross-load)} MW`,a,gross-load);}
+      const limit=1-(a.sink+273.15)/(a.reservoir+273.15);
+      const warning=a.efficiency/100>limit ? ' Warning: efficiency exceeds this ideal Carnot limit; positive output at this efficiency would be physically infeasible for the specified sink.' : ' Passing this upper bound alone does not establish feasibility.';
+      const returnWarning=a.reinjection<=a.sink ? ' Return temperature is at or below the specified sink: passive heat exchange with that sink cannot cool the fluid to this return temperature; a colder sink or additional work would be needed. The displayed net power does not account for such work.' : '';
+      return out(`Pₙₑₜ = ${fmt(gross-load)} MW`, `Pₜₕ = ${fmt(p)} MW · Pgross = ηPₜₕ = ${fmt(gross)} MW · Pnet = ${fmt(gross)} − ${fmt(load)} = ${fmt(gross-load)} MW · Carnot upper bound = ${fmt(limit*100,1)}%.${warning}${returnWarning}`,a,gross-load);}
   },
   pump: {
-    title:'Hydraulic pumping power', note:'Constant liquid density; pump efficiency is a fraction and volume flow is mass flow divided by density.',
-    controls:[flow,c('density','Fluid density',800,1200,10,1000,'kg/m³'),c('pressure','Pressure rise',0,15,.1,2,'MPa'),c('pumpEfficiency','Pump efficiency',30,95,1,75,'%')],
+    title:'Hydraulic pumping power', note:'Constant liquid density; combined motor–drive–pump efficiency converts hydraulic power to electrical input. Volume flow is mass flow divided by density.',
+    controls:[flow,c('density','Fluid density',800,1200,10,1000,'kg/m³'),c('pressure','Pressure rise',0,15,.1,2,'MPa'),c('pumpEfficiency','Combined motor–pump efficiency',30,95,1,75,'%')],
     calculate(a) {const q=a.flow/a.density,p=a.pressure*q/(a.pumpEfficiency/100);return out(`Ppump = ${fmt(p)} MW`, `Q = ṁ/ρ = ${fmt(q,4)} m³/s · ΔpQ/ηpump = ${fmt(p)} MW`,{...a,loadMode:'explicit'},p);}
   },
   heatpump: {
@@ -48,8 +51,8 @@ export const demos = {
     calculate(a) {const q=a.cop*a.heatPumpPower;return out(`Heat delivered = ${fmt(q)} MW`, `Q̇delivered = COPₕ × Pelectric = ${fmt(q)} MW thermal · Source heat = ${fmt(q-a.heatPumpPower)} MW`,{flow:Math.min(150,q*30)},q);}
   },
   storage: {
-    title:'Sensible heat stored in the reservoir', note:'Uniform bulk volume and properties; this is heat in place, not recoverable electricity.',
-    controls:[c('volume','Bulk reservoir volume',.5,30,.5,5,'million m³'),c('porosity','Porosity',0,35,1,12,'%'),hot,c('surface','Reference temperature',0,35,1,15,'°C'),c('rockDensity','Rock density',2000,3200,10,2600,'kg/m³'),c('rockCp','Rock heat capacity',600,1400,10,900,'J/(kg K)')],
+    title:'Sensible heat stored in the reservoir', note:'Uniform bulk volume and properties; all pore volume is assumed water-filled, with fixed water density 1,000 kg/m³ and heat capacity 4,180 J/(kg K). This is heat in place, not recoverable electricity.',
+    controls:[c('volume','Bulk reservoir volume',.5,30,.5,5,'million m³'),c('porosity','Porosity',0,35,1,12,'%'),hot,c('surface','Reference temperature',0,35,1,15,'°C'),c('rockDensity','Solid-rock density',2000,3200,10,2600,'kg/m³'),c('rockCp','Rock heat capacity',600,1400,10,900,'J/(kg K)')],
     calculate(a) {const phi=a.porosity/100, e=a.volume*1e6*((1-phi)*a.rockDensity*a.rockCp+phi*1000*4180)*(a.reservoir-a.surface)/3.6e12;
       return out(`Heat in place = ${fmt(e,1)} GWh`, `V[(1−φ)ρᵣcᵣ + φρꜰcꜰ](T−Tref) = ${fmt(e,1)} GWh thermal`,a,e);}
   },

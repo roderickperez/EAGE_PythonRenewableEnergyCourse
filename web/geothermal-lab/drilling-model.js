@@ -8,3 +8,10 @@ export function drilling({depth,flow,hole,pipe,density,friction,viscosity,partic
  const particleRe=density*slip*particle/viscosity;
  return {area,velocity,hydro,drop,equivalent,bottom,slip,particleRe,transport:velocity-slip,validStokes:particleRe<1};
 }
+
+// Animation shows direction only; visual speed is not a time-scaled transport prediction.
+export function drillingMotion(state) {
+ return {fluidRate: state.velocity > 0 ? .16 : 0,
+         particleRate: state.validStokes ? Math.sign(state.transport) * .16 : 0,
+         particleVisible: state.validStokes};
+}

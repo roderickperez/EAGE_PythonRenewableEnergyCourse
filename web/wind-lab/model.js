@@ -69,6 +69,16 @@ export function powerModel(input) {
   return speed => speed <= input.cutIn || speed >= input.cutOut ? 0 : Math.min(input.ratedMW, factor * speed ** 3);
 }
 
+// The course curve has its greatest P/v³ ratio at rated speed. The electrical
+// bound includes the selected drivetrain efficiency, as does shaft torque.
+export function curveFeasibility(input, point) {
+  if (input.outputMode !== 'curve') return { ratedViolation: false, currentViolation: false };
+  const idealElectrical = speed => availableWind(speed, point.density, input.radius).windMW * BETZ * input.efficiency / 100;
+  const exceeds = (power, limit) => power > limit + 1e-12 * Math.max(1, Math.abs(power), Math.abs(limit));
+  return { ratedViolation: exceeds(input.ratedMW, idealElectrical(input.ratedSpeed)),
+           currentViolation: exceeds(point.gridMW, idealElectrical(point.speed)) };
+}
+
 export function operatingPoint(input) {
   const ratio = input.hub / input.reference;
   const logRatio = Math.log((input.hub - input.displacement) / input.roughness) /

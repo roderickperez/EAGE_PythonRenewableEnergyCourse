@@ -6,9 +6,13 @@ kernelspec:
 
 # Geothermal Energy Quiz
 
+Unless calendar dates are specified, use a standardized model year of 8,760 hours.
+
 These questions connect thermodynamics and subsurface concepts to Python.
 
-**4 Easy · 8 Medium · 8 Hard.** Try each question before opening its solution. Where a prompt refers to an earlier answer, run that code first.
+**4 Easy · 8 Medium · 8 Hard.** Try each question before opening its solution. The code examples build on a shared Python session: run the preceding setup and solution code in order, or provide equivalent imports, data and functions yourself. In the sandbox, **Include preceding examples** does not run answers hidden in solution dropdowns.
+
+In the sandbox, after opening a code answer, **Include preceding practice answers** loads the earlier runnable examples and answers plus that answer into the editor. Review the code and select **Run Python**; loading it does not run it automatically.
 
 :::{admonition} Quiz 1 — Gradient, heat flux, or power?
 :class: note
@@ -77,6 +81,7 @@ Keep the thermal label to distinguish extracted heat from electricity.
 def kw_to_mw(power_kw):
     return power_kw/1000
 
+print('12,500 kW:', kw_to_mw(12500), 'MW thermal')
 assert kw_to_mw(12500)==12.5
 ```
 :::
@@ -98,10 +103,13 @@ Write a Celsius-to-Kelvin function. Test 85 °C and show that a 10 °C temperatu
 Absolute temperatures change origin; temperature differences do not.
 
 ```{code-cell} python
-from math import isclose
+from math import isclose, isfinite
 def to_kelvin(celsius):
+    if not isfinite(celsius) or celsius < -273.15:
+        raise ValueError('Temperature must be finite and at least -273.15 °C')
     return celsius+273.15
 
+print('Absolute temperature (K):', to_kelvin(85), '; temperature difference (K):', to_kelvin(95)-to_kelvin(85))
 assert isclose(to_kelvin(85),358.15) and isclose(to_kelvin(95)-to_kelvin(85),10)
 ```
 :::
@@ -113,22 +121,45 @@ assert isclose(to_kelvin(85),358.15) and isclose(to_kelvin(95)-to_kelvin(85),10)
 
 **Reference:** Grant and Bixley, Chapters 2–3 [@grant2011].
 
-Write a function returning thermal, gross, and net MW using $\dot m c_p\Delta T$, conversion efficiency, and parasitic fraction. Validate inputs and test the ordering of outputs.
+Write a function returning thermal, gross, and net MW using $\dot m c_p\Delta T$, conversion efficiency, and parasitic fraction. Validate inputs and test the ordering of outputs. For paired array records, align any well labels first and pass matching one-dimensional arrays in the same order; the model pairs values by position and requires unique, nonmissing and matching pandas indexes when inputs are labeled. If a labeled series is paired with an unlabeled array, check their order yourself; the helper cannot verify that pairing.
 
 :::
 
 :::{admonition} Solution
 :class: tip, dropdown
 
+The function evaluates a supplied conversion efficiency; it does not specify a heat sink or establish physical feasibility. Compare the assumption with an appropriate heat-engine bound for a stated sink, recognizing that a finite cooling stream can impose a stricter limit.
+
 ```{code-cell} python
 import numpy as np
 
 def well_power_mw(mass_flow, production_c, reinjection_c,
                   conversion_efficiency, parasitic_fraction=0.1, cp=4180):
+    """Pair by position; labeled inputs must already have matching indexes."""
+    indexes = [getattr(value, "index", None) for value in (mass_flow, production_c, reinjection_c)]
+    indexes = [index for index in indexes if index is not None and not callable(index)
+               and callable(getattr(index, "equals", None))]
+    for index in indexes:
+        if hasattr(index, "is_unique") and not index.is_unique:
+            raise ValueError("Labeled inputs must have unique, nonmissing indexes")
+        if callable(getattr(index, "to_frame", None)):
+            name = list(range(index.nlevels)) if index.nlevels > 1 else 0
+            if index.to_frame(index=False, name=name).isna().to_numpy().any():
+                raise ValueError("Labeled inputs must have unique, nonmissing indexes")
+    if len(indexes) > 1 and any(not indexes[0].equals(index) for index in indexes[1:]):
+        raise ValueError("Labeled inputs must have matching indexes in the same order")
     if not all(np.isfinite(np.asarray(value, dtype=float)).all() for value in [mass_flow, production_c, reinjection_c, conversion_efficiency, parasitic_fraction, cp]):
         raise ValueError("model inputs must be finite")
     mass_flow = np.asarray(mass_flow, dtype=float)
-    delta_t = np.asarray(production_c, dtype=float) - reinjection_c
+    production_c = np.asarray(production_c, dtype=float)
+    reinjection_c = np.asarray(reinjection_c, dtype=float)
+    arrays = (mass_flow, production_c, reinjection_c)
+    shapes = {value.shape for value in arrays if value.ndim == 1}
+    if any(value.ndim > 1 for value in arrays) or len(shapes) > 1:
+        raise ValueError("flow and temperatures must be scalars or matching 1-D arrays")
+    if np.any(production_c < -273.15) or np.any(reinjection_c < -273.15):
+        raise ValueError("temperatures cannot be below absolute zero")
+    delta_t = production_c - reinjection_c
     if np.any(mass_flow < 0) or np.any(delta_t < 0):
         raise ValueError("mass flow and temperature difference must be non-negative")
     if not 0 <= conversion_efficiency <= 1 or not 0 <= parasitic_fraction < 1:
@@ -188,7 +219,7 @@ assert np.all((carnot > 0) & (carnot < 1))
 
 **Reference:** Grant and Bixley, Chapters 2–3 [@grant2011].
 
-Create a DataFrame for four wells with mass flows `[62, 78, 55, 90]` kg/s and temperatures `[150, 168, 142, 175]` °C. Calculate net output by well, total it, and create a bar chart.
+Create a DataFrame for four wells with mass flows `[62, 78, 55, 90]` kg/s and temperatures `[150, 168, 142, 175]` °C. Assume water with constant specific heat 4,180 J/(kg K), reinjection at 70 °C, gross conversion efficiency 12%, and parasitic use 11% of gross. Calculate net output by well, total it, and create a bar chart.
 
 :::
 
@@ -207,6 +238,8 @@ _, _, wells["net_mw"] = well_power_mw(
     wells["mass_flow_kgs"], wells["production_c"],
     reinjection_c=70, conversion_efficiency=0.12, parasitic_fraction=0.11,
 )
+print(wells[["well", "net_mw"]].to_string(index=False))
+print(f"Total net power: {wells['net_mw'].sum():.3f} MW")
 wells.plot.bar(x="well", y="net_mw", figsize=(7, 4), legend=False, color="firebrick")
 plt.ylabel("Net power (MW)")
 plt.title(f"Well-field net power = {wells['net_mw'].sum():.1f} MW")
@@ -222,7 +255,7 @@ assert wells["net_mw"].ge(0).all()
 
 **Reference:** [@grant2011].
 
-Write functions to turn 50 mD into m² and 1.4 mPa·s into Pa·s. Use a gradient magnitude of 2 kPa/m to estimate Darcy flux magnitude.
+Write functions to turn 50 mD into m² and 1.4 mPa·s into Pa·s. Assume horizontal single-phase flow with gravity neglected; use a pressure-gradient magnitude of 2 kPa/m to estimate Darcy flux magnitude.
 
 :::
 
@@ -240,6 +273,7 @@ def mpa_s_to_pa_s(value):
     return value/1000
 
 flux=md_to_m2(50)*2000/mpa_s_to_pa_s(1.4)
+print('Permeability (m²):', md_to_m2(50), '; viscosity (Pa s):', mpa_s_to_pa_s(1.4), '; Darcy flux (m/s):', flux)
 assert isclose(flux,7.049452142857e-8,rel_tol=1e-9)
 ```
 :::
@@ -265,6 +299,7 @@ def recovered_heat(cp,hot,cold,flow):
     dh=cp*(hot-cold)
     return dh,flow*dh/1000
 
+print('Enthalpy drop (kJ/kg), thermal power (MW):', recovered_heat(4.1,155,85,45))
 assert recovered_heat(4.1,155,85,45)==(287.,12.915)
 ```
 :::
@@ -276,7 +311,7 @@ assert recovered_heat(4.1,155,85,45)==(287.,12.915)
 
 **Reference:** [@grant2011].
 
-Given 70 kg/s, fluid density 950 kg/m³, 1.8 MPa rise and 75% pump efficiency, return m³/s and MW consumed from a function.
+Given 70 kg/s, fluid density 950 kg/m³, 1.8 MPa rise and 75% combined motor-and-pump efficiency, return m³/s and electrical MW consumed from a function.
 
 :::
 
@@ -291,6 +326,7 @@ def pump_mw(flow,rho,pressure_mpa,efficiency):
     return q,pressure_mpa*q/efficiency
 
 q,power=pump_mw(70,950,1.8,.75)
+print('Volume flow (m³/s), electrical pumping power (MW):', q, power)
 assert abs(q-.07368421)<1e-8 and .176<power<.178
 ```
 :::
@@ -300,7 +336,7 @@ assert abs(q-.07368421)<1e-8 and .176<power<.178
 
 <span class="difficulty-badge difficulty-medium">Medium</span>
 
-**Reference:** [@grant2011].
+**Reference:** [OpenStax, heat pumps and coefficient of performance](https://openstax.org/books/university-physics-volume-2/pages/4-3-refrigerators-and-heat-pumps); [DOE heat-pump technical brief, §3.3.1](https://www.energy.gov/sites/prod/files/2014/05/f15/heatpump.pdf).
 
 For heating targets [3,6,9] MW thermal at COP 3, use a function to return electrical demand and heat moved from the source. Verify the first-law balance.
 
@@ -316,6 +352,7 @@ def heat_pump(heat,cop):
     electrical=heat/cop
     return electrical,heat-electrical
 
+print('Electrical input and source heat (MW):', [heat_pump(heat,3) for heat in [3,6,9]])
 assert [heat_pump(heat,3) for heat in [3,6,9]]==[(1,2),(2,4),(3,6)]
 ```
 :::
@@ -327,7 +364,7 @@ assert [heat_pump(heat,3) for heat in [3,6,9]]==[(1,2),(2,4),(3,6)]
 
 **Reference:** [@grant2011].
 
-Calculate operating hours and annual MWh for a steady 4 MW net plant at 88%, 95%, and 100% availability in a non-leap year. Use one function and verify the denominator for capacity factor if net rating is 5 MW.
+Calculate operating hours and annual MWh for a 4 MW net plant at 88%, 95%, and 100% availability in a non-leap year. For this exercise, assume the plant actually operates at steady 4 MW for the entire available fraction of the year; being available alone does not establish operating hours or output. Use one function and verify the denominator for capacity factor if net rating is 5 MW.
 
 :::
 
@@ -342,6 +379,9 @@ def annual(power,availability):
     energy=power*hours
     return energy,energy/(5*8760)
 
+for availability in [.88,.95,1.0]:
+    energy, cf = annual(4,availability)
+    print(f"Availability {availability:.0%}: {8760*availability:.1f} operating hours, {energy:.1f} MWh, capacity factor {cf:.1%}")
 assert abs(annual(4,.95)[0]-33288)<1e-9
 assert abs(annual(4,1)[1]-.8)<1e-9
 ```
@@ -354,7 +394,7 @@ assert abs(annual(4,1)[1]-.8)<1e-9
 
 **Reference:** Grant and Bixley, Chapters 2–3 [@grant2011].
 
-For an 80 kg/s well at 165/70 °C, vary conversion efficiency from 8–18% and parasitic fraction from 5–20%. Plot net power with `contourf`.
+For an 80 kg/s water well at 165/70 °C with constant specific heat 4,180 J/(kg K), vary conversion efficiency from 8–18% and parasitic fraction from 5–20%. Plot net power with `contourf`.
 
 :::
 
@@ -397,6 +437,8 @@ years = np.arange(1, 26)
 net_power_mw = 12 * (1 - 0.015) ** (years - 1)
 annual_gwh = net_power_mw * 8760 * 0.94 / 1000
 cumulative_gwh = np.cumsum(annual_gwh)
+for year, annual, cumulative in zip(years, annual_gwh, cumulative_gwh):
+    print(f"Year {year}: annual {annual:.2f} GWh; cumulative {cumulative:.2f} GWh")
 
 fig, axes = plt.subplots(1, 2, figsize=(10, 4))
 axes[0].plot(years, annual_gwh, marker="o", markersize=3)
@@ -417,7 +459,7 @@ assert np.all(np.diff(annual_gwh) < 0) and np.all(np.diff(cumulative_gwh) > 0)
 
 **Reference:** Grant and Bixley, Chapters 2–3 [@grant2011].
 
-Add two faulty rows to the well table: a negative flow and production below reinjection temperature. Write a validation function that returns problem rows rather than silently calculating negative power.
+Add two faulty rows to the well table: a negative flow and production below reinjection temperature. Write a validation function that returns problem rows rather than silently calculating negative power. For this exercise, screen a flowing well unless production is strictly warmer than reinjection; equal temperatures give zero modeled heat and are screened as an operating criterion, not as a physical impossibility. Treat zero flow as a valid stopped well, even when production is not warmer than reinjection. Require finite temperatures at or above absolute zero; this check does not establish a fluid-specific operating range.
 
 :::
 
@@ -431,7 +473,12 @@ faulty = pd.DataFrame({
 audit = pd.concat([wells[["well", "mass_flow_kgs", "production_c"]], faulty], ignore_index=True)
 
 def invalid_wells(frame, reinjection_c):
-    invalid = (frame["mass_flow_kgs"] < 0) | (frame["production_c"] <= reinjection_c)
+    if not np.isfinite(reinjection_c) or reinjection_c < -273.15:
+        raise ValueError("Reinjection temperature must be finite and at or above absolute zero")
+    # A nullable pandas comparison can yield pd.NA: treat unknown validity as a problem.
+    invalid = (~np.isfinite(frame["mass_flow_kgs"]) | ~np.isfinite(frame["production_c"])
+               | (frame["production_c"] < -273.15) | (frame["mass_flow_kgs"] < 0)
+               | ((frame["mass_flow_kgs"] > 0) & (frame["production_c"] <= reinjection_c))).fillna(True)
     return frame.loc[invalid].copy()
 
 problems = invalid_wells(audit, 70)
@@ -464,6 +511,8 @@ def case(flow):
 
 cases={q:case(q) for q in [40,60,80,100]}
 best=max(cases,key=lambda q:cases[q][0])
+print('Flow kg/s: (export MW, uncapped net MW):', cases, '; best flow:', best, 'kg/s')
+print('Any candidate consumes more than it generates:', any(net < 0 for _, net in cases.values()))
 assert best==60 and all(net>0 for _,net in cases.values())
 ```
 :::
@@ -492,6 +541,8 @@ def field(online):
     return min(4,net),max(0,net-4)
 
 full,clipped=field([0,1])
+print('All-on potential, export, clipped (MW):', potential.sum(), full, clipped)
+print('Single-well exports (MW):', [field([i])[0] for i in range(2)])
 assert full==4 and np.isclose(full+clipped,potential.sum())
 assert all(field([i])[0]<full and field([i])[1]==0 for i in range(2))
 ```
@@ -519,6 +570,7 @@ def net(cold):
 
 options=[60,70,80,90]
 choice=max(t for t in options if net(t)>=1.5)
+print('Net power (MW) by reinjection temperature (°C):', {t:net(t) for t in options}, '; warmest feasible:', choice, '°C')
 assert choice==70 and net(80)<1.5
 ```
 :::
@@ -547,6 +599,7 @@ def boundary(dh_kj_kg):
 
 reference=boundary(480); liquid=boundary(70*4.18)
 bias=1-liquid[1]/reference[1]
+print('Enthalpy and liquid approximations (thermal MW, net MW):', reference, liquid, '; relative underestimation:', f'{bias:.2%}')
 assert isclose(reference[0],26.4) and .39<bias<.40
 ```
 :::
@@ -576,6 +629,6 @@ restored_age=np.where(year<7,year-1,year-7)
 hours[6]-=500
 reset=5*.97**restored_age*hours/1000
 assert np.allclose(base[:6],reset[:6]) and reset.sum()>base.sum()
-print(base.sum(),reset.sum(),'GWh')
+print(f'12-year baseline: {base.sum():.2f} GWh; intervention: {reset.sum():.2f} GWh')
 ```
 :::

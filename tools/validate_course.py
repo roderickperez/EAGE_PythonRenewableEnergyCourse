@@ -136,6 +136,7 @@ def execute_energy_code_cells() -> None:
     pages = [p for p in sorted(ROOT.rglob('*.md'))
              if '_build' not in p.parts and 'node_modules' not in p.parts]
     count = 0
+    figures = 0
     for path in pages:
         namespace = {"__name__": "__course_validation__"}
         text = path.read_text(encoding="utf-8")
@@ -172,11 +173,15 @@ def execute_energy_code_cells() -> None:
                 except Exception as exc:
                     fail(f"Runtime error in {path.relative_to(ROOT)} code-cell #{number}: {type(exc).__name__}: {exc}")
                     break
-        try:
-            namespace.get("plt").close("all") if namespace.get("plt") is not None else None
-        except Exception:
-            pass
-    print(f"Executed {count} Markdown Python cells")
+        import matplotlib.pyplot as plt
+        for figure_number in plt.get_fignums():
+            try:
+                plt.figure(figure_number).canvas.draw()
+                figures += 1
+            except Exception as exc:
+                fail(f"Figure rendering error in {path.relative_to(ROOT)}: {type(exc).__name__}: {exc}")
+        plt.close("all")
+    print(f"Executed {count} Markdown Python cells and rendered {figures} figures")
 
 
 def check_workbook() -> None:

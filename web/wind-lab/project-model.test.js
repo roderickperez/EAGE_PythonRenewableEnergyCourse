@@ -8,7 +8,7 @@ import { wakePixels, wakeRaster, particleWind, advanceParticle, localParticle, p
 test('coordinates and the teaching turbine curve are explicit',()=>{
   assert.deepEqual(gridPoint(0),{id:0,x:100,y:100});
   assert.deepEqual(gridPoint(99),{id:99,x:1900,y:1900});
-  assert.equal(powerKw(2.9),0); assert.equal(powerKw(12),518.4); assert.equal(powerKw(25),518.4); assert.equal(powerKw(25.1),0);
+  assert.equal(powerKw(2.9),0); assert.equal(powerKw(3),8.1); assert.equal(powerKw(12),518.4); assert.equal(powerKw(25),518.4); assert.equal(powerKw(25.1),0);
 });
 
 test('northern wind wakes the downstream turbine; rotating wind changes the layout',()=>{

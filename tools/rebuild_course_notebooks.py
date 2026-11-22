@@ -39,7 +39,7 @@ Build a reproducible monthly time series from the bundled Eurostat exports, vali
 
 Source: [Eurostat energy database](https://ec.europa.eu/eurostat/web/energy/database). The bundled files make this notebook reproducible but should be refreshed before using the results as current statistics.
 
-**Accounting limits:** This tutorial selects combustible renewables, geothermal, broad hydro, other renewables, solar and wind. The broad Hydro export does not separate pumped-storage output; the selected sum must not be called a verified renewable-only total. Eurostat distinguishes storage generation from renewable primary production. Non-renewable combustible fuels can include non-renewable waste, so the aggregate is not labelled simply fossil. Reporting-country coverage changes, statistical flags are omitted by the beginner parser, and some values are missing. This is not an EU-27 official total. For a renewable-only analysis obtain the required hydro breakdown and consistent country coverage first. [Eurostat electricity statistics](https://ec.europa.eu/eurostat/statistics-explained/SEPDF/cache/9990.pdf).
+**Accounting limits:** This tutorial selects combustible renewables, geothermal, broad hydro, other renewables, solar and wind. The broad Hydro export does not separate pumped-storage output; the selected sum must not be called a verified renewable-only total. Eurostat distinguishes storage generation from renewable primary production. The historical non-renewable combustible workbook has an unverified category boundary and is not presented as a complete total. Reporting-country coverage changes, flags must be inspected, and some values are missing. The loader recognizes `:` as missing and stops on unexpected text or non-finite measurements so those values are not silently discarded. Unflagged zeros do not prove complete reporting; in particular, check solar coverage against national sources and comparable definitions. This is not an EU-27 official total. For a renewable-only analysis obtain the required hydro breakdown and consistent country coverage first. [Eurostat electricity statistics](https://ec.europa.eu/eurostat/statistics-explained/SEPDF/cache/9990.pdf).
 """),
         md("## Setup\n\nThe notebook uses pandas, NumPy, Matplotlib, and statsmodels. Paths are resolved whether execution starts in the course root or beside the notebook."),
         code(r"""
@@ -65,16 +65,16 @@ COURSE_ROOT = find_course_root()
 DATA_DIR = COURSE_ROOT / "data" / "section4" / "euroStat"
 DATA_DIR
 """),
-        md("## Data\n\nThe source map deliberately distinguishes aggregate categories from their components. `nonrenewable_combustible_total` is the Eurostat aggregate for non-renewable combustible fuels; it must not be added to coal, gas, and oil."),
+        md("## Data\n\nThe shorthand `oil` represents oil and petroleum products, excluding the biofuel portion, as stated in the bundled workbook. The historical combustible-fuel workbook is labelled `historical_nonrenewable_unverified`: its original category boundary has not been confirmed. Do not treat it as a complete non-renewable total or add it to other categories without verifying their definitions and overlap. The [Eurostat SIEC vocabulary](https://dd.eionet.europa.eu/vocabulary/eurostat/siec/view?page=2) lists both `CF_NR` and `CF_NR_OTH` with an accepted date of 7 December 2018, but their concept entries provide no definitions. This does not identify the code selected in the historical workbook or establish the relationship between the two series."),
         code(r"""
 SOURCE_FILES = {
-    "coal": "nrg_cb_pem_page_spreadsheet_coal.xlsx",
+    "coal_and_manufactured_gases": "nrg_cb_pem_page_spreadsheet_coal.xlsx",
     "combustible_renewable": "nrg_cb_pem_page_spreadsheet_combustionFuels_Renewables.xlsx",
-    "nonrenewable_combustible_total": "nrg_cb_pem_page_spreadsheet_combustionFuels_nonRenewables.xlsx",
+    "historical_nonrenewable_unverified": "nrg_cb_pem_page_spreadsheet_combustionFuels_nonRenewables.xlsx",
     "geothermal": "nrg_cb_pem_page_spreadsheet_geothermal.xlsx",
     "hydro": "nrg_cb_pem_page_spreadsheet_hydro.xlsx",
     "natural_gas": "nrg_cb_pem_page_spreadsheet_naturalGas.xlsx",
-    "nuclear": "nrg_cb_pem_page_spreadsheet_nuclear.xlsx",
+    "nuclear_and_other_fuels_nec": "nrg_cb_pem_page_spreadsheet_nuclear.xlsx",
     "oil": "nrg_cb_pem_page_spreadsheet_oil.xlsx",
     "other_renewable": "nrg_cb_pem_page_spreadsheet_otherRenewables.xlsx",
     "solar": "nrg_cb_pem_page_spreadsheet_solar.xlsx",
@@ -87,24 +87,36 @@ SELECTED_SOURCES = [
 ]
 
 def load_eurostat_export(path: Path, source: str) -> pd.DataFrame:
-    workbook = pd.ExcelFile(path)
-    data_sheet = workbook.sheet_names[-1]
-    wide = pd.read_excel(path, sheet_name=data_sheet, skiprows=8)
-    # Adjacent Unnamed columns contain statistical flags. This beginner parser
-    # omits those flags; retain them for operational analysis.
-    wide = wide.loc[:, ~wide.columns.astype(str).str.startswith("Unnamed")]
-    wide = wide.rename(columns={wide.columns[0]: "country"})
+    with pd.ExcelFile(path) as workbook:
+        wide = pd.read_excel(workbook, sheet_name=workbook.sheet_names[-1], skiprows=8)
+    # Every month has an adjacent status column, including flags for missing values.
+    columns = list(wide.columns)
+    month_columns = [c for c in columns if not str(c).startswith("Unnamed") and c != columns[0]]
+    flag_wide = pd.DataFrame({"country": wide[columns[0]]})
+    for month in month_columns:
+        next_index = columns.index(month) + 1
+        flag_wide[month] = (wide[columns[next_index]] if next_index < len(columns)
+                            and str(columns[next_index]).startswith("Unnamed") else pd.NA)
+    wide = wide[[columns[0], *month_columns]].rename(columns={columns[0]: "country"})
     wide = wide.iloc[1:].copy()  # remove GEO label row
-    wide = wide.loc[:wide["country"].isna().idxmax() - 1] if wide["country"].isna().any() else wide
+    footer = wide.index[wide["country"].eq("Special value")]
+    if len(footer) != 1:
+        raise ValueError("Workbook footer changed; inspect the source layout")
+    wide = wide.loc[wide.index < footer[0]]
     wide = wide.dropna(subset=["country"])
     wide = wide[~wide["country"].astype(str).str.startswith("European Union")]
     long = wide.melt(id_vars="country", var_name="month", value_name="generation_gwh")
+    # Keep status rows aligned with retained country rows, including after blank rows.
+    flag_long = flag_wide.loc[wide.index].melt(id_vars="country", var_name="month", value_name="status_flag")
+    long = long.merge(flag_long, on=["country", "month"], how="left", validate="one_to_one")
     long["month"] = pd.to_datetime(long["month"], format="%Y-%m")
     long["generation_gwh"] = pd.to_numeric(
-        long["generation_gwh"].replace({":": np.nan}), errors="coerce"
+        long["generation_gwh"].replace({":": np.nan}), errors="raise"
     )
+    if not np.isfinite(long["generation_gwh"].dropna()).all():
+        raise ValueError("Generation values must be finite or missing; inspect the source workbook")
     long["source"] = source
-    return long[["country", "month", "source", "generation_gwh"]]
+    return long[["country", "month", "source", "generation_gwh", "status_flag"]]
 
 generation = pd.concat(
     [load_eurostat_export(DATA_DIR / filename, source)
@@ -116,10 +128,27 @@ generation.head()
         md("### Checks\n\nThe intended grain is one country–month–source row. Missing values remain missing; they are never silently replaced by zero."),
         code(r"""
 key = ["country", "month", "source"]
-assert not generation.duplicated(key).any()
-assert generation["month"].min() == pd.Timestamp("2016-01-01")
-assert generation["month"].max() == pd.Timestamp("2024-07-01")
+if generation.duplicated(key).any():
+    raise ValueError("Duplicate country/month/source observations")
+if generation["month"].min() != pd.Timestamp("2016-01-01") or generation["month"].max() != pd.Timestamp("2024-07-01"):
+    raise ValueError("Unexpected historical snapshot month range")
 negative_rows = generation["generation_gwh"].lt(0).sum()
+
+# Source-file country sets are coverage diagnostics, not proof of valid measurements.
+def country_coverage(frame):
+    country_sets = frame.groupby("source")["country"].agg(lambda values: set(values.dropna()))
+    union = set().union(*country_sets)
+    return pd.DataFrame([
+        {"source": source, "country_count": len(countries),
+         "countries": ", ".join(sorted(countries)),
+         "absent_from_source": ", ".join(sorted(union - countries))}
+        for source, countries in country_sets.items()
+    ]).set_index("source")
+
+coverage_by_source = country_coverage(generation)
+print("Source-file country coverage (differences need review):")
+print(coverage_by_source[["country_count", "absent_from_source"]].to_string())
+print("Countries across all source files:", ", ".join(sorted(generation["country"].dropna().unique())))
 
 quality = pd.Series({
     "rows": len(generation),
@@ -221,12 +250,16 @@ Transform the bundled Eurostat Excel exports into a tidy SQLite database, query 
 
 The source measure is monthly **net electricity generation in GWh**. The database keeps source categories separate and records missing values as SQL `NULL`, not zero.
 
-**Accounting limits:** This tutorial selects combustible renewables, geothermal, broad hydro, other renewables, solar and wind. The broad Hydro export does not separate pumped-storage output; the selected sum must not be called a verified renewable-only total. Eurostat distinguishes storage generation from renewable primary production. Non-renewable combustible fuels can include non-renewable waste, so the aggregate is not labelled simply fossil. Reporting-country coverage changes, statistical flags are omitted by the beginner parser, and some values are missing. This is not an EU-27 official total. For a renewable-only analysis obtain the required hydro breakdown and consistent country coverage first. [Eurostat electricity statistics](https://ec.europa.eu/eurostat/statistics-explained/SEPDF/cache/9990.pdf).
+**Accounting limits:** This tutorial selects combustible renewables, geothermal, broad hydro, other renewables, solar and wind. The broad Hydro export does not separate pumped-storage output; the selected sum must not be called a verified renewable-only total. Eurostat distinguishes storage generation from renewable primary production. The historical non-renewable combustible workbook has an unverified category boundary and is not presented as a complete total. Reporting-country coverage changes, flags must be inspected, and some values are missing. The loader recognizes `:` as missing and stops on unexpected text or non-finite measurements so those values are not silently discarded. Unflagged zeros do not prove complete reporting; in particular, check solar coverage against national sources and comparable definitions. This is not an EU-27 official total. For a renewable-only analysis obtain the required hydro breakdown and consistent country coverage first. [Eurostat electricity statistics](https://ec.europa.eu/eurostat/statistics-explained/SEPDF/cache/9990.pdf).
 """),
         md("## Setup"),
         code(r"""
+database_rebuild_completed = False
+database_queries_completed = False
+input_validation_completed = False
 from pathlib import Path
 import sqlite3
+from contextlib import closing
 
 import numpy as np
 import pandas as pd
@@ -241,16 +274,19 @@ COURSE_ROOT = find_course_root()
 DATA_DIR = COURSE_ROOT / "data" / "section4" / "euroStat"
 DB_PATH = COURSE_ROOT / "section5" / "energy_generation.db"
 """),
-        md("## Data model\n\n`generation` has one row per country, month, and source. `source` describes the taxonomy and whether a row is an aggregate or component. This prevents accidental addition of `nonrenewable_combustible_total` to coal, natural gas, and oil."),
+        md('## Data model\n\n`generation` has one row per country, month, and source, including a status flag. The shorthand `oil` represents oil and petroleum products, excluding the biofuel portion, as stated in the bundled workbook. The historical non-renewable workbook has an unverified category boundary; it is not presented as a full total or combined with coal, natural gas, and oil.\n\nA separately archived [July 2024 Eurostat data conversion](https://git.nomics.world/dbnomics-json-data/eurostat-json-data/-/tree/6c03e4a30952f80e7ab2521c7ec7e8a0f19835dd/nrg_cb_pem) labels the historical code `CF_NR` “Combustible fuels - non-renewable,” consistent with the workbook header. Most matched historical values agree, but that evidence does not establish the original selection or its category boundary. The [Eurostat SIEC vocabulary](https://dd.eionet.europa.eu/vocabulary/eurostat/siec/view?page=2) lists `CF_NR` and a separate `CF_NR_OTH` code, each with an accepted date of 7 December 2018; their concept entries provide no definitions. The dates and labels do not establish which code was selected in the historical workbook or a crosswalk between the series. In the bundled May 2024 snapshot, Poland reports 103.001 GWh in the disputed workbook and 6,307.405 GWh for coal and manufactured gases. This discrepancy makes the complete-total interpretation questionable; signed net generation and dataset definitions still need checking. Current provider categories and values can differ through definitions or revisions; do not infer a complete total from the label or combine the series with other fuels without a verified crosswalk.'),
         code(r"""
+database_rebuild_completed = False
+database_queries_completed = False
+input_validation_completed = False
 SOURCE_FILES = {
-    "coal": ("nrg_cb_pem_page_spreadsheet_coal.xlsx", "fossil_component", 0),
+    "coal_and_manufactured_gases": ("nrg_cb_pem_page_spreadsheet_coal.xlsx", "fossil_component", 0),
     "combustible_renewable": ("nrg_cb_pem_page_spreadsheet_combustionFuels_Renewables.xlsx", "renewable", 1),
-    "nonrenewable_combustible_total": ("nrg_cb_pem_page_spreadsheet_combustionFuels_nonRenewables.xlsx", "nonrenewable_combustible_aggregate", 0),
+    "historical_nonrenewable_unverified": ("nrg_cb_pem_page_spreadsheet_combustionFuels_nonRenewables.xlsx", "boundary_unverified", 0),
     "geothermal": ("nrg_cb_pem_page_spreadsheet_geothermal.xlsx", "renewable", 1),
     "hydro": ("nrg_cb_pem_page_spreadsheet_hydro.xlsx", "hydro_including_storage", 1),
     "natural_gas": ("nrg_cb_pem_page_spreadsheet_naturalGas.xlsx", "fossil_component", 0),
-    "nuclear": ("nrg_cb_pem_page_spreadsheet_nuclear.xlsx", "nuclear", 0),
+    "nuclear_and_other_fuels_nec": ("nrg_cb_pem_page_spreadsheet_nuclear.xlsx", "nuclear_and_other_fuels_nec", 0),
     "oil": ("nrg_cb_pem_page_spreadsheet_oil.xlsx", "fossil_component", 0),
     "other_renewable": ("nrg_cb_pem_page_spreadsheet_otherRenewables.xlsx", "renewable", 1),
     "solar": ("nrg_cb_pem_page_spreadsheet_solar.xlsx", "renewable", 1),
@@ -258,20 +294,33 @@ SOURCE_FILES = {
 }
 
 def load_export(path, source):
-    workbook = pd.ExcelFile(path)
-    wide = pd.read_excel(path, sheet_name=workbook.sheet_names[-1], skiprows=8)
-    # Adjacent Unnamed columns contain statistical flags. This beginner parser
-    # omits those flags; retain them for operational analysis.
-    wide = wide.loc[:, ~wide.columns.astype(str).str.startswith("Unnamed")]
-    wide = wide.rename(columns={wide.columns[0]: "country"}).iloc[1:].copy()
-    wide = wide.loc[:wide["country"].isna().idxmax() - 1] if wide["country"].isna().any() else wide
+    with pd.ExcelFile(path) as workbook:
+        wide = pd.read_excel(workbook, sheet_name=workbook.sheet_names[-1], skiprows=8)
+    # Preserve the adjacent status columns, including flags on missing values.
+    columns = list(wide.columns)
+    month_columns = [c for c in columns if not str(c).startswith("Unnamed") and c != columns[0]]
+    flag_wide = pd.DataFrame({"country": wide[columns[0]]})
+    for month in month_columns:
+        next_index = columns.index(month) + 1
+        flag_wide[month] = (wide[columns[next_index]] if next_index < len(columns)
+                            and str(columns[next_index]).startswith("Unnamed") else pd.NA)
+    wide = wide[[columns[0], *month_columns]].rename(columns={columns[0]: "country"}).iloc[1:].copy()
+    footer = wide.index[wide["country"].eq("Special value")]
+    if len(footer) != 1:
+        raise ValueError("Workbook footer changed; inspect the source layout")
+    wide = wide.loc[wide.index < footer[0]]
     wide = wide.dropna(subset=["country"])
     wide = wide[~wide["country"].astype(str).str.startswith("European Union")]
     long = wide.melt(id_vars="country", var_name="month", value_name="generation_gwh")
+    # Keep status rows aligned with retained country rows, including after blank rows.
+    flag_long = flag_wide.loc[wide.index].melt(id_vars="country", var_name="month", value_name="status_flag")
+    long = long.merge(flag_long, on=["country", "month"], how="left", validate="one_to_one")
     long["month"] = pd.to_datetime(long["month"], format="%Y-%m").dt.strftime("%Y-%m-01")
-    long["generation_gwh"] = pd.to_numeric(long["generation_gwh"].replace(":", np.nan), errors="coerce")
+    long["generation_gwh"] = pd.to_numeric(long["generation_gwh"].replace(":", np.nan), errors="raise")
+    if not np.isfinite(long["generation_gwh"].dropna()).all():
+        raise ValueError("Generation values must be finite or missing; inspect the source workbook")
     long["source"] = source
-    return long[["country", "month", "source", "generation_gwh"]]
+    return long[["country", "month", "source", "generation_gwh", "status_flag"]]
 
 generation = pd.concat(
     [load_export(DATA_DIR / filename, source)
@@ -284,12 +333,35 @@ sources = pd.DataFrame([
 """),
         md("### Validate before writing"),
         code(r"""
-assert not generation.duplicated(["country", "month", "source"]).any()
-assert set(generation["source"]) == set(sources["source"])
+database_rebuild_completed = False
+database_queries_completed = False
+input_validation_completed = False
+if generation.duplicated(["country", "month", "source"]).any():
+    raise ValueError("Duplicate country/month/source observations")
+if set(generation["source"]) != set(sources["source"]):
+    raise ValueError("Generation sources do not match the source table")
 negative_rows = generation["generation_gwh"].lt(0).sum()
-assert generation["month"].min() == "2016-01-01"
-assert generation["month"].max() == "2024-07-01"
 
+# Source-file country sets are coverage diagnostics, not proof of valid measurements.
+def country_coverage(frame):
+    country_sets = frame.groupby("source")["country"].agg(lambda values: set(values.dropna()))
+    union = set().union(*country_sets)
+    return pd.DataFrame([
+        {"source": source, "country_count": len(countries),
+         "countries": ", ".join(sorted(countries)),
+         "absent_from_source": ", ".join(sorted(union - countries))}
+        for source, countries in country_sets.items()
+    ]).set_index("source")
+
+coverage_by_source = country_coverage(generation)
+print("Source-file country coverage (differences need review):")
+print(coverage_by_source[["country_count", "absent_from_source"]].to_string())
+print("Countries across all source files:", ", ".join(sorted(generation["country"].dropna().unique())))
+
+if generation["month"].min() != "2016-01-01" or generation["month"].max() != "2024-07-01":
+    raise ValueError("Unexpected historical snapshot month range")
+
+input_validation_completed = True
 pd.DataFrame({
     "rows": [len(generation)],
     "countries": [generation.country.nunique()],
@@ -299,34 +371,48 @@ pd.DataFrame({
     "negative_rows_to_review": [negative_rows],
 })
 """),
-        md("## Create the SQLite database\n\nThe notebook replaces only its own deterministic database file. The source spreadsheets remain unchanged."),
+        md("## Create the SQLite database\n\nThe notebook replaces the tables in its own deterministic database file in one SQLite transaction. If an insert fails, SQLite rolls back the table replacement; the source spreadsheets remain unchanged. This uses `executemany`, not pandas `to_sql`, whose raw SQLite connection behavior differs. Run cells in order and rerun the full notebook after editing code or changing inputs; a syntax error prevents a cell's safety flags from resetting."),
         code(r'''
-with sqlite3.connect(DB_PATH) as connection:
+database_rebuild_completed = False
+database_queries_completed = False
+if not globals().get("input_validation_completed", False):
+    raise RuntimeError("Input validation did not complete; rerun the notebook in order before rebuilding.")
+with closing(sqlite3.connect(DB_PATH)) as connection:
     connection.execute("PRAGMA foreign_keys = ON")
-    connection.executescript("""
-        DROP TABLE IF EXISTS generation;
-        DROP TABLE IF EXISTS source;
-        CREATE TABLE source (
+    with connection:
+        connection.execute("BEGIN")
+        connection.execute("DROP TABLE IF EXISTS generation")
+        connection.execute("DROP TABLE IF EXISTS source")
+        connection.execute("""CREATE TABLE source (
             source TEXT PRIMARY KEY,
             source_group TEXT NOT NULL,
             in_selected_group INTEGER NOT NULL CHECK (in_selected_group IN (0, 1))
-        );
-        CREATE TABLE generation (
+        )""")
+        connection.execute("""CREATE TABLE generation (
             country TEXT NOT NULL,
             month TEXT NOT NULL,
             source TEXT NOT NULL REFERENCES source(source),
             generation_gwh REAL,
+            status_flag TEXT,
             PRIMARY KEY (country, month, source)
-        );
-        CREATE INDEX generation_month_idx ON generation(month);
-    """)
-    sources.to_sql("source", connection, if_exists="append", index=False)
-    generation.to_sql("generation", connection, if_exists="append", index=False)
+        )""")
+        connection.execute("CREATE INDEX generation_month_idx ON generation(month)")
+        def sql_rows(frame, columns):
+            for row in frame.loc[:, columns].itertuples(index=False, name=None):
+                yield tuple(None if pd.isna(value) else value for value in row)
+        connection.executemany("INSERT INTO source VALUES (?, ?, ?)",
+                               sql_rows(sources, ["source", "source_group", "in_selected_group"]))
+        connection.executemany("INSERT INTO generation VALUES (?, ?, ?, ?, ?)",
+                               sql_rows(generation, ["country", "month", "source", "generation_gwh", "status_flag"]))
 
+database_rebuild_completed = True
 DB_PATH
 '''),
-        md("## Queries\n\nThe query selects six source categories for teaching; broad hydro includes storage generation, so this is not an official renewable-only total. The non-renewable combustible total uses only the Eurostat `nonrenewable_combustible_total` aggregate. Nuclear remains separate."),
+        md("## Queries\n\nThe query selects six source categories for teaching; broad hydro includes storage generation, so this is not an official renewable-only total. The historical non-renewable series has an unverified boundary and is shown separately, not as a complete total. Nuclear and other fuels n.e.c. remain separate. Counts show reported rows for the selected group and the other categories. The displayed selected countries, source categories and flagged-row count show which observations contribute to each monthly sum; a flag is not automatically an error. Compare months only after checking coverage, and use an explicit common country–source subset when appropriate."),
         code(r'''
+database_queries_completed = False
+if not globals().get("database_rebuild_completed", False):
+    raise RuntimeError("Database rebuild did not complete; rerun the notebook in order before querying.")
 selected_query = """
 SELECT g.month,
        SUM(g.generation_gwh) AS selected_generation_gwh,
@@ -341,22 +427,63 @@ ORDER BY g.month;
 mix_query = """
 SELECT g.month,
        SUM(CASE WHEN s.in_selected_group = 1 THEN g.generation_gwh END) AS selected_gwh,
-       SUM(CASE WHEN g.source = 'nonrenewable_combustible_total' THEN g.generation_gwh END) AS nonrenewable_combustible_gwh,
-       SUM(CASE WHEN g.source = 'nuclear' THEN g.generation_gwh END) AS nuclear_gwh
+       SUM(CASE WHEN g.source = 'historical_nonrenewable_unverified' THEN g.generation_gwh END) AS historical_nonrenewable_unverified_gwh,
+       SUM(CASE WHEN g.source = 'nuclear_and_other_fuels_nec' THEN g.generation_gwh END) AS nuclear_and_other_fuels_nec_gwh,
+       COUNT(CASE WHEN s.in_selected_group = 1 THEN g.generation_gwh END) AS selected_reported_rows,
+       COUNT(CASE WHEN s.in_selected_group = 1 AND g.generation_gwh IS NOT NULL
+                  AND TRIM(COALESCE(g.status_flag, '')) <> '' THEN 1 END) AS selected_flagged_rows,
+       GROUP_CONCAT(DISTINCT CASE WHEN s.in_selected_group = 1 AND g.generation_gwh IS NOT NULL
+                                  THEN g.country END) AS selected_countries,
+       GROUP_CONCAT(DISTINCT CASE WHEN s.in_selected_group = 1 AND g.generation_gwh IS NOT NULL
+                                  THEN g.source END) AS selected_sources,
+       COUNT(CASE WHEN g.source = 'historical_nonrenewable_unverified' THEN g.generation_gwh END) AS historical_reported_rows,
+       COUNT(CASE WHEN g.source = 'nuclear_and_other_fuels_nec' THEN g.generation_gwh END) AS nuclear_and_other_reported_rows
 FROM generation AS g
 JOIN source AS s USING (source)
 GROUP BY g.month
 ORDER BY g.month;
 """
 
-with sqlite3.connect(DB_PATH) as connection:
+with closing(sqlite3.connect(DB_PATH)) as connection:
     selected_monthly = pd.read_sql_query(selected_query, connection, parse_dates=["month"])
     electricity_mix = pd.read_sql_query(mix_query, connection, parse_dates=["month"])
 
-electricity_mix.tail()
+database_queries_completed = True
+print(electricity_mix.tail().to_string(index=False))
 '''),
-        md("### Database reconciliation\n\nA direct pandas aggregation must match the SQL result. This check catches missing joins, duplicate rows, and taxonomy errors."),
+        md('''### Compare the same reported country–source pairs
+
+A comparable subset contains only country–source pairs with reported values in **both** selected months. The following example compares May and June 2024. It retains reported zeros, excludes missing values and reports the number of common pairs and flagged observations. This selective subset is not a Europe-wide trend or evidence of complete reporting; the broad hydro category still includes storage generation. Flags call for interpretation, not automatic rejection.'''),
         code(r'''
+def compare_common_coverage(frame, source_table, first_month, second_month):
+    """Compare reported observations for identical selected country–source pairs."""
+    if first_month == second_month:
+        raise ValueError("Choose two different months")
+    selected = source_table.loc[source_table.in_selected_group.eq(1), "source"]
+    data = frame.loc[frame.source.isin(selected),
+                     ["country", "source", "month", "generation_gwh", "status_flag"]]
+    def month_rows(month):
+        rows = data.loc[data.month.eq(month)].dropna(subset=["generation_gwh"])
+        return rows.drop(columns="month")
+    pairs = month_rows(first_month).merge(month_rows(second_month), on=["country", "source"],
+                                          suffixes=("_first", "_second"), validate="one_to_one")
+    def flagged(column):
+        return pairs[column].fillna("").astype(str).str.strip().ne("").sum()
+    return {"first_month": first_month, "second_month": second_month,
+            "common_country_source_pairs": len(pairs), "countries": pairs.country.nunique(),
+            "first_gwh": pairs.generation_gwh_first.sum(min_count=1),
+            "second_gwh": pairs.generation_gwh_second.sum(min_count=1),
+            "first_flagged_rows": int(flagged("status_flag_first")),
+            "second_flagged_rows": int(flagged("status_flag_second"))}
+
+common_comparison = compare_common_coverage(generation, sources, "2024-05-01", "2024-06-01")
+print("Common-coverage comparison (not a Europe-wide estimate):")
+print(pd.Series(common_comparison).to_string())
+'''),
+        md("### Database reconciliation\n\nA direct pandas aggregation must match the SQL result. This checks consistency between SQL and pandas. Validate source labels and category boundaries separately; both paths can share the same taxonomy mistake."),
+        code(r'''
+if not globals().get("database_rebuild_completed", False) or not globals().get("database_queries_completed", False):
+    raise RuntimeError("Database rebuild and queries must complete before reconciliation; rerun the notebook in order.")
 selected_sources = sources.loc[sources.in_selected_group.eq(1), "source"]
 expected = (
     generation[generation.source.isin(selected_sources)]
@@ -365,7 +492,7 @@ expected = (
 actual = selected_monthly.set_index(selected_monthly.month.dt.strftime("%Y-%m-%d"))["selected_generation_gwh"]
 pd.testing.assert_series_equal(expected, actual, check_names=False)
 
-with sqlite3.connect(DB_PATH) as connection:
+with closing(sqlite3.connect(DB_PATH)) as connection:
     integrity = connection.execute("PRAGMA integrity_check").fetchone()[0]
     key_duplicates = connection.execute("""
         SELECT COUNT(*) FROM (
@@ -374,7 +501,8 @@ with sqlite3.connect(DB_PATH) as connection:
         )
     """).fetchone()[0]
 
-assert integrity == "ok" and key_duplicates == 0
+if integrity != "ok" or key_duplicates != 0:
+    raise ValueError("Database integrity check or key uniqueness failed")
 {"integrity_check": integrity, "duplicate_keys": key_duplicates}
 '''),
         md("## Takeaways\n\n- SQL execution success does not guarantee semantic correctness; source taxonomy and units must be validated first.\n- Use primary keys to enforce the intended grain.\n- Preserve missing observations as `NULL`.\n- Never add aggregate categories to their components.\n- Reconcile important SQL totals against an independent pandas calculation."),

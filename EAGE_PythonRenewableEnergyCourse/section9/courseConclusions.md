@@ -4,7 +4,7 @@ You have practised turning renewable-energy questions into Python calculations w
 
 ## Keep the physical meaning visible
 
-Power is a rate; energy accumulates over time. Capacity factor, conversion efficiency and availability answer different questions. Hydro needs net head and usable flow; wind energy requires a power curve and resource distribution; PV output depends on effective irradiance and cell temperature; geothermal thermal power must be converted to a defined electrical boundary. [@jica2011], Chapter 3; [@manwell2009], §§2.3–2.5; [@foster2010], Chapter 5; [@grant2011], Chapters 2–3.
+Power is a rate; energy accumulates over time. Capacity factor, conversion efficiency and availability answer different questions. Hydro needs net head and usable flow; wind energy can be summed from measured electrical intervals, or estimated from a wind-speed series and a suitable turbine power curve; PV output depends on effective irradiance and cell temperature; geothermal thermal power must be converted to a defined electrical boundary. [@jica2011], Chapter 3; [@manwell2009], §§2.3–2.5; [@foster2010], Chapter 5; [@grant2011], Chapters 2–3.
 
 ## Make the work reproducible
 

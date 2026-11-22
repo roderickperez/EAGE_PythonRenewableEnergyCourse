@@ -1,11 +1,11 @@
 # Workbook introduction
 
-The Applied Python Workbook contains 100 independent exercises across five topics. Each topic has **4 Basic, 8 Medium and 8 Hard** exercises, with references, step-by-step explanations and executable checks. Use **Introduction to Renewable Energy** for the fundamentals, equations and worked teaching examples.
+The Applied Python Workbook contains 102 independent exercises across five topics. General, Solar, Wind and Geothermal each have **4 Basic, 8 Medium and 8 Hard** exercises; Hydroelectric has **4 Basic, 10 Medium and 8 Hard** exercises, with references, step-by-step explanations and executable checks. Use **Introduction to Renewable Energy** for the fundamentals, equations and worked teaching examples.
 
 | Workbook topic | Exercises |
 |---|---:|
 | [General](workbook/general.md) | 20 |
-| [Hydroelectric](workbook/hydroelectric.md) | 20 |
+| [Hydroelectric](workbook/hydroelectric.md) | 22 |
 | [Solar](workbook/solar.md) | 20 |
 | [Wind](workbook/wind.md) | 20 |
 | [Geothermal](workbook/geothermal.md) | 20 |

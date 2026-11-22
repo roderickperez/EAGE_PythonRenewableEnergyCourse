@@ -1,3 +1,32 @@
-# Project 1: Hydraulic Energy
+# Project 1: Hydroelectric Energy
 
-Project content will be added here.
+Operate a reservoir plant over a synthetic year. Your challenge is to **maximize generated energy while maintaining the water reserve**. The reservoir level evolves from an initially given volume; future storage is unknown until inflow and your operating choices unfold.
+
+## How to use the explorer
+
+1. Choose the baseline or dry inflow scenario, then set **X**, the requested turbine discharge in m³/s. Changing scenario resets the year. The simulation starts immediately; pause to inspect or adjust your policy.
+2. Watch the same animated plant used in the [hydroelectric lesson](../section6/hydroelectricEnergy.md). The blue storage plot shows the changing reservoir; the dashed orange line is the minimum reserve. In the second plot blue is inflow, green is turbine flow, and gold is electrical power. Flow (m³/s) and power (MW) share a numerical axis but have different units; equal heights do not mean equal physical quantities.
+3. Adjust X throughout the year as inflow changes. The model prioritizes a 1 m³/s environmental release, then limits generation to water above the 5 hm³ reserve. If the reserve is reached, actual turbine flow may be lower than X. Surplus above 50 hm³ spills. Reset to compare strategies against the same inflow.
+4. Record total energy, spill, any environmental shortage and final storage. Compare strategies over the full year; water left in storage has potential value beyond the end of this simulation.
+
+(hydro-reservoir-project)=
+:::{iframe} ../../hydro-lab/project.html
+:width: 100%
+:title: Interactive hydroelectric reservoir project
+:::
+
+## Model and assumptions
+
+The plant starts with 30 hm³ in a 50 hm³ reservoir. The target is one simulated day per visible second, for 365 days; delayed animation frames can slow playback, and pausing or hiding the page stops simulation time. Seasonal inflow is synthetic and repeats on reset. The optional dry scenario scales every baseline inflow by 0.1, making environmental shortages possible after stored water is depleted. Environmental release takes priority over both generation and the turbine reserve, so storage can fall below the reserve in severe drought. Turbine efficiency declines automatically from 91% by 0.01 percentage points per simulated day, with a floor of 75%; there is no efficiency control. This is an illustrative deterioration scenario, not an equipment forecast. Generator and transformer efficiencies are 95% and 99%.
+
+For each day, the model uses beginning-of-day storage to approximate net head as $H=60+40S/(50\times10^6)$ metres, where $S$ is m³. It adds that day's inflow, allocates the ecological release, releases up to X through the turbine without crossing the reserve, and spills any excess. Inflow is available within the same day. It computes $P=\rho gQH\eta_t\eta_g\eta_{tr}$ and integrates the day's average power for 24 hours. No evaporation, flow-dependent losses, forecast, price, or detailed turbine curve is included. The safety reserve and environmental target are teaching assumptions, not operational guidance. The ecological shortage reports any inability to supply the target; ecological release itself is not used to generate power in this project.
+
+## Your investigation
+
+1. Run the year with X = 8 m³/s and record when the turbine becomes water-limited. Record energy, spill and final storage.
+2. Reset and try X = 3 m³/s. Compare the two results and explain how the reserve changes output.
+3. Reset and adapt X to seasonal inflow. Can you reduce spill and increase energy while retaining useful year-end storage? Explain the trade-off.
+4. Explain why maximizing this year's energy alone might favor emptying usable storage near year-end. Suggest a terminal-storage constraint for a fair comparison.
+5. Describe how the declining efficiency and storage-dependent head affect generation, and what data would be needed for a real operating model.
+
+6. Select the dry scenario and request 4 m³/s. Record when the environmental target can no longer be met, and compare energy and end-of-year storage with the baseline. The dry scaling is a teaching scenario, not a drought forecast.

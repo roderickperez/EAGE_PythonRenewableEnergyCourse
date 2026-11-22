@@ -64,6 +64,7 @@ mean_map = wind["speed"].mean(dim="time")
 print("Point time series (m/s):", point.values)
 print("First map shape:", first_map.shape)
 print("Time-mean speed (m/s):", float(mean_map.sel(latitude=47.0, longitude=15.0)))
+print("Valid point observations:", int(point.count()), "of", point.sizes["time"])
 ```
 
 Expected output:
@@ -72,9 +73,14 @@ Expected output:
 Point time series (m/s): [5. 5. 5.]
 First map shape: (2, 2)
 Time-mean speed (m/s): 5.0
+Valid point observations: 3 of 3
 ```
 
-For a coordinate not present exactly, `sel(..., method="nearest")` is available; choose a suitable tolerance and check the selected coordinate and distance before interpreting it as a site observation. Coordinate-aware alignment can drop nonmatching labels in arithmetic, depending on the join policy, so compare coordinates explicitly before calculations.
+For a coordinate not present exactly, `sel(..., method="nearest")` is available; choose a suitable tolerance and check the selected coordinate and distance before interpreting it as a site observation. For latitude and longitude, a tolerance in coordinate degrees is not a distance in kilometres. Match longitude conventions and remember that ordinary numeric nearest selection does not wrap around the antimeridian; use an appropriate geographic-distance method where needed. Coordinate-aware alignment can drop nonmatching labels in arithmetic, depending on the join policy, so compare coordinates explicitly before calculations.
+
+For floating-point data, xarray's default mean skips missing values. Report valid counts or duration coverage with the mean: a numeric result can represent only part of the requested period. The mean above gives equal weight to each sample. For unequal-duration interval means, establish interval bounds and use appropriate duration weights; instantaneous samples need a separately justified integration rule.
+
+Check whether real wind components are instantaneous, time-averaged, or accompanied by a separately averaged speed. Averaging the speed calculated at each time is not generally the same as taking the magnitude of the averaged components. For example, equal-duration eastward components of +10 and −10 m/s with zero northward component have mean speed 10 m/s but mean-vector speed 0 m/s. The constant synthetic vectors above do not reveal this difference. See the [ECMWF explanation for ERA-Interim monthly means](https://confluence.ecmwf.int/spaces/CKB/pages/77229867/ERA-Interim%2BMonthly%2BMeans%2Bof%2BDaily%2BMeans%2Bwind%2BU%2Band%2BV%2Bversus%2Bwind%2Bspeed); inspect the temporal definition of the product actually used.
 
 ## Step 3 — Save and reopen a NetCDF example
 

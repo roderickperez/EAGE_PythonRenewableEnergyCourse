@@ -82,3 +82,10 @@ export function createModel(settings={}) {
   }
   return {config,network,step,snapshot};
 }
+
+// This version models one configured layer and one well pair. A zero rate has no active circulation.
+export function projectCsv(history, config) {
+ const header = 'record_index,years,configured_depth_count,active_depth_count,total_flow_kg_s,mass_flow_kg_s,production_C,injection_C,conversion_efficiency,auxiliary_fraction,capacity_MW,availability,price_USD_per_MWh,net_power_MW,energy_MWh,revenue_USD';
+ const rows = history.map((p,i) => [i,p.years,1,config.rate>0?1:0,config.rate,config.rate,p.production,config.injection,config.efficiency,config.auxiliary,config.capacity,config.availability,config.price,p.net,p.energy,p.revenue].join(','));
+ return [header,...rows].join('\n');
+}

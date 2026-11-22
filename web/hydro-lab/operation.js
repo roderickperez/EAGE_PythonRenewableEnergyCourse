@@ -20,7 +20,7 @@ export function mountOperationDemo(kind) {
   if (lossMode) $('drawing').setAttribute('aria-label', 'A level, constant-diameter pipe with moving water and connected upstream and downstream open pressure taps');
   $('note').textContent = lossMode
     ? 'Tap B is held at 2 m of pressure head. Tap A rises by the head needed to drive the selected flow. The columns share a scale that adjusts for large losses. The bend represents one lumped fitting loss; gravity is fixed at 9.81 m/s².'
-    : 'Each turbine is a separate scenario using the same available flow, net head, and generator rating, with ρ = 1,000 kg/m³ and g = 9.81 m/s². The adjustable efficiencies are illustrative constants. Actual efficiency varies with operating conditions and turbine design.';
+    : 'Each turbine is a separate scenario using the same available flow, net head, and generator rating, with ρ = 1,000 kg/m³ and g = 9.81 m/s². The adjustable efficiencies are illustrative combined turbine–generator efficiencies; they include the generator stage. Actual efficiency varies with operating conditions and turbine design.';
 
   const legend = lossMode
     ? [[palette.water, 'Tap A · Inlet'], [palette.net, 'Tap B · Outlet'], ['#8a645f', 'Fitting']]
@@ -42,7 +42,7 @@ export function mountOperationDemo(kind) {
     ['flow', 'Available flow Q', 'm³/s', 0, MAX_TURBINE_FLOW, .1, 8],
     ['head', 'Net head', 'm', 0, MAX_TURBINE_HEAD, 1, 28],
     ['rating', 'Generator rating', 'MW', .1, 25, .1, 2],
-    ...turbineFamilies.map(({ name, efficiency }) => [name.toLowerCase(), name + ' efficiency', '%', 0, 100, 1, efficiency]),
+    ...turbineFamilies.map(({ name, efficiency }) => [name.toLowerCase(), name + ' combined turbine–generator efficiency', '%', 0, 100, 1, efficiency]),
   ];
   const fields = Object.fromEntries(sliders.map(([key, label, unit, min, max, step, value]) => {
     const control = document.createElement('div');

@@ -4,7 +4,8 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'project-map']) {
+for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'project-map', 'learning-roadmap']) {
+  if (process.argv[2] && process.argv[2] !== lab) continue;
   const source = resolve(root, 'web', lab);
   const output = resolve(root, 'EAGE_PythonRenewableEnergyCourse/static', lab);
 
@@ -14,6 +15,8 @@ for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'proj
   if (lab === 'hydro-lab') {
     entryPoints.head = resolve(source, 'head.js');
     entryPoints.balance = resolve(source, 'balance.js');
+    entryPoints['hydro-project'] = resolve(source, 'project.js');
+    entryPoints['worked-examples'] = resolve(source, 'worked-examples.js');
   }
   if (lab === 'solar-lab') {
     entryPoints.resource = resolve(source, 'resource.js');
@@ -22,7 +25,9 @@ for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'proj
   if (lab === 'geothermal-lab') {
     entryPoints.equations = resolve(source, 'equations.js');
     entryPoints['geothermal-project'] = resolve(source, 'project.js');
+    entryPoints['geothermal-multifield'] = resolve(root, 'web/geothermal-multifield/project.js');
     entryPoints.drilling = resolve(source, 'drilling.js');
+    entryPoints['closed-loop'] = resolve(source, 'closed-loop.js');
   }
   if (lab === 'wind-lab') {
     entryPoints.aerodynamics = resolve(source, 'aerodynamics.js');
@@ -40,12 +45,17 @@ for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'proj
     loader: { '.css': 'text', '.svg': 'text', '.csv': 'text', '.geojson': 'json' },
     legalComments: 'inline',
   });
+  if (lab === 'learning-roadmap') {
+    for (const file of ['python.svg', 'styles.css']) await cp(resolve(source, file), resolve(output, file));
+  }
   const html = await readFile(resolve(source, 'index.html'), 'utf8');
   await writeFile(resolve(output, 'index.html'), html);
   if (lab === 'geothermal-lab') {
     await cp(resolve(source, 'equations.html'), resolve(output, 'equations.html'));
     await cp(resolve(source, 'project.html'), resolve(output, 'project.html'));
+    await cp(resolve(root, 'web/geothermal-multifield/multifield.html'), resolve(output, 'multifield.html'));
     await cp(resolve(source, 'drilling.html'), resolve(output, 'drilling.html'));
+    await cp(resolve(source, 'closed-loop.html'), resolve(output, 'closed-loop.html'));
   }
   if (lab === 'solar-lab') {
     await cp(resolve(source, 'resource.html'), resolve(output, 'resource.html'));
@@ -56,12 +66,14 @@ for (const lab of ['hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'proj
     const card = await readFile(resolve(root, 'web/solar-lab/resource.html'), 'utf8');
     await writeFile(resolve(output, 'aerodynamics.html'), card
       .replace('<title>Solar radiation explorer</title>', '<title>Wind aerodynamics explorer</title>')
-      .replace(/src="resource\.js\?[^"]+"/, 'src="aerodynamics.js?v=wind-fixed-axes-3"'));
+      .replace(/src="resource\.js\?[^"]+"/, 'src="aerodynamics.js?v=wind-energy-boundary-4"'));
   }
   if (lab === 'hydro-lab') {
     await cp(resolve(source, 'fallback.svg'), resolve(output, 'fallback.svg'));
     await cp(resolve(source, 'head.html'), resolve(output, 'head.html'));
     await cp(resolve(source, 'balance.html'), resolve(output, 'balance.html'));
+    await cp(resolve(source, 'project.html'), resolve(output, 'project.html'));
+    await cp(resolve(source, 'worked-examples.html'), resolve(output, 'worked-examples.html'));
   }
   console.log(`Built ${lab} in ${output}`);
 }

@@ -24,6 +24,22 @@ Hydropower converts the gravitational potential energy of water into shaft power
 :title: Interactive three-dimensional hydroelectric plant and engineering dashboard
 :::
 
+## Worked plant-design examples
+
+These [interactive examples](https://roderickperez.github.io/EAGE_PythonRenewableEnergyCourse/sandbox/generated/hydro-lab/worked-examples.html) follow the two numerical exercises shown in the [hydroelectric calculation video](https://youtu.be/ROnupNPkVf4). Move a slider to see the results change; use the default values to reproduce the worked examples. The calculations use a 365-day year and $g=9.81$ m/s², so rounding can differ slightly from the video. At approximately 43:20, the video labels the ecological-group value 839.594 as kWh; it is power in kW. Multiply by operating time to obtain energy.
+
+(hydro-worked-examples)=
+:::{iframe} ../../hydro-lab/worked-examples.html
+:width: 100%
+:title: Interactive hydropower design calculations
+:::
+
+For a rectangular channel, $A=by$, wetted perimeter $P_w=b+2y$, and hydraulic radius $R=A/P_w$. Under steady uniform flow, Manning's relation gives $v=R^{2/3}\sqrt{S}/n$ and $Q=Av$. In words, velocity equals hydraulic radius to the two-thirds power, multiplied by the square root of slope, divided by Manning's roughness coefficient. For a full circular pipe $R=D/4$; the same relation can estimate friction slope, $S_f=n^2v^2/R^{4/3}$. Multiply by length for friction head loss, and add the specified local losses. This simplified approach assumes uniform flow and the stated Manning coefficients; it is not a complete penstock design.
+
+The default diversion example has a 12 m wide channel with 4.5 m water depth, slope 0.01%, and $n=0.014$: $A=54$ m², $R\approx2.57$ m, $v\approx1.34$ m/s, and $Q\approx72.4$ m³/s. Channel losses are 1.25 m; two equally loaded penstocks add about 3.1 m, giving roughly 4.35 m total. A 50 MW **electrical** output at 92% turbine and 97% generator efficiency requires about 78.9 m net head. The inferred gross head is about 83.2 m and tailwater elevation about 116.8 m for a 200 m intake. This is a design calculation, not an independently measured tailwater elevation. The mean river flow is 60 m³/s; the higher channel design flow cannot be sustained continuously at that mean without storage or varying inflow.
+
+For the reservoir example, annual runoff is precipitation depth × catchment area × runoff coefficient. With 200 km², 1,200 mm/year and coefficient 0.6, this is 144 hm³/year, or about 4.57 m³/s averaged over a year. The example assumes design flow twice the mean, 10% spill, and subtracts 1 m³/s for a separate ecological release upstream of the turbine return. It uses constant average head and efficiencies for annual energy; these assumptions do not replace chronological reservoir routing. Turbine selection requires manufacturer operating envelopes and minimum-flow data: the video's two-Francis-unit choice is illustrative, not a universal sizing rule.
+
 <!-- expanded-theory:hydro:start -->
 
 ## Physical description: water, elevation and electricity
@@ -41,15 +57,15 @@ A useful first description of a site therefore needs **both flow and head**. A l
 | Diversion scheme | Conveys water through a canal, tunnel or penstock to gain useful head | Include conveyance losses and impacts along the bypassed river reach |
 | Pumped storage | Uses electricity to lift water, then generates during release | Track both pumping consumption and recovered generation |
 
-*Source for these definitions/calculations:* [@ifc2015], Chapters 2–3; [@jrc2025hydro], §2 (pumped storage); the equations are energy balances with the stated loss boundaries.
+*Source for these definitions/calculations:* [@ifc2015], §§4.2 and 4.4; [@jrc2025hydro], §2 (pumped storage); the equations are energy balances with the stated loss boundaries.
 
 These categories can overlap: a run-of-river project may have some pondage, and a reservoir plant may also be part of a cascade. A pumped-storage scheme can have natural inflows as well as pumped water. Its total generation cannot automatically be treated as primary renewable production without appropriate accounting [@jica2011; @jrc2025hydro].
 
 ### Components and the flow path
 
-The typical sequence is **intake → screen/trash rack → conveyance system → turbine → tailrace**, with **turbine shaft → generator → transformer → electrical network** on the energy-conversion side. Gates regulate flow; a spillway passes water that cannot or should not enter the turbines. An intake screen intercepts debris, while sediment-management facilities may be needed to limit abrasion and deposition. [@jica2011], Chapters 3 and 9; [@ifc2015], Chapter 3.
+The typical sequence is **intake → screen/trash rack → conveyance system → turbine → tailrace**, with **turbine shaft → generator → transformer → electrical network** on the energy-conversion side. Gates regulate flow; a spillway passes water that cannot or should not enter the turbines. An intake screen intercepts debris, while sediment-management facilities may be needed to limit abrasion and deposition. [@jica2011], Chapters 3 and 9; [@ifc2015], §4.4.
 
-The penstock conveys pressurized water to the turbine. A surge arrangement may be required to manage pressure transients. The tailrace returns water downstream. In a reaction-turbine installation, the draft tube is part of the pressure and velocity-energy recovery process; it is not an additional source of energy. Hydraulic design must consider the full water passage rather than only the turbine nameplate. [@jica2011], Chapters 3 and 9; [@ifc2015], Chapter 3.
+The penstock conveys pressurized water to the turbine. A surge arrangement may be required to manage pressure transients. The tailrace returns water downstream. In a reaction-turbine installation, the draft tube is part of the pressure and velocity-energy recovery process; it is not an additional source of energy. Hydraulic design must consider the full water passage rather than only the turbine nameplate. [@jica2011], Chapters 3 and 9; [@ifc2015], §4.4.
 
 ## Head, flow and the hydraulic energy balance
 
@@ -97,7 +113,7 @@ The same distinction matters in reservoir routing. Electrical energy may be inte
 
 ### Deriving the power equation
 
-A water mass $m$ descending through usable head $H$ has available mechanical energy $mgH$. For a continuously flowing mass rate $\dot m=\rho Q$, the available hydraulic power is Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7.
+A water mass $m$ descending through usable head $H$ has available mechanical energy $mgH$. For a continuously flowing mass rate $\dot m=\rho Q$, the available hydraulic power is:
 
 $$P_{hyd}=\rho gQH_{net}.$$
 
@@ -107,7 +123,7 @@ $$P_{hyd}=\rho gQH_{net}.$$
 :title: Hydraulic power explorer
 :::
 
-*Equation basis:* Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7.
+*Sources and assumptions for this equation group:* Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7.
 
 The electrical conversion chain gives
 
@@ -118,8 +134,6 @@ $$P_e=\eta_t\eta_g\rho gQH_{net},$$
 :width: 100%
 :title: Electrical power explorer
 :::
-
-*Equation basis:* Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7.
 
 where $\eta_t$ is turbine efficiency and $\eta_g$ is generator efficiency. A combined efficiency $\eta$ may include other explicitly identified losses. If station auxiliaries are not included in $\eta$, subtract their power separately when calculating net export. A quoted turbine efficiency must not be silently treated as the efficiency of the complete station [@jica2011; @ifc2015].
 
@@ -137,11 +151,11 @@ With SI inputs the product gives watts. Divide by $10^6$ for megawatts. The IFC 
 
 *Source for these definitions/calculations:* Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7.
 
-Dimensional check: $(\mathrm{kg/m^3})(\mathrm{m/s^2})(\mathrm{m^3/s})(\mathrm m)=\mathrm{kg\,m^2/s^3}=\mathrm W$. Divide by $10^6$ to obtain MW. Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7.
+Dimensional check: $(\mathrm{kg/m^3})(\mathrm{m/s^2})(\mathrm{m^3/s})(\mathrm m)=\mathrm{kg\,m^2/s^3}=\mathrm W$. Divide by $10^6$ to obtain MW.
 
 ## Hydraulic losses and turbine operation
 
-For a circular pipe, a useful friction model is the Darcy–Weisbach equation, [@jica2011], §8.3 and Chapter 10; [@ifc2015], Chapter 3.
+For a circular pipe, the [U.S. Bureau of Reclamation's Design of Gravity Dams, §10-10(a), equation 7, p. 228](https://www.usbr.gov/tsc/techreferences/hydraulics_lab/pubs/manuals/GravityDams.pdf) gives the Darcy–Weisbach friction equation. The Darcy friction factor depends on Reynolds number and roughness; a fixed value is an assumption.
 
 $$h_f=f_D\frac{L}{D}\frac{v^2}{2g},\qquad
 v=\frac{Q}{A_p},\qquad A_p=\frac{\pi D^2}{4}.$$
@@ -152,19 +166,21 @@ v=\frac{Q}{A_p},\qquad A_p=\frac{\pi D^2}{4}.$$
 :title: Hydraulic losses explorer
 :::
 
-*Equation basis:* [@jica2011], §8.3 and Chapter 10; [@ifc2015], Chapter 3.
+$f_D$ is the dimensionless **Darcy** friction factor, $L$ and $D$ are pipe length and diameter in metres, and $A_p$ is pipe cross-sectional area. Do not substitute the numerically different Fanning friction factor without conversion. Fittings and transitions may be represented by $h_m=\sum K_jv^2/(2g)$ with appropriately defined local velocities. If geometry and coefficients are held fixed, losses scale approximately with $Q^2$. Thus doubling turbine flow need not double output: net head may fall as flow increases.
 
-$f_D$ is the dimensionless **Darcy** friction factor, $L$ and $D$ are pipe length and diameter in metres, and $A_p$ is pipe cross-sectional area. Do not substitute the numerically different Fanning friction factor without conversion. Fittings and transitions may be represented by $h_m=\sum K_jv^2/(2g)$ with appropriately defined local velocities. If geometry and coefficients are held fixed, losses scale approximately with $Q^2$. Thus doubling turbine flow need not double output: net head may fall as flow increases. [@jica2011], §8.3 and Chapter 10; [@ifc2015], Chapter 3.
+*Related head and loss context:* [@jica2011], §8.3; [@ifc2015], §§7.2.1 and 7.2.4. For the distinction between Darcy and Fanning friction factors, see the [NCEES FE Reference Handbook, p. 102](https://ncees.org/wp-content/uploads/2012/11/FE-Ref-9.0_Web.v2.pdf). The direct Darcy–Weisbach equation source is given above.
 
-The Python exercises sometimes use a supplied loss value or an illustrative coefficient $h_{loss}=aQ^2$. That coefficient is not a universal property of hydropower. A real estimate needs geometry, roughness, fluid properties and a defensible hydraulic model. [@jica2011], §8.3 and Chapter 10; [@ifc2015], Chapter 3.
+The Python exercises sometimes use a supplied loss value or an illustrative coefficient $h_{loss}=aQ^2$. That coefficient is not a universal property of hydropower. A real estimate needs geometry, roughness, fluid properties and a defensible hydraulic model.
 
 ### Turbine families
 
 **Impulse turbines**, including Pelton machines, extract energy from a high-speed jet acting on the runner. **Reaction turbines**, including Francis and Kaplan/propeller arrangements, operate with pressure changes through the runner. Pelton machines are commonly associated with higher-head, lower-flow applications; Kaplan/propeller machines suit many lower-head, larger-flow settings; Francis machines occupy a broad intermediate range. These are qualitative tendencies, not rigid selection thresholds [@jica2011; @doeHydroTurbines].
 
-Selection also depends on flow variation, rotational speed, cavitation, sediment, mechanical constraints and cost. Efficiency changes away from the design operating point. Minimum stable flow and turbine start/stop behavior mean that a constant-efficiency model may overstate output at very low discharge. Cavitation occurs when local pressure permits vapor cavities to form and subsequently collapse; it can damage components and constrain installation and operation. [@jica2011], Chapter 10; [@doeHydroTurbines].
+Selection also depends on flow variation, rotational speed, cavitation, sediment, mechanical constraints and cost. Efficiency changes away from the design operating point. Minimum stable flow and turbine start/stop behavior mean that a constant-efficiency model may overstate output at very low discharge. Cavitation occurs when local pressure permits vapor cavities to form and subsequently collapse; it can damage components and constrain installation and operation. See the [DOE hydropower glossary, “Cavitation”](https://www.energy.gov/cmei/water/glossary-hydropower-terms) for the bubble-collapse mechanism. [@jica2011], Chapter 10; [@doeHydroTurbines].
 
-The simple power cap $P=\min(\eta\rho gQH,P_r)$ is adequate for introductory energy calculations. It does not explicitly model gate position, turbine flow or pressure transients. At fixed head and efficiency, a corresponding flow limit is $Q_r=P_r/(\eta\rho gH)$. If water routing matters, allocate no more than that flow to the turbine and route the remainder to a bypass, spillway or storage. [@jica2011], Chapter 10; [@doeHydroTurbines].
+The simple power cap $P=\min(\eta\rho gQH,P_r)$ is adequate for introductory energy calculations. It does not explicitly model gate position, turbine flow or pressure transients. At fixed positive head and positive combined turbine–generator efficiency, a corresponding flow limit is $Q_r=P_r/(\eta\rho gH)$. The efficiency must match the electrical rating boundary; at zero head or efficiency this rearrangement is undefined. If water routing matters, allocate no more than that flow to the turbine and route the remainder to a bypass, spillway or storage. [@jica2011], Chapter 10; [@doeHydroTurbines].
+
+JICA's Chapter 10 turbine-output equation uses turbine efficiency for shaft power. When $P_r$ is an electrical rating, include generator and any other losses required by that rating's stated boundary in the combined $\eta$; turbine efficiency alone is not the complete electrical conversion efficiency.
 
 (turbine-operation-explorer)=
 :::{iframe} ../../hydro-lab/balance.html?demo=turbine-operation
@@ -176,7 +192,7 @@ The simple power cap $P=\min(\eta\rho gQH,P_r)$ is adequate for introductory ene
 
 ### Environmental releases before generation
 
-An elementary allocation rule is
+For this teaching rule, the environmental target is measured in a separate bypass reach upstream of the turbine return; bypass water is not available to the turbine. A target measured downstream of the tailrace may instead include qualifying turbine discharge. The applicable licence determines the actual location and routing. An elementary allocation rule is
 
 $$Q_{env,served}=\min(Q_{river},Q_{env,target}),$$
 $$Q_{usable}=\max(Q_{river}-Q_{env,target},0).$$
@@ -190,6 +206,8 @@ If river flow is below the target, generation cannot create the missing environm
 A **hydrograph** retains the time sequence of flow. A **flow-duration curve** sorts flows from largest to smallest and plots them against an exceedance-frequency convention. The latter helps describe how often a flow is equalled or exceeded, but discards chronological information. The course uses plotting positions $r/(n+1)$ for descending rank $r$; other conventions exist and should be named. [@jica2011], Chapters 7–8; [@ifc2015], Chapter 7.
 
 A duration curve can support a simplified run-of-river energy estimate, but it cannot on its own determine reservoir operation or a sequence of shortages. Long-term assessment should cover wet and dry conditions, missing observations, upstream abstractions and changes in the catchment. A four-day exercise is not evidence of firm year-round production. [@jica2011], Chapters 7–8; [@ifc2015], Chapter 7.
+
+For a simple illustration, inflows of `[2, 2, 0, 0]` and `[2, 0, 2, 0]` volume units per hour have the same sorted values. With demand of one unit per hour, initially empty storage of one unit, and no losses or rate limits, the first sequence leaves one unit unmet; the second meets all demand. The order matters even though the duration curves match.
 
 (flow-duration-explorer)=
 :::{iframe} ../../hydro-lab/balance.html?demo=flow-duration
@@ -290,20 +308,20 @@ $$S_{t+1}=S_t+
 
 *Equation basis:* [@jica2011], §8.3.2; the time-discrete water balance follows conservation under the stated separate flow paths.
 
-Storage $S$ and losses $V$ are in m³, flows are m³/s, and $\Delta t$ is seconds. Environmental flow and turbine release must be defined as distinct water paths; do not count the same discharge twice. A route with minimum storage or dead storage must limit withdrawals to water above that bound. Enforce $S_{min}\le S\le S_{max}$ and preserve mass balance at every step. [@jica2011], §8.3.2; the time-discrete water balance follows conservation under the stated separate flow paths.
+Storage $S$ and losses $V$ are in m³, flows are m³/s, and $\Delta t$ is seconds. Environmental flow and turbine release must be defined as distinct water paths; do not count the same discharge twice. A route with minimum storage or dead storage must limit withdrawals to water above that bound. Enforce $S_{min}\le S\le S_{max}$ and preserve mass balance at every step.
 
-Reservoir level and tailwater can change, so head is generally a function of storage and discharge. Constant head is a useful simplification, particularly for short demonstrations, but can bias energy in a large drawdown. State whether within-step inflow can be used immediately and whether head is evaluated at the beginning, midpoint or end of the step. [@jica2011], §8.3.2; the time-discrete water balance follows conservation under the stated separate flow paths.
+Reservoir level and tailwater can change, so head is generally a function of storage and discharge. Constant head is a useful simplification, particularly for short demonstrations, but can bias energy in a large drawdown. State whether within-step inflow can be used immediately and whether head is evaluated at the beginning, midpoint or end of the step.
 
 ## Pumped storage and energy accounting
 
-Moving a volume $V$ upward through constant head $H$ stores approximately $E_{pot}=\rho gVH$ joules. Pumping and generation require separate efficiency directions: [@jrc2025hydro], §2 (pumped storage); the equations are energy balances with the stated loss boundaries.
+Moving a volume $V$ upward through constant head $H$ stores approximately $E_{pot}=\rho gVH$ joules. Here $\eta_p$ is the combined grid-electricity-to-stored-water efficiency, including motor, drive and pump losses; $\eta_t$ and $\eta_g$ describe the turbine and generator stages. Pumping and generation require separate efficiency directions:
 
 $$E_{pump}=\frac{E_{pot}}{\eta_p},\qquad
 E_{gen}=\eta_t\eta_gE_{pot}.$$
 
-*Equation basis:* [@jrc2025hydro], §2 (pumped storage); the equations are energy balances with the stated loss boundaries.
-
 With the same head and water volume on both legs and no additional losses, $\eta_{RT}=\eta_p\eta_t\eta_g$. In a partial cycle, remaining water still contains stored energy; comparing generated energy with pumping input before accounting for that remaining storage gives an incomplete efficiency calculation. Pumped storage provides timing and flexibility services while consuming net electrical energy over a complete cycle [@jrc2025hydro].
+
+*Equation basis:* [@jrc2025hydro], §2 (pumped storage); the equations are energy balances with the stated loss boundaries.
 
 (pumped-storage-explorer)=
 :::{iframe} ../../hydro-lab/balance.html?demo=pumped-storage
@@ -313,7 +331,7 @@ With the same head and water volume on both legs and no additional losses, $\eta
 
 ## Worked calculation before coding
 
-Take a synthetic river flow of 12 m³/s, environmental reservation of 2 m³/s, gross head of 30 m, hydraulic loss of 2 m and combined turbine-generator efficiency of 0.85. Original numerical substitution; Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7.
+Take a synthetic river flow of 12 m³/s, a 2 m³/s environmental reservation to a separate bypass reach upstream of the turbine return, gross head of 30 m, hydraulic loss of 2 m and combined turbine-generator efficiency of 0.85.
 
 1. Available turbine flow is $12-2=10$ m³/s.
 2. Net head is $30-2=28$ m.
@@ -323,7 +341,7 @@ Take a synthetic river flow of 12 m³/s, environmental reservation of 2 m³/s, g
 
 *Source for these definitions/calculations:* Original numerical substitution; Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7.
 
-If the model also routes water, calculate the flow needed for the capped output and handle the remaining available flow explicitly. Do not assume the generator cap eliminates water from the balance. This example omits separate auxiliary consumption and assumes unchanged conditions over six hours. Original numerical substitution; Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7.
+If the model also routes water, calculate the flow needed for the capped output and handle the remaining available flow explicitly. Do not assume the generator cap eliminates water from the balance. This example omits separate auxiliary consumption and assumes unchanged conditions over six hours.
 
 ## Environmental context and the route to Python
 
@@ -331,28 +349,27 @@ Hydropower does not burn fuel in the turbine, but the project can affect river c
 
 Exercises 1–4 cover the Basic skills, Exercises 5–12 apply the models in Medium tasks, and Exercises 13–20 combine models, data, and validation in Hard tasks. Read JICA Chapters 3 and 8 before these calculations; consult the supplied IFC guide for hydrology and project context, and Paish's technical review for further small-hydro background [@jica2011; @ifc2015; @paish2002hydro].
 
-
 <!-- expanded-theory:hydro:end -->
 
 ## Concepts and equations: compact reference
 
 ### Gross head, head loss, and net head
 
-The gross head is the upstream-to-downstream elevation or hydraulic-head difference. Friction and local losses reduce the head available at the turbine: Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7.
+The gross head is the upstream-to-downstream elevation or hydraulic-head difference. Friction and local losses reduce the head available at the turbine:
 
 $$H_{net}=H_{gross}-h_{loss}$$
 
 *Equation basis:* Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7.
 
-Always use $H_{net}$ in the plant power equation. Treating gross head as net head overestimates production. Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7.
+Always use $H_{net}$ in the plant power equation. Treating gross head as net head overestimates production.
 
 ### Power and energy
 
-For water density $\rho$, gravity $g$, volume flow $Q$, net head $H_{net}$, and combined turbine-generator efficiency $\eta$: Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
+For water density $\rho$, gravity $g$, volume flow $Q$, net head $H_{net}$, and combined turbine-generator efficiency $\eta$:
 
 $$P_e=\eta\rho gQH_{net}$$
 
-*Equation basis:* Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
+*Sources and assumptions for this equation group:* Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §§3.1.2–3.1.3 (use coherent SI units).
 
 | Quantity | SI unit |
 |---|---|
@@ -362,21 +379,17 @@ $$P_e=\eta\rho gQH_{net}$$
 | $H$ | m |
 | $P$ | W |
 
-*Source for these definitions/calculations:* Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
+*Source for these definitions/calculations:* Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §§3.1.2–3.1.3 (use coherent SI units).
 
-Power is an instantaneous rate. Energy over intervals $\Delta t_i$ is Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
+Power is an instantaneous rate. If $P_i$ is the average over interval $\Delta t_i$, energy is:
 
 $$E=\sum_i P_i\Delta t_i$$
 
-*Equation basis:* Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
-
-If $P$ is in MW and $\Delta t$ in hours, $E$ is in MWh. For rated power $P_r$ and capacity factor $CF$ over $T$ hours: Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
+If $P$ is in MW and $\Delta t$ in hours, $E$ is in MWh. For rated power $P_r$ and capacity factor $CF$ over $T$ hours:
 
 $$E=P_r\,CF\,T,\qquad CF=\frac{E}{P_rT}$$
 
-*Equation basis:* Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
-
-Capacity factor includes hydrology, outages, dispatch, and other constraints; it is not turbine efficiency. Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7. Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units).
+Capacity factor includes hydrology, outages, dispatch, and other constraints; it is not turbine efficiency.
 
 ### Equipment limits and storage
 
@@ -384,17 +397,17 @@ The generator limits electrical output:
 
 $$P_{plant}=\min(P_e,P_r)$$
 
-*Equation basis:* Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7. [@jrc2025hydro], §2 (pumped storage); the equations are energy balances with the stated loss boundaries.
+*Sources and assumptions for this equation group:* Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7. [@jrc2025hydro], §2 (pumped storage); the equations are energy balances with the stated loss boundaries.
 
-For pumped storage, round-trip efficiency compares recovered generation with pumping energy: Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7. [@jrc2025hydro], §2 (pumped storage); the equations are energy balances with the stated loss boundaries.
+For pumped storage, round-trip efficiency compares recovered generation with pumping energy:
 
 $$\eta_{RT}=\frac{E_{generated}}{E_{pumping}}$$
 
-*Equation basis:* Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7. [@jrc2025hydro], §2 (pumped storage); the equations are energy balances with the stated loss boundaries.
-
-It is below one. Pumped storage shifts energy in time; it is not a net energy source. Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7. [@jrc2025hydro], §2 (pumped storage); the equations are energy balances with the stated loss boundaries.
+The idealized ratio is at most one; real cycles have losses and operate below one. Pumped storage shifts energy in time; it is not a net energy source.
 
 ## A tested Python model
+
+When multiple inputs are pandas series, these helpers require unique, nonmissing, matching indexes in the same order; they do not align data automatically. With an unlabeled array, the caller must ensure its order corresponds to the labeled data.
 
 ```{code-cell} python
 import numpy as np
@@ -405,7 +418,22 @@ G = 9.81            # m/s2
 
 def hydro_power_mw(flow_m3s, gross_head_m, efficiency=0.90,
                    head_loss_m=0.0, rated_power_mw=None):
-    """Return hydroelectric power in MW for scalar or array inputs."""
+    """Return MW; flow, gross head and head loss may broadcast as arrays.
+
+    Efficiency and optional rated power are scalar configuration values.
+    """
+    indexes = [getattr(value, "index", None) for value in (flow_m3s, gross_head_m, head_loss_m)]
+    indexes = [index for index in indexes if index is not None and not callable(index)
+               and callable(getattr(index, "equals", None))]
+    for index in indexes:
+        if hasattr(index, "is_unique") and not index.is_unique:
+            raise ValueError("Labeled inputs must have unique, nonmissing indexes")
+        if callable(getattr(index, "to_frame", None)):
+            name = list(range(index.nlevels)) if index.nlevels > 1 else 0
+            if index.to_frame(index=False, name=name).isna().to_numpy().any():
+                raise ValueError("Labeled inputs must have unique, nonmissing indexes")
+    if len(indexes) > 1 and any(not indexes[0].equals(index) for index in indexes[1:]):
+        raise ValueError("Labeled inputs must have matching indexes in the same order")
     if not all(np.isfinite(np.asarray(value, dtype=float)).all() for value in [flow_m3s, gross_head_m, efficiency, head_loss_m]):
         raise ValueError("model inputs must be finite")
     flow = np.asarray(flow_m3s, dtype=float)
@@ -474,7 +502,7 @@ The flat segments at 35 MW are generator clipping, not constant river flow. This
 - Applying capacity factor to power that is already a time average.
 - Treating pumped storage as a source of net electricity.
 
-(chapter-practice-20-python-exercises)=
+(hydro-practice)=
 ## Practice
 
 [Open the hydroelectric exercises](../section7/workbook/hydroelectric.md) in the Applied Python Workbook.
