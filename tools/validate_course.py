@@ -78,13 +78,18 @@ def check_known_regressions() -> None:
             fail(f"Known regression found: {label}")
 
 
+CODE_CELL_RE = re.compile(r"^```\{code-cell\}\s+python[^\n]*\n(.*?)^```", re.DOTALL | re.MULTILINE)
+INLINE_CODE_CELL_RE = re.compile(r"^[^\r\n]+```\{code-cell\}", re.MULTILINE)
+
+
 def check_python_code_cells() -> None:
-    marker = re.compile(r"```\{code-cell\}\s+python[^\n]*\n(.*?)```", re.DOTALL)
     for path in ROOT.rglob("*.md"):
         if "_build" in path.parts:
             continue
         text = path.read_text(encoding="utf-8", errors="ignore")
-        for number, match in enumerate(marker.finditer(text), start=1):
+        if INLINE_CODE_CELL_RE.search(text):
+            fail(f"Inline code-cell fence not at start of line in {path.relative_to(ROOT)}")
+        for number, match in enumerate(CODE_CELL_RE.finditer(text), start=1):
             try:
                 ast.parse(match.group(1))
             except SyntaxError as exc:
@@ -132,10 +137,11 @@ def execute_energy_code_cells() -> None:
     import matplotlib
 
     matplotlib.use("Agg")
-    marker = re.compile(r"```\{code-cell\}\s+python[^\n]*\n(.*?)```", re.DOTALL)
+    marker = CODE_CELL_RE
     pages = [p for p in sorted(ROOT.rglob('*.md'))
              if '_build' not in p.parts and 'node_modules' not in p.parts]
     count = 0
+    figures = 0
     for path in pages:
         namespace = {"__name__": "__course_validation__"}
         text = path.read_text(encoding="utf-8")
@@ -172,11 +178,15 @@ def execute_energy_code_cells() -> None:
                 except Exception as exc:
                     fail(f"Runtime error in {path.relative_to(ROOT)} code-cell #{number}: {type(exc).__name__}: {exc}")
                     break
-        try:
-            namespace.get("plt").close("all") if namespace.get("plt") is not None else None
-        except Exception:
-            pass
-    print(f"Executed {count} Markdown Python cells")
+        import matplotlib.pyplot as plt
+        for figure_number in plt.get_fignums():
+            try:
+                plt.figure(figure_number).canvas.draw()
+                figures += 1
+            except Exception as exc:
+                fail(f"Figure rendering error in {path.relative_to(ROOT)}: {type(exc).__name__}: {exc}")
+        plt.close("all")
+    print(f"Executed {count} Markdown Python cells and rendered {figures} figures")
 
 
 def check_workbook() -> None:

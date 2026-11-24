@@ -1,8 +1,31 @@
 # References and reading guide
 
-Reviewed 2 October 2026, including a second check after the Drive folder was expanded. This catalogue covers all 10 local PDFs (9 distinct works) and the newly accessible Goswami book in Drive: **10 distinct works in total**. The Drive listing now exposes seven PDFs. Publication metadata were checked against the supplied title/copyright pages; topic locators use printed chapters or pages, not PDF-viewer page numbers unless explicitly labelled PDF page.
+Book catalogue reviewed 2 October 2026, including a second check after the Drive folder was expanded; source-passage notes and technical references were updated in November 2026. This catalogue covers all 10 local PDFs (9 distinct works) and the newly accessible Goswami book in Drive: **10 distinct works in total**. The Drive listing now exposes seven PDFs. Publication metadata were checked against the supplied title/copyright pages; topic locators use printed chapters or pages, not PDF-viewer page numbers unless explicitly labelled PDF page.
 
 The exercises are original teaching adaptations of these concepts, with synthetic numbers; they are not copied textbook problems. Older books support physical principles, while dated reports support market context. No local PDFs are republished by the book build.
+
+## Notes on source passages
+
+These corrections concern the cited sources as checked in November 2026; the course equations use the stated boundaries.
+
+- Foster et al., Chapter 2, p. 39: the Sun reaches its highest daily position at solar noon but is not generally at the zenith. For example, at 48° N on an equinox, its geometric noon zenith angle is 48° ([Sandia solar-position model](https://pvpmc.sandia.gov/modeling-guide/1-weather-design-inputs/sun-position/basic-solar-position-models/)).
+- [OpenStax, §4.3](https://openstax.org/books/university-physics-volume-2/pages/4-3-refrigerators-and-heat-pumps): its heat-pump COP definition is useful, but the statement that heat-pump heat delivery falls below work input below approximately −10 °C is not a universal threshold. Performance depends on equipment and operating conditions; an ideal reversible heat pump at −20 °C source and 20 °C delivery temperatures has a heating COP of about 7.33, calculated using kelvin temperatures.
+- IFC hydropower guide, §7.3, p. 48: a statement equating energy to work times time is a dimensional typo. Work and energy share units; energy is the time integral of power ([EIA explanation](https://www.eia.gov/energyexplained/electricity/measuring-electricity.php)). For elevation, pressure and velocity head, use the [U.S. Bureau of Reclamation explanation and Figure 2-3a](https://www.usbr.gov/tsc/techreferences/mands/wmm/chap02_10.html); IFC Figure 7-7 instead illustrates plant head and losses.
+- IFC hydropower guide, Box 7-2, p. 47: the annual energy ratio given for capacity factor is distinct from availability, although the surrounding wording associates the two. A 10 MW plant available throughout a period but producing 5 MW continuously has a 50% capacity factor for that period; its time-based availability is 100% under a ready-to-operate definition. See the [EIA capacity-factor definition](https://www.eia.gov/tools/glossary/index.php?id=Capacity_factor) and state the period and measurement boundary.
+- Grant and Bixley, §2.3, p. 16: the Wairakei example compares approximately 180 W/m² convective with 1 W/m² conductive heat flux; its later reference to the larger value as conductive appears to mean convective.
+- The cited [DOE PV longevity page](https://www.energy.gov/cmei/femp/optimizing-solar-photovoltaic-performance-longevity) displays a dimensionally inconsistent availability expression. For time-based availability, use (total time − downtime) / total time, consistent with the [DOE-hosted performance assessment](https://www.energy.gov/sites/default/files/2022-01/understanding-solar-photovoltaic-system-performance.pdf). Define downtime and the reporting boundary first.
+
+Additional reading cautions:
+
+- Foster et al., §5.13, p. 126: maximum-power efficiency is $V_{mp}I_{mp}/P_{in}$, equivalently $V_{oc}I_{sc}FF/P_{in}$. The book’s Eq. 5.15 appears to apply fill factor again to maximum power; see [DOE, Eqs. 3.12–3.14](https://www.energy.gov/sites/default/files/2017/08/f36/USDOE_WVSC_Project_Final_Report_5-30-2014_R1.pdf).
+- Foster et al., §§7.5.2.2–7.5.2.3, pp. 158–159: the lamp quantities and hours differ between the stated table and calculations; the battery percentage and rounding also need rechecking. The product of the listed retained fractions is a retained fraction, not the combined loss. In §7.6, a daily volume in litres/day is also described as litres/second without conversion: a volume per day does not determine an instantaneous pump rate without an operating-duration assumption. Recompute sizing from the stated inputs and assumptions.
+- Foster et al., §4.1, p. 73: concentration is not universally required above 100 °C. [NREL’s solar industrial heat review, §5.1.1](https://www.nrel.gov/docs/fy21osti/80574.pdf) describes nonconcentrating evacuated-tube applications above 150 °C; performance depends on design and conditions.
+- Wade, Chapters 3 and 5: PV connections are discussed on pp. 26–27 and battery examples on pp. 39–40. Some battery practices are specific to lead-acid systems and historical designs; follow the current specifications and controls for the actual chemistry and equipment.
+- Wade, Chapter 2, p. 19: DC polarity does not mean fixed voltage. PV voltage changes with operating point and temperature ([DOE PV performance basics](https://www.energy.gov/cmei/systems/solar-photovoltaic-performance-and-efficiency-basics)).
+- Wagner and Mathur, §7.1.2.3, p. 71: availability loss should not automatically be omitted from economics. Planned and unplanned downtime and its timing affect energy loss; see [NREL wind-resource assessment, Appendix C](https://www.nrel.gov/docs/fy14osti/60429.pdf).
+- IFC hydropower guide, Chapter 7, p. 45: probable maximum flood and a 10,000-year frequency-based flood are different concepts. [USACE guidance](https://www.hec.usace.army.mil/confluence/hmsdocs/hmsag/reservoir-spillway-capacity-studies/background-for-reservoir-spillway-capacity-studies) notes that the method used to estimate a probable maximum flood does not assign it a return period.
+- [Dayan’s drilling report, p. 129, Eq. 5](https://gogn.orkustofnun.is/unu-gtp-report/UNU-GTP-2014-11.pdf): its numerical factor 928.2 is inconsistent with the SI units printed alongside it. With density in kg/m³, diameter in m, speed in m/s and dynamic viscosity in Pa s, use $Re=ρvd/μ$ without that factor ([NASA Reynolds number](https://www.grc.nasa.gov/www/k-12/airplane/reynolds.html)).
+- [MIT control-volume notes, §2.5.2](https://web.mit.edu/16.unified/www/SPRING/thermodynamics/notes/node18.html): dividing an energy rate in J/s by a mass rate in kg/s gives specific energy in J/kg; the notes’ later J/s/kg label is inconsistent with that normalization.
 
 ## Books and documents supplied with the course
 
@@ -12,7 +35,7 @@ The exercises are original teaching adaptations of these concepts, with syntheti
 
 **Local file:** `referenceBooks/(64) Geothermal Reservoir Engineering- Second Edition.pdf`
 
-**Edition / identifier:** Second edition; ISBN 978-0-12-383880-3.
+**Edition / identifier:** Second edition; ISBN 978-0-12-383880-3. The [Wageningen University library record](https://library.wur.nl/WebQuery/titel/1992812) identifies the authors, edition and ISBN; a catalogue record does not itself provide full-text access.
 
 **Use in this course:** Chapters 2–3: conductive and convective systems, simple models and stored heat; Chapters 4–5: well measurements.
 
@@ -54,7 +77,7 @@ The exercises are original teaching adaptations of these concepts, with syntheti
 
 **Edition / identifier:** Edited proceedings; Lecture Notes in Civil Engineering 792; DOI 10.1007/978-981-95-4889-7.
 
-**Use in this course:** Multi-energy integration chapters, including capacity allocation (p. 35) and complementary dispatch (p. 65). Advanced reading, not a beginner design manual.
+**Use in this course:** Multi-energy integration chapters: [Li et al., capacity optimization and allocation](https://doi.org/10.1007/978-981-95-4889-7_4), pp. 35–43, and [Dong et al., complementary dispatch](https://doi.org/10.1007/978-981-95-4889-7_7), pp. 65–74. These chapter authors are distinct from the volume's editors. Advanced reading, not a beginner design manual; the studies do not validate the course's synthetic dispatch policy.
 
 ### Solar Photovoltaic Systems: Technical Training Manual
 
@@ -72,7 +95,7 @@ The exercises are original teaching adaptations of these concepts, with syntheti
 
 **Local file:** `referenceBooks/Solar-energy-Renewable-Energy-and-the-Environment.pdf`
 
-**Edition / identifier:** ISBN 978-1-4200-7566-3.
+**Edition / identifier:** Print ISBN 978-1-4200-7566-3. The [publisher catalogue](https://www.routledge.com/rsc/downloads/Environmental_and_Geomatic_Engineering_Spring_2025_HE.pdf) identifies the authors and print ISBN; it is a catalogue, not full-text access to the book. It lists publication in 2009, while the supplied edition carries a 2010 copyright year. The bibliography's publisher link uses ebook ISBN 978-0-429-13989-5; an [institutional ebook catalogue](https://library.mnit.ac.in/downloads/A%20to%20Z%20List%20of%20Ebooks%20upto%20March%202025.pdf) also identifies that ebook with the same title and authors. Access to the ebook may require a subscription or purchase.
 
 **Use in this course:** Solar-resource and photovoltaic chapters: irradiation, conversion and system performance. Use current sources for prices and installed capacity.
 
@@ -114,7 +137,9 @@ The exercises are original teaching adaptations of these concepts, with syntheti
 
 - [IEA Global Energy Review 2026](https://www.iea.org/reports/global-energy-review-2026): estimates for **2025**, not completed 2026 statistics [@iea2026].
 - [IRENA Renewable Power Generation Costs in 2025](https://www.irena.org/Publications/2026/Jul/Renewable-Power-Generation-Costs-in-2025): July 2026 edition. Do not substitute global cost averages for a project budget [@irena2026].
-- [Eurostat energy database](https://ec.europa.eu/eurostat/web/energy/database): the course retains August 2024 exports as reproducible historical inputs [@eurostat_energy_database].
+- [Eurostat energy database](https://ec.europa.eu/eurostat/web/energy/database): the course retains August 2024 exports of monthly net electricity generation as historical inputs [@eurostat_energy_database]. The source dataset is [nrg_cb_pem, DOI 10.2908/NRG_CB_PEM](https://doi.org/10.2908/NRG_CB_PEM); the DOI points to the evolving dataset, not the retained snapshot. The 2024 date identifies the bundled export, not the publication date of the live database.
+- [Our World in Data: Energy Mix](https://ourworldindata.org/energy-mix): background reference on energy-mix definitions (first published July 2020; revised August 2026; accessed 19 November 2026). Primary energy or total energy supply must not be relabelled as electricity generation [@owid_energy_mix].
+- [U.S. Department of Energy: Small Wind Guidebook](https://www.energy.gov/cmei/systems/windexchange/small-wind-guidebook): introductory small-wind reference (page metadata lists published 2025-08-27, which is the current page date rather than the guide's first publication; accessed 1 September 2026) [@doeSmallWind].
 - [SPE Industry Data Repository](https://www.spe.org/en/industry/data-repository/?gad_source=1).
 - [Python tutorial](https://docs.python.org/3/tutorial/) and [built-in functions](https://docs.python.org/3/library/functions.html) [@pythonDocs].
 - [NumPy user guide](https://numpy.org/doc/stable/user/) [@numpyDocs].
@@ -138,12 +163,17 @@ in the supplied books. External textbooks identify where to extend that study.
 | Burton, Jenkins, Sharpe and Bossanyi, *Wind Energy Handbook* | 2nd edition, 2011; DOI 10.1002/9781119992714 | Additional turbine and wind-farm design reading [@burton2011wind] |
 | Burton, Jenkins, Bossanyi, Sharpe and Graham, *Wind Energy Handbook* | 3rd edition, 2021; ISBN 9781119451099 | Updated supplementary coverage of wakes, loads, offshore structures and integration [@burton2021wind] |
 | DiPippo, *Geothermal Power Plants: Principles, Applications, Case Studies and Environmental Impact* | 4th edition, copyright 2016; ISBN 9780081008799; DOI 10.1016/C2014-0-02885-7 | Surface conversion cycles and case studies beyond the simple reservoir heat balance [@diPippo2016geothermal] |
-| Paish, “Small Hydro Power: Technology and Current Status” | Review article, 2002; DOI 10.1016/S1364-0321(02)00006-0 | Supplementary small-hydro technology background; this is an article, not a textbook [@paish2002hydro] |
+| Paish, “Small Hydro Power: Technology and Current Status” | Review article, 2002; DOI 10.1016/S1364-0321(02)00006-0 | Supplementary small-hydro technology background; this is an article, not a textbook. Its market statistics and broad environmental comparisons reflect 2002, not a current site assessment [@paish2002hydro] |
 
 DiPippo's publisher records include a late-2015 release date, while the fourth-edition
 copyright page states 2016. The bibliography follows that edition year. Technical
 principles in older books remain useful, but their market figures and installed-
 capacity statistics should be dated rather than presented as current observations.
+
+Additional cited articles and technical reports:
+
+- **White et al. (2024), *Numerical investigation of closed-loop geothermal systems in deep geothermal reservoirs*** (*Geothermics*, Vol. 116, 102852; [DOI 10.1016/j.geothermics.2023.102852](https://doi.org/10.1016/j.geothermics.2023.102852)). Basis for the U-shaped and coaxial closed-loop geothermal comparison [@white2024closedloop].
+- **Dayan (2014), *Drilling Fluid Design for Geothermal Wells*** ([United Nations University Geothermal Training Programme Report No. 11](https://www.grocentre.is/gtp/media-gtp/publication/publication-dashboard/drilling-fluid-design-for-geothermal-wells)). Background on geothermal drilling fluids, annular hydraulics and well control; see the Eq. 5 Reynolds-number caution above [@dayan2014drilling].
 
 ## Reading route before the chapter exercises
 
@@ -156,7 +186,8 @@ capacity statistics should be dated rather than presented as current observation
 | Geothermal | Grant and Bixley Chapters 2–3 | Reservoir properties, conduction and fluid flow, enthalpy, net electricity and decline assumptions |
 
 Chapter equations define symbols, units and assumptions. Worked numerical examples
-use synthetic inputs. Each topic has 20 practice exercises in the Applied Python Workbook.
+use synthetic inputs. The Applied Python Workbook has 20 exercises each for General,
+Solar, Wind and Geothermal, and 22 for Hydroelectric: 102 in total.
 
 ## How to cite an exercise
 
@@ -164,7 +195,7 @@ Give its number and course title, the underlying book/chapter, the code revision
 
 ## October review: source access and equation locators
 
-The requested [Drive folder](https://drive.google.com/drive/folders/1Y_2BFwJEcVNszKsbznubi6oqsTHVyR3l) initially exposed one file. A fresh listing after the user's update exposes **seven PDFs**. Six correspond by title and edition to works already reviewed locally; Goswami adds a tenth distinct work to the combined collection. The five newly visible existing titles were fetched to check their identities and relevant content, and Goswami's relevant sections were reviewed. Title/edition correspondence is not a claim of byte-identical copies. This is a targeted review of course claims, not a page-by-page review of every book.
+The requested [Drive folder](https://drive.google.com/drive/folders/1Y_2BFwJEcVNszKsbznubi6oqsTHVyR3l) initially exposed one file. A fresh listing after the user's update exposes **seven PDFs**. Six correspond by title and edition to works already reviewed locally; Goswami adds a tenth distinct work to the combined collection. The five newly visible existing titles were fetched to check their identities and relevant content, and Goswami's relevant sections were reviewed. Title/edition correspondence is not a claim of byte-identical copies. This is a targeted review of course claims, not a page-by-page review of every book. The Drive links below may require access permission; use the linked bibliography records for other access options.
 
 | Currently visible in Drive | Course reference | Review status |
 |---|---|---|
@@ -179,7 +210,7 @@ The requested [Drive folder](https://drive.google.com/drive/folders/1Y_2BFwJEcVN
 | Claim or relationship | Specific supporting location | Course qualification |
 |---|---|---|
 | Irradiance, irradiation and horizontal radiation components | Foster et al., Chapter 2, pp. 39–40 [@foster2010] | POA requires a receiving-plane/transposition definition |
-| PV I–V endpoints and fill factor | Foster et al., §5.13, pp. 125–126 [@foster2010] | Open circuit means zero current; short circuit means zero voltage |
+| PV I–V endpoints and fill factor | Foster et al., §5.13, pp. 125–126 and p. 139 [@foster2010] | Open circuit means zero current; short circuit means zero voltage. The parenthetical on p. 125 mislabels the zero-current condition; p. 139 states the endpoints correctly. |
 | Solar time and azimuth conventions | Goswami, §2.3.1, pp. 42–45; Figure 2.21 [@goswami2015] | Clock noon need not be solar noon; declare angle conventions |
 | Isotropic-sky POA transposition | Goswami, §2.5.3, pp. 68–69, Eqs. 2.46–2.51 [@goswami2015] | Uniform sky and ground; no shading or rear-side collection |
 | PV operating point and MPPT | Goswami, §§9.2–9.2.2, pp. 525–532 [@goswami2015] | MPPT controls the operating point; it is not inverter efficiency |
@@ -191,16 +222,16 @@ The requested [Drive folder](https://drive.google.com/drive/folders/1Y_2BFwJEcVN
 | Hydro power and generation planning | JICA, §3.1.2 and Chapter 8 [@jica2011] | Coherent SI expression gives W; divide by 1000 for kW |
 | Environmental releases and LCOE | IFC, Chapters 7 and 12; §13.2.5, p. 90 and Chapter 14 [@ifc2015] | Fixed release and cost inputs are hypothetical, not regulations or quotations |
 | Pumped storage | JRC status report, §2 [@jrc2025hydro] | Pumping consumes electricity; a full cycle incurs losses |
-| Hybrid capacity and complementary dispatch | Hu et al., chapters starting pp. 35 and 65 [@hu2026] | Advanced context, not authority for the course’s invented dispatch policy |
+| Hybrid capacity and complementary dispatch | [Li et al., pp. 35–43](https://doi.org/10.1007/978-981-95-4889-7_4); [Dong et al., pp. 65–74](https://doi.org/10.1007/978-981-95-4889-7_7), in the Hu-edited volume [@hu2026] | Advanced context, not authority for the course’s invented dispatch policy |
 | Wind height profiles | Manwell et al., §2.3.4.2, pp. 45–46 [@manwell2009] | Shear exponent is site/condition dependent |
-| Wind distributions and energy | Manwell et al., §§2.4–2.5, pp. 58–63 [@manwell2009] | Integrate power over probability, not power at the mean speed |
+| Wind distributions and energy | Manwell et al., §§2.4–2.5, pp. 58–65 [@manwell2009] | Integrate power over probability, not power at the mean speed |
 | Betz limit | Manwell et al., §3.2 [@manwell2009] | Ideal isolated actuator disc; not a plant capacity factor |
 | Introductory turbine operation/economics | Wagner and Mathur, turbine chapters and Chapter 7 [@wagner2009] | Historical cost examples retain their dates |
 | Geothermal transport and stored heat | Grant and Bixley, §§2.2–2.5, 3.3.1, 3.6 [@grant2011] | Stored heat is not a recoverable electrical reserve |
 | Carnot bound | [OpenStax University Physics 2, §4.5, Eq. 4.5](https://openstax.org/books/university-physics-volume-2/pages/4-5-the-carnot-cycle) | Absolute kelvin, fixed hot/cold reservoirs, reversible limit |
 | SI units and temperature conversion | [NIST SP 811, Appendix B](https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors) | Distinguish temperature differences from absolute ratios |
 
-Adjacent citations identify the basis for definitions, equations and API behavior. Numerical examples and all 100 chapter exercises are original calculations with stated synthetic inputs; citations do not imply that a book contains those exact numbers. Code results are checked by execution and independent arithmetic. The new Eurostat tutorial is explicitly real provider data with a separate retrieval record and SHA-256 checksum.
+Adjacent citations identify the basis for definitions, equations and API behavior. Numerical examples and all 102 chapter exercises are original calculations with stated synthetic inputs; citations do not imply that a book contains those exact numbers. Code results are checked by execution and independent arithmetic. The new Eurostat tutorial is explicitly real provider data with a separate retrieval record and SHA-256 checksum.
 
 ## Sandbox technology documentation
 

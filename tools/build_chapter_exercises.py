@@ -8,6 +8,7 @@ from textwrap import dedent
 import re
 import nbformat
 from course_reference_map import EXERCISE_REFERENCES
+from notebook_links import rewrite_notebook_links
 
 ROOT = Path(__file__).resolve().parents[1] / 'EAGE_PythonRenewableEnergyCourse'
 BANK = {key: [] for key in ['general', 'solar', 'hydro', 'wind', 'geothermal']}
@@ -99,7 +100,7 @@ total = df.mwh.sum()
 print(df.to_string(index=False)); print(total, 'MWh')
 assert total == 40
 ''', 'StringIO behaves like a file; replace it with a CSV path for local data.')
-add('general', 'Missing generation is not zero', 'For [1, missing,3,2] hourly MW readings, report coverage and observed energy, but do not invent a four-hour total.', '''
+add('general', 'Missing generation is not zero', 'For [1, missing,3,2] MW readings, each an average over a distinct one-hour interval, report coverage and observed energy, but do not invent a four-hour total.', '''
 import pandas as pd
 # Step 1: Preserve the missing measurement.
 p = pd.Series([1, None, 3, 2], dtype=float)
@@ -109,18 +110,19 @@ coverage = p.notna().mean(); observed_mwh = p.sum(min_count=1)
 print(f'Coverage: {coverage:.0%}; observed energy: {observed_mwh} MWh')
 assert coverage == 0.75 and observed_mwh == 6
 ''', '6 MWh covers three observed hours; the full four-hour total is unknown.')
-add('general', 'Exact duplicate readings', 'Times [00,01,01,02] have MW [1,2,2,3]. Remove only exact timestamp/value duplicates and check uniqueness.', '''
+add('general', 'Exact duplicate readings', 'Times [00,01,01,02] have MW [1,2,2,3], each the average power over the one-hour interval starting at its timestamp. Remove only exact timestamp/value duplicates, check uniqueness, and report the retained interval energy.', '''
 import pandas as pd
 # Step 1: Build a timestamped table.
 df = pd.DataFrame({'time': pd.to_datetime(['2025-01-01 00:00', '2025-01-01 01:00', '2025-01-01 01:00', '2025-01-01 02:00'], utc=True), 'mw': [1,2,2,3]})
 # Step 2: Remove exact repeated records, then check for conflicting times.
 clean = df.drop_duplicates()
-assert clean.time.is_unique
+if not clean.time.is_unique:
+    raise ValueError('Conflicting measurements share a timestamp; investigate before summing')
 # Step 3: Sum the remaining hourly mean powers.
 print(clean.to_string(index=False)); print(clean.mw.sum(), 'MWh')
 assert len(clean) == 3 and clean.mw.sum() == 6
 ''', 'Different values at one timestamp would require investigation, not arbitrary deletion.')
-add('general', 'Match supply and demand', 'Hourly renewable supply is [1,5,2] MW and demand [3,3,3] MW. Calculate served, curtailed and unmet energy.', '''
+add('general', 'Match supply and demand', 'Hourly renewable supply is [1,5,2] MW and demand [3,3,3] MW. Treat each power as constant within its one-hour interval; calculate served, curtailed and unmet energy.', '''
 import numpy as np
 # Step 1: Store aligned hourly power arrays.
 supply = np.array([1,5,2]); demand = np.array([3,3,3])
@@ -154,7 +156,7 @@ print(individual, 'individual CF;', fleet, 'fleet CF')
 assert np.isclose(fleet, 0.7)
 assert np.isclose(fleet, np.average(individual, weights=capacity))
 ''', 'Fleet CF is capacity-weighted when the time window is the same.')
-add('general', 'SQL and pandas agreement', 'Solar delivers 10 MWh and 12,000 kWh; wind delivers 20 MWh and 18,000 kWh. Normalise mixed units, reject unsupported units and reconcile separate SQL and pandas totals by source.', '''
+add('general', 'SQL and pandas agreement', 'Solar delivers 10 MWh and 12,000 kWh; wind delivers 20 MWh and 18,000 kWh. Normalise mixed units, reject unsupported units and reconcile separate SQL and pandas totals by source. When pairing labelled readings and units, require the same unique, nonmissing index in the same order.', '''
 import sqlite3
 import pandas as pd
 # Step 1: Create a small table of source observations.
@@ -162,10 +164,21 @@ df = pd.DataFrame({'source': ['solar','solar','wind','wind'],
                    'energy': [10,12000,20,18000], 'unit': ['MWh','kWh','MWh','kWh']})
 # Step 2: Convert each reading to MWh and reject unknown units.
 def to_mwh(values, units):
+    import numpy as np
+    if (not isinstance(values, pd.Series) or not isinstance(units, pd.Series)
+            or not values.index.is_unique or not values.index.equals(units.index)):
+        raise ValueError('Provide Series with the same unique index in the same order')
+    names = list(range(values.index.nlevels)) if values.index.nlevels > 1 else 0
+    if values.index.to_frame(index=False, name=names).isna().to_numpy().any():
+        raise ValueError('Index labels must not be missing')
+    try:
+        numeric = pd.to_numeric(values, errors='raise').astype(float)
+    except (ValueError, TypeError) as exc:
+        raise ValueError('Energy readings must be numeric') from exc
     scale = units.map({'MWh': 1, 'kWh': .001})
-    if scale.isna().any() or values.isna().any() or values.lt(0).any():
-        raise ValueError('Need non-negative readings with known units')
-    return values * scale
+    if scale.isna().any() or not np.isfinite(numeric).all() or numeric.lt(0).any():
+        raise ValueError('Need finite non-negative readings with known units')
+    return numeric * scale
 
 df['mwh'] = to_mwh(df.energy, df.unit)
 # Step 3: Aggregate independently using SQL and pandas.
@@ -191,7 +204,7 @@ mae = {name: np.abs(test-predictions).mean() for name,predictions in
 print(mae,'MWh MAE')
 assert mae == {'fixed last':1, 'training mean':3, 'walk-forward':1.5}
 ''', 'Two test months illustrate evaluation; they do not establish long-term forecast skill.')
-add('general', 'Plot a source mix', 'For two one-hour intervals, use solar [0,20], hydro [15,20], wind [20,10], geothermal [7,8] and demand [50,45], all in MW. Plot stacked source output and demand. Reconcile interval and total energy, and explain how surplus and shortfall coexist.', '''
+add('general', 'Plot a source mix', 'For two one-hour intervals, use solar [0,20], hydro [15,20], wind [20,10], geothermal [7,8] and demand [50,45], all in MW and each held constant within its interval. Plot stacked source output and demand. Reconcile interval and total energy, and explain how surplus and shortfall coexist.', '''
 import numpy as np
 import matplotlib.pyplot as plt
 # Step 1: Align per-source power and demand at each hour.
@@ -210,9 +223,11 @@ served = np.minimum(bottom,demand)
 surplus = bottom-served; shortfall = demand-served
 assert np.allclose(served+surplus,bottom) and np.allclose(served+shortfall,demand)
 assert (bottom.sum(),served.sum(),surplus.sum(),shortfall.sum()) == (100,87,13,8)
-print('MWh available, served, surplus, shortfall:',100,87,13,8)
+for hour, values in enumerate(zip(bottom,served,surplus,shortfall), 1):
+    print(f'Hour {hour} MWh available, served, surplus, shortfall:', *values)
+print('Total MWh available, served, surplus, shortfall:', bottom.sum(),served.sum(),surplus.sum(),shortfall.sum())
 ''', 'The second-hour surplus cannot cover the earlier shortfall without storage or another balancing source.')
-add('general', 'Battery dispatch with losses', 'Supply [0,4,4,0] MW meets constant 2 MW demand. Start empty with 3 MWh usable storage, 2 MW charge/discharge limits and 90% efficiency each way. Route four hours and prove energy balance.', '''
+add('general', 'Battery dispatch with losses', 'Supply [0,4,4,0] MW meets constant 2 MW demand over four one-hour intervals; treat the power as constant within each interval. Start empty with 3 MWh usable storage, 2 MW charge and discharge limits measured at the supply–demand bus, and 90% efficiency in each direction. Route the intervals and prove energy balance.', '''
 import numpy as np
 # Step 1: Set storage state, limits and accounting totals.
 soc = 0.0; rows = []
@@ -247,7 +262,7 @@ results = [lcoe(r) for r in [0,0.05,0.10]]
 print(results, 'EUR/MWh')
 assert np.isclose(results[0], 1.2) and np.all(np.diff(results)>0)
 ''', 'Teaching costs are intentionally small. This omits replacements, taxes and end-of-life costs; see IFC Chapter 14 for economic boundaries.')
-add('general', 'Strict multi-file alignment', 'Join two CSV-like tables with hourly UTC times: solar [0,1,2] and wind [2,1,0]. Reject duplicate times or mismatched coverage before calculating their sum.', '''
+add('general', 'Strict multi-file alignment', 'Join two CSV-like tables against the expected hourly UTC schedule from 00:00 through 02:00 on 1 January 2025: solar [0,1,2] MW and wind [2,1,0] MW in reverse timestamp order. Reject duplicate or non-UTC timestamps, missing expected hours, mismatched source coverage, and missing/non-finite values before calculating their sum.', '''
 import pandas as pd
 import numpy as np
 # Step 1: Create separate source tables with their own timestamp columns.
@@ -255,22 +270,34 @@ time = pd.date_range('2025-01-01', periods=3, freq='h', tz='UTC')
 solar = pd.DataFrame({'time':time, 'solar_mw':[0,1,2]})
 wind = pd.DataFrame({'time':time[::-1], 'wind_mw':[0,1,2]})
 # Step 2: Validate matching coverage and perform a one-to-one join.
-def align(solar, wind):
-    for table in (solar, wind):
-        if table.time.isna().any() or not table.time.is_unique:
-            raise ValueError('Each source must have valid, unique timestamps.')
-    if set(solar.time) != set(wind.time):
-        raise ValueError('Sources must cover the same timestamps.')
-    return solar.merge(wind, on='time', validate='one_to_one', sort=True)
+def align(solar, wind, expected):
+    if (not isinstance(expected, pd.DatetimeIndex) or expected.empty or expected.hasnans
+            or str(expected.tz) != 'UTC' or not expected.is_unique
+            or not expected.equals(pd.date_range(expected[0], expected[-1], freq='h', tz='UTC'))):
+        raise ValueError('Provide a complete, ordered hourly UTC schedule.')
+    normalized = []
+    for table, column in ((solar, 'solar_mw'), (wind, 'wind_mw')):
+        times = pd.DatetimeIndex(table.time)
+        if (times.hasnans or not times.is_unique or str(times.tz) != 'UTC'
+                or not times.sort_values().equals(expected)):
+            raise ValueError('Each source must match the expected UTC schedule exactly.')
+        values = pd.to_numeric(table[column], errors='raise').astype(float)
+        if not np.isfinite(values.to_numpy()).all():
+            raise ValueError('Complete, finite power observations are required at each timestamp.')
+        copy = table.copy()
+        copy['time'] = times
+        copy[column] = values
+        normalized.append(copy)
+    return normalized[0].merge(normalized[1], on='time', validate='one_to_one', sort=True)
 
-joined = align(solar, wind)
+joined = align(solar, wind, time)
 joined['total_mw'] = joined.solar_mw + joined.wind_mw
 # Step 3: Test both completeness and the known sum.
 assert len(joined)==3 and np.allclose(joined.total_mw, 2)
 assert joined.time.is_monotonic_increasing
 print(joined.to_string(index=False))
-''', 'An inner join alone can silently discard unmatched times; coverage must be checked first.')
-add('general', 'Capacity search under a reliability target', 'Wind produces [0,1,2,1] MW per unit; firm geothermal supplies 1 MW and demand is 2 MW each hour. Search 0–4 wind units for coverage at least 80%. Report the smallest feasible count, unmet and curtailed MWh.', '''
+''', 'An inner join alone can silently discard unmatched times. Matching source timestamps also cannot reveal an hour missing from both files; compare each source with an independently specified schedule. Timestamps and numeric strings are converted on copies before joining and addition, so equivalent UTC representations align, numeric values cannot be concatenated, and the input tables remain unchanged.')
+add('general', 'Capacity search under an energy-coverage target', 'Wind produces [0,1,2,1] MW per unit; firm geothermal supplies 1 MW and demand is 2 MW. Treat each value as constant within its one-hour interval. Search 0–4 wind units for served energy divided by demand energy of at least 80%; this is not the fraction of hours with fully met demand. Report the smallest feasible count, unmet and curtailed MWh.', '''
 import numpy as np
 # Step 1: Set aligned generation shapes and a coverage target.
 wind = np.array([0,1,2,1]); demand = np.full(4,2); target = 0.8
@@ -356,7 +383,7 @@ dc_kw = 10*(1+gamma*(temperature-25))
 # Step 3: Check direction and expected output.
 print(dc_kw,'kW DC'); assert np.allclose(dc_kw,[10,9.2,8.4])
 ''','Higher cell temperature reduces output for a negative power coefficient.')
-add('solar','Clipping budget','Hourly DC output [0,4,8,10] kW passes through a 97% inverter capped at 7 kW AC. Calculate AC kWh and clipping kWh.', '''
+add('solar','Clipping budget','DC output [0,4,8,10] kW is constant within each one-hour interval and passes through a 97% inverter capped at 7 kW AC. Calculate AC kWh and clipping kWh.', '''
 import numpy as np
 # Step 1: Calculate AC power before applying the rating.
 dc = np.array([0,4,8,10]); available_ac = dc*0.97
@@ -404,40 +431,66 @@ energy = (power*duration).sum()
 # Step 3: Verify the hand calculation.
 print(energy,'kWh'); assert energy == 11.5
 ''','A sum of kW samples without duration is not energy for unequal intervals.')
-add('solar','Nighttime and invalid data','Four intervals have irradiances [0,200,missing,−10] W/m² and durations [2,0.5,1,0.5] h. The first interval is night. Write a function for valid-time coverage, daylight coverage and observed irradiation. Preserve night zero and exclude non-finite or negative readings.', '''
+add('solar','Nighttime and invalid data','Four intervals have irradiances [0,200,missing,−10] W/m² and durations [2,0.5,1,0.5] h. Assume the daylight mask is [False, True, True, True], including for missing and invalid readings. Write a function for valid-time coverage, daylight coverage and observed irradiation. Preserve night zero and exclude non-finite or negative readings.', '''
 import numpy as np
 # Step 1: Preserve measured zero and the two distinct invalid states.
 g=np.array([0,200,np.nan,-10]); dt=np.array([2,.5,1,.5])
 daylight=np.array([False,True,True,True])
 # Step 2: Integrate valid intervals and weight coverage by duration.
 def audit_irradiance(g, dt, daylight):
+    # Arrays pair by position; labelled series need matching, nonmissing labels.
+    import pandas as pd
+    inputs = (g, dt, daylight)
+    if any(isinstance(value, pd.Series) for value in inputs):
+        if (not all(isinstance(value, pd.Series) for value in inputs)
+                or not g.index.is_unique
+                or any(not g.index.equals(value.index) for value in inputs[1:])):
+            raise ValueError("Series must have the same unique index in the same order")
+        names = list(range(g.index.nlevels)) if g.index.nlevels > 1 else 0
+        if g.index.to_frame(index=False, name=names).isna().to_numpy().any():
+            raise ValueError("Index labels must not be missing")
+    g,dt=np.asarray(g,dtype=float),np.asarray(dt,dtype=float)
+    daylight=np.asarray(daylight)
+    if (g.ndim!=1 or g.size==0 or dt.shape!=g.shape or daylight.shape!=g.shape
+            or daylight.dtype.kind!='b' or not np.isfinite(dt).all()
+            or np.any(dt<0) or dt.sum()<=0):
+        raise ValueError("Provide aligned readings, boolean daylight flags and finite non-negative durations with positive total")
     valid=np.isfinite(g)&(g>=0)
-    return (dt[valid].sum()/dt.sum(), dt[valid&daylight].sum()/dt[daylight].sum(),
-            np.dot(g[valid],dt[valid])/1000)
+    daylight_hours=dt[daylight].sum()
+    daylight_coverage=dt[valid&daylight].sum()/daylight_hours if daylight_hours>0 else np.nan
+    observed = np.dot(g[valid],dt[valid])/1000 if dt[valid].sum()>0 else np.nan
+    return (dt[valid].sum()/dt.sum(), daylight_coverage, observed)
 
 # Step 3: Reconcile coverage and observed irradiation against hand calculations.
 result=audit_irradiance(g,dt,daylight)
 print(result,'total coverage, daylight coverage, observed kWh/m²')
 assert np.allclose(result,[.625,.25,.1])
-''','Zero at night is a valid observation; a missing daylight observation cannot be treated as zero.')
+''','Zero at night is a valid observation; a missing daylight observation cannot be treated as zero. If there is no daylight duration, daylight coverage is undefined and reported as NaN. If there is no valid observed duration, irradiation is unavailable rather than zero. If using labelled series, pair readings, durations and daylight flags using the same unique, nonmissing labels in the same order.')
 add('solar','Compounded degradation','First-year output is 100 MWh. Write a reusable forecast for annual and cumulative output over 25 years. Compare 0.5% and 1% annual degradation and find the first year below 90 MWh in each case.', '''
 import numpy as np
 # Step 1: Index years with no degradation in the first year.
 years = np.arange(1,26)
 # Step 2: Apply annual retained output multiplicatively.
 def forecast(rate):
-    return 100*(1-rate)**(years-1)
-# Step 3: Check the first and last years and print the sum.
+    if not np.isscalar(rate) or not np.isfinite(rate) or not 0 <= rate < 1:
+        raise ValueError('Annual degradation rate must be finite and in [0, 1)')
+    annual = 100 * (1-rate)**(years-1)
+    return annual, np.cumsum(annual)
+# Step 3: Show annual and cumulative energy for each year and compare scenarios.
 totals=[]; first=[]
 for rate in [.005,.01]:
-    energy=forecast(rate)
-    first.append(next((int(year) for year,e in zip(years,energy) if e<90),None))
-    totals.append(energy.sum())
-    assert energy[0]==100 and np.isclose(energy[4],100*(1-rate)**4)
-print(totals,'MWh cumulative; first year under 90 MWh:',first)
+    annual, cumulative = forecast(rate)
+    first.append(next((int(year) for year,e in zip(years,annual) if e<90),None))
+    totals.append(cumulative[-1])
+    assert annual[0]==100 and np.isclose(annual[4],100*(1-rate)**4)
+    print(f'Annual degradation: {rate:.1%}')
+    print('Year  Annual MWh  Cumulative MWh')
+    for year, energy, running_total in zip(years, annual, cumulative):
+        print(f'{year:4d}  {energy:10.2f}  {running_total:14.2f}')
+    print(f'First year below 90 MWh: {first[-1]}')
 assert first==[23,12] and totals[0]>totals[1]
 ''','The rate is an assumption; weather and availability are held constant.')
-add('solar','Daily profile plot','Model 24 hourly mean irradiances as max(0,800 sin(pi(h−6)/12)). Use 20 m², 20% module efficiency and 96% inverter efficiency. Plot DC and delivered AC for inverter caps of 2 and 3 kW. Integrate DC, delivered AC and clipping in MWh and reconcile the energy budget.', '''
+add('solar','Daily profile plot','Model 24 representative irradiances as max(0,800 sin(pi(h−6)/12)), each constant within its one-hour interval. Use 20 m², 20% module efficiency and 96% inverter efficiency. Plot DC and delivered AC for inverter caps of 2 and 3 kW. Integrate DC, delivered AC and clipping in MWh and reconcile the energy budget.', '''
 import numpy as np
 import matplotlib.pyplot as plt
 # Step 1: Generate a labelled synthetic hourly irradiance profile.
@@ -451,12 +504,12 @@ for cap in [2,3]:
     clipping=(potential-ac).sum()/1000
     delivered=ac.sum()/1000
     assert np.isclose(dc_kw.sum()/1000, delivered+clipping+(dc_kw-potential).sum()/1000)
-    print(cap,'kW inverter:',delivered,'MWh delivered;',clipping,'MWh clipped')
+    print(cap,'kW inverter:',dc_kw.sum()/1000,'MWh DC;',delivered,'MWh delivered;',clipping,'MWh clipped;',(dc_kw-potential).sum()/1000,'MWh conversion loss')
     ax.plot(h,ac,label=f'AC, {cap} kW cap')
-ax.set(xlabel='UTC hour',ylabel='Power (kW)',title='Synthetic PV day')
+ax.set(xlabel='Hour of synthetic day',ylabel='Power (kW)',title='Synthetic PV day')
 ax.legend(); fig.tight_layout(); plt.show()
-''','The irradiance values are treated as interval means; no real location or date is represented.')
-add('solar','Size an inverter by clipping target','For hourly DC [0,2,5,9,12,8,3,0] kW and 97% efficiency, search integer AC ratings 5–12 kW for at most 5% clipped potential AC energy.', '''
+''','The irradiance values are treated as constant within each interval; no real location or date is represented.')
+add('solar','Size an inverter by clipping target','For DC [0,2,5,9,12,8,3,0] kW, each constant for one hour, and 97% efficiency, search integer AC ratings 5–12 kW for at most 5% clipped potential AC energy.', '''
 import numpy as np
 # Step 1: Calculate the common available AC profile.
 available = np.array([0,2,5,9,12,8,3,0])*0.97
@@ -467,7 +520,7 @@ best = next(t for t in trials if t[1]<=0.05)
 print('Rating kW and clipping fraction:',best)
 assert best[0]==10 and all(f>0.05 for r,f in trials if r<best[0])
 ''','An energy constraint is not a financial optimum; inverter prices and lifetime behavior are omitted.')
-add('solar','Temperature and irradiance sensitivity grid','For irradiance [200, 600, 1000] W/m² and air temperature [10, 25, 40] °C, calculate a 3×3 grid of AC power in kW. Use 10 kW DC nameplate, an 8 kW AC cap, NOCT 45 °C, a power coefficient of −0.004/°C and inverter efficiency 0.97.', '''
+add('solar','Temperature and irradiance sensitivity grid','For irradiance [200, 600, 1000] W/m² and air temperature [10, 25, 40] °C, calculate a 3×3 grid of AC power in kW. Use 10 kW DC nameplate, an 8 kW AC cap, NOCT 45 °C, a power coefficient of −0.004/°C referenced to 25 °C, inverter efficiency 0.97 and the model Tcell = Tair + G(NOCT − 20)/800.', '''
 import numpy as np
 import pandas as pd
 # Step 1: Broadcast irradiance columns against ambient-temperature rows.
@@ -479,7 +532,7 @@ dc=np.maximum(10*g/1000*(1-0.004*(cell-25)),0); ac=np.minimum(dc*0.97,8)
 assert ac.shape==(3,3) and np.all(ac<=8) and np.all(np.diff(ac,axis=0)<=0)
 print(pd.DataFrame(ac,index=[10,25,40],columns=[200,600,1000]).rename_axis('Ambient °C / G W m⁻²'))
 ''','At fixed irradiance, higher modeled cell temperature cannot increase power here; clipping can flatten sensitivity.')
-add('solar','PV and battery self-consumption','PV hourly AC [0,4,6,0] kW meets constant 2 kW load with an initially empty 3 kWh battery, 2 kW limits and 90% efficiencies. Report unmet load, curtailed PV and final SOC.', '''
+add('solar','PV and battery self-consumption','PV AC powers [0,4,6,0] kW, each constant within its one-hour interval, meet a constant 2 kW load with an initially empty 3 kWh battery, 2 kW charge and discharge limits measured at the AC bus, and 90% efficiency in each direction. Report unmet load, curtailed PV and final SOC.', '''
 import numpy as np
 # Step 1: Initialise storage and bookkeeping in kWh.
 soc=0.; unmet_total=0.; curtailed_total=0.; rows=[]
@@ -634,39 +687,59 @@ input_energy=stored/0.85; output=stored*0.9
 print(stored,input_energy,output,'MWh stored, input, output')
 assert np.isclose(output/input_energy,0.85*0.9)
 ''','Storage shifts electricity and consumes net energy; it is not a new primary-energy source.')
-add('hydro','Validate resource readings','For flows [3,−1,missing,5] m³/s and interval durations [1,2,1,0.5] h, flag invalid readings without filling gaps. Write a function to compare sample coverage with time coverage and estimate observed volume plus a plausible upper bound if missing flow is at most 6 m³/s.', '''
+add('hydro','Validate resource readings','For flows [3,−1,missing,5] m³/s and interval durations [1,2,1,0.5] h, flag invalid readings without filling gaps. Write a function to compare sample coverage with time coverage and estimate observed volume plus a plausible upper bound if every unknown true flow, including invalid readings, lies between 0 and 6 m³/s.', '''
 import numpy as np
 # Step 1: Preserve the measured values and missing marker.
 flow=np.array([3,-1,np.nan,5]); duration=np.array([1,2,1,.5])
 # Step 2: Integrate valid readings and bound the remaining volume separately.
 def audit(flow, duration, limit):
+    # Arrays pair by position; labelled series need matching, nonmissing labels.
+    import pandas as pd
+    if isinstance(flow, pd.Series) or isinstance(duration, pd.Series):
+        if (not isinstance(flow, pd.Series) or not isinstance(duration, pd.Series)
+                or not flow.index.is_unique or not duration.index.is_unique
+                or not flow.index.equals(duration.index)):
+            raise ValueError("Series must have the same unique index in the same order")
+        names = list(range(flow.index.nlevels)) if flow.index.nlevels > 1 else 0
+        if flow.index.to_frame(index=False, name=names).isna().to_numpy().any():
+            raise ValueError("Index labels must not be missing")
+    flow,duration=np.asarray(flow,dtype=float),np.asarray(duration,dtype=float)
+    if (flow.ndim!=1 or flow.size==0 or flow.shape!=duration.shape or not np.isfinite(limit)
+            or limit<0 or not np.isfinite(duration).all() or np.any(duration<=0)):
+        raise ValueError("Provide aligned intervals, positive finite durations and a non-negative finite limit")
     valid=np.isfinite(flow)&(flow>=0)
-    observed=np.dot(flow[valid],duration[valid])*3600
-    return valid.mean(),duration[valid].sum()/duration.sum(),observed,observed+limit*duration[~valid].sum()*3600
+    valid_volume=np.dot(flow[valid],duration[valid])*3600
+    observed=valid_volume if valid.any() else np.nan
+    upper=valid_volume+limit*duration[~valid].sum()*3600
+    return valid.mean(),duration[valid].sum()/duration.sum(),observed,upper
 # Step 3: Report coverage rather than a complete-period generation claim.
 result=audit(flow,duration,6)
 print(result,'sample coverage, time coverage, observed m³, upper m³')
 assert np.allclose(result,[.5,1/3,19800,84600])
-''','Do not infer zero flow from an absent measurement.')
-add('hydro','Environmental shortage','Flows [1,4,7] m³/s last [1,2,3] hours. Compare environmental release targets of 2 and 3 m³/s for a turbine limited to 3 m³/s, head 20 m and efficiency 0.9. Integrate environmental shortfall volume and electricity; reconcile water including bypass.', '''
+''','Do not infer zero flow from an absent measurement. If no valid intervals are observed, observed volume is unavailable; the upper bound still uses the stipulated limits. If using labelled series, pair observations with durations using the same unique, nonmissing labels in the same order.')
+add('hydro','Environmental shortage','Flows [1,4,7] m³/s remain constant over respective intervals of [1,2,3] hours. Compare environmental release targets of 2 and 3 m³/s for a turbine limited to 3 m³/s, head 20 m and combined turbine–generator efficiency 0.9. Integrate environmental shortfall volume and electricity; reconcile water including bypass.', '''
 import numpy as np
-# Step 1: Store daily mean flows and the reservation target.
+# Step 1: Store the constant interval flows and durations.
 river=np.array([1,4,7]); duration=np.array([1,2,3])
 # Step 2: Allocate available water before calculating shortages.
 def evaluate(target):
     release=np.minimum(river,target); shortage=target-release
     turbine=np.minimum(river-release,3); bypass=river-release-turbine
     assert np.array_equal(release+turbine+bypass,river)
-    return np.dot(shortage,duration)*3600,np.dot(turbine,duration)*1000*9.81*20*.9/1e6
+    return (np.dot(shortage,duration)*3600,
+            np.dot(turbine,duration)*1000*9.81*20*.9/1e6,
+            np.dot(bypass,duration)*3600)
 # Step 3: Reconcile water and print all three quantities.
 low,high=evaluate(2),evaluate(3)
-print(low,high,'m³ shortfall, MWh')
+print('Target 2 m³/s: shortfall m³, electricity MWh, bypass m³:', *low)
+print('Target 3 m³/s: shortfall m³, electricity MWh, bypass m³:', *high)
 assert low[0]==3600 and high[0]==7200 and low[1]>high[1]
+assert low[2]==21600 and high[2]==10800
 ''','A shortage means the river cannot meet the target; no negative turbine flow is allowed.')
-add('hydro','Plot a power-duration curve','Flows [2,4,8,12,16] m³/s last [12,24,36,12,36] h at head 20 m, efficiency 0.9 and a 2 MW cap. Compare environmental reservations of 0 and 3 m³/s. Plot ranked power against cumulative time share and recompute total MWh from the sorted intervals.', '''
+add('hydro','Plot a power-duration curve','Flows [2,4,8,12,16] m³/s are constant over respective intervals of [12,24,36,12,36] h at head 20 m, efficiency 0.9 and a 2 MW cap. Compare environmental reservations of 0 and 3 m³/s. Plot ranked power against cumulative time share and recompute total MWh from the sorted intervals.', '''
 import numpy as np
 import matplotlib.pyplot as plt
-# Step 1: Calculate daily average electrical powers.
+# Step 1: Calculate interval-average electrical powers.
 flow=np.array([2,4,8,12,16]); dt=np.array([12,24,36,12,36])
 fig,ax=plt.subplots(figsize=(6,3)); totals=[]
 # Step 2: Sort power together with its interval length and calculate time share.
@@ -681,7 +754,7 @@ for reserve in [0,3]:
 ax.set(xlabel='Cumulative time share (%)',ylabel='Power (MW)',title='Synthetic hydro duration curves')
 ax.legend(); fig.tight_layout(); plt.show()
 print(totals,'MWh'); assert totals[0]>totals[1]
-''','Sorting preserves total energy for equal intervals but removes the order needed for storage simulation.')
+''','Sorting preserves total energy when each power stays paired with its duration, but removes the order needed for storage simulation.')
 add('hydro','Reservoir routing','Route hourly inflows [2, 0, 8, 16, 0, 0] m³/s from 20,000 m³ initial storage and a 50,000 m³ capacity. Prioritise an environmental release of up to 1 m³/s, then turbine flow of up to 3 m³/s. Spill the overflow. With net head 20 m and efficiency 0.9, report storage, spill and generation. Check the water balance in every interval.', '''
 import numpy as np
 # Step 1: Set storage state and output records.
@@ -719,7 +792,7 @@ for inflow in [2,0,3]:
 print(variable_energy,fixed_energy,'MWh variable/fixed head')
 assert storage==16400 and variable_energy<fixed_energy
 ''','Beginning-of-step head is a numerical approximation; smaller time steps may be needed for rapid level changes.')
-add('hydro','Environmental-flow trade-off','For daily river flows[2,5,8,12] m³/s, compare reservations1,3,5 m³/s, head30 m, eta0.9, cap2 MW. Calculate four-day energy and environmental-shortage volume.', '''
+add('hydro','Environmental-flow trade-off','For daily river flows [2,5,8,12] m³/s, compare reservations1,3,5 m³/s, head30 m, eta0.9, cap2 MW. Calculate four-day energy and environmental-shortage volume.', '''
 import numpy as np
 # Step 1: Keep the same river observations for every policy scenario.
 river=np.array([2,5,8,12]); results=[]
@@ -733,7 +806,7 @@ for reserve in [1,3,5]:
 print('Reservation m³/s, energy MWh, shortage m³:',results)
 assert np.all(np.diff([r[1] for r in results])<=0)
 ''','The model compares water allocation, not ecological adequacy or regulatory compliance.')
-add('hydro','Search a generator rating','Flows[2,4,8,12] m³/s last24 h each, head30 m and eta0.9. Choose the smallest candidate rating[1,2,3,4] MW that captures95% of uncapped energy.', '''
+add('hydro','Search a generator rating','Flows [2,4,8,12] m³/s last24 h each, head30 m and eta0.9. Choose the smallest candidate rating [1,2,3,4] MW that captures95% of uncapped energy.', '''
 import numpy as np
 # Step 1: Calculate the uncapped electrical resource.
 available=1000*9.81*np.array([2,4,8,12])*30*0.9/1e6
@@ -807,7 +880,7 @@ cf=21.6/maximum
 # Step 3: Print the percentage and check bounds.
 print(f'{cf:.0%}'); assert abs(cf-0.3)<1e-12
 ''','30% is a period-specific utilization measure.')
-add('wind','Hub-height adjustment','Wind is6 m/s at10 m. Estimate at heights[10,50,100] m using v=vref(z/zref)^0.14.', '''
+add('wind','Hub-height adjustment','Wind is6 m/s at10 m. Estimate at heights [10,50,100] m using v=vref(z/zref)^0.14.', '''
 import numpy as np
 # Step 1: Store measurement height, speed and target heights.
 height=np.array([10,50,100]); reference=10; speed=6
@@ -816,7 +889,7 @@ hub=speed*(height/reference)**0.14
 # Step 3: Verify the reference height is unchanged.
 print(hub,'m/s'); assert hub[0]==6 and np.all(np.diff(hub)>0)
 ''','The exponent is illustrative and not universal across terrain and atmospheric stability.')
-add('wind','Density sensitivity','At fixed area1000 m² and8 m/s, compare available kW for densities[1.0,1.225,1.3] kg/m³.', '''
+add('wind','Density sensitivity','At fixed area1000 m² and8 m/s, compare available kW for densities [1.0,1.225,1.3] kg/m³.', '''
 import numpy as np
 # Step 1: Store candidate air densities.
 rho=np.array([1.0,1.225,1.3])
@@ -825,7 +898,7 @@ power=0.5*rho*1000*8**3/1000
 # Step 3: Check proportionality with density.
 print(power,'kW'); assert np.allclose(power/power[0],rho/rho[0])
 ''','This checks available wind power; manufacturer electrical curves require their specified density treatment.')
-add('wind','Piecewise turbine curve','Implement3 MW rated power: zero below3 m/s, 3(v³−3³)/(12³−3³) between3 and12, rated to below25, zero thereafter. Test[0,3,6,12,25].', '''
+add('wind','Piecewise turbine curve','Implement3 MW rated power: zero below3 m/s, 3(v³−3³)/(12³−3³) between3 and12, rated to below25, zero thereafter. Test [0,3,6,12,25].', '''
 import numpy as np
 # Step 1: Define a vectorised curve with explicit operating boundaries.
 def curve(values):
@@ -837,7 +910,7 @@ power=curve([0,3,6,12,25])
 # Step 3: Check key thresholds and print MW.
 print(power,'MW'); assert np.allclose(power[[0,1,3,4]],[0,0,3,0])
 ''','Cut-out is a shutdown boundary; the idealised curve omits control hysteresis.')
-add('wind','Power of mean versus mean power','Compare the mean of v³ with the cube of mean speed for speeds[4,8] m/s.', '''
+add('wind','Power of mean versus mean power','Compare the mean of v³ with the cube of mean speed for speeds [4,8] m/s.', '''
 import numpy as np
 # Step 1: Store equal-duration wind observations.
 v=np.array([4,8])
@@ -847,7 +920,7 @@ mean_cube=np.mean(v**3); cube_mean=np.mean(v)**3
 print(mean_cube,cube_mean,'m³/s³; difference:',mean_cube-cube_mean,'m³/s³')
 assert mean_cube==288 and cube_mean==216
 ''','Using mean speed in a nonlinear power model can bias energy estimates; clipping adds further effects.')
-add('wind','Turbulence intensity','For[6,8,10] m/s, calculate population standard deviation divided by mean speed. State ddof=0.', '''
+add('wind','Turbulence intensity','For [6,8,10] m/s, calculate population standard deviation divided by mean speed. State ddof=0.', '''
 import numpy as np
 # Step 1: Define the observations and statistical convention.
 v=np.array([6,8,10]); mean=v.mean()
@@ -856,17 +929,17 @@ ti=v.std(ddof=0)/mean
 # Step 3: Check and print the dimensionless ratio.
 print(f'TI: {ti:.2%}'); assert np.isclose(ti,np.sqrt(8/3)/8)
 ''','Three samples demonstrate the calculation; they do not meet a field measurement campaign specification.')
-add('wind','Circular mean direction','Calculate the equal-weight circular mean of[350,10,0] degrees clockwise from north.', '''
+add('wind','Circular mean direction','Calculate the equal-weight circular mean of [350,10,0] degrees clockwise from north.', '''
 import numpy as np
 # Step 1: Convert angles to radians before trigonometry.
 angle=np.deg2rad([350,10,0])
 # Step 2: Average sine and cosine and recover a compass angle.
 s=np.sin(angle).mean(); c=np.cos(angle).mean()
-mean=np.degrees(np.arctan2(s,c))%360
-# Step 3: Verify north modulo a full rotation.
-print(mean,'degrees'); assert min(abs(mean),abs(mean-360))<1e-10
+mean=np.round(np.degrees(np.arctan2(s,c))%360,12)%360
+# Step 3: Verify north in the half-open compass range.
+print(mean,'degrees'); assert 0<=mean<360 and np.isclose(mean,0)
 ''','An arithmetic mean would be misleading across the north/360° boundary.')
-add('wind','Compass sector counts','Bin directions[350,0,20,45,90,180,270] into eight sectors centered on N,NE,E,SE,S,SW,W,NW.', '''
+add('wind','Compass sector counts','Bin directions [350,0,20,45,90,180,270] into eight sectors centered on N,NE,E,SE,S,SW,W,NW.', '''
 import numpy as np
 # Step 1: Shift by half a sector so north straddles zero degrees.
 direction=np.array([350,0,20,45,90,180,270]); sector=((direction+22.5)%360//45).astype(int)
@@ -887,7 +960,10 @@ net=online*wake_retained
 wake=online-net
 # Step 3: Check net energy and show the total loss fraction.
 aggregate=gross.sum()*availability.mean()*wake_retained.mean()
-print(net.sum(),aggregate,'GWh, by season and mean-factor estimate')
+for i,(g,off,w,n) in enumerate(zip(gross,offline,wake,net),1):
+    print(f'Season {i}: gross {g:.3f}, offline {off:.3f}, wake {w:.3f}, net {n:.3f} GWh')
+print(f'Seasonal net total: {net.sum():.3f} GWh; mean-factor estimate: {aggregate:.3f} GWh')
+print(f'Total sequential loss fraction: {(offline.sum()+wake.sum())/gross.sum():.2%}')
 assert np.allclose(net+offline+wake,gross) and net.sum()<aggregate
 ''','Avoid applying a loss twice when an input power curve or energy estimate is already net of it.')
 add('wind','Unequal operating intervals','Mean powers [0.5,2,3] MW last [2,1,0.5] h. Write a function for energy and realised capacity factor at 3 MW. Compare with the biased result obtained if you assume each interval lasts the mean duration. Reject mismatched inputs and out-of-rating power.', '''
@@ -896,8 +972,11 @@ import numpy as np
 p=np.array([0.5,2,3]); dt=np.array([2,1,0.5])
 # Step 2: Integrate and use the same duration in the capacity-factor denominator.
 def metrics(p,dt,rating):
-    if p.shape!=dt.shape or np.any(dt<=0) or np.any((p<0)|(p>rating)):
-        raise ValueError('Invalid aligned power and duration')
+    p,dt=np.asarray(p,dtype=float),np.asarray(dt,dtype=float)
+    if (p.ndim!=1 or p.size==0 or p.shape!=dt.shape or not np.isfinite(rating) or rating<=0
+            or not np.isfinite(p).all() or not np.isfinite(dt).all()
+            or np.any(dt<=0) or np.any((p<0)|(p>rating))):
+        raise ValueError('Provide finite aligned power, positive durations and a positive rating')
     energy=np.sum(p*dt)
     return energy,energy/(rating*dt.sum())
 # Step 3: Check the hand sum and report results.
@@ -923,7 +1002,7 @@ fig.tight_layout(); plt.show()
 print(counts,energy,'observations and MWh')
 assert np.array_equal(counts,[3,2,3]) and np.isclose(energy.sum(),power.sum()) and energy.argmax()==2
 ''','A frequency histogram uses counts; probability density would have a different vertical-axis unit.')
-add('wind','Weibull annual energy and convergence','Use Weibull shape2, scale8 m/s and the3/12/25 m/s,3 MW curve. Integrate using midpoint powers and CDF bin probabilities over0–30 m/s. Compare bin widths0.1 and0.05; apply8760 h and net factor0.9.', '''
+add('wind','Weibull annual energy and convergence','Use Weibull shape2, scale8 m/s and the3/12/25 m/s, 3 MW curve. Integrate using midpoint powers and CDF bin probabilities over0–30 m/s. Compare bin widths0.1 and0.05; apply8760 h and net factor0.9.', '''
 import numpy as np
 # Step 1: Define the curve and exact bin probabilities from the Weibull CDF.
 def aep(step):
@@ -936,8 +1015,8 @@ coarse,fine=aep(0.1),aep(0.05)
 # Step 3: Check convergence and capacity limits.
 print(coarse,fine,'GWh; relative difference:',abs(coarse-fine)/fine)
 assert abs(coarse-fine)/fine<0.001 and 0<fine<3*8760/1000
-''','Probability above30 m/s has zero output under this shutdown curve; its omission does not remove generating energy.')
-add('wind','Undefined circular means','Write a direction-mean function rejecting empty/nonfinite data and resultant length below1e−8. Verify[90,270] is undefined and[350,10] is north.', '''
+''','Probability above 30 m/s has zero output under this shutdown curve; its omission does not remove generating energy.')
+add('wind','Undefined circular means','Write a direction-mean function returning degrees in [0, 360), rejecting empty/nonfinite data and resultant length below 1e−8. Verify [90, 270] is undefined and [350, 10] is north.', '''
 import numpy as np
 # Step 1: Validate input angles and compute the mean vector.
 def mean_direction(values):
@@ -945,16 +1024,17 @@ def mean_direction(values):
     if a.size==0 or np.any(~np.isfinite(a)): raise ValueError('Need finite directions')
     s=np.sin(np.deg2rad(a)).mean(); c=np.cos(np.deg2rad(a)).mean()
     if np.hypot(s,c)<1e-8: raise ValueError('Undefined mean direction')
-    return np.degrees(np.arctan2(s,c))%360
+    angle=np.degrees(np.arctan2(s,c))%360
+    return 0.0 if angle == 360 else angle
 # Step 2: Verify cancellation is explicitly reported.
 try: mean_direction([90,270])
 except ValueError: print('Opposite directions: undefined mean')
 else: raise AssertionError('Cancellation was not detected')
 # Step 3: Verify the well-defined northward sample.
-answer=mean_direction([350,10]); assert min(answer,360-answer)<1e-8
+answer=mean_direction([350,10]); assert 0 <= answer < 360 and min(answer,360-answer)<1e-8
 print(answer,'degrees')
 ''','A near-zero resultant is not evidence for a meaningful northward average.')
-add('wind','Fit shear from multiple heights','Measured speeds at heights[20,40,80] m are generated by6(z/20)^0.2. Fit log(v) against log(z/20) and predict at100 m.', '''
+add('wind','Fit shear from multiple heights','Synthetic speeds at heights [20,40,80] m are generated by6(z/20)^0.2. Fit log(v) against log(z/20) and predict at100 m.', '''
 import numpy as np
 # Step 1: Build synthetic multi-height observations.
 height=np.array([20,40,80]); speed=6*(height/20)**0.2
@@ -965,18 +1045,21 @@ prediction=np.exp(intercept)*(100/20)**alpha
 print('Alpha:',alpha,'100 m wind:',prediction,'m/s')
 assert np.isclose(alpha,0.2) and np.isclose(np.exp(intercept),6)
 ''','Three heights provide a fit and consistency check; real profiles require concurrent quality-controlled measurements.')
-add('wind','Compare hub heights on energy','At10 m, speeds[3,5,7,9] m/s last6 h each. Compare hub heights50 and100 m using exponent0.14 and the3 MW piecewise curve. Calculate daily MWh, not power from mean speed.', '''
+add('wind','Compare hub heights on energy','At10 m, speeds [3,5,7,9] m/s last6 h each. Compare hub heights50 and100 m using exponent0.14 and the3 MW piecewise curve. Calculate daily MWh, not power from mean speed.', '''
 import numpy as np
-# Step 1: Define the common measured speeds and a turbine model.
+# Step 1: Define the common example speeds and a turbine model.
 vref=np.array([3,5,7,9])
 def curve(v):
+    v = np.asarray(v, dtype=float)
+    if not np.isfinite(v).all() or (v < 0).any():
+        raise ValueError("Wind speeds must be finite and non-negative")
     return np.where((v>=3)&(v<12),3*(v**3-27)/(1728-27),np.where((v>=12)&(v<25),3,0))
 # Step 2: Adjust each interval to each candidate hub height.
 energy={height:float(curve(vref*(height/10)**0.14).sum()*6) for height in [50,100]}
 # Step 3: Check rated bounds and compare the designs.
-print(energy,'MWh'); assert all(0<=e<=72 for e in energy.values()) and energy[100]>=energy[50]
-''','Higher towers change cost and loads. More energy in this sample does not prove economic superiority.')
-add('wind','Bootstrap a sample mean power','Observed daily-average powers[0.4,0.8,1.2,0.6,1.5,1.0] MW are treated as independent. With seed11, bootstrap2000 equal-sized samples and calculate a percentile95% interval for mean MW.', '''
+print(energy,'MWh'); assert all(0<=e<=72 for e in energy.values())
+''','Higher towers change cost and loads. More energy in this sample does not prove economic superiority; a higher hub can also reach cut-out and produce less for other winds.')
+add('wind','Bootstrap a sample mean power','Observed daily-average powers [0.4, 0.8, 1.2, 0.6, 1.5, 1.0] MW are treated as independent. With seed 11, draw 2000 equal-sized samples with replacement and calculate a percentile 95% interval for mean MW.', '''
 import numpy as np
 # Step 1: Set observations and a reproducible random generator.
 p=np.array([0.4,0.8,1.2,0.6,1.5,1.0]); rng=np.random.default_rng(11)
@@ -1023,13 +1106,13 @@ print(energy,'GWh'); assert abs(energy-24.966)<1e-12
 add('geothermal','Kelvin and temperature differences','Convert150 and70°C to kelvin, then show that the temperature difference is unchanged.', '''
 # Step 1: Store Celsius temperatures.
 hot,cold=150,70
-# Step 2: Add273.15 to both absolute temperatures.
+# Step 2: Add 273.15 to both absolute temperatures.
 hot_k,cold_k=hot+273.15,cold+273.15
-# Step 3: Check that the difference is80 K.
+# Step 3: Check that the difference is 80 K.
 print(hot_k,cold_k,'K; difference:',hot_k-cold_k,'K')
 assert abs((hot_k-cold_k)-(hot-cold))<1e-10
 ''','Use absolute kelvin temperatures in thermodynamic ratios; Celsius differences are valid for sensible heat.')
-add('geothermal','Depth-temperature table','At depths[1,2,3] km, compare gradients25 and35°C/km with surface15°C. Build a pandas table.', '''
+add('geothermal','Depth-temperature table','At depths [1,2,3] km, compare gradients25 and35°C/km with surface15°C. Build a pandas table.', '''
 import numpy as np
 import pandas as pd
 # Step 1: Store depths in a common unit.
@@ -1039,7 +1122,7 @@ table=pd.DataFrame({f'{g} C_per_km':15+g*depth for g in [25,35]},index=depth)
 # Step 3: Print labelled values and check one scenario.
 print(table.rename_axis('Depth km')); assert table.iloc[-1,1]==120
 ''','Gradient uncertainty changes inferred temperature substantially at depth.')
-add('geothermal','Compare well flows','For flows[30,50,70] kg/s, temperatures150/70°C, cp4180, efficiency0.12 and parasitic fraction0.1, calculate net MW.', '''
+add('geothermal','Compare well flows','For flows [30,50,70] kg/s, temperatures150/70°C, cp4180, efficiency0.12 and parasitic fraction0.1, calculate net MW.', '''
 import numpy as np
 # Step 1: Store well-flow cases.
 flow=np.array([30,50,70])
@@ -1048,7 +1131,7 @@ net=flow*4180*(150-70)*0.12*0.9/1e6
 # Step 3: Check proportionality to flow and display power.
 print(net,'MW net'); assert np.allclose(net/net[0],flow/flow[0])
 ''','Pump demand is represented only by a fixed fractional loss in this model.')
-add('geothermal','Reinjection temperature sensitivity','At50 kg/s and production160°C, compare reinjection[60,80,100]°C with cp4180, efficiency0.12 and parasitic0.1.', '''
+add('geothermal','Reinjection temperature sensitivity','At50 kg/s and production160°C, compare reinjection [60,80,100] °C with cp4180, efficiency0.12 and parasitic0.1.', '''
 import numpy as np
 # Step 1: Store reinjection-temperature alternatives.
 reinjection=np.array([60,80,100])
@@ -1057,7 +1140,7 @@ net=50*4180*(160-reinjection)*0.12*0.9/1e6
 # Step 3: Verify the direction of the simplified sensitivity.
 print(net,'MW net'); assert np.all(np.diff(net)<0)
 ''','Lower reinjection temperatures may increase modeled heat recovery but create chemical and reservoir constraints.')
-add('geothermal','Multiple well-field totals','Two wells have flows[40,60] kg/s and production[150,170]°C. Reinjection is70°C, cp4180, conversion0.12 and parasitic0.1. Calculate individual and total net MW.', '''
+add('geothermal','Multiple well-field totals','Two wells have flows [40,60] kg/s and production [150,170] °C. Reinjection is70°C, cp4180, conversion0.12 and parasitic0.1. Calculate individual and total net MW.', '''
 import numpy as np
 # Step 1: Align each well flow with its production temperature.
 flow=np.array([40,60]); temperature=np.array([150,170])
@@ -1067,7 +1150,7 @@ net=flow*4180*(temperature-70)*0.12*0.9/1e6
 print(net,'MW by well;',net.sum(),'MW total')
 assert np.isclose(net.sum(),4180*(40*80+60*100)*0.12*0.9/1e6)
 ''','Adding well powers assumes the shared plant can accept all of the available resource.')
-add('geothermal','Parasitic-load scenarios','Gross output is5 MW. Compare parasitic fractions[0.05,0.10,0.20] and calculate net MW and24-hour MWh.', '''
+add('geothermal','Parasitic-load scenarios','Gross output is5 MW. Compare parasitic fractions [0.05,0.10,0.20] and calculate net MW and24-hour MWh.', '''
 import numpy as np
 # Step 1: Store alternative operating-loss assumptions.
 fraction=np.array([0.05,0.10,0.20])
@@ -1091,10 +1174,10 @@ gradient=30/1000
 flux=2.5*gradient
 # Step 3: Check units and numerical value.
 print(flux,'W/m²'); assert abs(flux-0.075)<1e-12
-''','The magnitude is75 mW/m². Heat flux requires conductivity; a temperature gradient alone is not flux.')
+''','The magnitude is 75 mW/m². Heat flux requires conductivity; a temperature gradient alone is not flux.')
 add('geothermal','Compounded net-power decline','A plant starts at 5 MW net and declines 2% per year. Report net operating power and annual energy for years 1–10 using 95% availability except 80% in year 4. Compare cumulative energy against constant 95% availability and verify the outage effect.', '''
 import numpy as np
-# Step 1: Start the decline exponent at zero for year1.
+# Step 1: Start the decline exponent at zero for year 1.
 years=np.arange(1,11)
 # Step 2: Calculate annual net power and availability-adjusted energy.
 power=5*0.98**(years-1)
@@ -1108,20 +1191,22 @@ print(constant.sum()-energy.sum(),'GWh lost to the additional outage')
 assert np.isclose(energy[0],41.61) and np.all(np.diff(power)<0)
 assert np.isclose(constant.sum()-energy.sum(),power[3]*8760*(.95-.8)/1000)
 ''','A prescribed decline curve is a scenario, not a calibrated reservoir forecast.')
-add('geothermal','Invalid well records','Four one-hour observations have flows [40,−2,50,missing] kg/s and production [150,160,60,170] °C with reinjection at 70 °C. Build mutually exclusive quality flags, report coverage and integrate thermal MWh for valid intervals only. Show why it is not a complete-period estimate.', '''
+add('geothermal','Invalid well records','Four one-hour water intervals have flows [40,−2,50,missing] kg/s and production temperatures [150,160,60,170] °C, treated as constant within each interval, with reinjection at 70 °C. Assume constant specific heat 4,180 J/(kg K). Build mutually exclusive quality flags, report coverage and integrate thermal MWh for valid intervals only. Show why it is not a complete-period estimate.', '''
 import numpy as np
 # Step 1: Preserve aligned well observations.
 flow=np.array([40,-2,50,np.nan]); production=np.array([150,160,60,170])
 # Step 2: Construct a physical-validity mask before calculating heat.
-flags=np.select([~np.isfinite(flow)|~np.isfinite(production),flow<=0,production<=70],
-                ['missing','nonpositive flow','no useful drop'],default='valid')
+flags=np.select([np.isnan(flow)|np.isnan(production),~np.isfinite(flow)|~np.isfinite(production),production <= -273.15,flow<0,(flow>0)&(production<=70)],
+                ['missing','non-finite','at or below absolute zero','negative flow','no useful drop'],default='valid')
 valid=flags=='valid'
-thermal=flow[valid]*4180*(production[valid]-70)/1e6
+thermal=flow[valid]*4180*np.maximum(production[valid]-70,0)/1e6
+# A zero-flow stopped interval is valid and contributes zero heat.
+observed_energy = thermal.sum() if valid.any() else np.nan
 # Step 3: Report excluded records and verify the retained count.
-print(flags,'coverage:',valid.mean(),'observed MWh thermal:',thermal.sum())
-assert flags.tolist()==['valid','nonpositive flow','no useful drop','missing']
-assert valid.mean()==.25 and np.isclose(thermal.sum(),13.376)
-''','Excluded values need investigation; silently converting negative heat to positive power would hide errors.')
+energy_label = f"{observed_energy:.3f}" if valid.any() else "unavailable"
+print(flags,'data coverage:',valid.mean(),'operating coverage:',(valid & (flow>0)).mean(),'observed MWh thermal:',energy_label)
+assert (np.isfinite(observed_energy) and observed_energy >= 0) if valid.any() else np.isnan(observed_energy)
+''','The observed thermal energy covers valid intervals only; it is not a complete-period estimate when coverage is incomplete. Temperatures at or below absolute zero are invalid even when flow is zero. Excluded values need investigation, and silently converting negative heat to positive power would hide errors.')
 add('geothermal','Plot decline scenarios','Compare initial 5 MW with annual decline 0%, 1%, 3% over 20 years and 95% availability. Plot annual GWh, print cumulative values, and find the first year below 35 GWh, reporting when the threshold is never crossed.', '''
 import numpy as np
 import matplotlib.pyplot as plt
@@ -1149,7 +1234,7 @@ mae=np.abs(prediction-power[split:]).mean(); baseline=np.abs(power[split:]-power
 print('Annual decline:',1-np.exp(slope),'MAE/baseline MW:',mae,baseline)
 assert np.isclose(1-np.exp(slope),0.02) and mae<baseline
 ''','Exact recovery occurs because the noiseless observations follow the fitted model by construction.')
-add('geothermal','Well field with plant clipping','Three wells have flows[40,50,60] kg/s and production[150,160,170]°C. Use reinjection70°C, cp4180, conversion0.12, parasitic0.1 and a4 MW net plant cap. Compare all operating versus outage of each well.', '''
+add('geothermal','Well field with plant clipping','Three wells have flows [40,50,60] kg/s and production [150,160,170] °C. Use reinjection70°C, cp4180, conversion0.12, parasitic0.1 and a4 MW net plant cap. Compare all operating versus outage of each well.', '''
 import numpy as np
 # Step 1: Calculate each well potential net contribution.
 flow=np.array([40,50,60]); temp=np.array([150,160,170])
@@ -1161,18 +1246,18 @@ outage=[min(potential.sum()-p,4) for p in potential]
 print('Baseline MW:',all_on,'single-well outages MW:',outage)
 assert all_on==4 and all(0<=p<=all_on for p in outage)
 ''','Clipping can hide some well loss. This allocation ignores interactions between wells and shared equipment.')
-add('geothermal','Net output with pumping penalty','Compare flows20–100 kg/s in steps10. Gross MW=m×4180×80×0.12/1e6 and pump MW=0.00004m². Find the discrete flow maximising net power.', '''
+add('geothermal','Net output with pumping penalty','Compare flows20–100 kg/s in steps10. Let m be the numerical mass flow in kg/s. Use gross MW=m×4180×80×0.12/1e6 and pump MW=0.00004×m², with the pumping coefficient expressed in MW for that numerical convention. Find the discrete flow maximising net power.', '''
 import numpy as np
 # Step 1: Define candidate flow rates and a synthetic pump-load model.
 flow=np.arange(20,101,10); pump=0.00004*flow**2
 # Step 2: Calculate gross and net power consistently in MW.
 gross=flow*4180*80*0.12/1e6; net=gross-pump
-# Step 3: Select the best candidate and verify the energy subtraction.
+# Step 3: Select the best candidate and verify the power subtraction.
 best=np.argmax(net)
 print('Best flow:',flow[best],'kg/s; net:',net[best],'MW')
 assert np.allclose(net+pump,gross) and flow[best]==100
 ''','The best candidate is the upper search boundary, not an established physical optimum; do not extrapolate the pump model.')
-add('geothermal','Lifetime energy with an intervention','Starting at5 MW, power declines3% per year through year10. At the start of year11 restore power to5 MW and then decline3% again through year20. Compare cumulative GWh with uninterrupted decline;95% availability.', '''
+add('geothermal','Lifetime energy with an intervention','Starting at5 MW, power declines3% per year through year10. At the start of year11 restore power to5 MW and then decline3% again through year20. Compare cumulative GWh with uninterrupted decline; 95% availability.', '''
 import numpy as np
 # Step 1: Calculate the uninterrupted reference trajectory.
 year=np.arange(1,21); baseline=5*0.97**(year-1)
@@ -1186,7 +1271,7 @@ gain=intervention_gwh-baseline_gwh
 print(baseline_gwh,'GWh uninterrupted;',intervention_gwh,'GWh with intervention;',gain,'GWh gain')
 assert intervention[10]==5 and gain>0
 ''','Intervention cost, downtime and reservoir feasibility are omitted; additional energy is not automatically economic benefit.')
-add('geothermal','Joint uncertainty in flow and temperature','With seed5 sample2000 independent flows uniform40–60 kg/s and production temperatures uniform140–170°C. Use reinjection70°C, cp4180, eta0.12, parasitic0.1. Report net-power median,5th/95th percentiles and probability above2 MW.', '''
+add('geothermal','Joint uncertainty in flow and temperature','With seed5 sample2000 independent flows uniform40–60 kg/s and production temperatures uniform140–170°C. Use reinjection70°C, cp4180, eta0.12, parasitic0.1. Report net-power median, 5th/95th percentiles and probability above2 MW.', '''
 import numpy as np
 # Step 1: State the synthetic uncertainty distributions and independence assumption.
 rng=np.random.default_rng(5); flow=rng.uniform(40,60,2000); temp=rng.uniform(140,170,2000)
@@ -1213,10 +1298,11 @@ DIFFICULTIES = ['Basic'] * 4 + ['Medium'] * 8 + ['Hard'] * 8
 def render(topic):
     exercises=BANK[topic]
     assert len(exercises)==20, (topic,len(exercises))
-    text='## Chapter practice — 20 Python exercises\n\n**4 Basic · 8 Medium · 8 Hard.** Basic exercises connect concepts, units and short calculations. Medium exercises apply functions and arrays. Hard exercises combine modelling, validation and interpretation. Each solution runs independently.\n\n'
+    count, medium = (22, 10) if topic == 'hydro' else (20, 8)
+    text=f'## Chapter practice — {count} Python exercises\n\n**4 Basic · {medium} Medium · 8 Hard.** Basic exercises connect concepts, units and short calculations. Medium exercises apply functions and arrays. Hard exercises combine modelling, validation and interpretation. Each solution runs independently.\n\n'
     for i,e in enumerate(exercises,1):
         e=e.copy()
-        e['prompt']=re.sub(r'(?<=[A-Za-z])(?=\d)', ' ', e['prompt'])
+        e['prompt']=re.sub(r'(?<!\d[A-Za-z])(?<=[A-Za-z])(?=\d)', ' ', e['prompt'])
         e['prompt']=re.sub(r'(?<=\d)(?=(?:MW|GW|kW|W/|m³|m²|m/s|kg|°C|km|h\b))',' ',e['prompt'])
         level=DIFFICULTIES[i-1]
         if i in (1,5,13):
@@ -1245,9 +1331,10 @@ def notebook_citations(text):
     return re.sub(r'\[@([^\]]+)\]',replace,text)
 
 def workbook_intro():
-    text = '# Workbook introduction\n\nThe Applied Python Workbook contains 100 independent exercises across five topics. Each topic has **4 Basic, 8 Medium and 8 Hard** exercises, with references, step-by-step explanations and executable checks. Use **Introduction to Renewable Energy** for the fundamentals, equations and worked teaching examples.\n\n| Workbook topic | Exercises |\n|---|---:|\n'
-    for _, title, path in WORKBOOK_CHAPTERS:
-        text += f'| [{title}]({Path(path).relative_to("section7").as_posix()}) | 20 |\n'
+    text = '# Workbook introduction\n\nThe Applied Python Workbook contains 102 independent exercises across five topics. General, Solar, Wind and Geothermal each have **4 Basic, 8 Medium and 8 Hard** exercises; Hydroelectric has **4 Basic, 10 Medium and 8 Hard** exercises, with references, step-by-step explanations and executable checks. Use **Introduction to Renewable Energy** for the fundamentals, equations and worked teaching examples.\n\n| Workbook topic | Exercises |\n|---|---:|\n'
+    for topic, title, path in WORKBOOK_CHAPTERS:
+        count = 22 if topic == 'hydro' else 20
+        text += f'| [{title}]({Path(path).relative_to("section7").as_posix()}) | {count} |\n'
     return text + '\nEach workbook page has a downloadable `.ipynb` notebook. Answers start collapsed in the course; ordinary notebook viewers show the answers below the prompts.\n\n## After practice\n\nUse the **Quizzes** section for chapter quizzes. Complete the [assessment](renewableEnergyTest.md), then the [four-source final project](../section8/projectIntro.md) using the five separate input datasets. Assessment solutions are not published.\n'
 
 def strip_website_embeds(text):
@@ -1259,6 +1346,10 @@ def export_notebook(path, prior_code=None):
     """Create a companion .ipynb from this theory or workbook page."""
     text=path.read_text(encoding='utf-8')
     text=re.sub(r'\A---\n.*?\n---\n','',text,flags=re.S)
+    if '{iframe}' in text:
+        notice = ("The interactive controls described in this notebook are available in the "
+                  "[online course lesson](" + path.name + "); they are not embedded in this standalone notebook.\n\n")
+        text = re.sub(r'(^# [^\n]+\n\n)', lambda m: m.group(1) + notice, text, count=1, flags=re.M)
     text=strip_website_embeds(text)
     cells=[]; last=0
     for match in re.finditer(r'```\{code-cell\} python\n(.*?)```',text,re.S):
@@ -1273,6 +1364,7 @@ def export_notebook(path, prior_code=None):
             cell.source=re.sub(r'^::::\s*$','',cell.source,flags=re.M)
             cell.source=re.sub(r'^\([a-z]+-exercise-\d+\)=\n','',cell.source,flags=re.M)
             cell.source=notebook_citations(cell.source)
+            cell.source=rewrite_notebook_links(cell.source, path)
     # Preserve checked code outputs when only surrounding teaching text changes.
     destination=path.with_suffix('.ipynb')
     previous=nbformat.read(destination,as_version=4) if destination.exists() else None
@@ -1297,7 +1389,14 @@ def export_notebook(path, prior_code=None):
         def field(name):
             match=re.search(r'\b'+name+r'\s*=\s*\{(.*?)\}\s*[,\n]',body+'\n',re.S|re.I)
             return match.group(1).replace('{','').replace('}','') if match else ''
-        details.append(f'<a id="reference-{key}"></a>\n\n- **{key}:** {field("author") or field("editor")}. {field("title")} ({field("year")}). '+field('url'))
+        author, editor = field("author"), field("editor")
+        credited = author or (editor + ' (eds.)' if editor else '')
+        author_text = (credited if credited.endswith(('.', '!', '?')) else credited + '.') if credited else ''
+        citation_note = field('note') if key in {'pythonDocs', 'numpyDocs', 'pandasDocs', 'matplotlibDocs', 'sqliteDocs', 'pvlibDocs', 'iea2026', 'irena2026', 'owid_energy_mix', 'doeHydropowerWorks', 'doeGeothermalElectricity', 'doePVLongevity', 'doeSmallWind'} else ''
+        note_text = (' ' + citation_note.rstrip('.') + '.') if citation_note else ''
+        source_url = field('url') or ('https://doi.org/' + field('doi') if field('doi') else '')
+        edition_text = (' Edition ' + field('edition').rstrip('.') + '.') if field('edition') else ''
+        details.append(f'<a id="reference-{key}"></a>\n\n- **{key}:** {author_text} {field("title")} ({field("year") or "n.d."}).'+edition_text+' '+source_url+note_text)
     cells.append(nbformat.v4.new_markdown_cell('\n'.join(details)))
     if previous:
         for cell, old in zip(cells, previous.cells):
@@ -1307,6 +1406,20 @@ def export_notebook(path, prior_code=None):
     nb=nbformat.v4.new_notebook(cells=cells,metadata=metadata)
     nbformat.write(nb,destination)
 
+def workbook_text(topic, title, relative):
+    path = ROOT / relative
+    text=(
+        '---\nkernelspec:\n  name: python3\n  display_name: Python 3\n---\n\n'
+        f'# {title}\n\n'
+        + ('Unless otherwise specified, use water density 1,000 kg/m³ and gravitational acceleration 9.81 m/s². Environmental reservations in these exercises are separate releases to a bypass reach upstream of the turbine return, so they are unavailable for generation. This is a teaching assumption: a requirement measured downstream of the return may also be met by qualifying turbine discharge.\n\n' if topic == 'hydro' else 'Unless calendar dates are specified, use a standardized model year of 8,760 hours.\n\n' if topic == 'geothermal' else '')
+        + f'[Review the theory and worked examples](../../{PATHS[topic]}). '
+        f'[Download the exercise notebook]({path.stem}.ipynb).\n\n'
+        + render(topic)
+        + ((ROOT / 'section7' / 'hydro_worked_exercises.inc').read_text(encoding='utf-8') if topic == 'hydro' else '')
+        + ((ROOT / 'section7' / 'wind_visualization.inc').read_text(encoding='utf-8').lstrip('\n') if topic == 'wind' else '')
+    )
+    return text
+
 def main():
     for topic,title,relative in WORKBOOK_CHAPTERS:
         theory=ROOT/PATHS[topic]
@@ -1314,14 +1427,7 @@ def main():
         prior_code={c.source:c for c in previous.cells if c.cell_type=='code'}
         path=ROOT/relative
         path.parent.mkdir(parents=True,exist_ok=True)
-        text=(
-            '---\nkernelspec:\n  name: python3\n  display_name: Python 3\n---\n\n'
-            f'# {title}\n\n'
-            f'[Review the theory and worked examples](../../{PATHS[topic]}). '
-            f'[Download the exercise notebook]({path.stem}.ipynb).\n\n'
-            + render(topic)
-            + ((ROOT / 'section7' / 'wind_visualization.inc').read_text(encoding='utf-8') if topic == 'wind' else '')
-        )
+        text = workbook_text(topic, title, relative)
         path.write_text(text,encoding='utf-8')
         export_notebook(path,prior_code)
         export_notebook(theory)

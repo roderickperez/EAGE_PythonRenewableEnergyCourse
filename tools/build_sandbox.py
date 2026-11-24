@@ -6,6 +6,10 @@ static: practice disclosures use native details, and every Python cell is editab
 from __future__ import annotations
 
 import argparse
+from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'EAGE_pythonSandBox'))
+from source_inspection import inspect_source
 from course_media import attach_media
 from build_chapter_exercises import PATHS as THEORY_PATHS, WORKBOOK_CHAPTERS
 import ast
@@ -34,6 +38,29 @@ ASSESSMENT_PAGES = [f'section7/assessment/{name}.md' for name in
 PROJECT = 'section8/projectIntro.md'
 ALLOWED_ASSETS = {'.png', '.jpg', '.jpeg', '.svg', '.gif', '.webp', '.pdf', '.csv',
                   '.xlsx', '.db', '.nc', '.geojson', '.json', '.ipynb', '.bib'}
+
+
+def reference_label(parts):
+    """Join bibliographic fields without duplicating terminal punctuation."""
+    label = ""
+    for raw in parts:
+        part = str(raw).replace("{", "").replace("}", "").strip() if raw else ""
+        if part:
+            label += (" " if label.endswith((".", "!", "?")) else ". ") if label else ""
+            label += part
+    return label
+
+
+def course_digest(pages, generated_dir):
+    """Fingerprint rendered lessons and generated files used by the course."""
+    digest = hashlib.sha256()
+    digest.update(json.dumps(pages, ensure_ascii=False, sort_keys=True, separators=(',', ':')).encode('utf-8'))
+    for path in sorted(p for p in generated_dir.rglob('*') if p.is_file() and p != generated_dir / 'course.json'):
+        relative = path.relative_to(generated_dir).as_posix().encode('utf-8')
+        digest.update(len(relative).to_bytes(8, 'big'))
+        digest.update(relative)
+        digest.update(hashlib.sha256(path.read_bytes()).digest())
+    return digest.hexdigest()
 
 
 def slug(text):
@@ -83,8 +110,13 @@ class Builder:
         path = path.resolve()
         if (path.suffix.lower() not in ALLOWED_ASSETS and path != BOOK / 'myst.yml') or not path.is_file():
             return None
-        if path.is_relative_to(BOOK) and not {'_build', 'outputs'}.intersection(path.relative_to(BOOK).parts):
+        if path.is_relative_to(BOOK):
             rel = path.relative_to(BOOK).as_posix()
+            if {'_build', 'outputs'}.intersection(path.relative_to(BOOK).parts):
+                return None
+            if (rel == 'package-lock.json' or rel.startswith('section5/section5/')
+                    or (path.suffix.lower() == '.db' and path.stat().st_size == 0)):
+                return None
         elif path.is_relative_to(ROOT / 'referenceBooks') and path.suffix == '.pdf':
             rel = 'referenceBooks/' + path.name
         else:
@@ -97,13 +129,26 @@ class Builder:
                             'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
         return 'generated/assets/' + quote(rel)
 
+    def citation_label(self, key):
+        entry = self.bib[key]
+        people = (entry.get('author') or entry.get('editor') or key).split(' and ')
+        surname = people[0].split(',')[0].replace('{', '').replace('}', '')
+        if len(people) == 2:
+            surname += ' & ' + people[1].split(',')[0].replace('{', '').replace('}', '')
+        elif len(people) > 2:
+            surname += ' et al.'
+        return surname, entry.get('year') or 'n.d.'
+
     def citation(self, match):
         links = []
         for key in re.findall(r'@([\w-]+)', match.group()):
             entry = self.bib[key]
             self.cited.add(key)
-            label = entry.get('author', key).split(' and ')[0].split(',')[0].replace('{', '').replace('}', '')
-            links.append(f'<a href="#ref-{html.escape(key)}">{html.escape(label)}, {entry.get("year", "n.d.")}</a>')
+            label, year = self.citation_label(key)
+            # Short titles disambiguate sources that share an author and year.
+            if sum(self.citation_label(k) == (label, year) for k in self.bib) > 1:
+                label += ', ' + entry.get('title', key).replace('{', '').replace('}', '')
+            links.append(f'<a href="#ref-{html.escape(key)}">{html.escape(label)}, {html.escape(year)}</a>')
         return '(' + '; '.join(links) + ')'
 
     def code(self, code, language='python'):
@@ -116,18 +161,18 @@ class Builder:
             runnable = True
         except SyntaxError:
             runnable = False
-        local_only = self.path == 'section5/mdio-format.md' or bool(re.search(r'^(?:import marimo\b|(?:from|import) cartopy\b)', code, re.M))
+        local_only = self.path == 'section5/mdio-format.md' or bool(re.search(r'^import marimo\b', code, re.M))
         runnable = runnable and not local_only
         self.codes.append({'id': code_id, 'code': code, 'solution': self.in_solution > 0,
                            'title': self.heading, 'runnable': runnable,
-                           'magic': bool(re.search(r'^\s*[%!]', code, re.M))})
+                           'magic': inspect_source(code)['magic']})
         if not runnable:
             note = ('Local application example — run in the book\'s local Python environment.' if local_only else
                     'Syntax illustration, output transcript or notebook command — not an executable Python cell.')
             return '<div class="code-cell"><p class="muted">' + note + '</p><pre><code>' + html.escape(code) + '</code></pre></div>'
         return (f'<div class="code-cell"><div class="cell-actions"><span>Python · {code_id}</span>'
                 f'<button data-code="{code_id}">Edit this code</button>'
-                + ('' if self.in_solution else f'<button data-setup="{code_id}">Include preceding examples</button>')
+                + (f'<button data-setup-answers="{code_id}">Include preceding practice answers</button>' if self.in_solution else f'<button data-setup="{code_id}">Include preceding examples</button>')
                 + '</div><pre><code>' + html.escape(code) + '</code></pre></div>')
 
     def render(self, text):
@@ -184,7 +229,7 @@ class Builder:
                 body = '\n'.join(lines[i+1:j])
                 if info.startswith('{image}') or info.startswith('{figure}'):
                     src = info.split('}', 1)[1].strip()
-                    alt = re.search(r'^:alt:\s*(.*)', body, re.M)
+                    alt = re.search(r'^(?::alt:|alt:)\s*(.*)', body, re.M)
                     output.append(f'<img src="{html.escape(src)}" alt="{html.escape(alt[1] if alt else Path(src).stem)}" loading="lazy">')
                 elif info.startswith('{code-cell}'):
                     body = re.sub(r'\A(?::[^\n]*\n|\n)*', '', body)
@@ -198,7 +243,7 @@ class Builder:
                 level = len(heading[1])
                 output.append(f'<h{level} id="{slug(self.heading)}">{self.md.renderInline(heading[2])}</h{level}>')
                 if (re.match(r'(?i)(exercise\s+\d|question\s+\d)', self.heading)
-                    or self.path == PROJECT and level == 2):
+                    or self.path == PROJECT and level == 2 and not self.heading.lower().startswith('references')):
                     output.append(self.workspace(self.heading))
                 i += 1
             else:
@@ -223,7 +268,9 @@ class Builder:
             rendered += '<h2 id="references">References</h2><ul>'
             for key in sorted(self.cited):
                 entry = self.bib[key]
-                label = '. '.join(entry.get(f, '').replace('{', '').replace('}', '') for f in ['author', 'year', 'title', 'publisher'])
+                people = entry.get('author') or (entry.get('editor', '') + ' (eds.)' if entry.get('editor') else '')
+                edition = f"Edition {entry['edition']}" if entry.get('edition') else ''
+                label = reference_label([people, entry.get('year') or 'n.d.', entry.get('title', ''), edition, entry.get('publisher', ''), entry.get('note', '')])
                 url = entry.get('url') or ('https://doi.org/' + entry['doi'] if 'doi' in entry else '')
                 rendered += f'<li id="ref-{key}">{html.escape(label)}'
                 if url:
@@ -256,6 +303,8 @@ class Builder:
                 tag[attr] = '#lesson=' + quote(rel, safe='') + ('&anchor=' + parts.fragment if parts.fragment else '')
             elif link := self.asset(target):
                 tag[attr] = link
+                if tag.name == 'a' and target.suffix.lower() == '.ipynb':
+                    tag['download'] = target.name
             elif rel.endswith('.md'):
                 tag[attr] = '../' + rel[:-3].lower() + '/' + ('#' + parts.fragment if parts.fragment else '')
             else:
@@ -271,7 +320,7 @@ class Builder:
         # assets from surviving into a later deployment.
         shutil.rmtree(OUT, ignore_errors=True)
         OUT.mkdir(exist_ok=True)
-        for lab in ('hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'project-map'):
+        for lab in ('hydro-lab', 'solar-lab', 'wind-lab', 'geothermal-lab', 'project-map', 'learning-roadmap'):
             source = BOOK / 'static' / lab
             if not (source / f'{lab}.js').is_file():
                 raise FileNotFoundError(f'Build {lab} first: npm run build')
@@ -290,7 +339,7 @@ class Builder:
                 if cell['runnable'] and not cell['solution']:
                     legacy['setup-' + cell['id']] = 'setup-' + previous
             practice['legacy_drafts'] = {key: theory['id'] + '::' + old for key, old in legacy.items()}
-        attach_media(pages, SANDBOX)
+        attach_media(pages, SANDBOX, output_dir=OUT)
         # Data are fetched on demand into the worker, retaining book-relative paths.
         for path in BOOK.rglob('*'):
             if path.suffix in {'.csv', '.xlsx', '.db', '.nc', '.geojson', '.json'} and '_build' not in path.parts:
@@ -298,7 +347,7 @@ class Builder:
         payload = {'version': 2, 'pages': pages,
                    'assets': sorted(self.assets.values(), key=lambda x: x['path']),
                    'book_url': 'https://roderickperez.github.io/EAGE_PythonRenewableEnergyCourse/',
-                   'source_digest': hashlib.sha256(''.join(p['source_sha256'] for p in pages).encode()).hexdigest()}
+                   'source_digest': course_digest(pages, OUT)}
         (OUT / 'course.json').write_text(json.dumps(payload, ensure_ascii=False, indent=2) + '\n')
         print(f'Sandbox: {len(pages)} book pages, {sum(len(p["codes"]) for p in pages)} Python cells, {len(self.assets)} assets.')
 
@@ -311,7 +360,7 @@ if __name__ == '__main__':
     if args.deploy:
         target = BOOK / '_build/html/sandbox'
         target.mkdir(parents=True, exist_ok=True)
-        for name in ['index.html', 'app.js', 'styles.css', 'python-worker.js', 'eagelogo.jpg']:
+        for name in ['index.html', 'app.js', 'styles.css', 'python-worker.js', 'source_inspection.py', 'eagelogo.jpg', 'course-session-refresh.js']:
             shutil.copyfile(SANDBOX / name, target / name)
         shutil.copytree(OUT, target / 'generated', dirs_exist_ok=True)
         shutil.copytree(SANDBOX / 'jupyterlite', target / 'jupyterlite', dirs_exist_ok=True)

@@ -1,0 +1,28 @@
+*{box-sizing:border-box}
+:root{color:#153b36;background:#f4f8f6;font:16px/1.55 Inter,system-ui,sans-serif}
+body{margin:0}main{max-width:1240px;margin:auto;padding:0 clamp(16px,4vw,64px) 5rem}
+header{padding:1.2rem 0;display:flex;justify-content:space-between;gap:1rem;border-bottom:1px solid #cbdad5;font-size:.86rem}
+a{color:#086e5b;font-weight:650;text-underline-offset:3px}
+h1,h2,h3{line-height:1.1;letter-spacing:-.04em}
+h1{font-size:clamp(2.6rem,6vw,5rem);margin:.65em 0 .15em}
+.intro{max-width:66ch;color:#44635b;margin-bottom:2rem}
+.board{display:grid;grid-template-columns:minmax(0,2.3fr) minmax(245px,1fr);border:1px solid #cbdad5;background:white;border-radius:16px;overflow:hidden}
+.atlas{min-height:410px;position:relative;background:radial-gradient(ellipse at 50% 40%,#e0f3ec,#abd9dd 62%,#85becb);isolation:isolate}
+#terrain,#markers,#terrain canvas{position:absolute;inset:0;width:100%;height:100%}
+#markers{pointer-events:none}button{font:inherit;font-weight:650;cursor:pointer;color:#153b36}
+#markers button{position:absolute;pointer-events:auto;transform:translate(-50%,-15%);border:1px solid #9fbdb5;border-radius:20px;padding:.22rem .62rem;background:#fffffff5;box-shadow:0 3px 9px #17433e24;font-size:clamp(.68rem,1.2vw,.86rem);white-space:nowrap}
+#markers button[aria-pressed=true]{background:#153b36;color:white}
+#markers .earned:after{content:' ✓'}
+#markers img{position:absolute;width:38px;height:38px;bottom:110%;left:50%;transform:translateX(-50%);filter:drop-shadow(0 2px 2px #30545255)}
+aside,#station,#finish{padding:clamp(18px,3vw,32px)}
+.kicker,aside label{font-size:.72rem;font-weight:750;letter-spacing:.12em;text-transform:uppercase;color:#527068}
+aside h2,#station h2,#finish h2{font-size:2rem;margin:.35em 0}
+aside p{font-size:.95rem}#task{color:#526963}hr{border:0;border-top:1px solid #cbdad5;margin:1.4rem 0}
+progress{display:block;width:100%;height:9px;margin:.6rem 0;accent-color:#0f826c}#count{font-size:.85rem}
+#enter,#checkpoint button{background:#0c715e;border:0;color:white;border-radius:7px;padding:.65rem 1rem}
+#station,#finish{background:white;border:1px solid #cbdad5;border-radius:14px;margin-top:1rem}
+iframe{width:100%;height:min(80vh,740px);border:1px solid #cbdad5;border-radius:10px}pre{background:#edf5f1;padding:1rem;overflow:auto;border-radius:8px}
+#checkpoint{border-top:1px solid #cbdad5;margin-top:1.2rem;padding-top:.5rem}#checkpoint>button{margin-left:1rem}
+.choices,#quiz-links{display:flex;flex-wrap:wrap;gap:.6rem 1rem}#checkpoint .choices button{background:#eaf3ef;color:#153b36}
+:focus-visible{outline:3px solid #bf7925;outline-offset:3px}
+@media(max-width:720px){.board{grid-template-columns:1fr}.atlas{min-height:0;aspect-ratio:1.4}header span{font-size:.75rem}#markers img{width:29px;height:29px}}

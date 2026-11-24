@@ -16,12 +16,14 @@ ROOT=BASE/'EAGE_PythonRenewableEnergyCourse'
 
 def validate():
     count=0
+    figures=0
     for _, _, relative in WORKBOOK_CHAPTERS:
         path=ROOT/relative; text=path.read_text(encoding='utf-8')
         blocks=re.split(r'\n### Exercise \d+ — ',text)[1:]
-        assert len(blocks)==20,relative
+        expected = 22 if relative == 'section7/workbook/hydroelectric.md' else 20
+        assert len(blocks)==expected,relative
         levels=re.findall(r'\*\*Difficulty:\*\* (Basic|Medium|Hard)',text)
-        assert levels==DIFFICULTIES,relative
+        assert levels == DIFFICULTIES + (['Medium', 'Medium'] if expected == 22 else []),relative
         solutions=Counter()
         for i,block in enumerate(blocks,1):
             block=block.split('\n## ',1)[0]
@@ -35,9 +37,15 @@ def validate():
             solutions[cells[-1].strip()]+=1
             with contextlib.redirect_stdout(io.StringIO()):
                 exec(compile(cells[-1],f'{relative}:exercise-{i}','exec'),{})
+                for number in plt.get_fignums():
+                    try:
+                        plt.figure(number).canvas.draw()
+                        figures+=1
+                    except Exception as exc:
+                        raise RuntimeError(f'Figure rendering failed: {relative}:exercise-{i}') from exc
             plt.close('all');count+=1
         nb=nbformat.read(path.with_suffix('.ipynb'),as_version=4);nbformat.validate(nb)
-        assert sum('### Exercise ' in c.source for c in nb.cells if c.cell_type=='markdown')==20
+        assert sum('### Exercise ' in c.source for c in nb.cells if c.cell_type=='markdown')==expected
         notebook_code=Counter(c.source.strip() for c in nb.cells if c.cell_type=='code')
         assert not solutions-notebook_code,(relative,'practice solutions differ in the notebook')
     config=(ROOT/'myst.yml').read_text()
@@ -51,6 +59,6 @@ def validate():
         assert '**Answer' not in test and '{code-cell}' not in test and '{dropdown}' not in test
     tracked=subprocess.check_output(['git','ls-files','instructor_private'],cwd=BASE,text=True)
     assert not tracked.strip(),'Private instructor files must never be tracked'
-    print(f'Validated {count} independent chapter solutions, 5 notebook companions, 60 assessment questions and private-file exclusion.')
+    print(f'Validated {count} independent chapter solutions and rendered {figures} figures; checked 5 notebook companions, 60 assessment questions and private-file exclusion.')
 
 if __name__=='__main__':validate()

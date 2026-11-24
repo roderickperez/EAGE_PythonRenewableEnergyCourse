@@ -4,7 +4,7 @@ MDIO (multidimensional input/output) is an open-source format and Python library
 
 ## Article and reference
 
-Sansal, Altay; Kainkaryam, Sribharath; Lasscock, Ben; and Valenciano, Alejandro (2023). “MDIO: Open-source format for multidimensional energy data.” *The Leading Edge*, July 2023, pp. 457–465 as printed in the [TGS-hosted article PDF](https://www.tgs.com/hubfs/TGS%20-%20MDIO%20-%20Open-Source%20Format%20for%20Multidimensional%20Energy%20Data%20-%20The%20Leading%20Edge.pdf). The DOI printed in that PDF, `10.1190/tle42070457.1`, currently resolves to a different paper; verify it with the publisher before citing it as an MDIO DOI.
+Sansal, Altay; Kainkaryam, Sribharath; Lasscock, Ben; and Valenciano, Alejandro (2023). “MDIO: Open-source format for multidimensional energy data.” *The Leading Edge* 42(7), pp. 465–473, [doi:10.1190/tle42070465.1](https://doi.org/10.1190/tle42070465.1). The [TGS-hosted article PDF](https://www.tgs.com/hubfs/TGS%20-%20MDIO%20-%20Open-Source%20Format%20for%20Multidimensional%20Energy%20Data%20-%20The%20Leading%20Edge.pdf). The DOI printed in that PDF, `10.1190/tle42070457.1`, currently resolves to a different paper; verify it with the publisher before citing it as an MDIO DOI.
 
 ## How it works
 
@@ -12,7 +12,7 @@ The article describes an MDIO dataset as Zarr arrays plus JSON metadata. Its ill
 
 An array might have axes `(inline, crossline, sample)` for a seismic volume, or `(latitude, longitude, time)` for a gridded wind variable. To retrieve one small region, the reader needs only the chunks that intersect it. The live mask distinguishes an absent seismic trace from an actual zero amplitude. Preserve coordinate reference systems, units, time conventions, variable definitions and provenance; dimensions alone do not supply their physical meaning.
 
-**Chunking is a tradeoff.** Long time-series access and map-slice access favor different chunk shapes. Larger chunks reduce the number of storage requests but can fetch unnecessary data. The paper gives 4–8 MB as a cloud-object-store starting point and 1–2 MB for parallel filesystems, not universal optima; benchmark your own data and access patterns. Lossless compression preserves values; lossy compression changes values, so use it only after measuring error against a suitable scientific tolerance. The paper reports approximately 41% storage savings with lossless compression on the authors' seismic datasets; this is not a guarantee for other data.
+**Chunking is a tradeoff.** Long time-series access and map-slice access favor different chunk shapes. Larger chunks reduce the number of storage requests but can fetch unnecessary data. The paper gives 4–8 MB as a cloud-object-store starting point and 1–2 MB for parallel filesystems, not universal optima; benchmark your own data and access patterns. Lossless compression preserves values; lossy compression changes values, so use it only after measuring error against a suitable scientific tolerance. The paper reports approximately 41% lower storage costs with lossless compression on the authors' seismic datasets, without specifying a detailed cost breakdown; this is not a guarantee for other data.
 
 ## MDIO and xarray compared
 

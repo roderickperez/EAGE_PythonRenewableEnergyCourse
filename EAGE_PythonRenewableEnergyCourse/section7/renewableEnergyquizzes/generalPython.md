@@ -71,7 +71,7 @@ Convert 3 MW sustained for 2 hours to MWh with Python.
 
 <span class="difficulty-badge difficulty-medium">Medium</span>
 
-Write a condition that is true when `power` is at least zero and no greater than `rating`.
+For scalar numeric values, write a condition that is true when `power` is at least zero and no greater than `rating`.
 
 :::
 
@@ -158,7 +158,7 @@ Compute the mean of `[2, 4, 6]` without an external library.
 :::{admonition} Solution
 :class: tip, dropdown
 
-`sum(values) / len(values)` gives 4 for this nonempty list.
+For `values = [2, 4, 6]`, `sum(values) / len(values)` gives 4.
 
 :::
 

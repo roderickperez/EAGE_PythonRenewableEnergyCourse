@@ -25,7 +25,7 @@
         "irradiation-over-time": "en/solar/irradiation-over-time.mp3",
         "stc-nameplate-and-temperature": "en/solar/stc-nameplate-and-temperature.mp3",
         "inverter-efficiency-clipping-and-loss-accounting": "en/solar/inverter-efficiency-clipping-and-loss-accounting.mp3",
-        "thermal-storage-energy-is-not-power": "en/solar/thermal-storage-energy-is-not-power.mp3",
+        "thermal-storage-energy-is-not-power": "en/solar/thermal-storage-boundary-corrected.mp3",
         "irradiance-versus-irradiation": "en/solar/irradiance-versus-irradiation.mp3",
         "from-solar-resource-to-pv-power": "en/solar/from-solar-resource-to-pv-power.mp3",
         "ac-output-and-energy": "en/solar/ac-output-and-energy.mp3",
@@ -37,7 +37,7 @@
     "audio": {
       "en": {
         "components-and-system-boundaries": "en/wind/components-and-system-boundaries.mp3",
-        "why-available-power-contains-the-cube-of-wind-speed": "en/wind/why-available-power-contains-the-cube-of-wind-speed.mp3",
+        "why-available-power-contains-the-cube-of-wind-speed": "en/wind/available-power-reference-flux-corrected.mp3",
         "power-coefficient-drivetrain-efficiency-and-betzs-limit": "en/wind/power-coefficient-drivetrain-efficiency-and-betzs-limit.mp3",
         "torque-and-tip-speed-ratio": "en/wind/torque-and-tip-speed-ratio.mp3",
         "air-density": "en/wind/air-density.mp3",

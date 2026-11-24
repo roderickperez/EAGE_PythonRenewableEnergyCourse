@@ -1,7 +1,7 @@
 # Frequently asked questions
 
 ## Do I need previous Python experience?
-No. Work through Sections 1–3 first. Basic algebra and unit conversions are enough to start.
+Yes. A working foundation in Python functions, NumPy, pandas, notebooks, and plotting is expected. If you need preparation, use the separate [Python Course](https://roderickperezaltamar.com/private-course/eage-python-course/index.html); separate access may be required. The [Python preparation guide](../courseIntro.md#python-preparation) also links supplementary official tutorials. Basic algebra and unit conversions are helpful.
 
 ## Why does my result differ?
 Check units, time step, rounding, random seed, package versions and earlier cells. Use `np.isclose` with tolerances appropriate to the units and expected numerical error. [NumPy isclose](https://numpy.org/doc/stable/reference/generated/numpy.isclose.html).

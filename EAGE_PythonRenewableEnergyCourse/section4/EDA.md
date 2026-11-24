@@ -66,19 +66,22 @@ df = pd.read_csv(book_root / "data/examples/penguins.csv")
 df.head()
 ```
 
-Using panda we can identify the basic data of our dataset. For example, the number and name of the columns.
- [pandas descriptive statistics](https://pandas.pydata.org/docs/user_guide/basics.html#descriptive-statistics).```{code-cell} python
+Using panda we can identify the basic data of our dataset. For example, the number and name of the columns. [pandas descriptive statistics](https://pandas.pydata.org/docs/user_guide/basics.html#descriptive-statistics).
+
+```{code-cell} python
 print('Number of rows and columns: ', df.shape)
 print('Columns names: ', df.columns)
 ```
 
 Also, we can identify the number of null values, as well as the data type in each column:
+
 ```{code-cell} python
 df.info()
 ```
 
-Additionally, we can obtain a brief statistical description of the numerical data contained in our data set:
- [pandas descriptive statistics](https://pandas.pydata.org/docs/user_guide/basics.html#descriptive-statistics).```{code-cell} python
+Additionally, we can obtain a brief statistical description of the numerical data contained in our data set: [pandas descriptive statistics](https://pandas.pydata.org/docs/user_guide/basics.html#descriptive-statistics).
+
+```{code-cell} python
 df.describe()
 ```
 
@@ -92,13 +95,14 @@ sns.heatmap(corr, xticklabels=corr.columns, yticklabels=corr.columns)
 plt.show()
 ```
 
-:::{admonition} Seaborn built-in datasets
+:::{admonition} Correlation and data leakage
 :class: tip
 Do not remove features solely because a heatmap shows high correlation. Check physical meaning, redundant measurements and the intended model. For forecasting, choose transformations on training data only; keep future observations out of feature selection. [scikit-learn: data leakage](https://scikit-learn.org/stable/common_pitfalls.html#data-leakage).
 :::
 
-If we wanted to carry out a more detailed analysis of each of our variables, we could calculate a histogram that allows us to identify the frequency distribution in each one. For example, we can select the `bill_length_mm` column and calculate the histogram of the values.
- [Seaborn distributions](https://seaborn.pydata.org/tutorial/distributions.html).```{code-cell} python
+If we wanted to carry out a more detailed analysis of each of our variables, we could calculate a histogram that allows us to identify the frequency distribution in each one. For example, we can select the `bill_length_mm` column and calculate the histogram of the values. [Seaborn distributions](https://seaborn.pydata.org/tutorial/distributions.html).
+
+```{code-cell} python
 sns.displot(df["bill_length_mm"], kde = False)
 ```
 
@@ -127,7 +131,7 @@ sns.boxplot(x =  df["bill_length_mm"])
 
 If we compare the boxplot to a histogram or density plot, they have the advantage of taking up less space, which is useful when comparing distributions between many groups or datasets.  [Matplotlib boxplot](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.boxplot.html).
 
-In case we would like to plot a boxplot for all the variables in the data set, select the numeric columns and pass them as `data`; compare variables with compatible units.
+To compare a numeric variable's distribution across categories, plot a grouped boxplot (here `bill_length_mm` grouped by `species`; if comparing multiple numeric columns together, keep only variables with compatible units).
 
 ```{code-cell} python
 plt.figure(figsize=(20, 12))
@@ -164,7 +168,7 @@ sns.pairplot(
 )
 ```
 
-As you may have already noticed, the parsing of our `pairplot()` function is symmetrical. Therefore, in some cases we can only show the lower part of it so as not to saturate the image. [Seaborn pairplot](https://seaborn.pydata.org/generated/seaborn.pairplot.html).
+As you may have already noticed, the grid of our `pairplot()` function is symmetrical. Therefore, in some cases we can only show the lower part of it so as not to saturate the image. [Seaborn pairplot](https://seaborn.pydata.org/generated/seaborn.pairplot.html).
 
 ```{code-cell} python
 sns.pairplot(penguins, corner=True)

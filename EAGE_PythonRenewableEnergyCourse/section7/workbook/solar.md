@@ -19,7 +19,7 @@ kernelspec:
 
 **Difficulty:** Basic
 
-**Reference:** PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2.
+**Reference:** PV devices and systems: [@foster2010], Chapter 5 and §§6.3, 6.5.3 and 7.5.2; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2.
 
 **Task:** At 800 W/m², a 2 m² panel has efficiency 20%. Calculate DC watts.
 
@@ -51,7 +51,7 @@ print(power_w, 'W DC'); assert power_w == 320
 
 **Difficulty:** Basic
 
-**Reference:** PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2.
+**Reference:** PV devices and systems: [@foster2010], Chapter 5 and §§6.3, 6.5.3 and 7.5.2; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2.
 
 **Task:** An array contains 24 modules rated at 400 W DC. Calculate its STC rating in kW.
 
@@ -83,7 +83,7 @@ print(array_kw,'kW DC'); assert array_kw == 9.6
 
 **Difficulty:** Basic
 
-**Reference:** Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units). PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2.
+**Reference:** Power, energy and conversion: [@wade2003], Chapter 2; [@jica2011], §3.1.2 (use coherent SI units). PV devices and systems: [@foster2010], Chapter 5 and §§6.3, 6.5.3 and 7.5.2; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2.
 
 **Task:** Four hourly mean irradiances are [0, 200, 600, 400] W/m². Calculate four-hour irradiation in kWh/m².
 
@@ -115,7 +115,7 @@ print(irradiation,'kWh/m²'); assert irradiation == 1.2
 
 **Difficulty:** Basic
 
-**Reference:** PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2.
+**Reference:** PV devices and systems: [@foster2010], Chapter 5 and §§6.3, 6.5.3 and 7.5.2; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2.
 
 **Task:** A PV array delivers 5 kW DC to a 96%-efficient inverter with a 6 kW AC limit. Find AC kW.
 
@@ -249,9 +249,9 @@ print(dc_kw,'kW DC'); assert np.allclose(dc_kw,[10,9.2,8.4])
 
 **Difficulty:** Medium
 
-**Reference:** PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2. The constant-efficiency clipping rule is specified here.
+**Reference:** PV devices and systems: [@foster2010], Chapter 5 and §§6.3, 6.5.3 and 7.5.2; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2. The constant-efficiency clipping rule is specified here.
 
-**Task:** Hourly DC output [0,4,8,10] kW passes through a 97% inverter capped at 7 kW AC. Calculate AC kWh and clipping kWh.
+**Task:** DC output [0,4,8,10] kW is constant within each one-hour interval and passes through a 97% inverter capped at 7 kW AC. Calculate AC kWh and clipping kWh.
 
 ```{code-cell} python
 # Your solution for solar exercise 08.
@@ -283,7 +283,7 @@ assert np.allclose(ac+clipping,available_ac) and np.isclose(ac.sum(),17.88)
 
 **Difficulty:** Medium
 
-**Reference:** PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2.
+**Reference:** PV devices and systems: [@foster2010], Chapter 5 and §§6.3, 6.5.3 and 7.5.2; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2.
 
 **Task:** Start with 1000 kWh of estimated DC energy before soiling and wiring losses. Apply 3% soiling, 2% wiring and 4% inverter losses sequentially. Compare with simply subtracting 9%.
 
@@ -419,9 +419,9 @@ print(energy,'kWh'); assert energy == 11.5
 
 **Difficulty:** Hard
 
-**Reference:** PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2. Array calculations: [@numpyDocs].
+**Reference:** PV devices and systems: [@foster2010], Chapter 5 and §§6.3, 6.5.3 and 7.5.2; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2. Array calculations: [@numpyDocs].
 
-**Task:** Four intervals have irradiances [0,200,missing,−10] W/m² and durations [2,0.5,1,0.5] h. The first interval is night. Write a function for valid-time coverage, daylight coverage and observed irradiation. Preserve night zero and exclude non-finite or negative readings.
+**Task:** Four intervals have irradiances [0,200,missing,−10] W/m² and durations [2,0.5,1,0.5] h. Assume the daylight mask is [False, True, True, True], including for missing and invalid readings. Write a function for valid-time coverage, daylight coverage and observed irradiation. Preserve night zero and exclude non-finite or negative readings.
 
 ```{code-cell} python
 # Your solution for solar exercise 13.
@@ -440,9 +440,28 @@ g=np.array([0,200,np.nan,-10]); dt=np.array([2,.5,1,.5])
 daylight=np.array([False,True,True,True])
 # Step 2: Integrate valid intervals and weight coverage by duration.
 def audit_irradiance(g, dt, daylight):
+    # Arrays pair by position; labelled series need matching, nonmissing labels.
+    import pandas as pd
+    inputs = (g, dt, daylight)
+    if any(isinstance(value, pd.Series) for value in inputs):
+        if (not all(isinstance(value, pd.Series) for value in inputs)
+                or not g.index.is_unique
+                or any(not g.index.equals(value.index) for value in inputs[1:])):
+            raise ValueError("Series must have the same unique index in the same order")
+        names = list(range(g.index.nlevels)) if g.index.nlevels > 1 else 0
+        if g.index.to_frame(index=False, name=names).isna().to_numpy().any():
+            raise ValueError("Index labels must not be missing")
+    g,dt=np.asarray(g,dtype=float),np.asarray(dt,dtype=float)
+    daylight=np.asarray(daylight)
+    if (g.ndim!=1 or g.size==0 or dt.shape!=g.shape or daylight.shape!=g.shape
+            or daylight.dtype.kind!='b' or not np.isfinite(dt).all()
+            or np.any(dt<0) or dt.sum()<=0):
+        raise ValueError("Provide aligned readings, boolean daylight flags and finite non-negative durations with positive total")
     valid=np.isfinite(g)&(g>=0)
-    return (dt[valid].sum()/dt.sum(), dt[valid&daylight].sum()/dt[daylight].sum(),
-            np.dot(g[valid],dt[valid])/1000)
+    daylight_hours=dt[daylight].sum()
+    daylight_coverage=dt[valid&daylight].sum()/daylight_hours if daylight_hours>0 else np.nan
+    observed = np.dot(g[valid],dt[valid])/1000 if dt[valid].sum()>0 else np.nan
+    return (dt[valid].sum()/dt.sum(), daylight_coverage, observed)
 
 # Step 3: Reconcile coverage and observed irradiation against hand calculations.
 result=audit_irradiance(g,dt,daylight)
@@ -450,7 +469,7 @@ print(result,'total coverage, daylight coverage, observed kWh/m²')
 assert np.allclose(result,[.625,.25,.1])
 ```
 
-**Interpretation:** Zero at night is a valid observation; a missing daylight observation cannot be treated as zero.
+**Interpretation:** Zero at night is a valid observation; a missing daylight observation cannot be treated as zero. If there is no daylight duration, daylight coverage is undefined and reported as NaN. If there is no valid observed duration, irradiation is unavailable rather than zero. If using labelled series, pair readings, durations and daylight flags using the same unique, nonmissing labels in the same order.
 
 ::::
 
@@ -471,7 +490,7 @@ assert np.allclose(result,[.625,.25,.1])
 
 1. Index years with no degradation in the first year.
 2. Apply annual retained output multiplicatively.
-3. Check the first and last years and print the sum.
+3. Show annual and cumulative energy for each year and compare scenarios.
 
 ```{code-cell} python
 import numpy as np
@@ -479,15 +498,22 @@ import numpy as np
 years = np.arange(1,26)
 # Step 2: Apply annual retained output multiplicatively.
 def forecast(rate):
-    return 100*(1-rate)**(years-1)
-# Step 3: Check the first and last years and print the sum.
+    if not np.isscalar(rate) or not np.isfinite(rate) or not 0 <= rate < 1:
+        raise ValueError('Annual degradation rate must be finite and in [0, 1)')
+    annual = 100 * (1-rate)**(years-1)
+    return annual, np.cumsum(annual)
+# Step 3: Show annual and cumulative energy for each year and compare scenarios.
 totals=[]; first=[]
 for rate in [.005,.01]:
-    energy=forecast(rate)
-    first.append(next((int(year) for year,e in zip(years,energy) if e<90),None))
-    totals.append(energy.sum())
-    assert energy[0]==100 and np.isclose(energy[4],100*(1-rate)**4)
-print(totals,'MWh cumulative; first year under 90 MWh:',first)
+    annual, cumulative = forecast(rate)
+    first.append(next((int(year) for year,e in zip(years,annual) if e<90),None))
+    totals.append(cumulative[-1])
+    assert annual[0]==100 and np.isclose(annual[4],100*(1-rate)**4)
+    print(f'Annual degradation: {rate:.1%}')
+    print('Year  Annual MWh  Cumulative MWh')
+    for year, energy, running_total in zip(years, annual, cumulative):
+        print(f'{year:4d}  {energy:10.2f}  {running_total:14.2f}')
+    print(f'First year below 90 MWh: {first[-1]}')
 assert first==[23,12] and totals[0]>totals[1]
 ```
 
@@ -500,9 +526,9 @@ assert first==[23,12] and totals[0]>totals[1]
 
 **Difficulty:** Hard
 
-**Reference:** PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2. Plotting: [@matplotlibDocs].
+**Reference:** PV devices and systems: [@foster2010], Chapter 5 and §§6.3, 6.5.3 and 7.5.2; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2. Plotting: [@matplotlibDocs].
 
-**Task:** Model 24 hourly mean irradiances as max(0,800 sin(pi(h−6)/12)). Use 20 m², 20% module efficiency and 96% inverter efficiency. Plot DC and delivered AC for inverter caps of 2 and 3 kW. Integrate DC, delivered AC and clipping in MWh and reconcile the energy budget.
+**Task:** Model 24 representative irradiances as max(0,800 sin(pi(h−6)/12)), each constant within its one-hour interval. Use 20 m², 20% module efficiency and 96% inverter efficiency. Plot DC and delivered AC for inverter caps of 2 and 3 kW. Integrate DC, delivered AC and clipping in MWh and reconcile the energy budget.
 
 ```{code-cell} python
 # Your solution for solar exercise 15.
@@ -528,13 +554,13 @@ for cap in [2,3]:
     clipping=(potential-ac).sum()/1000
     delivered=ac.sum()/1000
     assert np.isclose(dc_kw.sum()/1000, delivered+clipping+(dc_kw-potential).sum()/1000)
-    print(cap,'kW inverter:',delivered,'MWh delivered;',clipping,'MWh clipped')
+    print(cap,'kW inverter:',dc_kw.sum()/1000,'MWh DC;',delivered,'MWh delivered;',clipping,'MWh clipped;',(dc_kw-potential).sum()/1000,'MWh conversion loss')
     ax.plot(h,ac,label=f'AC, {cap} kW cap')
-ax.set(xlabel='UTC hour',ylabel='Power (kW)',title='Synthetic PV day')
+ax.set(xlabel='Hour of synthetic day',ylabel='Power (kW)',title='Synthetic PV day')
 ax.legend(); fig.tight_layout(); plt.show()
 ```
 
-**Interpretation:** The irradiance values are treated as interval means; no real location or date is represented.
+**Interpretation:** The irradiance values are treated as constant within each interval; no real location or date is represented.
 
 ::::
 
@@ -543,9 +569,9 @@ ax.legend(); fig.tight_layout(); plt.show()
 
 **Difficulty:** Hard
 
-**Reference:** PV device and system relationships: [@foster2010], Chapter 5; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2. Original discrete inverter search.
+**Reference:** PV devices and systems: [@foster2010], Chapter 5 and §§6.3, 6.5.3 and 7.5.2; [@wade2003], Chapter 3; [@goswami2015], §§9.2–9.2.2. Original discrete inverter search.
 
-**Task:** For hourly DC [0,2,5,9,12,8,3,0] kW and 97% efficiency, search integer AC ratings 5–12 kW for at most 5% clipped potential AC energy.
+**Task:** For DC [0,2,5,9,12,8,3,0] kW, each constant for one hour, and 97% efficiency, search integer AC ratings 5–12 kW for at most 5% clipped potential AC energy.
 
 ```{code-cell} python
 # Your solution for solar exercise 16.
@@ -580,7 +606,7 @@ assert best[0]==10 and all(f>0.05 for r,f in trials if r<best[0])
 
 **Reference:** Specified simplified NOCT approximation; compare the fuller [Sandia/SAM thermal model](https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/cell-temperature/noct-cell-temperature/). [@pvlibDocs].
 
-**Task:** For irradiance [200, 600, 1000] W/m² and air temperature [10, 25, 40] °C, calculate a 3×3 grid of AC power in kW. Use 10 kW DC nameplate, an 8 kW AC cap, NOCT 45 °C, a power coefficient of −0.004/°C and inverter efficiency 0.97.
+**Task:** For irradiance [200, 600, 1000] W/m² and air temperature [10, 25, 40] °C, calculate a 3×3 grid of AC power in kW. Use 10 kW DC nameplate, an 8 kW AC cap, NOCT 45 °C, a power coefficient of −0.004/°C referenced to 25 °C, inverter efficiency 0.97 and the model Tcell = Tair + G(NOCT − 20)/800.
 
 ```{code-cell} python
 # Your solution for solar exercise 17.
@@ -616,7 +642,7 @@ print(pd.DataFrame(ac,index=[10,25,40],columns=[200,600,1000]).rename_axis('Ambi
 
 **Reference:** Storage losses: [@wade2003], Chapter 5; [@manwell2009], §10.7. The dispatch policy is an original course assumption.
 
-**Task:** PV hourly AC [0,4,6,0] kW meets constant 2 kW load with an initially empty 3 kWh battery, 2 kW limits and 90% efficiencies. Report unmet load, curtailed PV and final SOC.
+**Task:** PV AC powers [0,4,6,0] kW, each constant within its one-hour interval, meet a constant 2 kW load with an initially empty 3 kWh battery, 2 kW charge and discharge limits measured at the AC bus, and 90% efficiency in each direction. Report unmet load, curtailed PV and final SOC.
 
 ```{code-cell} python
 # Your solution for solar exercise 18.
@@ -657,7 +683,7 @@ assert np.isclose(unmet_total,2) and all(0<=s<=3+1e-12 for s in rows)
 
 **Difficulty:** Hard
 
-**Reference:** Discounted cost and energy: [@ifc2015], §13.2.5 and Chapter 14; [@goswami2015], §1.4.3, Eq. 1.6; [@irena2026], methodology annex. Original degradation scenario.
+**Reference:** Discounted cost and energy: [@ifc2015], §13.2.5 and Chapter 14; [@goswami2015], §1.4.3, Eq. 1.6. Historical cost context: [@irena2026]. Original degradation scenario.
 
 **Task:** Use €1m capital, €20k annual O&M, 1500 MWh first-year AC, 0.5% annual degradation and 25 years. Calculate LCOE at 0%,3%,6% real discount rates.
 

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { electricalPower, operatingPoint, annualEnergy, circularMean, YEAR_H } from './model.js';
+import { electricalPower, operatingPoint, annualEnergy, circularMean, curveFeasibility, YEAR_H } from './model.js';
 import { BETZ, availableWind, aerodynamicConversion, dryAirDensity, powerLawWind,
   logLawWind, twoIntervalWind, weibullPowerBins, annualEnergyScenarios } from './model.js';
 
@@ -73,4 +73,20 @@ test('annual integration respects generating probabilities and sequential losses
   close(annualEnergy({ ...base, availability: 90, wake: 10, loss: 10 }).net, gross.gross * .9 ** 3);
   close(circularMean(350, 10).degrees, 0);
   assert.equal(circularMean(90, 270).degrees, null);
+});
+
+test('curve feasibility includes drivetrain losses and distinguishes current from rated speed', () => {
+  // At rated speed the Betz rotor bound is 3.1 MW, but only 2.79 MW
+  // can reach the grid under the selected 90% drivetrain efficiency.
+  const radius = Math.sqrt(3.1e6 / (BETZ * .5 * 1.225 * Math.PI * 12**3));
+  const input = {...base, radius, efficiency: 90, speed: 12};
+  const rated = operatingPoint(input);
+  assert.ok(rated.windMW * BETZ > input.ratedMW);
+  assert.deepEqual(curveFeasibility(input, rated), {ratedViolation: true, currentViolation: true});
+  const stopped = {...input, speed: 2};
+  assert.deepEqual(curveFeasibility(stopped, operatingPoint(stopped)), {ratedViolation: true, currentViolation: false});
+  const feasible = {...input, efficiency: 100};
+  assert.deepEqual(curveFeasibility(feasible, operatingPoint(feasible)), {ratedViolation: false, currentViolation: false});
+  const aero = {...input, outputMode: 'aero'};
+  assert.deepEqual(curveFeasibility(aero, operatingPoint(aero)), {ratedViolation: false, currentViolation: false});
 });

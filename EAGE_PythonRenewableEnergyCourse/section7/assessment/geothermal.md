@@ -42,4 +42,4 @@ Write a Python function for net electrical output from mass flow, enthalpy drop,
 
 ### Question 60 <span class="difficulty-badge difficulty-hard">Hard</span>
 
-Given annual declining flow measurements with gaps, propose and implement a Python workflow to calculate net generation and report missing coverage; explain why extrapolation needs reservoir evidence.
+For years 2021–2024 use annual mean production flows `[50, 47, None, 42]` kg/s. Assume a constant 300 kJ/kg enthalpy drop, 12% gross thermal-to-electric efficiency, auxiliaries equal to 10% of gross output, and 8,000 operating hours in each reported year. Treat each supplied flow as representative of those operating hours; leave the missing year unknown. Implement net annual generation and coverage reporting, and explain why extrapolation needs reservoir evidence.

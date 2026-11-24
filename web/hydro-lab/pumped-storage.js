@@ -12,7 +12,7 @@ export function mountPumpedStorage() {
   $('title').textContent = document.title = 'Pumped storage energy cycle';
   $('result').setAttribute('aria-label', 'Theoretical round-trip efficiency');
   $('drawing').setAttribute('aria-label', 'Upper and lower reservoirs linked by a reversible pump-turbine. Blue particles follow the water, and gold pulses show the direction of energy transfer between the machine and the grid.');
-  $('note').textContent = 'Playback compresses time. The energy balance uses constant head, the same water volume in each direction, ρ = 1,000 kg/m³ and g = 9.81 m/s². Water levels show the transferred volume schematically.';
+  $('note').textContent = 'Playback compresses time. The energy balance uses constant head, the same water volume in each direction, ρ = 1,000 kg/m³ and g = 9.81 m/s². Water levels show the transferred volume schematically. The displayed theoretical efficiency is the product of the stage efficiencies; when pumping input is zero, an observed output-to-input ratio is undefined.';
 
   const phaseLine = document.createElement('p');
   phaseLine.className = 'storage-phase';
@@ -31,7 +31,7 @@ export function mountPumpedStorage() {
   const sliders = [
     ['volume', 'Cycle water volume <i>V</i>', 'm³', 0, MAX_CYCLE_VOLUME_M3, 5000, 120000],
     ['head', 'Constant head <i>H</i>', 'm', 0, 250, 1, 80],
-    ['pump', 'Pumping efficiency <i>η<sub>p</sub></i>', '%', 10, 100, 1, 85],
+    ['pump', 'Combined motor, drive and pump efficiency <i>η<sub>p</sub></i>', '%', 10, 100, 1, 85],
     ['turbine', 'Turbine efficiency <i>η<sub>t</sub></i>', '%', 10, 100, 1, 90],
     ['generator', 'Generator efficiency <i>η<sub>g</sub></i>', '%', 10, 100, 1, 95],
   ].map(([id, label, unit, min, max, step, initial]) => {
@@ -68,7 +68,7 @@ export function mountPumpedStorage() {
       return number;
     });
     const { stored, input, recovered, roundTrip } = pumpedStorage(volume, head, pump / 100, turbine / 100, generator / 100, densityKgM3, gravityMS2);
-    $('result').innerHTML = `η<sub>RT</sub> = ${value(roundTrip * 100)}%`;
+    $('result').innerHTML = `Theoretical η<sub>RT</sub> = ${value(roundTrip * 100)}%`;
     equations[0].innerHTML = `Stored at the top · E<sub>pot</sub> = ρgVH = <strong>${energy(stored)}</strong>`;
     equations[1].innerHTML = `Pumping input · E<sub>pump</sub> = E<sub>pot</sub> / ${value(pump / 100)} = <strong>${energy(input)}</strong>`;
     equations[2].innerHTML = `Recovered electricity · E<sub>gen</sub> = ${value(turbine / 100)} × ${value(generator / 100)} × E<sub>pot</sub> = <strong>${energy(recovered)}</strong>`;

@@ -46,6 +46,10 @@ CREATE TABLE energy_data (
 
 ---
 
+SQLite uses type affinity: `VARCHAR(50)` does not enforce a 50-character limit, and `DATE` does not by itself validate calendar dates. Validate input and use explicit constraints or a suitable strict schema when those properties are required. [SQLite datatypes](https://www.sqlite.org/datatype3.html).
+
+---
+
 ### ALTER TABLE
 
 `ALTER TABLE` is used to modify the structure of an existing table. In this case, we add a column for the region. [SQLite ALTER](https://www.sqlite.org/lang_altertable.html).
@@ -59,7 +63,7 @@ ADD region VARCHAR(50);
 
 ### CHECK
 
-The `CHECK` constraint ensures that the values entered into a column meet specified conditions. Here, we create a table that restricts the energy produced to nonnegative values (`>= 0`). In SQLite this check still permits `NULL`; add `NOT NULL` when a measurement is required. [SQLite CHECK constraints](https://www.sqlite.org/lang_createtable.html#check_constraints).
+The `CHECK` constraint ensures that the values entered into a column meet specified conditions. Here, we create a table that restricts the energy produced to nonnegative values (`>= 0`). The type-aware check accepts numeric values and `NULL`, but rejects text. Add `NOT NULL` when a measurement is required, and validate finite values before insertion; numeric type alone does not rule out infinity. Other source-defined net-generation series may legitimately be negative. [SQLite CHECK constraints](https://www.sqlite.org/lang_createtable.html#check_constraints).
 
 ```sql
 CREATE TABLE energy_data (
@@ -67,7 +71,7 @@ CREATE TABLE energy_data (
     energy_source VARCHAR(50),
     energy_generated INT,
     date DATE,
-    CHECK (energy_generated >= 0)
+    CHECK (energy_generated IS NULL OR (typeof(energy_generated) IN ('integer', 'real') AND energy_generated >= 0))
 );
 ```
 
@@ -75,13 +79,13 @@ CREATE TABLE energy_data (
 
 ### WHERE
 
-The `WHERE` clause filters rows in the result set. Below, we retrieve records for wind and solar energy generated in 2024.
+The `WHERE` clause filters rows in the result set. Below, we retrieve records for wind and solar energy generated in the UTC year 2024. Store validated dates or timestamps in a consistent, sortable UTC text representation; mixed offsets must be normalized before comparing strings.
 
 ```sql
 SELECT country, energy_source, energy_generated
 FROM energy_data
 WHERE energy_source IN ('Wind', 'Solar') 
-  AND date BETWEEN '2024-01-01' AND '2024-12-31';
+  AND date >= '2024-01-01' AND date < '2025-01-01';
 ```
 
 ---
@@ -204,7 +208,7 @@ JOIN countries AS c ON e.country = c.country_name;
 
 ### LEFT JOIN
 
-`LEFT JOIN` returns all rows from the left table, even if there are no matching rows in the right table. The following query includes regions, even if there’s no match for some countries. [SQLite LEFT](https://www.sqlite.org/lang_select.html).
+`LEFT JOIN` returns all rows from the left table, even if there are no matching rows in the right table. The following query keeps every energy-data row; when its country has no region match, the region fields are NULL. Regions with no matching energy row are not included. [SQLite LEFT](https://www.sqlite.org/lang_select.html).
 
 ```sql
 SELECT e.country, e.energy_source, e.energy_generated, r.region_name

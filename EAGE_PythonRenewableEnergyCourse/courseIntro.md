@@ -1,26 +1,28 @@
 # Python for Renewable Energy Data Processing: An Extensive Online Short Course for Geoscientists and Engineers
 
 ```{image} Logo4.png
-:alt: AIRenewablesOU
+:alt: Wind turbines beyond a green field
 :class: bg-primary mb-1
 :width: 800px
 :align: center
 ```
 
-Last technical review: October 2, 2026
+Last technical review: November 24, 2026
 
 Start with the [learning guide](learningGuide.md), use the [Applied Python Workbook](section7/renewableExercises.md), and consult the [reference catalogue](references.md).
 
 ## Course Description
 
 This course applies Python to renewable-energy data and engineering. It connects energy datasets, exploratory analysis, SQL, time-series methods, and engineering calculations for hydroelectric, solar, wind, and geothermal systems.
-Participants use their existing Python foundation to load, validate, analyse, visualise, and store real energy data. The course introduces reproducible time-series analysis and predictive modelling, while keeping the distinction between measured data, engineering estimates, and model forecasts explicit.
+Participants use their existing Python foundation to load, validate, analyse, visualise, and store real energy data. An optional [book time-series case study](section4/timeSeriesEnergyConsumption.ipynb), outside the browser lesson navigation, introduces reproducible time-series analysis and predictive modelling. It requires the [course repository](https://github.com/roderickperez/EAGE_PythonRenewableEnergyCourse) and its bundled spreadsheets; the notebook alone does not contain the data. The browser course also includes a chronological forecasting exercise in the [Wind Data Lab](section7/renewableEnergyquizzes/eolicenergy.md). Distinguish measured data, engineering estimates, and model forecasts.
 
 Programming fundamentals, notebooks, NumPy, pandas, and plotting are taught in the separate [Python Course](https://roderickperezaltamar.com/private-course/eage-python-course/index.html). Complete that preparation first if these tools are unfamiliar. Separate course access may be required. Renewable-energy exercises can run in Google Colab or in the reproducible local environment documented with the repository.
 
 ## Python preparation
 
 The [Python Course](https://roderickperezaltamar.com/private-course/eage-python-course/index.html) is the prerequisite programming foundation. This renewable-energy course does not repeat its general Python, IDE, notebook, or library lessons.
+
+For additional self-study, the official guides cover [Python fundamentals](https://docs.python.org/3/tutorial/) (aimed at people with some programming experience), [using Jupyter notebooks](https://jupyter-notebook.readthedocs.io/en/stable/notebook.html), [NumPy arrays](https://numpy.org/doc/stable/user/quickstart.html), [pandas data analysis](https://pandas.pydata.org/docs/getting_started/intro_tutorials/index.html), and [Matplotlib plotting](https://matplotlib.org/stable/tutorials/pyplot.html). These guides are supplementary; check the organizer's requirements for access to or completion of the prerequisite course.
 
 (how-the-browser-sandbox-was-made)=
 
@@ -32,9 +34,13 @@ Pyodide brings CPython, the standard Python interpreter, to the browser by compi
 
 The first run downloads the runtime and required packages from jsDelivr, so an internet connection is needed. Python executes on your device, and drafts are saved in this browser; export your work to keep a backup. Restarting Python clears runtime variables and uploaded files. Code that requests external data still needs network access and must respect browser access restrictions.
 
+Variables are shared while you work within one lesson. Switching lessons creates a fresh variable namespace, including when you return to an earlier lesson, so rerun its setup. Saved drafts are separate from those variables. Runtime files can persist across lesson switches: if you edit a supplied dataset in place, returning to the lesson does not restore its original contents. Preserve a copy or checksum before editing. **Restart Python** clears the temporary runtime files and reloads supplied course assets when next needed; download any files you want to keep first.
+
 ### Libraries available in this Pyodide version
 
 The table below lists **all 286 packages and their versions** in the official [Packages built in Pyodide](https://pyodide.org/en/stable/usage/packages-in-pyodide.html) table for **314.0.7**, checked on **8 October 2026** against the sandbox's [pinned package manifest](https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide-lock.json). The documentation's `stable` link may change with future releases; this table records the version used here.
+
+When troubleshooting version-specific behavior, check the runtime version and consult a matching documentation series, such as the [Python 3.14 tutorial](https://docs.python.org/3.14/tutorial/), [NumPy 2.4 guide](https://numpy.org/doc/2.4/user/) or [Matplotlib 3.10 guide](https://matplotlib.org/3.10.8/users/index.html). These guides may describe a later patch release. A cited library's documentation does not by itself mean that library is installed in the sandbox.
 
 These are packages distributed with Pyodide, loaded when needed rather than all at startup. The sandbox detects imports to load bundled packages. Additional compatible pure-Python wheels can be installed with `micropip`; this sandbox also installs Plotly, Folium, OpenPyXL and Seaborn when their examples need them. Python's standard library is separate from this package table. Package availability does not guarantee every feature works in a browser: desktop interfaces, Jupyter widgets, authenticated services and some native extensions need a local or Colab environment.
 
@@ -340,7 +346,7 @@ For further reading, see the [Pyodide website](https://pyodide.org/), [package-l
 - Explain the limits of descriptive analysis, engineering models, and predictive models, and avoid common problems such as data leakage and invalid train/test splits.
 - Apply techniques of analysis and visualization of geoscientific data using the libraries from Python.
 - Interpret the output obtained by the prediction models.
-- Build and evaluate an introductory renewable-energy prediction model with scikit-learn. Deep-learning examples are identified as optional extensions rather than core learning outcomes.
+- Build and evaluate simple chronological forecast baselines for renewable-energy data. Deep learning is an optional next step.
 
 ## Learning outcomes
 
@@ -348,27 +354,25 @@ By the end of the course, participants should be able to:
 
 1. Validate renewable-energy data units, grain, missing values, and category definitions before aggregation.
 2. Query and create SQLite databases using reproducible SQL and pandas workflows.
-3. Analyse energy time series with appropriate sampling frequencies, rolling windows, decomposition, and chronological validation.
+3. Analyse energy time series with appropriate sampling frequencies and rolling windows; the optional book case study adds decomposition and chronological validation.
 4. Apply and check the principal equations used in hydroelectric, solar, wind, and geothermal resource calculations.
 5. Build clear, correctly labelled plots and interpret their engineering meaning.
 6. Compare measured data, engineering estimates, and model forecasts without conflating them.
-7. Build and evaluate an introductory renewable-energy prediction model using chronological validation.
+7. Build and evaluate simple forecast baselines using chronological validation.
 8. Communicate assumptions, uncertainty, data freshness, and model limitations.
 
 ## Scope and prerequisites
 
 Working knowledge of Python functions, NumPy arrays, pandas DataFrames, Jupyter or Colab, and Matplotlib is required; use the linked Python Course for preparation. Basic algebra and familiarity with energy units are helpful. This is an applied introductory renewable-energy course; it does not replace a full power-systems, resource-assessment, statistics, or deep-learning course.
 
-## Calendar
+## Course navigation
 
-```{tableofcontents}
-
-```
+Use the course navigation to choose lessons, exercises and projects. Consult your course organizer for session dates.
 
 ## Instructor
 
 **Roderick Perez Altamar, Ph.D.**
-Geophysical Engineer from the Simón Bolívar University in Venezuela, with a Master's degree in Geology and a Ph.D. in Geophysics from the University of Oklahoma, an MBA from the Universidad de Los Andes, and currently pursuing a Master's degree in Data Science at the University of Vienna. Roderick is a seismic
+Geophysical Engineer from the Simón Bolívar University in Venezuela, with a Master's degree in Geology and a Ph.D. in Geophysics from the University of Oklahoma, an MBA from the Universidad de Los Andes, and authored a [2025 University of Vienna Data Science master’s thesis](https://datascience.univie.ac.at/index.php?L=0&id=185018). Roderick is a seismic
 interpreter, with more than 15 years of experience in the Oil & Gas industry, where he has developed techniques for characterizing the fragility of these reservoirs. He specialized in the characterization of
 YNC in the USA (Barnett Shale, Eagle Ford, Marcellus Shale, Permian Basin, among others), as well as the characterization and economic evaluation of conventional reservoirs in Colombia, Ecuador, Argentina, among others. Roderick is an expert in pre and post-stack seismic inversion, as well as in the application of Machine Learning and Neural Networks in the analysis of geoscientific data.
 

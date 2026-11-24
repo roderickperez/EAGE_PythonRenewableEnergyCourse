@@ -2,7 +2,7 @@ import { updateMotionControl } from '../motion-control.js';
 import shared from '../hydro-lab/styles.css';
 import layout from '../solar-lab/styles.css';
 import styles from './styles.css';
-import { operatingPoint, powerModel, annualEnergy, circularMean, YEAR_H } from './model.js';
+import { operatingPoint, powerModel, annualEnergy, circularMean, curveFeasibility, YEAR_H } from './model.js';
 import { mountWindScene } from './scene.js';
 
 const groups = [
@@ -137,6 +137,7 @@ export function mountWindLab(container) {
   function render() {
     const p = operatingPoint(input);
     const year = annualEnergy(input);
+    const feasibility = curveFeasibility(input, p);
     const mean = circularMean(input.bearingA, input.bearingB);
     get('grid').textContent = fixed(p.gridMW, 3) + ' MW';
     const badge = get('region');
@@ -158,9 +159,13 @@ export function mountWindLab(container) {
     get('wind-equations').innerHTML = [
       `${heightEquation} → hub wind ${fixed(p.speed, 2)} m/s`,
       `ρ = p/(R<sub>d</sub>T) = ${fixed(input.pressure*1000,0)}/[287.05 × ${fixed(input.temperature+273.15)}] ≈ ${fixed(p.density,3)} kg/m³`,
-      `A = πR² = ${fixed(p.area,1)} m² · ṁ = ρAv = ${fixed(p.massFlow,0)} kg/s · P<sub>wind</sub> = ½ρAv³ = ${fixed(p.windMW,3)} MW`,
+      `A = πR² = ${fixed(p.area,1)} m² · undisturbed reference mass flux ṁ<sub>ref</sub> = ρAv = ${fixed(p.massFlow,0)} kg/s · P<sub>wind</sub> = ½ρAv³ = ${fixed(p.windMW,3)} MW`,
       `Fixed-coefficient estimate: P<sub>rotor</sub> = C<sub>p</sub>P<sub>wind</sub> = ${fixed(p.rotorMW,3)} MW · C<sub>p,max</sub> = 16/27 · P<sub>e</sub> = η<sub>drive</sub>P<sub>rotor</sub> = ${fixed(p.aeroMW,3)} MW before equipment limits.`,
       `${outputEquation}. Current electrical output: ${fixed(p.gridMW,3)} MW.`,
+      ...(feasibility.ratedViolation
+        ? ['Warning: at rated speed the electrical curve exceeds the ideal Betz rotor limit after the selected drivetrain efficiency. The curve and its annual-energy estimate are not physically consistent with this rotor and air density.'] : []),
+      ...(feasibility.currentViolation
+        ? ['Warning: the current curve output also exceeds that ideal electrical bound; its estimated shaft torque is physically inconsistent with these assumptions.'] : []),
       `Ω = 2πn/60 = ${fixed(p.omega,3)} rad/s · λ = ΩR/v = ${fixed(p.tsr)} · τ = P<sub>shaft</sub>/Ω = ${p.torque === null ? 'undefined when stopped' : fixed(p.torque/1000,1) + ' kN·m'} (shaft power estimated from grid output and drivetrain efficiency)`,
       `E = Σ P<sub>i</sub>Δt<sub>i</sub> = ${fixed(p.gridMW,3)} × ${input.hours} ≈ ${fixed(input.hours*p.gridMW,3)} MWh for the current interval`,
       `Weibull F(v) = 1 − exp[−(v/c)<sup>k</sup>], f(v) = (k/c)(v/c)<sup>k−1</sup> exp[−(v/c)<sup>k</sup>]. Bin probability = F(b) − F(a). Mean power ≈ ΣP(v<sub>mid</sub>)p<sub>i</sub> = ${fixed(year.meanMW,3)} MW.`,

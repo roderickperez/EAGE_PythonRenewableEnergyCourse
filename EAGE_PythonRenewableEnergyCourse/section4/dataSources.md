@@ -35,7 +35,7 @@ Download controls and selection options: [Eurostat download guide](https://ec.eu
 3. Run its first Python cell to download the files and create a country/region lookup.
 4. Choose a country code, such as `AUT`, `BRA`, `IND` or `USA`, and an electricity-generation variable. Run the selection and save cells.
 5. Download the selected CSV, SQLite database and provenance. Preserve the original files, checksums, retrieval dates and the codebook's original-provider attribution.
-6. Inspect year coverage and units. Use `OWID_WRL` only when you intend to select the world aggregate; do not add it to country rows.
+6. Inspect year coverage and units. Use `WORLD` (the global tutorial's shortcut for `country == "World"`) only when you intend to select the world aggregate; do not add it to country rows.
 
 These steps follow the [current dataset documentation](https://catalog.ourworldindata.org/energy/owid_energy/readme.md). The old GitHub files are a legacy release and no longer updated. The new release changes column names and primary-energy methodology; do not mix its values and metadata with the old release. The worked example uses annual electricity generation in TWh, whereas the Eurostat exercise uses monthly net generation in GWh. Check definitions before comparing.
 

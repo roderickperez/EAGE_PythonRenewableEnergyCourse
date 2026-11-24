@@ -6,11 +6,13 @@ kernelspec:
 
 # Hydroelectric
 
+Unless otherwise specified, use water density 1,000 kg/m³ and gravitational acceleration 9.81 m/s². Environmental reservations in these exercises are separate releases to a bypass reach upstream of the turbine return, so they are unavailable for generation. This is a teaching assumption: a requirement measured downstream of the return may also be met by qualifying turbine discharge.
+
 [Review the theory and worked examples](../../section6/hydroelectricEnergy.md). [Download the exercise notebook](hydroelectric.ipynb).
 
-## Chapter practice — 20 Python exercises
+## Chapter practice — 22 Python exercises
 
-**4 Basic · 8 Medium · 8 Hard.** Basic exercises connect concepts, units and short calculations. Medium exercises apply functions and arrays. Hard exercises combine modelling, validation and interpretation. Each solution runs independently.
+**4 Basic · 10 Medium · 8 Hard.** Basic exercises connect concepts, units and short calculations. Medium exercises apply functions and arrays. Hard exercises combine modelling, validation and interpretation. Each solution runs independently.
 
 ## Basic
 
@@ -421,7 +423,7 @@ assert np.isclose(output/input_energy,0.85*0.9)
 
 **Reference:** Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7.
 
-**Task:** For flows [3,−1,missing,5] m³/s and interval durations [1,2,1,0.5] h, flag invalid readings without filling gaps. Write a function to compare sample coverage with time coverage and estimate observed volume plus a plausible upper bound if missing flow is at most 6 m³/s.
+**Task:** For flows [3,−1,missing,5] m³/s and interval durations [1,2,1,0.5] h, flag invalid readings without filling gaps. Write a function to compare sample coverage with time coverage and estimate observed volume plus a plausible upper bound if every unknown true flow, including invalid readings, lies between 0 and 6 m³/s.
 
 ```{code-cell} python
 # Your solution for hydro exercise 13.
@@ -439,16 +441,32 @@ import numpy as np
 flow=np.array([3,-1,np.nan,5]); duration=np.array([1,2,1,.5])
 # Step 2: Integrate valid readings and bound the remaining volume separately.
 def audit(flow, duration, limit):
+    # Arrays pair by position; labelled series need matching, nonmissing labels.
+    import pandas as pd
+    if isinstance(flow, pd.Series) or isinstance(duration, pd.Series):
+        if (not isinstance(flow, pd.Series) or not isinstance(duration, pd.Series)
+                or not flow.index.is_unique or not duration.index.is_unique
+                or not flow.index.equals(duration.index)):
+            raise ValueError("Series must have the same unique index in the same order")
+        names = list(range(flow.index.nlevels)) if flow.index.nlevels > 1 else 0
+        if flow.index.to_frame(index=False, name=names).isna().to_numpy().any():
+            raise ValueError("Index labels must not be missing")
+    flow,duration=np.asarray(flow,dtype=float),np.asarray(duration,dtype=float)
+    if (flow.ndim!=1 or flow.size==0 or flow.shape!=duration.shape or not np.isfinite(limit)
+            or limit<0 or not np.isfinite(duration).all() or np.any(duration<=0)):
+        raise ValueError("Provide aligned intervals, positive finite durations and a non-negative finite limit")
     valid=np.isfinite(flow)&(flow>=0)
-    observed=np.dot(flow[valid],duration[valid])*3600
-    return valid.mean(),duration[valid].sum()/duration.sum(),observed,observed+limit*duration[~valid].sum()*3600
+    valid_volume=np.dot(flow[valid],duration[valid])*3600
+    observed=valid_volume if valid.any() else np.nan
+    upper=valid_volume+limit*duration[~valid].sum()*3600
+    return valid.mean(),duration[valid].sum()/duration.sum(),observed,upper
 # Step 3: Report coverage rather than a complete-period generation claim.
 result=audit(flow,duration,6)
 print(result,'sample coverage, time coverage, observed m³, upper m³')
 assert np.allclose(result,[.5,1/3,19800,84600])
 ```
 
-**Interpretation:** Do not infer zero flow from an absent measurement.
+**Interpretation:** Do not infer zero flow from an absent measurement. If no valid intervals are observed, observed volume is unavailable; the upper bound still uses the stipulated limits. If using labelled series, pair observations with durations using the same unique, nonmissing labels in the same order.
 
 ::::
 
@@ -459,7 +477,7 @@ assert np.allclose(result,[.5,1/3,19800,84600])
 
 **Reference:** [@ifc2015], Chapters 7 and 12; separate environmental demand from water physically available.
 
-**Task:** Flows [1,4,7] m³/s last [1,2,3] hours. Compare environmental release targets of 2 and 3 m³/s for a turbine limited to 3 m³/s, head 20 m and efficiency 0.9. Integrate environmental shortfall volume and electricity; reconcile water including bypass.
+**Task:** Flows [1,4,7] m³/s remain constant over respective intervals of [1,2,3] hours. Compare environmental release targets of 2 and 3 m³/s for a turbine limited to 3 m³/s, head 20 m and combined turbine–generator efficiency 0.9. Integrate environmental shortfall volume and electricity; reconcile water including bypass.
 
 ```{code-cell} python
 # Your solution for hydro exercise 14.
@@ -467,24 +485,28 @@ assert np.allclose(result,[.5,1/3,19800,84600])
 
 ::::{dropdown} Step-by-step answer — Hydro 14
 
-1. Store daily mean flows and the reservation target.
+1. Store the constant interval flows and durations.
 2. Allocate available water before calculating shortages.
 3. Reconcile water and print all three quantities.
 
 ```{code-cell} python
 import numpy as np
-# Step 1: Store daily mean flows and the reservation target.
+# Step 1: Store the constant interval flows and durations.
 river=np.array([1,4,7]); duration=np.array([1,2,3])
 # Step 2: Allocate available water before calculating shortages.
 def evaluate(target):
     release=np.minimum(river,target); shortage=target-release
     turbine=np.minimum(river-release,3); bypass=river-release-turbine
     assert np.array_equal(release+turbine+bypass,river)
-    return np.dot(shortage,duration)*3600,np.dot(turbine,duration)*1000*9.81*20*.9/1e6
+    return (np.dot(shortage,duration)*3600,
+            np.dot(turbine,duration)*1000*9.81*20*.9/1e6,
+            np.dot(bypass,duration)*3600)
 # Step 3: Reconcile water and print all three quantities.
 low,high=evaluate(2),evaluate(3)
-print(low,high,'m³ shortfall, MWh')
+print('Target 2 m³/s: shortfall m³, electricity MWh, bypass m³:', *low)
+print('Target 3 m³/s: shortfall m³, electricity MWh, bypass m³:', *high)
 assert low[0]==3600 and high[0]==7200 and low[1]>high[1]
+assert low[2]==21600 and high[2]==10800
 ```
 
 **Interpretation:** A shortage means the river cannot meet the target; no negative turbine flow is allowed.
@@ -498,7 +520,7 @@ assert low[0]==3600 and high[0]==7200 and low[1]>high[1]
 
 **Reference:** Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7. Plotting: [@matplotlibDocs].
 
-**Task:** Flows [2,4,8,12,16] m³/s last [12,24,36,12,36] h at head 20 m, efficiency 0.9 and a 2 MW cap. Compare environmental reservations of 0 and 3 m³/s. Plot ranked power against cumulative time share and recompute total MWh from the sorted intervals.
+**Task:** Flows [2,4,8,12,16] m³/s are constant over respective intervals of [12,24,36,12,36] h at head 20 m, efficiency 0.9 and a 2 MW cap. Compare environmental reservations of 0 and 3 m³/s. Plot ranked power against cumulative time share and recompute total MWh from the sorted intervals.
 
 ```{code-cell} python
 # Your solution for hydro exercise 15.
@@ -506,14 +528,14 @@ assert low[0]==3600 and high[0]==7200 and low[1]>high[1]
 
 ::::{dropdown} Step-by-step answer — Hydro 15
 
-1. Calculate daily average electrical powers.
+1. Calculate interval-average electrical powers.
 2. Sort power together with its interval length and calculate time share.
 3. Label the duration curve and compare scenario energy.
 
 ```{code-cell} python
 import numpy as np
 import matplotlib.pyplot as plt
-# Step 1: Calculate daily average electrical powers.
+# Step 1: Calculate interval-average electrical powers.
 flow=np.array([2,4,8,12,16]); dt=np.array([12,24,36,12,36])
 fig,ax=plt.subplots(figsize=(6,3)); totals=[]
 # Step 2: Sort power together with its interval length and calculate time share.
@@ -530,7 +552,7 @@ ax.legend(); fig.tight_layout(); plt.show()
 print(totals,'MWh'); assert totals[0]>totals[1]
 ```
 
-**Interpretation:** Sorting preserves total energy for equal intervals but removes the order needed for storage simulation.
+**Interpretation:** Sorting preserves total energy when each power stays paired with its duration, but removes the order needed for storage simulation.
 
 ::::
 
@@ -626,7 +648,7 @@ assert storage==16400 and variable_energy<fixed_energy
 
 **Reference:** Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7. Environmental flow is a scenario, not a regulatory recommendation.
 
-**Task:** For daily river flows[2,5,8,12] m³/s, compare reservations 1,3,5 m³/s, head 30 m, eta 0.9, cap 2 MW. Calculate four-day energy and environmental-shortage volume.
+**Task:** For daily river flows [2,5,8,12] m³/s, compare reservations 1,3,5 m³/s, head 30 m, eta 0.9, cap 2 MW. Calculate four-day energy and environmental-shortage volume.
 
 ```{code-cell} python
 # Your solution for hydro exercise 18.
@@ -664,7 +686,7 @@ assert np.all(np.diff([r[1] for r in results])<=0)
 
 **Reference:** Head, discharge and electrical output: [@jica2011], Chapter 3 and §8.3; [@ifc2015], Chapter 7. Original capacity search.
 
-**Task:** Flows[2,4,8,12] m³/s last 24 h each, head 30 m and eta 0.9. Choose the smallest candidate rating[1,2,3,4] MW that captures 95% of uncapped energy.
+**Task:** Flows [2,4,8,12] m³/s last 24 h each, head 30 m and eta 0.9. Choose the smallest candidate rating [1,2,3,4] MW that captures 95% of uncapped energy.
 
 ```{code-cell} python
 # Your solution for hydro exercise 19.
@@ -734,5 +756,89 @@ assert np.isclose(recovered+stored_equivalent,used*0.85*0.9)
 
 **Interpretation:** The final reservoir need not be empty; recovered/pumped energy over a partial cycle is not full round-trip efficiency.
 
+::::
+
+## Worked plant-design exercises
+
+Use the sliders in the [hydroelectric lesson](../../section6/hydroelectricEnergy.md#worked-plant-design-examples) to explore both cases. At the default settings, verify the calculations below independently in Python before changing inputs.
+
+**Video unit correction:** At approximately 43:20 the ecological-group value 839.594 is labelled kWh, but it is power in kW. Energy requires multiplying power by a duration; the subsequent energy value has a different boundary.
+
+### Exercise 21 — Diversion scheme: channel and penstocks
+
+**Difficulty:** Medium
+
+**Reference:** [Hydroelectric calculation video](https://youtu.be/ROnupNPkVf4) and the interactive worked examples in the hydroelectric lesson.
+
+**Task:** A 12 m wide canal contains 4.5 m of water. The channel slope is 0.01%, Manning $n=0.014$ and length 2,500 m. Add 1 m intake loss. Two equal steel penstocks each carry half the channel flow at 5 m/s, with $n=0.012$, length 500 m and a 0.5 m transition loss. Assume the related scenario has a 60 m³/s mean river flow. For 50 MW electrical output, calculate net and gross head with turbine efficiency 0.92 and generator efficiency 0.97. Take $g=9.81$ m/s². Compare channel flow and losses with the video values 72.4 m³/s and 4.35 m.
+
+
+
+```{code-cell} python
+# Your solution for hydro exercise 21.
+```
+
+::::{dropdown} Step-by-step answer — Hydro 21
+
+1. Calculate the channel flow.
+2. Compute losses and net head.
+3. Compare against the worked values.
+
+```{code-cell} python
+import math
+# Step 1: Calculate the channel flow.
+b, depth, slope, n = 12, 4.5, 0.0001, 0.014
+area = b * depth
+radius = area / (b + 2 * depth)
+velocity = radius ** (2/3) * math.sqrt(slope) / n
+flow = area * velocity
+# Step 2: Compute losses and net head.
+pipe_radius = math.sqrt((flow / 5 / 2) / math.pi)
+pipe_hydraulic_radius = pipe_radius / 2
+pipe_slope = 0.012 ** 2 * 5 ** 2 / pipe_hydraulic_radius ** (4/3)
+loss = 2500 * slope + 1 + 500 * pipe_slope + 0.5
+net_head = 50e6 / (1000 * 9.81 * flow * 0.92 * 0.97)
+# Step 3: Compare against the worked values.
+print(f'Q={flow:.2f} m³/s, loss={loss:.2f} m, net head={net_head:.2f} m, gross head={net_head+loss:.2f} m')
+assert abs(flow - 72.4) < 0.1 and abs(loss - 4.35) < 0.05
+```
+**Interpretation:** The design discharge exceeds the given 60 m³/s mean river flow; do not treat design output as continuous annual generation.
+::::
+
+### Exercise 22 — Reservoir scheme: runoff and annual energy
+
+**Difficulty:** Medium
+
+**Reference:** [Hydroelectric calculation video](https://youtu.be/ROnupNPkVf4) and the interactive worked examples in the hydroelectric lesson.
+
+**Task:** For a 365-day model year, 200 km², annual precipitation 1,200 mm and runoff coefficient 0.6, calculate annual runoff and mean inflow. Assume 10% spill, 1 m³/s ecological release, design flow twice the mean, design head 100 m and mean head 80 m. Compute design generator power at turbine efficiency 0.91 and generator efficiency 0.95, and annual generator energy using mean usable flow. Compare with 144 hm³/year, 4.57 m³/s and approximately 18.48 GWh.
+
+
+
+```{code-cell} python
+# Your solution for hydro exercise 22.
+```
+
+::::{dropdown} Step-by-step answer — Hydro 22
+
+1. Calculate annual runoff.
+2. Calculate usable flow and energy.
+3. Compare against the worked values.
+
+```{code-cell} python
+# Step 1: Calculate annual runoff.
+annual = 200e6 * 1.2 * 0.6
+mean = annual / (365 * 86400)
+# Step 2: Calculate usable flow and energy.
+design = 2 * mean
+usable = max(0, .9 * mean - 1)
+generator_kw = 9.81 * design * 100 * .91 * .95
+hours = 8760 * usable * 80 / (design * 100)
+energy_gwh = generator_kw * hours / 1e6
+# Step 3: Compare against the worked values.
+print(f'{annual/1e6:.0f} hm³/year, {mean:.2f} m³/s, {generator_kw:.0f} kW design generator power, {energy_gwh:.2f} GWh/year')
+assert annual == 144e6 and abs(mean - 4.57) < .01 and abs(energy_gwh - 18.48) < .05
+```
+**Interpretation:** Equivalent full-load hours incorporate average head as well as mean usable flow. Constant mean inflow does not demonstrate whether the ecological release can be met throughout the year.
 ::::
 

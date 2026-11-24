@@ -2,6 +2,8 @@
 
 **4 Easy · 8 Medium · 8 Hard.** Try each question before opening its practice solution.
 
+For SQL questions (unless a question constructs its own small in-memory demonstration table), use SQLite tables `generation(country TEXT, source TEXT, year INTEGER, generation_gwh REAL)` and `sources(source TEXT PRIMARY KEY, label TEXT)`. Each row in `generation` represents one country–source–year observation; `generation_gwh` may be `NULL`, and missing observations are not zero. Source codes in `generation` (such as `Hydro`, `Solar`, `Wind`, and `Geothermal`) join on `sources.source` to look up `sources.label`.
+
 :::{admonition} Quiz 1 — Database and table
 :class: note
 
@@ -14,7 +16,7 @@ How is a SQLite database different from a table?
 :::{admonition} Solution
 :class: tip, dropdown
 
-The database is the managed collection stored in a file; a table is one named collection of rows within it.
+The database is the managed collection, usually stored in a file but sometimes held in memory; a table is one named collection of rows within it.
 
 :::
 
@@ -110,7 +112,7 @@ Write DataFrame `df` into a new table called `generation` without its index.
 :::{admonition} Solution
 :class: tip, dropdown
 
-`df.to_sql("generation", connection, index=False)`; choose `if_exists` deliberately.
+`df.to_sql("generation", connection, index=False)`; choose `if_exists` deliberately. With a raw `sqlite3.Connection`, pandas documents that inserted records cannot be rolled back through this call; do not assume it participates in the all-or-nothing transaction in Quiz 19. See [pandas `to_sql`](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_sql.html).
 
 :::
 
@@ -302,7 +304,25 @@ What should happen when one step of a multi-step database update fails?
 :::{admonition} Solution
 :class: tip, dropdown
 
-Use a transaction and roll back the group so a partial update is not committed. Validate data and keep backups.
+Use a transaction and roll back the group so a partial update is not committed. For raw SQLite connections, use `execute` or `executemany` within the transaction instead of assuming pandas `to_sql` inserts will roll back. Validate data and keep backups.
+
+```{code-cell} python
+import sqlite3
+connection = sqlite3.connect(":memory:")
+try:
+    connection.execute("CREATE TABLE generation (gwh REAL NOT NULL CHECK (gwh >= 0))")
+    try:
+        with connection:
+            connection.executemany("INSERT INTO generation VALUES (?)", [(1.0,), (2.0,)])
+            connection.execute("INSERT INTO generation VALUES (?)", (-1.0,))
+    except sqlite3.IntegrityError:
+        pass  # the failed transaction is rolled back
+    count = connection.execute("SELECT COUNT(*) FROM generation").fetchone()[0]
+    print("Rows after rollback:", count)
+    assert count == 0
+finally:
+    connection.close()
+```
 
 :::
 

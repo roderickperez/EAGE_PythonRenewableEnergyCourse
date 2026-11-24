@@ -110,3 +110,16 @@ div:has(> iframe[src*="hydro-lab/index.html"]) {
   iframe[src*="hydro-lab/index.html"] { min-height: 2200px; }
   div:has(> iframe[src*="hydro-lab/index.html"]) { height: 2200px !important; }
 }
+
+/* MyST iframe directives do not accept a height option. Size their wrappers. */
+div:has(> iframe[src*="hydro-lab/worked-examples.html"]) { --course-frame-height: 1050px; }
+div:has(> iframe[src*="geothermal-lab/drilling.html"]) { --course-frame-height: 1000px; }
+div:has(> iframe[src*="hydro-lab/project.html"]) { --course-frame-height: 1200px; }
+div:has(> iframe[src*="solar-lab/project.html"]) { --course-frame-height: 1200px; }
+div:has(> iframe[src*="wind-lab/project.html"]) { --course-frame-height: 1100px; }
+div:has(> iframe:is([src*="geothermal-lab/project.html"], [src*="geothermal-lab/multifield.html"])) { --course-frame-height: 1650px; }
+div:has(> iframe:is([src*="hydro-lab/worked-examples.html"], [src*="geothermal-lab/drilling.html"], [src*="hydro-lab/project.html"], [src*="solar-lab/project.html"], [src*="wind-lab/project.html"], [src*="geothermal-lab/project.html"], [src*="geothermal-lab/multifield.html"])) {
+  width: 100% !important;
+  height: var(--course-frame-height) !important;
+  padding-bottom: 0 !important;
+}

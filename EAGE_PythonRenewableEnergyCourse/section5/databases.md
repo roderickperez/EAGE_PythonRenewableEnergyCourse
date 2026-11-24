@@ -59,7 +59,7 @@ generation(geo, source FOREIGN KEY, month, generation_gwh, status_flag)
 PRIMARY KEY (geo, source, month)
 ```
 
-Enable SQLite foreign-key checking on every connection using `PRAGMA foreign_keys = ON`. [SQLite foreign keys](https://www.sqlite.org/foreignkeys.html)
+Immediately after opening each SQLite connection, before beginning a transaction or savepoint, run `PRAGMA foreign_keys = ON` and verify `PRAGMA foreign_keys` returns 1. Changing this setting inside an active transaction has no effect. [SQLite foreign keys](https://www.sqlite.org/foreignkeys.html)
 
 ## Missing data and units
 

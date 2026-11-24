@@ -22,6 +22,16 @@ test('pumped storage accounts for input, stored and recovered energy at separate
   assert.equal(pumpedStorage(120000, 0, .85, .9, .95, 1000, 9.81).input, 0);
 });
 
+test('the ideal lossless pumped-storage boundary reaches but does not exceed unity', () => {
+  const ideal = pumpedStorage(120000, 80, 1, 1, 1, 1000, 9.81);
+  assert.equal(ideal.stored, 26.16);
+  assert.equal(ideal.input, ideal.stored);
+  assert.equal(ideal.recovered, ideal.input);
+  assert.equal(ideal.roundTrip, 1);
+  const lossy = pumpedStorage(120000, 80, .85, .9, .95, 1000, 9.81);
+  assert.ok(lossy.roundTrip < 1 && lossy.recovered < lossy.input);
+});
+
 test('the upper reservoir fills while pumping and drains during generation', () => {
   assert.deepEqual(pumpedCycle(0), { pumping: true, upper: 0 });
   assert.deepEqual(pumpedCycle(.25), { pumping: true, upper: .5 });

@@ -8,7 +8,7 @@ AI has moved from experimental tools to operational infrastructure in many indus
 
 At the same time, three realities define the current AI moment:
 
-1. **Productivity gains are real, but uneven.** Organizations with strong data practices and clear problem definitions benefit the most.
+1. **Productivity effects vary.** Strong data practices and clear problem definitions may help, but their relative importance needs evidence. In an [experienced-developer experiment](https://metr.org/Early_2025_AI_Experienced_OS_Devs_Study-paper.pdf), the tools studied increased completion time on familiar projects; a separate [customer-support study](https://academic.oup.com/qje/article/140/2/889/7990658) found an average productivity increase. These studies cover different tasks and tools. Evaluate both completion time and output quality for the work at hand.
 2. **Model quality is improving, but reliability is still a challenge.** Hallucinations, bias, and explainability remain key limitations in high-stakes workflows.
 3. **Governance is now essential.** Topics such as data privacy, model transparency, intellectual property, security, and energy use of AI systems are central to responsible deployment.
 
@@ -32,7 +32,7 @@ At the same time, low-carbon sources continue expanding:
 - Wind
 - Solar
 - Nuclear
-- Bioenergy and other renewables
+- Bioenergy and other renewables (bioenergy lifecycle emissions depend on feedstock, land-use change, conversion, timescale and system boundary; it is not automatically low-carbon: [IPCC energy systems, §6.4.2.6](https://www.ipcc.ch/report/ar6/wg3/chapter/chapter-6/))
 
 Electricity systems in many countries are seeing fast growth in variable renewables (especially solar and wind), while thermal generation remains important for reliability and industrial demand.
 
@@ -43,7 +43,7 @@ Energy production remains geographically concentrated:
 - **Oil and gas:** major production from the United States, Middle East producers (including Saudi Arabia and the UAE), Russia, and other key exporting countries.
 - **Coal:** significant production and consumption in Asia, especially China and India.
 - **Hydropower:** large contributions from countries with abundant water resources (for example China, Brazil, Canada, and parts of Europe).
-- **Wind and solar:** strongest growth in China, the United States, the European Union, and India, with additional momentum in Latin America, Africa, and Southeast Asia.
+- **Wind and solar:** in 2025, China added approximately 370 GW of solar PV and 117 GW of wind capacity. The European Union, India and the United States also added renewable capacity, although changes in annual additions differed by region and technology. These are capacity additions, not generation or a ranking of percentage growth; some 2025 values are estimates. [IEA Global Energy Review 2026](https://www.iea.org/reports/global-energy-review-2026/technology-solar-pv-and-wind).
 
 ### Energy-system challenges
 

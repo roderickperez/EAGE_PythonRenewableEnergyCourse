@@ -15,13 +15,13 @@ before revealing exercise answers. The downloadable notebook contains the comple
 chapter text as well as the code.
 
 1. Complete the separate [Python Course](https://roderickperezaltamar.com/private-course/eage-python-course/index.html) first if Python functions, NumPy, pandas, notebooks, or plotting are unfamiliar.
-2. Start here with renewable-energy context, units, and easy exercises 1–5.
+2. Start here with renewable-energy context, units, and Basic exercises 1–4.
 3. Check data definitions, missingness, time-series handling, and SQL totals in the data and database chapters.
 4. Study each renewable-energy model and use the interactive diagrams before attempting Basic (1–4) and Medium (5–12) practice and quiz questions.
 5. Complete the Hard questions (13–20), which combine modelling, validation, comparison and interpretation.
 6. Take the question-only renewable-energy test, then complete the hybrid-portfolio project from its separate CSV datasets. The test answer key and project solution are instructor-only.
 
-Introduction to Renewable Energy contains the fundamentals, equations and worked examples. Every workbook topic and quiz has 20 questions: 4 Basic, 8 Medium and 8 Hard. The final project in Course Projects progresses from loading the supplied CSVs through Python modelling, validation, plotting and comparing scenarios in one notebook.
+Introduction to Renewable Energy contains the fundamentals, equations and worked examples. General, Solar, Wind and Geothermal workbooks each have 20 exercises (4 Basic, 8 Medium and 8 Hard); the hydro workbook has 22 (4 Basic, 10 Medium and 8 Hard). Each chapter quiz has 20 questions. The final project in Course Projects progresses from loading the supplied CSVs through Python modelling, validation, plotting and comparing scenarios in one notebook.
 
 ## Running the examples
 

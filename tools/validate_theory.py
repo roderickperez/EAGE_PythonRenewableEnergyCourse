@@ -4,6 +4,7 @@ import math
 import re
 import nbformat
 from build_chapter_exercises import notebook_citations, strip_website_embeds
+from notebook_links import rewrite_notebook_links
 
 ROOT=Path(__file__).resolve().parents[1]/'EAGE_PythonRenewableEnergyCourse'
 PATHS={'general':'section0/introRenewableEnergy','solar':'section6/solarEnergy',
@@ -35,7 +36,7 @@ def validate():
             if index % 2:
                 assert segment.strip() in code_sources,(topic,'Notebook is missing theory code')
             else:
-                assert notebook_citations(segment.strip()) in prose,(topic,'Notebook is missing theory prose')
+                assert rewrite_notebook_links(notebook_citations(segment.strip()), ROOT/(relative+'.md')) in prose,(topic,'Notebook is missing theory prose')
     # Independent hand checks for the five explanatory worked examples.
     solar_dc=10*(800/1000)*(1-0.004*((25+800/800*(45-20))-25))
     solar_ac=min(solar_dc*0.97,8)

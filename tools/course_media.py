@@ -13,8 +13,9 @@ class Headings(HTMLParser):
         if tag in {'h2', 'h3', 'h4'} and dict(attrs).get('id'):
             self.ids.add(dict(attrs)['id'])
 
-def attach_media(pages, sandbox, languages=('en', 'es')):
+def attach_media(pages, sandbox, languages=('en', 'es'), output_dir=None):
     sandbox = Path(sandbox)
+    output_dir = Path(output_dir) if output_dir is not None else sandbox / 'generated'
     manifest = sandbox / 'media.json'
     if not manifest.exists():
         return
@@ -36,7 +37,7 @@ def attach_media(pages, sandbox, languages=('en', 'es')):
             if not source.is_relative_to(root / lang) or not source.is_file() or source.suffix.lower() not in allowed:
                 raise ValueError(f'Missing or invalid {lang} media file: {value}')
             rel = source.relative_to(root)
-            target = sandbox / 'generated' / 'media' / rel
+            target = output_dir / 'media' / rel
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(source, target)
             return 'generated/media/' + quote(rel.as_posix())

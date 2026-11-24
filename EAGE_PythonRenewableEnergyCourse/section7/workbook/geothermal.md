@@ -6,6 +6,8 @@ kernelspec:
 
 # Geothermal
 
+Unless calendar dates are specified, use a standardized model year of 8,760 hours.
+
 [Review the theory and worked examples](../../section6/geothermalEnergy.md). [Download the exercise notebook](geothermal.ipynb).
 
 ## Chapter practice — 20 Python exercises
@@ -160,15 +162,15 @@ print(energy,'GWh'); assert abs(energy-24.966)<1e-12
 ::::{dropdown} Step-by-step answer — Geothermal 05
 
 1. Store Celsius temperatures.
-2. Add273.15 to both absolute temperatures.
-3. Check that the difference is80 K.
+2. Add 273.15 to both absolute temperatures.
+3. Check that the difference is 80 K.
 
 ```{code-cell} python
 # Step 1: Store Celsius temperatures.
 hot,cold=150,70
-# Step 2: Add273.15 to both absolute temperatures.
+# Step 2: Add 273.15 to both absolute temperatures.
 hot_k,cold_k=hot+273.15,cold+273.15
-# Step 3: Check that the difference is80 K.
+# Step 3: Check that the difference is 80 K.
 print(hot_k,cold_k,'K; difference:',hot_k-cold_k,'K')
 assert abs((hot_k-cold_k)-(hot-cold))<1e-10
 ```
@@ -184,7 +186,7 @@ assert abs((hot_k-cold_k)-(hot-cold))<1e-10
 
 **Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
-**Task:** At depths[1,2,3] km, compare gradients 25 and 35 °C/km with surface 15 °C. Build a pandas table.
+**Task:** At depths [1,2,3] km, compare gradients 25 and 35 °C/km with surface 15 °C. Build a pandas table.
 
 ```{code-cell} python
 # Your solution for geothermal exercise 06.
@@ -218,7 +220,7 @@ print(table.rename_axis('Depth km')); assert table.iloc[-1,1]==120
 
 **Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
-**Task:** For flows[30,50,70] kg/s, temperatures 150/70 °C, cp 4180, efficiency 0.12 and parasitic fraction 0.1, calculate net MW.
+**Task:** For flows [30,50,70] kg/s, temperatures 150/70 °C, cp 4180, efficiency 0.12 and parasitic fraction 0.1, calculate net MW.
 
 ```{code-cell} python
 # Your solution for geothermal exercise 07.
@@ -251,7 +253,7 @@ print(net,'MW net'); assert np.allclose(net/net[0],flow/flow[0])
 
 **Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
-**Task:** At 50 kg/s and production 160 °C, compare reinjection[60,80,100]°C with cp 4180, efficiency 0.12 and parasitic 0.1.
+**Task:** At 50 kg/s and production 160 °C, compare reinjection [60,80,100] °C with cp 4180, efficiency 0.12 and parasitic 0.1.
 
 ```{code-cell} python
 # Your solution for geothermal exercise 08.
@@ -284,7 +286,7 @@ print(net,'MW net'); assert np.all(np.diff(net)<0)
 
 **Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
-**Task:** Two wells have flows[40,60] kg/s and production[150,170]°C. Reinjection is 70 °C, cp 4180, conversion 0.12 and parasitic 0.1. Calculate individual and total net MW.
+**Task:** Two wells have flows [40,60] kg/s and production [150,170] °C. Reinjection is 70 °C, cp 4180, conversion 0.12 and parasitic 0.1. Calculate individual and total net MW.
 
 ```{code-cell} python
 # Your solution for geothermal exercise 09.
@@ -318,7 +320,7 @@ assert np.isclose(net.sum(),4180*(40*80+60*100)*0.12*0.9/1e6)
 
 **Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions.
 
-**Task:** Gross output is 5 MW. Compare parasitic fractions[0.05,0.10,0.20] and calculate net MW and 24-hour MWh.
+**Task:** Gross output is 5 MW. Compare parasitic fractions [0.05,0.10,0.20] and calculate net MW and 24-hour MWh.
 
 ```{code-cell} python
 # Your solution for geothermal exercise 10.
@@ -404,7 +406,7 @@ flux=2.5*gradient
 print(flux,'W/m²'); assert abs(flux-0.075)<1e-12
 ```
 
-**Interpretation:** The magnitude is75 mW/m². Heat flux requires conductivity; a temperature gradient alone is not flux.
+**Interpretation:** The magnitude is 75 mW/m². Heat flux requires conductivity; a temperature gradient alone is not flux.
 
 ::::
 
@@ -425,13 +427,13 @@ print(flux,'W/m²'); assert abs(flux-0.075)<1e-12
 
 ::::{dropdown} Step-by-step answer — Geothermal 13
 
-1. Start the decline exponent at zero for year1.
+1. Start the decline exponent at zero for year 1.
 2. Calculate annual net power and availability-adjusted energy.
 3. Check first-year energy and decreasing power.
 
 ```{code-cell} python
 import numpy as np
-# Step 1: Start the decline exponent at zero for year1.
+# Step 1: Start the decline exponent at zero for year 1.
 years=np.arange(1,11)
 # Step 2: Calculate annual net power and availability-adjusted energy.
 power=5*0.98**(years-1)
@@ -457,7 +459,7 @@ assert np.isclose(constant.sum()-energy.sum(),power[3]*8760*(.95-.8)/1000)
 
 **Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions. Array calculations: [@numpyDocs].
 
-**Task:** Four one-hour observations have flows [40,−2,50,missing] kg/s and production [150,160,60,170] °C with reinjection at 70 °C. Build mutually exclusive quality flags, report coverage and integrate thermal MWh for valid intervals only. Show why it is not a complete-period estimate.
+**Task:** Four one-hour water intervals have flows [40,−2,50,missing] kg/s and production temperatures [150,160,60,170] °C, treated as constant within each interval, with reinjection at 70 °C. Assume constant specific heat 4,180 J/(kg K). Build mutually exclusive quality flags, report coverage and integrate thermal MWh for valid intervals only. Show why it is not a complete-period estimate.
 
 ```{code-cell} python
 # Your solution for geothermal exercise 14.
@@ -474,17 +476,19 @@ import numpy as np
 # Step 1: Preserve aligned well observations.
 flow=np.array([40,-2,50,np.nan]); production=np.array([150,160,60,170])
 # Step 2: Construct a physical-validity mask before calculating heat.
-flags=np.select([~np.isfinite(flow)|~np.isfinite(production),flow<=0,production<=70],
-                ['missing','nonpositive flow','no useful drop'],default='valid')
+flags=np.select([np.isnan(flow)|np.isnan(production),~np.isfinite(flow)|~np.isfinite(production),production <= -273.15,flow<0,(flow>0)&(production<=70)],
+                ['missing','non-finite','at or below absolute zero','negative flow','no useful drop'],default='valid')
 valid=flags=='valid'
-thermal=flow[valid]*4180*(production[valid]-70)/1e6
+thermal=flow[valid]*4180*np.maximum(production[valid]-70,0)/1e6
+# A zero-flow stopped interval is valid and contributes zero heat.
+observed_energy = thermal.sum() if valid.any() else np.nan
 # Step 3: Report excluded records and verify the retained count.
-print(flags,'coverage:',valid.mean(),'observed MWh thermal:',thermal.sum())
-assert flags.tolist()==['valid','nonpositive flow','no useful drop','missing']
-assert valid.mean()==.25 and np.isclose(thermal.sum(),13.376)
+energy_label = f"{observed_energy:.3f}" if valid.any() else "unavailable"
+print(flags,'data coverage:',valid.mean(),'operating coverage:',(valid & (flow>0)).mean(),'observed MWh thermal:',energy_label)
+assert (np.isfinite(observed_energy) and observed_energy >= 0) if valid.any() else np.isnan(observed_energy)
 ```
 
-**Interpretation:** Excluded values need investigation; silently converting negative heat to positive power would hide errors.
+**Interpretation:** The observed thermal energy covers valid intervals only; it is not a complete-period estimate when coverage is incomplete. Temperatures at or below absolute zero are invalid even when flow is zero. Excluded values need investigation, and silently converting negative heat to positive power would hide errors.
 
 ::::
 
@@ -570,7 +574,7 @@ assert np.isclose(1-np.exp(slope),0.02) and mae<baseline
 
 **Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions. The shared plant limit is assumed.
 
-**Task:** Three wells have flows[40,50,60] kg/s and production[150,160,170]°C. Use reinjection 70 °C, cp 4180, conversion 0.12, parasitic 0.1 and a 4 MW net plant cap. Compare all operating versus outage of each well.
+**Task:** Three wells have flows [40,50,60] kg/s and production [150,160,170] °C. Use reinjection 70 °C, cp 4180, conversion 0.12, parasitic 0.1 and a 4 MW net plant cap. Compare all operating versus outage of each well.
 
 ```{code-cell} python
 # Your solution for geothermal exercise 17.
@@ -606,7 +610,7 @@ assert all_on==4 and all(0<=p<=all_on for p in outage)
 
 **Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions. Pump-load polynomial is a synthetic penalty, not a measured pump curve.
 
-**Task:** Compare flows 20–100 kg/s in steps 10. Gross MW=m×4180×80×0.12/1e 6 and pump MW=0.00004 m². Find the discrete flow maximising net power.
+**Task:** Compare flows 20–100 kg/s in steps 10. Let m be the numerical mass flow in kg/s. Use gross MW=m×4180×80×0.12/1e6 and pump MW=0.00004×m², with the pumping coefficient expressed in MW for that numerical convention. Find the discrete flow maximising net power.
 
 ```{code-cell} python
 # Your solution for geothermal exercise 18.
@@ -616,7 +620,7 @@ assert all_on==4 and all(0<=p<=all_on for p in outage)
 
 1. Define candidate flow rates and a synthetic pump-load model.
 2. Calculate gross and net power consistently in MW.
-3. Select the best candidate and verify the energy subtraction.
+3. Select the best candidate and verify the power subtraction.
 
 ```{code-cell} python
 import numpy as np
@@ -624,7 +628,7 @@ import numpy as np
 flow=np.arange(20,101,10); pump=0.00004*flow**2
 # Step 2: Calculate gross and net power consistently in MW.
 gross=flow*4180*80*0.12/1e6; net=gross-pump
-# Step 3: Select the best candidate and verify the energy subtraction.
+# Step 3: Select the best candidate and verify the power subtraction.
 best=np.argmax(net)
 print('Best flow:',flow[best],'kg/s; net:',net[best],'MW')
 assert np.allclose(net+pump,gross) and flow[best]==100
@@ -641,7 +645,7 @@ assert np.allclose(net+pump,gross) and flow[best]==100
 
 **Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions. Intervention timing and restoration are hypothetical.
 
-**Task:** Starting at 5 MW, power declines 3% per year through year 10. At the start of year 11 restore power to 5 MW and then decline 3% again through year 20. Compare cumulative GWh with uninterrupted decline;95% availability.
+**Task:** Starting at 5 MW, power declines 3% per year through year 10. At the start of year 11 restore power to 5 MW and then decline 3% again through year 20. Compare cumulative GWh with uninterrupted decline; 95% availability.
 
 ```{code-cell} python
 # Your solution for geothermal exercise 19.
@@ -679,7 +683,7 @@ assert intervention[10]==5 and gain>0
 
 **Reference:** Reservoir heat and flow: [@grant2011], Chapters 2–3; efficiencies and decline rates are specified teaching assumptions. Independent uniform distributions are hypothetical; Array calculations: [@numpyDocs].
 
-**Task:** With seed 5 sample 2000 independent flows uniform 40–60 kg/s and production temperatures uniform 140–170 °C. Use reinjection 70 °C, cp 4180, eta 0.12, parasitic 0.1. Report net-power median,5th/95th percentiles and probability above 2 MW.
+**Task:** With seed 5 sample 2000 independent flows uniform 40–60 kg/s and production temperatures uniform 140–170 °C. Use reinjection 70 °C, cp 4180, eta 0.12, parasitic 0.1. Report net-power median, 5th/95th percentiles and probability above 2 MW.
 
 ```{code-cell} python
 # Your solution for geothermal exercise 20.

@@ -69,9 +69,9 @@ project:
         - file: section7/renewableEnergyquizzes/pythonSQL.md
         - file: section7/renewableEnergyquizzes/hydroelectricEnergy.md
 
-        - file: section7/renewableEnergyquizzes/eolicenergy.md
-
         - file: section7/renewableEnergyquizzes/windEnergy.md
+
+        - file: section7/renewableEnergyquizzes/eolicenergy.md
 
         - file: section7/renewableEnergyquizzes/solarEnergy.md
 

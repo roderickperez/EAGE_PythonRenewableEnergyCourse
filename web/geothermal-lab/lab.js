@@ -39,7 +39,7 @@ const groups = [
     ['pressureGradient','Pressure-gradient magnitude',0,30,1,'kPa/m'],
     ['volume','Bulk reservoir volume V',.5,30,.5,'million m³'],
     ['porosity','Reservoir porosity φ',0,35,1,'%'],
-    ['rockDensity','Rock density ρ<sub>r</sub>',2000,3200,10,'kg/m³'],
+    ['rockDensity','Solid-rock density ρ<sub>r</sub>',2000,3200,10,'kg/m³'],
     ['rockCp','Rock specific heat c<sub>r</sub>',600,1400,10,'J/(kg·K)'],
   ]],
   ['Direct heat and heat-pump comparison', [
@@ -107,7 +107,7 @@ export function mountGeothermalLab(container) {
         <svg id="geo-chart" viewBox="0 0 530 177" role="img" aria-label="Annual net exported electricity in gigawatt-hours"></svg></section>
       <details open><summary>Live power and energy equations</summary><div id="geo-equations"></div></details>
       ${groups.slice(3).map(([name,items],i)=>`<details><summary>${name}</summary><div class="solar-controls">${controls(items)}</div><div id="geo-extra-${i}"></div></details>`).join('')}
-      <p class="assumptions">The model assumes pressurized liquid brine, constant fluid properties and a fixed cooling sink. Return temperature is bounded by the sink and production temperatures when useful heat is available. The ground section is schematic. Depth, heat flux and stored heat are independent geology estimates. Annual decline is a scenario with assumed operating hours.</p>
+      <p class="assumptions">The model assumes pressurized liquid brine, constant fluid properties and a fixed cooling sink. Return temperature is bounded by the sink and production temperatures when useful heat is available. The ground section is schematic. Depth, heat flux and stored heat are independent geology estimates. The stored-heat estimate assumes all pore volume is filled with the selected fluid. Annual decline is a scenario with assumed operating hours.</p>
     </div>
   </article>`;
   root.replaceChildren(sheet,body);

@@ -185,7 +185,7 @@ print(f'{cf:.0%}'); assert abs(cf-0.3)<1e-12
 
 **Reference:** Height profiles: [@manwell2009], §2.3.4.2.
 
-**Task:** Wind is 6 m/s at 10 m. Estimate at heights[10,50,100] m using v=vref(z/zref)^0.14.
+**Task:** Wind is 6 m/s at 10 m. Estimate at heights [10,50,100] m using v=vref(z/zref)^0.14.
 
 ```{code-cell} python
 # Your solution for wind exercise 06.
@@ -218,7 +218,7 @@ print(hub,'m/s'); assert hub[0]==6 and np.all(np.diff(hub)>0)
 
 **Reference:** Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2.
 
-**Task:** At fixed area 1000 m² and 8 m/s, compare available kW for densities[1.0,1.225,1.3] kg/m³.
+**Task:** At fixed area 1000 m² and 8 m/s, compare available kW for densities [1.0,1.225,1.3] kg/m³.
 
 ```{code-cell} python
 # Your solution for wind exercise 07.
@@ -251,7 +251,7 @@ print(power,'kW'); assert np.allclose(power/power[0],rho/rho[0])
 
 **Reference:** Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2. Cubic ramp is a teaching approximation, not a measured curve.
 
-**Task:** Implement 3 MW rated power: zero below 3 m/s, 3(v³−3³)/(12³−3³) between 3 and 12, rated to below 25, zero thereafter. Test[0,3,6,12,25].
+**Task:** Implement 3 MW rated power: zero below 3 m/s, 3(v³−3³)/(12³−3³) between 3 and 12, rated to below 25, zero thereafter. Test [0,3,6,12,25].
 
 ```{code-cell} python
 # Your solution for wind exercise 08.
@@ -287,7 +287,7 @@ print(power,'MW'); assert np.allclose(power[[0,1,3,4]],[0,0,3,0])
 
 **Reference:** Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2.
 
-**Task:** Compare the mean of v³ with the cube of mean speed for speeds[4,8] m/s.
+**Task:** Compare the mean of v³ with the cube of mean speed for speeds [4,8] m/s.
 
 ```{code-cell} python
 # Your solution for wind exercise 09.
@@ -321,7 +321,7 @@ assert mean_cube==288 and cube_mean==216
 
 **Reference:** Turbulence intensity: [@manwell2009], §2.3; population standard deviation is explicitly assumed.
 
-**Task:** For[6,8,10] m/s, calculate population standard deviation divided by mean speed. State ddof=0.
+**Task:** For [6,8,10] m/s, calculate population standard deviation divided by mean speed. State ddof=0.
 
 ```{code-cell} python
 # Your solution for wind exercise 10.
@@ -354,7 +354,7 @@ print(f'TI: {ti:.2%}'); assert np.isclose(ti,np.sqrt(8/3)/8)
 
 **Reference:** Circular mean and zero-resultant limitation: [SciPy circmean](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.circmean.html).
 
-**Task:** Calculate the equal-weight circular mean of[350,10,0] degrees clockwise from north.
+**Task:** Calculate the equal-weight circular mean of [350,10,0] degrees clockwise from north.
 
 ```{code-cell} python
 # Your solution for wind exercise 11.
@@ -364,7 +364,7 @@ print(f'TI: {ti:.2%}'); assert np.isclose(ti,np.sqrt(8/3)/8)
 
 1. Convert angles to radians before trigonometry.
 2. Average sine and cosine and recover a compass angle.
-3. Verify north modulo a full rotation.
+3. Verify north in the half-open compass range.
 
 ```{code-cell} python
 import numpy as np
@@ -372,9 +372,9 @@ import numpy as np
 angle=np.deg2rad([350,10,0])
 # Step 2: Average sine and cosine and recover a compass angle.
 s=np.sin(angle).mean(); c=np.cos(angle).mean()
-mean=np.degrees(np.arctan2(s,c))%360
-# Step 3: Verify north modulo a full rotation.
-print(mean,'degrees'); assert min(abs(mean),abs(mean-360))<1e-10
+mean=np.round(np.degrees(np.arctan2(s,c))%360,12)%360
+# Step 3: Verify north in the half-open compass range.
+print(mean,'degrees'); assert 0<=mean<360 and np.isclose(mean,0)
 ```
 
 **Interpretation:** An arithmetic mean would be misleading across the north/360° boundary.
@@ -388,7 +388,7 @@ print(mean,'degrees'); assert min(abs(mean),abs(mean-360))<1e-10
 
 **Reference:** Direction-sector convention specified in this exercise; [@manwell2009], Chapter 2; Array calculations: [@numpyDocs].
 
-**Task:** Bin directions[350,0,20,45,90,180,270] into eight sectors centered on N,NE,E,SE,S,SW,W,NW.
+**Task:** Bin directions [350,0,20,45,90,180,270] into eight sectors centered on N,NE,E,SE,S,SW,W,NW.
 
 ```{code-cell} python
 # Your solution for wind exercise 12.
@@ -447,7 +447,10 @@ net=online*wake_retained
 wake=online-net
 # Step 3: Check net energy and show the total loss fraction.
 aggregate=gross.sum()*availability.mean()*wake_retained.mean()
-print(net.sum(),aggregate,'GWh, by season and mean-factor estimate')
+for i,(g,off,w,n) in enumerate(zip(gross,offline,wake,net),1):
+    print(f'Season {i}: gross {g:.3f}, offline {off:.3f}, wake {w:.3f}, net {n:.3f} GWh')
+print(f'Seasonal net total: {net.sum():.3f} GWh; mean-factor estimate: {aggregate:.3f} GWh')
+print(f'Total sequential loss fraction: {(offline.sum()+wake.sum())/gross.sum():.2%}')
 assert np.allclose(net+offline+wake,gross) and net.sum()<aggregate
 ```
 
@@ -480,8 +483,11 @@ import numpy as np
 p=np.array([0.5,2,3]); dt=np.array([2,1,0.5])
 # Step 2: Integrate and use the same duration in the capacity-factor denominator.
 def metrics(p,dt,rating):
-    if p.shape!=dt.shape or np.any(dt<=0) or np.any((p<0)|(p>rating)):
-        raise ValueError('Invalid aligned power and duration')
+    p,dt=np.asarray(p,dtype=float),np.asarray(dt,dtype=float)
+    if (p.ndim!=1 or p.size==0 or p.shape!=dt.shape or not np.isfinite(rating) or rating<=0
+            or not np.isfinite(p).all() or not np.isfinite(dt).all()
+            or np.any(dt<=0) or np.any((p<0)|(p>rating))):
+        raise ValueError('Provide finite aligned power, positive durations and a positive rating')
     energy=np.sum(p*dt)
     return energy,energy/(rating*dt.sum())
 # Step 3: Check the hand sum and report results.
@@ -543,7 +549,7 @@ assert np.array_equal(counts,[3,2,3]) and np.isclose(energy.sum(),power.sum()) a
 
 **Reference:** Wind distribution and energy: [@manwell2009], §§2.4–2.5; [SciPy Weibull density](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.weibull_min.html).
 
-**Task:** Use Weibull shape 2, scale 8 m/s and the 3/12/25 m/s,3 MW curve. Integrate using midpoint powers and CDF bin probabilities over 0–30 m/s. Compare bin widths 0.1 and 0.05; apply 8760 h and net factor 0.9.
+**Task:** Use Weibull shape 2, scale 8 m/s and the 3/12/25 m/s, 3 MW curve. Integrate using midpoint powers and CDF bin probabilities over 0–30 m/s. Compare bin widths 0.1 and 0.05; apply 8760 h and net factor 0.9.
 
 ```{code-cell} python
 # Your solution for wind exercise 16.
@@ -570,7 +576,7 @@ print(coarse,fine,'GWh; relative difference:',abs(coarse-fine)/fine)
 assert abs(coarse-fine)/fine<0.001 and 0<fine<3*8760/1000
 ```
 
-**Interpretation:** Probability above30 m/s has zero output under this shutdown curve; its omission does not remove generating energy.
+**Interpretation:** Probability above 30 m/s has zero output under this shutdown curve; its omission does not remove generating energy.
 
 ::::
 
@@ -581,7 +587,7 @@ assert abs(coarse-fine)/fine<0.001 and 0<fine<3*8760/1000
 
 **Reference:** Circular mean and zero-resultant limitation: [SciPy circmean](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.circmean.html).
 
-**Task:** Write a direction-mean function rejecting empty/nonfinite data and resultant length below 1e−8. Verify[90,270] is undefined and[350,10] is north.
+**Task:** Write a direction-mean function returning degrees in [0, 360), rejecting empty/nonfinite data and resultant length below 1e−8. Verify [90, 270] is undefined and [350, 10] is north.
 
 ```{code-cell} python
 # Your solution for wind exercise 17.
@@ -601,13 +607,14 @@ def mean_direction(values):
     if a.size==0 or np.any(~np.isfinite(a)): raise ValueError('Need finite directions')
     s=np.sin(np.deg2rad(a)).mean(); c=np.cos(np.deg2rad(a)).mean()
     if np.hypot(s,c)<1e-8: raise ValueError('Undefined mean direction')
-    return np.degrees(np.arctan2(s,c))%360
+    angle=np.degrees(np.arctan2(s,c))%360
+    return 0.0 if angle == 360 else angle
 # Step 2: Verify cancellation is explicitly reported.
 try: mean_direction([90,270])
 except ValueError: print('Opposite directions: undefined mean')
 else: raise AssertionError('Cancellation was not detected')
 # Step 3: Verify the well-defined northward sample.
-answer=mean_direction([350,10]); assert min(answer,360-answer)<1e-8
+answer=mean_direction([350,10]); assert 0 <= answer < 360 and min(answer,360-answer)<1e-8
 print(answer,'degrees')
 ```
 
@@ -622,7 +629,7 @@ print(answer,'degrees')
 
 **Reference:** Power-law shear: [@manwell2009], §2.3.4.2; logarithmic least squares is the stated estimator.
 
-**Task:** Measured speeds at heights[20,40,80] m are generated by 6(z/20)^0.2. Fit log(v) against log(z/20) and predict at 100 m.
+**Task:** Synthetic speeds at heights [20,40,80] m are generated by 6(z/20)^0.2. Fit log(v) against log(z/20) and predict at 100 m.
 
 ```{code-cell} python
 # Your solution for wind exercise 18.
@@ -657,7 +664,7 @@ assert np.isclose(alpha,0.2) and np.isclose(np.exp(intercept),6)
 
 **Reference:** Resource and energy accounting: [@manwell2009], §§2.3–2.5; aerodynamics: §3.2.
 
-**Task:** At 10 m, speeds[3,5,7,9] m/s last 6 h each. Compare hub heights 50 and 100 m using exponent 0.14 and the 3 MW piecewise curve. Calculate daily MWh, not power from mean speed.
+**Task:** At 10 m, speeds [3,5,7,9] m/s last 6 h each. Compare hub heights 50 and 100 m using exponent 0.14 and the 3 MW piecewise curve. Calculate daily MWh, not power from mean speed.
 
 ```{code-cell} python
 # Your solution for wind exercise 19.
@@ -665,23 +672,26 @@ assert np.isclose(alpha,0.2) and np.isclose(np.exp(intercept),6)
 
 ::::{dropdown} Step-by-step answer — Wind 19
 
-1. Define the common measured speeds and a turbine model.
+1. Define the common example speeds and a turbine model.
 2. Adjust each interval to each candidate hub height.
 3. Check rated bounds and compare the designs.
 
 ```{code-cell} python
 import numpy as np
-# Step 1: Define the common measured speeds and a turbine model.
+# Step 1: Define the common example speeds and a turbine model.
 vref=np.array([3,5,7,9])
 def curve(v):
+    v = np.asarray(v, dtype=float)
+    if not np.isfinite(v).all() or (v < 0).any():
+        raise ValueError("Wind speeds must be finite and non-negative")
     return np.where((v>=3)&(v<12),3*(v**3-27)/(1728-27),np.where((v>=12)&(v<25),3,0))
 # Step 2: Adjust each interval to each candidate hub height.
 energy={height:float(curve(vref*(height/10)**0.14).sum()*6) for height in [50,100]}
 # Step 3: Check rated bounds and compare the designs.
-print(energy,'MWh'); assert all(0<=e<=72 for e in energy.values()) and energy[100]>=energy[50]
+print(energy,'MWh'); assert all(0<=e<=72 for e in energy.values())
 ```
 
-**Interpretation:** Higher towers change cost and loads. More energy in this sample does not prove economic superiority.
+**Interpretation:** Higher towers change cost and loads. More energy in this sample does not prove economic superiority; a higher hub can also reach cut-out and produce less for other winds.
 
 ::::
 
@@ -690,9 +700,9 @@ print(energy,'MWh'); assert all(0<=e<=72 for e in energy.values()) and energy[10
 
 **Difficulty:** Hard
 
-**Reference:** Bootstrap sampling: [SciPy bootstrap](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.bootstrap.html). Independence is assumed here; serial wind data may require block resampling.
+**Reference:** Bootstrap sampling: [SciPy bootstrap](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.bootstrap.html). If using SciPy, select `method="percentile"`; its default is BCa. Different random draws or implementations can produce different endpoints. Independence is assumed here; serial wind data may require block resampling.
 
-**Task:** Observed daily-average powers[0.4,0.8,1.2,0.6,1.5,1.0] MW are treated as independent. With seed 11, bootstrap 2000 equal-sized samples and calculate a percentile 95% interval for mean MW.
+**Task:** Observed daily-average powers [0.4, 0.8, 1.2, 0.6, 1.5, 1.0] MW are treated as independent. With seed 11, draw 2000 equal-sized samples with replacement and calculate a percentile 95% interval for mean MW.
 
 ```{code-cell} python
 # Your solution for wind exercise 20.
@@ -722,9 +732,11 @@ assert interval[0]<interval[1] and means.min()>=p.min() and means.max()<=p.max()
 
 ## Python Visualization: Wind Direction
 
-These original examples use **synthetic data** and are inspired by the saved videos [How to make a wind rose with Python](https://youtu.be/UdMCWf6WuK4), [How to make a wind rose plot with Python](https://youtu.be/g-MmDTbx8kI), and [Overlay Wind Barbs and Wind Vectors on a Map](https://youtu.be/1Nr9KW89lCc). They illustrate the topics rather than reproduce the videos' code or data. The wind-rose examples use NumPy and Matplotlib and can run in this course's browser workspace. The map example requires local Cartopy, as explained below.
+These original examples use **synthetic data** and are inspired by the saved videos [How to make a wind rose with Python](https://youtu.be/UdMCWf6WuK4), [How to make a wind rose plot with Python](https://youtu.be/g-MmDTbx8kI), and [Overlay Wind Barbs and Wind Vectors on a Map](https://youtu.be/1Nr9KW89lCc). They illustrate the topics rather than reproduce the videos' code or data. The wind-rose examples use NumPy and Matplotlib and can run in this course's browser workspace. The map example also uses Cartopy, which is available in the tested browser runtime; package or map asset availability may change.
 
 **Direction convention:** meteorological direction is the direction the wind comes **from**, clockwise from north: N = 0°, E = 90°, S = 180°, W = 270°. Arrows in a vector map instead point **toward** the direction of airflow. Exclude or separately report calm winds, for which direction is undefined. [ECMWF wind conventions](https://confluence.ecmwf.int/pages/viewpage.action?pageId=212441203).
+
+When transferring formulas between NumPy and a spreadsheet, check `atan2` argument order and test cardinal directions. Excel takes x before y; NumPy takes y before x. The current ECMWF page checked on 19 November 2026 differed from the linked 2021 spreadsheet expression, so verify the target formula rather than copying it untested.
 
 ### 1. A simple frequency wind rose
 
@@ -756,7 +768,7 @@ plt.show()
 
 ### 2. Wind rose with speed categories
 
-Stack speed ranges within each directional sector. The example uses the same directions and eight measured speeds. Each colored segment is a percentage of **all valid observations**, so the heights of all segments together sum to 100%.
+Stack speed ranges within each directional sector. The example uses the same directions and eight synthetic speeds. Each colored segment is a percentage of **all valid observations**, so the heights of all segments together sum to 100%.
 
 ```{code-cell} python
 import numpy as np
@@ -793,9 +805,9 @@ plt.show()
 
 ### 3. Wind vectors and barbs on a map
 
-This local Python example plots a small **synthetic** Europe-region grid on Cartopy's bundled low-resolution background. `u` is eastward and `v` northward, in m/s. Arrows show where air is going; barbs use **knots** here (1 m/s ≈ 1.94384 knots). A full barb denotes 10 knots and a half barb 5 knots, rounded to the nearest 5 by the plotting convention. The background is a visual reference, not a site survey.
+This Python example plots a small **synthetic** Europe-region grid on Cartopy's bundled low-resolution background. `u` is eastward and `v` northward, in m/s. Arrows show where air is going; barbs use **knots** here (1 m/s ≈ 1.94384 knots). A full barb denotes 10 knots and a half barb 5 knots, rounded to the nearest 5 by the plotting convention. The background is a visual reference, not a site survey.
 
-In a local environment, install `numpy matplotlib cartopy`; Cartopy is not available in the course's browser Python workspace. The pre-rendered result below lets you inspect the output without installing it. Use `transform=ccrs.PlateCarree()` because the input positions are longitude and latitude. For real gridded data, check the coordinate system and whether vector components must be rotated into east/north.
+In a local environment, install `numpy matplotlib cartopy`. The tested browser workspace can load Cartopy; its availability and map assets depend on the runtime and network. The pre-rendered result below provides a reference. Use `transform=ccrs.PlateCarree()` because the input positions are longitude and latitude. For real gridded data, check the coordinate system and whether vector components must be rotated into east/north.
 
 ```{code-cell} python
 import numpy as np
