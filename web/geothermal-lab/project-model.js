@@ -15,10 +15,15 @@ const adjacency=Array.from({length:N*N},(_,i)=>neighbors(i));
 // Unit-conductance pressure network, no-flow outer boundary. The imposed
 // sources balance exactly; conductance determines distribution, not pressure.
 export function flowNetwork(injector, producer, rate) {
-  if (injector === producer || ![injector,producer].every(i=>Number.isInteger(i)&&i>=0&&i<N*N)) throw Error('Choose two different grid cells.');
+  return networkForWells([injector],[producer],rate);
+}
+export function networkForWells(injectors, producers, rate) {
+  const ids=[...injectors,...producers];
+  if(!injectors.length||!producers.length||new Set(ids).size!==ids.length||!ids.every(i=>Number.isInteger(i)&&i>=0&&i<N*N))throw Error('Choose different grid cells for wells in each layer.');
   if (!Number.isFinite(rate) || rate < 0) throw Error('Flow must be nonnegative.');
   const p=new Float64Array(N*N), b=new Float64Array(N*N);
-  b[injector]=rate; b[producer]=-rate;
+  for(const i of injectors)b[i]+=rate/injectors.length;
+  for(const i of producers)b[i]-=rate/producers.length;
   for(let k=0;k<12000;k++) {
     let change=0;
     for(let i=1;i<p.length;i++) {
@@ -34,7 +39,7 @@ export function flowNetwork(injector, producer, rate) {
     edges.push({from,to,mass}); outgoing[from]+=mass;
     divergence[from]+=mass; divergence[to]-=mass;
   }
-  outgoing[producer]+=rate;
+  for(const i of producers)outgoing[i]+=rate/producers.length;
   return {edges,outgoing,divergence, residual:Math.max(...divergence.map((v,i)=>Math.abs(v-b[i])))};
 }
 
@@ -76,7 +81,7 @@ export function createModel(settings={}) {
     const production=temperature[config.producer];
     const thermal=Math.max(0,config.rate*CP*(production-config.injection)/1e6);
     const net=Math.min(config.capacity,thermal*config.efficiency*(1-config.auxiliary));
-    return {years:seconds/YEAR, production, thermal, net, energy, revenue, extractedJ,
+    return {years:seconds/YEAR, production, thermal, net, energy, revenue, capacity:config.capacity, extractedJ,
       remainingJ:temperature.reduce((a,t)=>a+(t-config.injection)*cellCapacity,0),
       temperature:Array.from(temperature)};
   }

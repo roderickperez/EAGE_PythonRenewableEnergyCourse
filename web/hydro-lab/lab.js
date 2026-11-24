@@ -7,7 +7,7 @@ const sliderDefinitions = [
   ['grossHeadM', 'Gross head H_gross', 5, 250, 1, 'm'],
   ['usableFlowM3s', 'Usable flow Q', 0, 30, 0.1, 'm³/s'],
   ['headLossM', 'Head loss h_loss', 0, 50, 0.5, 'm'],
-  ['ratingMW', 'Rating cap P_r', 0.1, 25, 0.1, 'MW'],
+  ['ratingMW', 'Electrical power cap P_r', 0.1, 25, 0.1, 'MW'],
 ];
 
 function format(value, digits = 1) {
@@ -32,7 +32,7 @@ function template(inputs, assetBase, standaloneUrl) {
     <header class="lab-head">
       <span class="lab-kicker">Interactive engineering diagram</span>
       <h2 id="hydro-lab-title">From reservoir head to electrical energy</h2>
-      <p>Move the four controls. The plant, water paths, equations, and plots all use the same steady-state calculation.</p>
+      <p>Move the four controls, including the electrical power cap in MW. The plant, water paths, equations, and plots all use the same steady-state calculation; six-hour energy is shown in MWh.</p>
     </header>
     <section class="controls" aria-label="Hydroelectric plant inputs">
       ${sliderDefinitions.map((definition) => sliderMarkup(definition, inputs[definition[0]])).join('')}

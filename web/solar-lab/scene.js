@@ -3,31 +3,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RAD, sunDirection } from './model.js';
 import { createSolarPanel } from './panel.js';
 
-export function mountScene(host) {
-  const scene = new T.Scene();
-  const day = new T.Color('#e4eef2');
-  const night = new T.Color('#26394f');
-  scene.background = day.clone();
-  const renderer = new T.WebGLRenderer({ antialias: true });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-  renderer.shadowMap.enabled = true;
-  renderer.toneMapping = T.ACESFilmicToneMapping;
-  host.append(renderer.domElement);
-  const camera = new T.OrthographicCamera(-8, 8, 6, -6, .1, 100);
-  camera.position.set(13, 10, -16);
-  const orbit = new OrbitControls(camera, renderer.domElement);
-  orbit.target.set(0, 2.7, 0);
-  Object.assign(orbit, { enablePan: false, maxPolarAngle: Math.PI / 2.1, minPolarAngle: .42,
-    minZoom: .8, maxZoom: 1.85, enableZoom: false });
-  orbit.update();
-  const sky = new T.HemisphereLight(0xe5f3ff, 0x647957, 2);
-  scene.add(sky);
-  const sunlight = new T.DirectionalLight(0xffdf9e, 3);
-  sunlight.castShadow = true;
-  sunlight.shadow.mapSize.set(1024, 1024);
-  Object.assign(sunlight.shadow.camera, { left: -8, right: 8, top: 8, bottom: -8 });
-  sunlight.shadow.normalBias = .035;
-  scene.add(sunlight);
+export function buildSolarPlant(scene) {
   const mat = (color, roughness = .7, metalness = 0) =>
     new T.MeshStandardMaterial({ color, roughness, metalness });
   function mesh(geometry, material, position, parent = scene) {
@@ -72,7 +48,44 @@ export function mountScene(host) {
   scene.add(path, rays);
   const panelCenter = new T.Vector3(0, 2.05, 0);
   const sunPoint = direction => new T.Vector3(...direction).multiplyScalar(6.1).add(panelCenter);
-  let lastTrack, phase = 0, previous = 0, power, playing = false, shown = true, dirty = true;
+  let phase=0;
+  function advance(dt, power, playing) {
+    if (playing) phase = (phase + dt * .48) % 1;
+    wires.forEach(({ curve, pulse }, i) => {
+      pulse.visible = (i ? power.ac : power.dc) > 0;
+      pulse.position.copy(curve.getPointAt((phase + i * .5) % 1));
+    });
+  }
+  return { advance, rack, panel, path, rays, sunPoint, sun, led, output, wires };
+}
+
+export function mountScene(host) {
+  const scene = new T.Scene();
+  const day = new T.Color('#e4eef2');
+  const night = new T.Color('#26394f');
+  scene.background = day.clone();
+  const renderer = new T.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.toneMapping = T.ACESFilmicToneMapping;
+  host.append(renderer.domElement);
+  const camera = new T.OrthographicCamera(-8, 8, 6, -6, .1, 100);
+  camera.position.set(13, 10, -16);
+  const orbit = new OrbitControls(camera, renderer.domElement);
+  orbit.target.set(0, 2.7, 0);
+  Object.assign(orbit, { enablePan: false, maxPolarAngle: Math.PI / 2.1, minPolarAngle: .42,
+    minZoom: .8, maxZoom: 1.85, enableZoom: false });
+  orbit.update();
+  const sky = new T.HemisphereLight(0xe5f3ff, 0x647957, 2);
+  scene.add(sky);
+  const sunlight = new T.DirectionalLight(0xffdf9e, 3);
+  sunlight.castShadow = true;
+  sunlight.shadow.mapSize.set(1024, 1024);
+  Object.assign(sunlight.shadow.camera, { left: -8, right: 8, top: 8, bottom: -8 });
+  sunlight.shadow.normalBias = .035;
+  scene.add(sunlight);
+  const { advance, rack, panel, path, rays, sunPoint, sun, led, output, wires } = buildSolarPlant(scene);
+  let lastTrack, previous = 0, power, playing = false, shown = true, dirty = true;
   function update(input, result, animate) {
     playing = animate;
     power = result;
@@ -133,11 +146,7 @@ export function mountScene(host) {
     const dt = Math.min(.05, (time - previous) / 1000);
     previous = time;
     if (!shown || !power || (!dirty && !playing)) return;
-    if (playing) phase = (phase + dt * .48) % 1;
-    wires.forEach(({ curve, pulse }, i) => {
-      pulse.visible = (i ? power.ac : power.dc) > 0;
-      pulse.position.copy(curve.getPointAt((phase + i * .5) % 1));
-    });
+    advance(dt, power, playing);
     renderer.render(scene, camera);
     dirty = false;
   });

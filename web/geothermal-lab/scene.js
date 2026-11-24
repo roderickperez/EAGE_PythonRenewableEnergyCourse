@@ -1,29 +1,8 @@
 import * as T from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { createReservoirFlow } from './reservoir-flow.js';
 
-export function mountGeothermalScene(host, tooltip) {
-  const scene = new T.Scene();
-  scene.background = new T.Color('#e6eff3');
-  const renderer = new T.WebGLRenderer({ antialias: true });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-  renderer.shadowMap.enabled = true;
-  renderer.toneMapping = T.ACESFilmicToneMapping;
-  host.append(renderer.domElement);
-  const camera = new T.OrthographicCamera(-10, 10, 7, -7, .1, 90);
-  camera.position.set(8, 8, 21);
-  const controls = new OrbitControls(camera, renderer.domElement);
-  controls.target.set(0, -.3, 0);
-  Object.assign(controls, { enablePan: false, enableZoom: false, minAzimuthAngle: -.55, maxAzimuthAngle: .63,
-    minPolarAngle: .69, maxPolarAngle: 1.51 });
-  controls.update();
-  scene.add(new T.HemisphereLight(0xe3f3ff, 0xa18b78, 2.3));
-  const sun = new T.DirectionalLight(0xffedcd, 3);
-  sun.position.set(-7, 15, 9);
-  sun.castShadow = true;
-  sun.shadow.mapSize.set(1024, 1024);
-  Object.assign(sun.shadow.camera, { left: -12, right: 12, top: 12, bottom: -12 });
-  sun.shadow.normalBias = .04;
-  scene.add(sun);
+export function buildGeothermalPlant(scene) {
   const mat = (color, metalness = 0) => new T.MeshStandardMaterial({ color, roughness: .58, metalness });
   const steel = mat('#8396a1', .48), dark = mat('#344954', .45), concrete = mat('#cbd1ca');
   const chrome = mat('#b7c4c8', .4), copper = mat('#b86c47', .38);
@@ -157,6 +136,51 @@ export function mountGeothermalScene(host, tooltip) {
   pipe([[3.49,.43,.82],[3.49,.49,.15],[3.49,1.11,-.46]],.086,liquid,'#a6ddf4','cycle','Condenser coolant to dry cooler',5);
   pipe([[3.81,1.11,-.46],[3.81,.52,.11],[3.81,.48,.79]],.086,cool,'#8ee9ff','cycle','Coolant return from dry cooler',5);
 
+  const reservoirFlow = createReservoirFlow(scene, [4.58,-3.88,3.08], [-5.1,-3.8,3.08]);
+  let reservoirDistance=0;
+  function advance(dt, state, animate) {
+    if (animate) runner.rotation.x = (runner.rotation.x + dt * Math.min(7,state.gross*1.5)) % (Math.PI*2);
+    for (const route of routes) {
+      const rate = state[route.channel];
+      if (animate) route.phase=(route.phase+dt*Math.min(4,.5+rate)/route.distance)%1;
+      route.pulses.forEach((pulse,i)=>{
+        pulse.visible=rate>0;
+        if (pulse.visible) {
+          pulse.position.copy(route.curve.getPointAt((i/route.pulses.length+route.phase)%1));
+          pulse.position.z += route.radius * .85;
+        }
+      });
+    }
+    if (animate && state.brine > 0) reservoirDistance += dt * Math.min(4,.5+state.brine);
+    reservoirFlow.draw(reservoirDistance, state.brine > 0);
+  }
+  return { advance, clickable, routes, runner, warmRock, reservoirFlow };
+}
+
+export function mountGeothermalScene(host, tooltip) {
+  const scene = new T.Scene();
+  scene.background = new T.Color('#e6eff3');
+  const renderer = new T.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.toneMapping = T.ACESFilmicToneMapping;
+  host.append(renderer.domElement);
+  const camera = new T.OrthographicCamera(-10, 10, 7, -7, .1, 90);
+  camera.position.set(8, 8, 21);
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.target.set(0, -.3, 0);
+  Object.assign(controls, { enablePan: false, enableZoom: false, minAzimuthAngle: -.55, maxAzimuthAngle: .63,
+    minPolarAngle: .69, maxPolarAngle: 1.51 });
+  controls.update();
+  scene.add(new T.HemisphereLight(0xe3f3ff, 0xa18b78, 2.3));
+  const sun = new T.DirectionalLight(0xffedcd, 3);
+  sun.position.set(-7, 15, 9);
+  sun.castShadow = true;
+  sun.shadow.mapSize.set(1024, 1024);
+  Object.assign(sun.shadow.camera, { left: -12, right: 12, top: 12, bottom: -12 });
+  sun.shadow.normalBias = .04;
+  scene.add(sun);
+  const { advance, clickable, routes, runner, warmRock, reservoirFlow } = buildGeothermalPlant(scene);
   let state, animate, dirty = true, visible = true, last = 0;
   const ray = new T.Raycaster();
   const cursor = new T.Vector2();
@@ -193,18 +217,7 @@ export function mountGeothermalScene(host, tooltip) {
     const dt = Math.min(.05,(time-last)/1000);
     last = time;
     if (!state || !visible || (!animate && !dirty)) return;
-    if (animate) runner.rotation.x = (runner.rotation.x + dt * Math.min(7,state.gross*1.5)) % (Math.PI*2);
-    for (const route of routes) {
-      const rate = state[route.channel];
-      if (animate) route.phase=(route.phase+dt*Math.min(4,.5+rate)/route.distance)%1;
-      route.pulses.forEach((pulse,i)=>{
-        pulse.visible=rate>0;
-        if (pulse.visible) {
-          pulse.position.copy(route.curve.getPointAt((i/route.pulses.length+route.phase)%1));
-          pulse.position.z += route.radius * .85;
-        }
-      });
-    }
+    advance(dt, state, animate);
     renderer.render(scene,camera);
     dirty=false;
   });

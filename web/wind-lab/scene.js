@@ -2,28 +2,7 @@ import * as T from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RAD } from './model.js';
 
-export function mountWindScene(host, tooltip, { showSweep = false } = {}) {
-  const scene = new T.Scene();
-  scene.background = new T.Color('#e6eff3');
-  const renderer = new T.WebGLRenderer({ antialias: true });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-  renderer.shadowMap.enabled = true;
-  renderer.toneMapping = T.ACESFilmicToneMapping;
-  host.append(renderer.domElement);
-  const camera = new T.OrthographicCamera(-10, 10, 8, -8, .1, 100);
-  camera.position.set(12, 11, 23);
-  const orbit = new OrbitControls(camera, renderer.domElement);
-  orbit.target.set(0, 5, 0);
-  Object.assign(orbit, { enablePan: false, enableZoom: false, minPolarAngle: .55, maxPolarAngle: 1.47 });
-  orbit.update();
-  scene.add(new T.HemisphereLight(0xe6f5ff, 0x7f8568, 2.4));
-  const sun = new T.DirectionalLight(0xffedcd, 3);
-  sun.position.set(-7, 16, 9);
-  sun.castShadow = true;
-  sun.shadow.mapSize.set(1024, 1024);
-  Object.assign(sun.shadow.camera, { left: -12, right: 12, top: 12, bottom: -12 });
-  sun.shadow.normalBias = .035;
-  scene.add(sun);
+export function buildWindPlant(scene, showSweep) {
   const material = (color, metalness = 0) => new T.MeshStandardMaterial({ color, metalness, roughness: .59 });
   const white = material('#e3e9eb'), steel = material('#788a93', .48), dark = material('#334752', .4);
   const copper = material('#be7545', .45), green = material('#657e62');
@@ -157,7 +136,49 @@ export function mountWindScene(host, tooltip, { showSweep = false } = {}) {
     streak.castShadow = false;
     return streak;
   });
-  let point, animate, phase = 0, airPhase = 0, lastTime = 0, dirty = true, visible = true, lastGeometry;
+  let phase=0, airPhase=0;
+  function advance(dt, point, animate) {
+    if (animate) {
+      rotor.rotation.z = (rotor.rotation.z - dt * point.omega) % (2*Math.PI);
+      phase = (phase + dt * Math.min(.9, point.gridMW * .3)) % 1;
+      airPhase = (airPhase + dt * point.speed / 18) % 1;
+    }
+    powerLines.forEach(({ curve, pulses }) => pulses.forEach((pulse,i) => {
+      pulse.visible = point.gridMW > 0;
+      pulse.position.copy(curve.getPointAt((i/pulses.length + phase)%1));
+    }));
+    airflow.forEach((streak,i) => {
+      streak.visible = point.speed > 0;
+      streak.position.set((i%5-2)*.9, (i%3-1)*.8, 4.5 - 8.7*((i/10+airPhase)%1));
+    });
+  }
+  return { advance, parts, column, head, blades, air, towerX, rotor, powerLines, airflow };
+}
+
+export function mountWindScene(host, tooltip, { showSweep = false } = {}) {
+  const scene = new T.Scene();
+  scene.background = new T.Color('#e6eff3');
+  const renderer = new T.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.toneMapping = T.ACESFilmicToneMapping;
+  host.append(renderer.domElement);
+  const camera = new T.OrthographicCamera(-10, 10, 8, -8, .1, 100);
+  camera.position.set(12, 11, 23);
+  const orbit = new OrbitControls(camera, renderer.domElement);
+  orbit.target.set(0, 5, 0);
+  Object.assign(orbit, { enablePan: false, enableZoom: false, minPolarAngle: .55, maxPolarAngle: 1.47 });
+  orbit.update();
+  scene.add(new T.HemisphereLight(0xe6f5ff, 0x7f8568, 2.4));
+  const sun = new T.DirectionalLight(0xffedcd, 3);
+  sun.position.set(-7, 16, 9);
+  sun.castShadow = true;
+  sun.shadow.mapSize.set(1024, 1024);
+  Object.assign(sun.shadow.camera, { left: -12, right: 12, top: 12, bottom: -12 });
+  sun.shadow.normalBias = .035;
+  scene.add(sun);
+  const { advance, parts, column, head, blades, air, towerX, rotor, powerLines, airflow } = buildWindPlant(scene, showSweep);
+  let point, animate, lastTime = 0, dirty = true, visible = true, lastGeometry;
   function update(input, result, motion) {
     point = result;
     animate = motion;
@@ -211,19 +232,7 @@ export function mountWindScene(host, tooltip, { showSweep = false } = {}) {
     const dt = Math.min(.05, (time-lastTime)/1000);
     lastTime = time;
     if (!point || !visible || (!animate && !dirty)) return;
-    if (animate) {
-      rotor.rotation.z = (rotor.rotation.z - dt * point.omega) % (2*Math.PI);
-      phase = (phase + dt * Math.min(.9, point.gridMW * .3)) % 1;
-      airPhase = (airPhase + dt * point.speed / 18) % 1;
-    }
-    powerLines.forEach(({ curve, pulses }) => pulses.forEach((pulse,i) => {
-      pulse.visible = point.gridMW > 0;
-      pulse.position.copy(curve.getPointAt((i/pulses.length + phase)%1));
-    }));
-    airflow.forEach((streak,i) => {
-      streak.visible = point.speed > 0;
-      streak.position.set((i%5-2)*.9, (i%3-1)*.8, 4.5 - 8.7*((i/10+airPhase)%1));
-    });
+    advance(dt, point, animate);
     host.dataset.rotorAngle = String(rotor.rotation.z);
     renderer.render(scene,camera);
     dirty = false;

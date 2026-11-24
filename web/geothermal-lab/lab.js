@@ -87,11 +87,11 @@ export function mountGeothermalLab(container) {
     </div>
     <div class="solar-stage">
       <figure class="engineering-card">
-        <div id="geo-scene" aria-label="Isometric geothermal reservoir, wells, binary-cycle plant and grid connection">
+        <div id="geo-scene" aria-label="Isometric hydrothermal doublet with flow through permeable rock and a binary-cycle plant">
           <div class="plant-tooltip" id="geo-tooltip" hidden></div>
           <button class="motion-toggle" id="geo-play" type="button"></button>
         </div>
-        <figcaption>Drag to orbit. Hover or tap to identify components.</figcaption>
+        <figcaption>Drag to orbit. Hover or tap to identify components. Follow the dots from the blue reinjection well through the permeable rock to the red production well. The dots trace illustrative paths viewed in cutaway.</figcaption>
         <ul class="geo-legend"><li><i class="hot"></i>Hot production brine</li><li><i class="cool"></i>Cooled return brine</li>
           <li><i class="vapor"></i>Working-fluid vapor</li><li><i class="liquid"></i>Condensed working fluid</li>
           <li><i class="power"></i>Electrical output</li></ul>
@@ -113,7 +113,7 @@ export function mountGeothermalLab(container) {
   root.replaceChildren(sheet,body);
   const input = { ...defaults };
   const get = id => root.getElementById(id);
-  let animate = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let animate = true;
   let scene;
   try { scene=mountGeothermalScene(get('geo-scene'),get('geo-tooltip')); }
   catch { get('geo-scene').textContent='The 3D view requires WebGL. Controls, equations and charts are available below.'; }
