@@ -27,7 +27,7 @@ These are simplified engineering models. Site assessment requires technology-spe
 
 ## Renewable-energy quizzes and exercises
 
-Exercises apply prerequisite Python, NumPy, pandas, and plotting knowledge to renewable-energy calculations. Learners should run every solution and inspect units and edge cases rather than accepting output solely because code executes. This course includes a general Python practice quiz; prerequisite Python and library instruction is in the separate Python Course.
+Module 2 introduces [Python, NumPy, pandas and Matplotlib](../section0/python-foundations.md) before learners apply them to renewable-energy data. Run the exercises and inspect their units and edge cases. The [eight-module outline](../courseIntro.md#eage-course-outline) links the technology labs, including wind capacity, river flood flow, observed irradiance and geothermal temperature logs.
 
 ## Final project
 
@@ -37,7 +37,7 @@ The final project models one synthetic week of a hybrid solar, wind, hydro and g
 
 - [ ] Explain the difference between power and energy.
 - [ ] Validate units, grain, date coverage, and missing values before analysis.
-- [ ] Apply prerequisite array and DataFrame skills without hidden shape assumptions.
+- [ ] Apply array and DataFrame skills without hidden shape assumptions.
 - [ ] Produce renewable-energy charts with accurate titles, axes, units, and scope.
 - [ ] Avoid double-counting aggregate and component energy categories.
 - [ ] Use a chronological holdout and a simple forecast baseline in the Wind Data Lab; the book case study is an optional extension.

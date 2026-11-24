@@ -14,15 +14,30 @@ Start with the [learning guide](learningGuide.md), use the [Applied Python Workb
 ## Course Description
 
 This course applies Python to renewable-energy data and engineering. It connects energy datasets, exploratory analysis, SQL, time-series methods, and engineering calculations for hydroelectric, solar, wind, and geothermal systems.
-Participants use their existing Python foundation to load, validate, analyse, visualise, and store real energy data. An optional [book time-series case study](section4/timeSeriesEnergyConsumption.ipynb), outside the browser lesson navigation, introduces reproducible time-series analysis and predictive modelling. It requires the [course repository](https://github.com/roderickperez/EAGE_PythonRenewableEnergyCourse) and its bundled spreadsheets; the notebook alone does not contain the data. The browser course also includes a chronological forecasting exercise in the [Wind Data Lab](section7/renewableEnergyquizzes/eolicenergy.md). Distinguish measured data, engineering estimates, and model forecasts.
+Participants build and apply a Python foundation to load, validate, analyse, visualise, and store real energy data. An optional [book time-series case study](section4/timeSeriesEnergyConsumption.ipynb), outside the browser lesson navigation, introduces reproducible time-series analysis and predictive modelling. It requires the [course repository](https://github.com/roderickperez/EAGE_PythonRenewableEnergyCourse) and its bundled spreadsheets; the notebook alone does not contain the data. The browser course also includes a chronological forecasting exercise in the [Wind Data Lab](section7/renewableEnergyquizzes/eolicenergy.md). Distinguish measured data, engineering estimates, and model forecasts.
 
-Programming fundamentals, notebooks, NumPy, pandas, and plotting are taught in the separate [Python Course](https://roderickperezaltamar.com/private-course/eage-python-course/index.html). Complete that preparation first if these tools are unfamiliar. Separate course access may be required. Renewable-energy exercises can run in Google Colab or in the reproducible local environment documented with the repository.
+Module 2 introduces programming fundamentals, notebooks, NumPy, pandas and plotting. Exercises can run in the course sandbox, in a local Python environment or in a notebook with the required data and packages.
 
 ## Python preparation
 
-The [Python Course](https://roderickperezaltamar.com/private-course/eage-python-course/index.html) is the prerequisite programming foundation. This renewable-energy course does not repeat its general Python, IDE, notebook, or library lessons.
+Start with [Python foundations for renewable energy](section0/python-foundations.md) if you are new to Python or want a refresher. The separate [Python Course](https://roderickperezaltamar.com/private-course/eage-python-course/index.html) provides further practice and may require separate access.
 
-For additional self-study, the official guides cover [Python fundamentals](https://docs.python.org/3/tutorial/) (aimed at people with some programming experience), [using Jupyter notebooks](https://jupyter-notebook.readthedocs.io/en/stable/notebook.html), [NumPy arrays](https://numpy.org/doc/stable/user/quickstart.html), [pandas data analysis](https://pandas.pydata.org/docs/getting_started/intro_tutorials/index.html), and [Matplotlib plotting](https://matplotlib.org/stable/tutorials/pyplot.html). These guides are supplementary; check the organizer's requirements for access to or completion of the prerequisite course.
+For additional self-study, the official guides cover [Python fundamentals](https://docs.python.org/3/tutorial/) (aimed at people with some programming experience), [using Jupyter notebooks](https://jupyter-notebook.readthedocs.io/en/stable/notebook.html), [NumPy arrays](https://numpy.org/doc/stable/user/quickstart.html), [pandas data analysis](https://pandas.pydata.org/docs/getting_started/intro_tutorials/index.html), and [Matplotlib plotting](https://matplotlib.org/stable/tutorials/pyplot.html). These guides are supplementary.
+
+## EAGE course outline
+
+| Module | Lessons and practice |
+| --- | --- |
+| 1. Introduction to renewable energy | [Fundamentals and applications](section0/introRenewableEnergy.md) across hydroelectric, wind, solar and geothermal energy |
+| 2. Python programming | [Python foundations](section0/python-foundations.md) and [general Python quiz](section7/renewableEnergyquizzes/generalPython.md) |
+| 3. Data processing and analysis | [Eurostat statistics, exploratory analysis, charts and seasonality](section4/energy-data-analysis.md) |
+| 4. Advanced data visualization | [Static and interactive choropleths with GeoPandas and Folium](section4/energy-maps.md) |
+| 5. Wind energy | [Generation principles](section6/windEnergy.md), [worldwide installed capacity](section6/labs/wind-capacity.md), [wind maps](section7/workbook/wind.md) and [time-series estimates](section7/renewableEnergyquizzes/eolicenergy.md) |
+| 6. Hydroelectric energy | [Generation principles](section6/hydroelectricEnergy.md) and [river mapping and flood flow](section6/labs/river-flood-flow.md) |
+| 7. Solar energy | [Radiation and PV generation](section6/solarEnergy.md) and [modelled and measured irradiance](section6/labs/solar-irradiance.md) |
+| 8. Geothermal energy | [Generation principles](section6/geothermalEnergy.md) and [world gradient map and well temperature log](section6/labs/geothermal-gradient.md) |
+
+Published reference [EAGE course description and syllabus](https://learninggeoscience.org/mod/page/view.php?id=6785).
 
 (how-the-browser-sandbox-was-made)=
 
@@ -363,7 +378,7 @@ By the end of the course, participants should be able to:
 
 ## Scope and prerequisites
 
-Working knowledge of Python functions, NumPy arrays, pandas DataFrames, Jupyter or Colab, and Matplotlib is required; use the linked Python Course for preparation. Basic algebra and familiarity with energy units are helpful. This is an applied introductory renewable-energy course; it does not replace a full power-systems, resource-assessment, statistics, or deep-learning course.
+Prior Python experience is optional. General programming concepts, basic descriptive statistics, algebra and familiarity with energy units are helpful. Learners new to Python should work through Module 2 before starting the data and engineering exercises. This is an applied introductory renewable-energy course; it does not replace a full power-systems, resource-assessment, statistics, or deep-learning course.
 
 ## Course navigation
 

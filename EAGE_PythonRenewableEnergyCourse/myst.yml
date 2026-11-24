@@ -17,14 +17,34 @@ project:
         - file: preface/foreword.md
         - file: preface/preface.md
         - file: section0/faq.md
-    - title: Introduction to Renewable Energy
+    - title: Module 1 · Introduction to Renewable Energy
       children:
         - file: section0/introRenewableEnergy.md
-          title: General fundamentals
-        - file: section6/hydroelectricEnergy.md
-        - file: section6/solarEnergy.md
+    - title: Module 2 · Python Programming
+      children:
+        - file: section0/python-foundations.md
+    - title: Module 3 · Data Processing and Analysis
+      children:
+        - file: section4/energy-data-analysis.md
+    - title: Module 4 · Advanced Data Visualization
+      children:
+        - file: section4/energy-maps.md
+    - title: Module 5 · Wind Energy
+      children:
         - file: section6/windEnergy.md
+        - file: section6/labs/wind-capacity.md
+    - title: Module 6 · Hydroelectric Energy
+      children:
+        - file: section6/hydroelectricEnergy.md
+        - file: section6/labs/river-flood-flow.md
+    - title: Module 7 · Solar Energy
+      children:
+        - file: section6/solarEnergy.md
+        - file: section6/labs/solar-irradiance.md
+    - title: Module 8 · Geothermal Energy
+      children:
         - file: section6/geothermalEnergy.md
+        - file: section6/labs/geothermal-gradient.md
 
     - title: Data Processing and Exploration Data Analysis
       children:

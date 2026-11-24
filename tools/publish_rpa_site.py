@@ -6,6 +6,7 @@ only accepts the student browser output, not a course repository or instructor f
 import argparse
 from concurrent.futures import ThreadPoolExecutor
 import hashlib
+import http.cookiejar
 import json
 import mimetypes
 import os
@@ -86,7 +87,45 @@ def object_path(course, file):
     return "/storage/v1/object/private-courses/" + urllib.parse.quote(course + "/" + file, safe="/")
 
 
-def publish(course, root, email, password):
+def verify_hub(course, token, manifest):
+    """Read back the release through the official authenticated delivery endpoint."""
+    origin = "https://roderickperezaltamar.com"
+    delivery = origin + "/private-course/" + urllib.parse.quote(course, safe="") + "/"
+    opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+    session_request = urllib.request.Request(
+        origin + "/api/course-session",
+        data=json.dumps({"token": token}).encode(),
+        headers={"Content-Type": "application/json", "Origin": origin},
+        method="POST",
+    )
+    try:
+        with opener.open(session_request, timeout=30):
+            pass
+    except urllib.error.HTTPError as exc:
+        raise RuntimeError(f"Official course session returned HTTP {exc.code}") from None
+    for name in ("index.html", "app.js", "generated/course.json"):
+        digest = manifest[name]
+        for attempt in range(5):
+            asset = urllib.request.Request(
+                delivery + name + f"?releaseCheck={time.time_ns()}",
+                headers={"Cache-Control": "no-cache"},
+            )
+            try:
+                with opener.open(asset, timeout=30) as response:
+                    matched = hashlib.sha256(response.read()).hexdigest() == digest
+                if matched:
+                    break
+            except urllib.error.HTTPError as exc:
+                if exc.code in {401, 403}:
+                    raise RuntimeError(f"Official course access returned HTTP {exc.code} for {name}") from None
+            if attempt < 4:
+                time.sleep(2 ** attempt)
+        else:
+            raise RuntimeError(f"Official course asset did not match the published build: {name}")
+    print("Verified official authenticated delivery of the course shell and lesson manifest.")
+
+
+def publish(course, root, email, password, *, check_hub=False):
     if course not in COURSES:
         raise ValueError("Unknown course.")
     inventory = build_inventory(root)
@@ -109,6 +148,8 @@ def publish(course, root, email, password):
     manifest = {name: digest for name, (_, digest) in sorted(inventory.items())}
     if previous.get("files") == manifest:
         print("Verified existing release for", course, "with", len(inventory), "files.")
+        if check_hub:
+            verify_hub(course, token, manifest)
         return
     uploads = {}
     for name, digest in manifest.items():
@@ -136,19 +177,22 @@ def publish(course, root, email, password):
     if published != {"version": 1, "files": manifest}:
         raise RuntimeError("Published course manifest did not match the build.")
     print("Published and verified", course, "with", len(inventory), "files.")
+    if check_hub:
+        verify_hub(course, token, manifest)
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--course", required=True, choices=sorted(COURSES))
     parser.add_argument("--root", required=True, type=Path)
+    parser.add_argument("--verify-hub", action="store_true", help="Read back the release through the official site")
     args = parser.parse_args()
     email = os.environ.get("COURSE_PUBLISHER_EMAIL", "")
     password = os.environ.get("COURSE_PUBLISHER_PASSWORD", "")
     if not email or not password:
         sys.exit("Set the publisher credentials as GitHub Actions secrets.")
     try:
-        publish(args.course, args.root, email, password)
+        publish(args.course, args.root, email, password, check_hub=args.verify_hub)
     except (ValueError, RuntimeError) as exc:
         sys.exit(str(exc))
 

@@ -54,4 +54,4 @@ jobs:
         env:
           COURSE_PUBLISHER_EMAIL: ${{ secrets.COURSE_PUBLISHER_EMAIL }}
           COURSE_PUBLISHER_PASSWORD: ${{ secrets.COURSE_PUBLISHER_PASSWORD }}
-        run: python tools/publish_rpa_site.py --course python-renewable --root EAGE_pythonSandBox
+        run: python tools/publish_rpa_site.py --course python-renewable --root EAGE_pythonSandBox --verify-hub

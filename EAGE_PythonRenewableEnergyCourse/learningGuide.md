@@ -14,10 +14,10 @@ and 20 graded exercises. Read the theory and work through the numerical example
 before revealing exercise answers. The downloadable notebook contains the complete
 chapter text as well as the code.
 
-1. Complete the separate [Python Course](https://roderickperezaltamar.com/private-course/eage-python-course/index.html) first if Python functions, NumPy, pandas, notebooks, or plotting are unfamiliar.
-2. Start here with renewable-energy context, units, and Basic exercises 1–4.
-3. Check data definitions, missingness, time-series handling, and SQL totals in the data and database chapters.
-4. Study each renewable-energy model and use the interactive diagrams before attempting Basic (1–4) and Medium (5–12) practice and quiz questions.
+1. Start with [Module 1](section0/introRenewableEnergy.md) and use the included [Python foundations lesson](section0/python-foundations.md) to learn or refresh Python, notebooks, NumPy, pandas and plotting.
+2. Practise units and energy balances in the general workbook before starting the source-specific exercises.
+3. Practise data quality, time series, seasonality and mapping in [Module 3](section4/energy-data-analysis.md) and [Module 4](section4/energy-maps.md). Use the database chapters to practise SQLite.
+4. Follow [Modules 5–8 in the course outline](courseIntro.md#eage-course-outline) for the theory, source-specific labs and interactive diagrams. Then attempt the workbook and quiz questions.
 5. Complete the Hard questions (13–20), which combine modelling, validation, comparison and interpretation.
 6. Take the question-only renewable-energy test, then complete the hybrid-portfolio project from its separate CSV datasets. The test answer key and project solution are instructor-only.
 
@@ -46,6 +46,6 @@ Submit code, a result with units, one or more checks, interpretation, reference 
 - Split forecast data chronologically; fit transformations on training data only and compare with a baseline.
 - Explain omitted losses and uncertainty. Teaching models are not bankable resource assessments.
 
-Core exercises apply prerequisite knowledge of Python, NumPy, pandas and Matplotlib; SQLite comes with Python. General programming and library instruction remains in the separate Python Course. Geospatial tools, Earth Engine, external map services and deep learning are optional. Browser kernels may not support every package or local file. Use the local environment for full validation.
+The Python foundations lesson prepares you to use NumPy, pandas and Matplotlib in later modules. The mapping labs use GeoPandas and Folium. SQLite comes with Python. Earth Engine, external map services and deep learning are extensions. Browser kernels may not support every package or local file. Use the local environment for full validation.
 
 See the [reference catalogue](references.md) and [Applied Python Workbook](section7/renewableExercises.md).

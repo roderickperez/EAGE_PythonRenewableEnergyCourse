@@ -1,8 +1,10 @@
 # Introduction to Renewable Energy
 
+[Open this lesson in Google Colab](https://colab.research.google.com/github/roderickperez/EAGE_PythonRenewableEnergyCourse/blob/main/EAGE_PythonRenewableEnergyCourse/section0/introRenewableEnergy.ipynb)
+
 ## Python preparation
 
-Review programming fundamentals, notebooks and scientific libraries in the [Python Course](https://roderickperezaltamar.com/private-course/eage-python-course/index.html). Separate course access may be required.
+Continue with [Module 2, Python foundations](python-foundations.md), for programming fundamentals, notebooks and scientific libraries.
 
 ## Energy, power and units
 

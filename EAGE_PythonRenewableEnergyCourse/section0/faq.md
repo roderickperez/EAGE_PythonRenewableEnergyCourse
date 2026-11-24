@@ -1,7 +1,7 @@
 # Frequently asked questions
 
 ## Do I need previous Python experience?
-Yes. A working foundation in Python functions, NumPy, pandas, notebooks, and plotting is expected. If you need preparation, use the separate [Python Course](https://roderickperezaltamar.com/private-course/eage-python-course/index.html); separate access may be required. The [Python preparation guide](../courseIntro.md#python-preparation) also links supplementary official tutorials. Basic algebra and unit conversions are helpful.
+Prior Python experience is optional. The included [Python foundations lesson](python-foundations.md) covers the tools used later in the course. Familiarity with basic programming concepts, descriptive statistics, algebra and unit conversions helps.
 
 ## Why does my result differ?
 Check units, time step, rounding, random seed, package versions and earlier cells. Use `np.isclose` with tolerances appropriate to the units and expected numerical error. [NumPy isclose](https://numpy.org/doc/stable/reference/generated/numpy.isclose.html).

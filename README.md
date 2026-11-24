@@ -38,11 +38,12 @@ Alternatively, use Node and npm installed inside WSL and run the commands from a
 
 The Eurostat notebooks use the bundled August 2024 exports for reproducibility. Refresh the exports and record the retrieval date before using their figures as current statistics.
 
-Optional geospatial and deep-learning packages are declared separately in `pyproject.toml`; they are not required to compile the core course.
+Additional geospatial and deep-learning packages are declared separately in `pyproject.toml`; they are not required to compile the core course.
 
-The course assumes working Python, NumPy, pandas and plotting knowledge. General
-Python, IDE, notebook and library instruction lives in the separate prerequisite
-Python course rather than being repeated here.
+The course book and sandbox follow the eight-module EAGE outline, starting with
+renewable-energy fundamentals and an included Python introduction. The core setup
+includes GeoPandas and Folium for the mapping labs. Refer to the course overview
+for lesson and exercise links. Each module has an Open in Google Colab link in its introductory lesson or lab. Regenerate the seven new lesson notebooks with python tools/build_module_notebooks.py after editing the lesson sources or their bundled datasets.
 
 The hydroelectric lesson includes a locally bundled Three.js teaching lab. Edit
 its source under `web/hydro-lab/`, run `npm test` and `npm run build`, and commit

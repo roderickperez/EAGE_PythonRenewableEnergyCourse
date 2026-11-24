@@ -12,7 +12,7 @@ document.getElementById('start').onclick=async()=>{
  worker.postMessage({type:'init',assets:course.assets,path:'section8/projectIntro.md'});
  let passed=0,failed=0;
  const run=(path,code)=>new Promise(resolve=>{receive=resolve;worker.postMessage({type:'run',path,code,stdin:Array(20).fill('7').join('\n'),fresh:true});});
- for(const page of course.pages.filter(p=>p.id.startsWith('section6/')||p.id==='section0/introRenewableEnergy.md')){
+ for(const page of course.pages.filter(p=>(/^section6\/[^/]+$/.test(p.id))||p.id==='section0/introRenewableEnergy.md')){
    for(const cell of page.codes.filter(c=>c.solution)){
      const r=await run(page.id,cell.code);if(r.error){failed++;write('FAIL '+page.id+' '+cell.id+' '+r.error);}else passed++;
    }write(page.title+': checked; total passed '+passed);
@@ -33,8 +33,12 @@ assert conn.execute('PRAGMA integrity_check').fetchone()[0]=='ok'
 print(conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall())
 conn.close()`]];
  for(const [name,path,code] of checks){const r=await run(path,code);if(r.error){failed++;write('FAIL '+name+' '+r.error);}else{passed++;write('PASS '+name);}}
- for(const id of ['section4/dataTypes/netcfd.md','section4/dataTypes/xArray.md','section4/EDA.md','section4/timeSeriesEnergyConsumption.ipynb','section5/SQL_Pandas.ipynb']){
-   const page=course.pages.find(p=>p.id===id);const r=await run(id,page.codes.map(c=>c.code).join('\n\n'));if(r.error){failed++;write('FAIL '+id+' '+r.error);}else{passed++;write('PASS '+id);}
+ const moduleLessons=course.pages.filter(page=>page.id==='section0/python-foundations.md'
+   || ['section4/energy-data-analysis.md','section4/energy-maps.md','section5/SQL_Pandas.ipynb'].includes(page.id)
+   || page.id.startsWith('section6/labs/'));
+ for(const page of moduleLessons){
+   const code=page.codes.filter(c=>c.runnable).map(c=>c.code).join('\n\n');
+   const r=await run(page.id,code);if(r.error){failed++;write('FAIL '+page.id+' '+r.error);}else{passed++;write('PASS '+page.id);}
  }
  for(const page of course.pages.filter(p=>p.group==='Quizzes')){
    const code=page.codes.filter(c=>c.runnable).map(c=>c.code).join('\n\n');

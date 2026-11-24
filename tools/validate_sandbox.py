@@ -20,6 +20,28 @@ def validate():
     assert set(pages) == {p for p, _ in Builder().pages}, 'Missing book pages'
     removed = {'Introduction to Python Programming', 'IDE & Notebooks', 'Python Basics', 'Python Libraries', 'Data Processing and Exploration Data Analysis'}
     assert not any(page['group'] in removed for page in pages.values())
+    module_lessons = (
+        ('section0/introRenewableEnergy.md',),
+        ('section0/python-foundations.md',),
+        ('section4/energy-data-analysis.md',),
+        ('section4/energy-maps.md',),
+        ('section6/windEnergy.md', 'section6/labs/wind-capacity.md'),
+        ('section6/hydroelectricEnergy.md', 'section6/labs/river-flood-flow.md'),
+        ('section6/solarEnergy.md', 'section6/labs/solar-irradiance.md'),
+        ('section6/geothermalEnergy.md', 'section6/labs/geothermal-gradient.md'),
+    )
+    for number, expected in enumerate(module_lessons, 1):
+        actual = tuple(path for path, page in pages.items()
+                       if page['group'].startswith(f'Module {number} · '))
+        assert actual == expected, f'Module {number} navigation: {actual}'
+        lesson = pages[expected[-1]]
+        notebook = (BOOK / expected[-1]).with_suffix('.ipynb')
+        assert notebook.is_file(), f'Module {number} notebook missing'
+        colab = ('https://colab.research.google.com/github/roderickperez/'
+                 f'EAGE_PythonRenewableEnergyCourse/blob/main/{BOOK.name}/{notebook.relative_to(BOOK).as_posix()}')
+        assert colab in lesson['html'], f'Module {number} Colab link missing'
+        if number > 1:
+            assert any(cell['runnable'] and cell['solution'] for cell in lesson['codes']), expected[-1]
     assert (OUT / 'hydro-lab' / 'hydro-lab.js').is_file()
     assert (OUT / 'hydro-lab' / 'fallback.svg').is_file()
     assert 'hydro-lab/index.html' not in pages['section6/hydroelectricEnergy.md']['html']
@@ -136,7 +158,7 @@ def validate():
         assert all(len(targets) == 1 for targets in citation_targets.values()), f'Ambiguous citation label: {path}'
     for theory_path in PATHS.values():
         page=pages[theory_path]
-        assert page['group']=='Introduction to Renewable Energy',theory_path
+        assert page['group'].startswith('Module '), theory_path
         assert 'expanded-theory:' in page['html'],theory_path
         assert not page['workspaces'] and not any(cell['solution'] for cell in page['codes']),theory_path
         assert not BeautifulSoup(page['html'],'html.parser').select('details.solution'),theory_path
